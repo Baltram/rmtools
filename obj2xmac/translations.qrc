@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/translations">
+        <file>obj2xmac_de.qm</file>
+    </qresource>
+</RCC>

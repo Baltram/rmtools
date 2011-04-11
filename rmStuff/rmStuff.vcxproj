@@ -1,0 +1,132 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{A95B4B8F-7C35-4BD1-8727-2E62C67EE890}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>rmStuff</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)</OutDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="rmAnimation.h" />
+    <ClInclude Include="rmArr2.h" />
+    <ClInclude Include="rmCollisionBinWriter.h" />
+    <ClInclude Include="rmDataTypes.h" />
+    <ClInclude Include="rmDir.h" />
+    <ClInclude Include="rmDummyClass.h" />
+    <ClInclude Include="rmFileStream.h" />
+    <ClInclude Include="rmMap.h" />
+    <ClInclude Include="rmMaterial.h" />
+    <ClInclude Include="rmMesh.h" />
+    <ClInclude Include="rmMurmurHash.h" />
+    <ClInclude Include="rmNearestNeighbor.h" />
+    <ClInclude Include="rmNode.h" />
+    <ClInclude Include="rmNxInFileStream.h" />
+    <ClInclude Include="rmNxOutFileStream.h" />
+    <ClInclude Include="rmObjReader.h" />
+    <ClInclude Include="rmObjWriter.h" />
+    <ClInclude Include="rmOptimizedMesh.h" />
+    <ClInclude Include="rmOut.h" />
+    <ClInclude Include="rmPhysxGlobals.h" />
+    <ClInclude Include="rmPropertyLinker.h" />
+    <ClInclude Include="rmScene.h" />
+    <ClInclude Include="rmSkin.h" />
+    <ClInclude Include="rmStringTable.h" />
+    <ClInclude Include="rmXcomFile.h" />
+    <ClInclude Include="rmXmacReader.h" />
+    <ClInclude Include="rmXmacWriter.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="rmAnimation.cpp" />
+    <ClCompile Include="rmCollisionBinWriter.cpp" />
+    <ClCompile Include="rmDir.cpp" />
+    <ClCompile Include="rmDummyClass.cpp" />
+    <ClCompile Include="rmFileStream.cpp" />
+    <ClCompile Include="rmMap.cpp" />
+    <ClCompile Include="rmMaterial.cpp" />
+    <ClCompile Include="rmMesh.cpp" />
+    <ClCompile Include="rmMurmurHash.cpp" />
+    <ClCompile Include="rmNearestNeighbor.cpp" />
+    <ClCompile Include="rmNode.cpp" />
+    <ClCompile Include="rmNxInFileStream.cpp" />
+    <ClCompile Include="rmNxOutFileStream.cpp" />
+    <ClCompile Include="rmObjReader.cpp" />
+    <ClCompile Include="rmObjWriter.cpp" />
+    <ClCompile Include="rmOptimizedMesh.cpp" />
+    <ClCompile Include="rmOut.cpp" />
+    <ClCompile Include="rmPropertyLinker.cpp" />
+    <ClCompile Include="rmScene.cpp" />
+    <ClCompile Include="rmSkin.cpp" />
+    <ClCompile Include="rmStringTable.cpp" />
+    <ClCompile Include="rmStuff2.cpp" />
+    <ClCompile Include="rmXcomFile.cpp" />
+    <ClCompile Include="rmXmacReader.cpp" />
+    <ClCompile Include="rmXmacWriter.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
