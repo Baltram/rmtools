@@ -1,1 +1,0 @@
-"Risen XMSH Builder" is obsolete and will be succeeded by some other tool.
