@@ -1,0 +1,150 @@
+//In Microsoft Visual C++ generiertes Ressourcenskript.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Von der Ressource TEXTINCLUDE 2 generiert.
+//
+#ifndef APSTUDIO_INVOKED
+#include "targetver.h"
+#endif
+#define APSTUDIO_HIDDEN_SYMBOLS
+#include "windows.h"
+#undef APSTUDIO_HIDDEN_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DEU)
+LANGUAGE 7, 1
+#pragma code_page(1252)
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Symbol
+//
+
+// Das Symbol mit dem niedrigsten ID-Wert wird an erster Stelle platziert,  um sicherzustellen,
+// dass es auf allen Systemen einheitlich ist.
+
+IDI_ASE2XMSH       ICON         "ase2xmsh.ico"
+IDI_SMALL               ICON         "small.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menü
+//
+
+IDC_ASE2XMSH MENU
+BEGIN
+    POPUP "&Datei"
+    BEGIN
+        MENUITEM "&Beenden",                IDM_EXIT
+    END
+    POPUP "&Hilfe"
+    BEGIN
+        MENUITEM "&Info...",           IDM_ABOUT
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Zugriffstaste
+//
+
+IDC_ASE2XMSH ACCELERATORS
+BEGIN
+    "?",            IDM_ABOUT,              ASCII,  ALT
+    "/",            IDM_ABOUT,              ASCII,  ALT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialogfeld
+//
+
+IDD_ABOUTBOX DIALOGEX 0, 0, 170, 62
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Info über ase2xmsh"
+FONT 8, "MS Shell Dlg"
+BEGIN
+    ICON            IDR_MAINFRAME,IDC_STATIC,14,14,21,20
+    LTEXT           "ase2xmsh, Version 1.0",IDC_STATIC,42,14,114,8,SS_NOPREFIX
+    LTEXT           "Copyright (C) 2010",IDC_STATIC,42,26,114,8
+    DEFPUSHBUTTON   "OK",IDOK,113,41,50,14,WS_GROUP
+END
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 163
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 55
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+1 TEXTINCLUDE
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE
+BEGIN
+	"#ifndef APSTUDIO_INVOKED\r\n"
+    "#include ""targetver.h""\r\n"
+    "#endif\r\n"
+    "#define APSTUDIO_HIDDEN_SYMBOLS\r\n"
+    "#include ""windows.h""\r\n"
+    "#undef APSTUDIO_HIDDEN_SYMBOLS\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Zeichenfolgentabelle
+//
+
+STRINGTABLE
+BEGIN
+   IDC_ASE2XMSH   "ASE2XMSH"
+   IDS_APP_TITLE       "ase2xmsh"
+END
+
+#endif
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Von der Ressource TEXTINCLUDE 3 generiert.
+//
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // nicht APSTUDIO_INVOKED

@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/flags">
+        <file>de.png</file>
+        <file>gb.png</file>
+    </qresource>
+</RCC>

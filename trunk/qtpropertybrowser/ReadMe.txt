@@ -1,0 +1,1 @@
+The original QtPropertyBrowser solution is available at http://qt.gitorious.org/qt-solutions.
