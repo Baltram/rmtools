@@ -25,6 +25,10 @@ file::file(char *filename, int mode)
 	if (mode == 1)
 	{
 		istr.open(filename, ios::in | ios::binary);
+		if (istr.fail())
+		{
+			throw std::exception();
+		}
 		chk();
 		buf();
 	}
@@ -33,12 +37,16 @@ file::file(char *filename, int mode)
 		ostr.open(filename, ios::out | ios::binary);
 		if (ostr.fail())
 		{
-			output::error("Zieldatei konnte nicht erstellt werden", "Couldn't create target file");
+			throw std::exception();
 		}
 	}
 	else if (mode == 3)
 	{
 		iostr.open(filename, ios::in | ios::out | ios::binary);
+		if (iostr.fail())
+		{
+			throw std::exception();
+		}
 		buf();
 	}
 	else if (mode == 4)
@@ -48,7 +56,7 @@ file::file(char *filename, int mode)
 		istr.open(filename, ios::in | ios::binary);
 		if (istr.fail())
 		{
-			output::error("Quelldatei konnte nicht geöffnet werden", "Couldn't open source file");
+			output::error("Datei konnte nicht geöffnet werden", "Couldn't open file");
 		}
 		if (filesize < (1010 * sizeof(int)))
 		{

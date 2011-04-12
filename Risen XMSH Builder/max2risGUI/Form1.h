@@ -383,7 +383,25 @@ namespace max2risGUI {
 			System::String ^directory = fileinfo->DirectoryName;
 			directory += "\\prefs.rxb";
 			char *dir = (char *)(void *)System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi(directory);
-			prefsFile = new file(dir, 3);
+			try
+			{
+				prefsFile = new file(dir, 3);
+			}
+			catch (exception & e)
+			{
+				delete prefsFile;
+				try
+				{
+					prefsFile = new file(dir, 2);
+				}
+				catch (exception & e)
+				{
+					output::error("Die Datei prefs.rxb konnte nicht geöffnet werden", "Failed to open prefs.rxb file");
+				}
+				prefsFile->writechararray("\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", 24);
+				prefsFile->close();
+				prefsFile = new file(dir, 3);
+			}
 			output::setlanguage(prefsFile->readlong());
 			if (output::getlanguage() == 1)
 			{
