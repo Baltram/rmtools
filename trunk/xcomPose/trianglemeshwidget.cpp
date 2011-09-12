@@ -55,6 +55,7 @@ TriangleMeshWidget::TriangleMeshWidget(rmXcomFile::TriangleMesh * link, QWidget 
 	connect(ignoredByTraceRayCheckBox, SIGNAL(clicked(bool)), this, SLOT(on_ignoredByTraceRayCheckBox_clicked(bool)));
 	connect(disableCollisionCheckBox, SIGNAL(clicked(bool)), this, SLOT(on_disableCollisionCheckBox_clicked(bool)));
 	connect(disableResponseCheckBox, SIGNAL(clicked(bool)), this, SLOT(on_disableResponseCheckBox_clicked(bool)));
+	connect(shapeMatComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(on_shapeMatComboBox_currentIndexChanged(int)));
     }
     else {
 	setEnabled(false);
@@ -106,4 +107,10 @@ void TriangleMeshWidget::on_disableCollisionCheckBox_clicked(bool checked)
 void TriangleMeshWidget::on_disableResponseCheckBox_clicked(bool checked)
 {
     linkedTriangleMesh->disableResponse = checked;
+}
+
+void TriangleMeshWidget::on_shapeMatComboBox_currentIndexChanged(int index)
+{
+	index;
+	linkedTriangleMesh->shapeMaterial = shapeMatComboBox->getShapeMat();
 }

@@ -26,6 +26,7 @@ private slots:
     void on_ignoredByTraceRayCheckBox_clicked(bool checked);
     void on_disableCollisionCheckBox_clicked(bool checked);
     void on_disableResponseCheckBox_clicked(bool checked);
+	void on_shapeMatComboBox_currentIndexChanged(int index);
 
 private:
     QHBoxLayout * mainLayout;
