@@ -13,7 +13,7 @@ public:
 public:
     mCMaterialBase & operator = ( mCMaterialBase const & a_matSource );
 public:
-    virtual mCMaterialBase * Clone( void ) = 0;
+    virtual mCMaterialBase * Clone( void ) const = 0;
 public:
     mCString const & GetName( void ) const;
     void             SetName( mCString const & a_strName );

@@ -40,7 +40,7 @@ mCMaterial const & mCMultiMaterial::operator [] ( MIUInt a_uIndex ) const
     return m_arrSubMaterials[ a_uIndex ];
 }
 
-mCMultiMaterial * mCMultiMaterial::Clone( void )
+mCMultiMaterial * mCMultiMaterial::Clone( void ) const
 {
     return new mCMultiMaterial( *this );
 }

@@ -39,6 +39,31 @@ mCNode * mCScene::AccessNodeAt( MIUInt a_uIndex )
     return m_arrNodes[ a_uIndex ];
 }
 
+void mCScene::AddMaterial( mCMaterialBase const & a_matSource )
+{
+    m_arrMaterials.Add( a_matSource.Clone() );
+}
+
+mCMaterial & mCScene::AddNewMaterial( void )
+{
+    return *dynamic_cast< mCMaterial * >( m_arrMaterials.AddNew() = new mCMaterial );
+}
+
+mCMultiMaterial & mCScene::AddNewMultiMaterial( void )
+{
+    return *dynamic_cast< mCMultiMaterial * >( m_arrMaterials.AddNew() = new mCMultiMaterial );
+}
+
+mCNode & mCScene::AddNewNode( void )
+{
+    return *( m_arrNodes.AddNew() = new mCNode );
+}
+
+void mCScene::AddNode( mCNode const & a_nodeSource )
+{
+    m_arrNodes.Add( new mCNode( a_nodeSource ) );
+}
+
 void mCScene::Clear( void )
 {
     for ( MIUInt u = m_arrMaterials.GetCount(); u--; delete m_arrMaterials[ u ] );

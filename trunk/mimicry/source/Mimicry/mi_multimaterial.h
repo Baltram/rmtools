@@ -15,7 +15,7 @@ public:
     mCMaterial &       operator [] ( MIUInt a_uIndex );
     mCMaterial const & operator [] ( MIUInt a_uIndex ) const;
 public:
-    virtual mCMultiMaterial * Clone( void );
+    virtual mCMultiMaterial * Clone( void ) const;
 public:
     mTArray< mCMaterial > &       AccessSubMaterials( void );
     mTArray< mCMaterial > const & GetSubMaterials( void ) const;

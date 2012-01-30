@@ -22,7 +22,7 @@ public:
 public:
     mCMaterial & operator = ( mCMaterial const & a_matSource );
 public:
-    virtual mCMaterial * Clone( void );
+    virtual mCMaterial * Clone( void ) const;
 public:
     mCTexMap const * GetTextureMapAt( EMapType a_enuMapType ) const;
     void             SetTextureMapAt( EMapType a_enuMapType, mCTexMap const & a_tmapSource );
