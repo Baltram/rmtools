@@ -3,7 +3,7 @@
 
 template< mEStreamType M >
 class mTIStream :
-    public virtual mCEndiannessHandler
+    public mCEndiannessHandler
 {
 public:
     virtual mEResult Read( MILPVoid a_pDest, MIUInt a_uSize ) = 0;

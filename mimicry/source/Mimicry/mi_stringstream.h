@@ -9,7 +9,7 @@ public:
 public:
     mCStringStream( void );
     mCStringStream( mCStringStream const & a_Source );
-    mCStringStream( mCStreamSeekable & a_Source );
+    mCStringStream( mCIOStreamFormatted & a_Source );
     mCStringStream( mCString const & a_strSource );
 public:
     mCStringStream & operator = ( mCStringStream const & a_Source );

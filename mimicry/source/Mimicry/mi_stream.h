@@ -22,7 +22,7 @@ public:
 public:
     mCEndiannessHandler( void );
 public:
-    void SetInvertEndianness( MIBool a_bMode );
+    virtual void SetInvertEndianness( MIBool a_bMode );
 protected:
     void Handle16( MILPVoid a_pDest );
     void Handle32( MILPVoid a_pDest );

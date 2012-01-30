@@ -1,5 +1,5 @@
-#ifndef MI_STREAMSEEKABLE_H_INCLUDED
-#define MI_STREAMSEEKABLE_H_INCLUDED
+#ifndef MI_IOSTREAM_H_INCLUDED
+#define MI_IOSTREAM_H_INCLUDED
 
 enum mEStreamSeekMode
 {
@@ -9,19 +9,27 @@ enum mEStreamSeekMode
     mEStreamSeekMode_ForceDWORD = MI_FORCE_DWORD
 };
 
-class mCStreamSeekable
+template< mEStreamType M >
+class mTIOStream :
+    public mTIStream< M >,
+    public mTOStream< M >
 {
+public:
+    virtual ~mTIOStream( void );
 public:
     virtual MIUInt   GetSize( void ) const = 0;
     virtual mEResult Seek( MIUInt a_uPosition, mEStreamSeekMode a_enuMode = mEStreamSeekMode_Begin ) = 0;
+    virtual void     SetInvertEndianness( MIBool a_bMode );
     virtual mEResult Skip( MIInt a_iCount );
     virtual MIUInt   Tell( void ) const = 0;
-    virtual         ~mCStreamSeekable( void );
 };
+
+typedef mTIOStream< mEStreamType_Binary >    mCIOStreamBinary;
+typedef mTIOStream< mEStreamType_Formatted > mCIOStreamFormatted;
 
 template< mEStreamType M, mEStreamType N > mTIStream< M > & operator >> ( mTIStream< M > & a_streamSource, mTOStream< N > & a_streamDest );
 template< mEStreamType M, mEStreamType N > mTOStream< M > & operator << ( mTOStream< M > & a_streamDest, mTIStream< N > & a_streamSource );
 
-#include "mi_streamseekable.inl"
+#include "mi_iostream.inl"
 
 #endif

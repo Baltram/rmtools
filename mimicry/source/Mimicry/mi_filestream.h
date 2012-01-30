@@ -11,9 +11,7 @@ enum mEFileOpenMode
 };
 
 class mCFileStream :
-    public mCIStreamBinary,
-    public mCOStreamBinary,
-    public mCStreamSeekable
+    public mCIOStreamBinary
 {
 public:
     virtual ~mCFileStream( void );

@@ -61,7 +61,7 @@ mCStringStream::mCStringStream( mCStringStream const & a_Source ) :
 {
 }
 
-mCStringStream::mCStringStream( mCStreamSeekable & a_Source ) :
+mCStringStream::mCStringStream( mCIOStreamFormatted & a_Source ) :
     mCMemoryStreamBaseFormatted( a_Source )
 {
 }
