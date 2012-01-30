@@ -32,7 +32,7 @@ mCMaterial & mCMaterial::operator = ( mCMaterial const & a_matSource )
     return *this;
 }
 
-mCMaterial * mCMaterial::Clone( void )
+mCMaterial * mCMaterial::Clone( void ) const
 {
     return new mCMaterial( *this );
 }
