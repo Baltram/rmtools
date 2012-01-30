@@ -19,8 +19,8 @@ public:
     virtual         ~mCStreamSeekable( void );
 };
 
-template< mEStreamType M, mEStreamType N > mCIStream< M > & operator >> ( mCIStream< M > & a_streamSource, mCOStream< N > & a_streamDest );
-template< mEStreamType M, mEStreamType N > mCOStream< M > & operator << ( mCOStream< M > & a_streamDest, mCIStream< N > & a_streamSource );
+template< mEStreamType M, mEStreamType N > mTIStream< M > & operator >> ( mTIStream< M > & a_streamSource, mTOStream< N > & a_streamDest );
+template< mEStreamType M, mEStreamType N > mTOStream< M > & operator << ( mTOStream< M > & a_streamDest, mTIStream< N > & a_streamSource );
 
 #include "mi_streamseekable.inl"
 

@@ -247,112 +247,112 @@ mCOStreamFormatted & mCOStreamFormatted::operator << ( mCString const & a_strSou
 }
 
 template< mEStreamType M >
-mCOStream< M > & operator >> ( MII8 a_i8Source, mCOStream< M > & a_streamDest )
+mTOStream< M > & operator >> ( MII8 a_i8Source, mTOStream< M > & a_streamDest )
 {
     a_streamDest << a_i8Source;
     return a_streamDest;
 }
 
 template< mEStreamType M >
-mCOStream< M > & operator >> ( MIU8 a_u8Source, mCOStream< M > & a_streamDest )
+mTOStream< M > & operator >> ( MIU8 a_u8Source, mTOStream< M > & a_streamDest )
 {
     a_streamDest << a_u8Source;
     return a_streamDest;
 }
 
 template< mEStreamType M >
-mCOStream< M > & operator >> ( MII16 a_i16Source, mCOStream< M > & a_streamDest )
+mTOStream< M > & operator >> ( MII16 a_i16Source, mTOStream< M > & a_streamDest )
 {
     a_streamDest << a_i16Source;
     return a_streamDest;
 }
 
 template< mEStreamType M >
-mCOStream< M > & operator >> ( MIU16 a_u16Source, mCOStream< M > & a_streamDest )
+mTOStream< M > & operator >> ( MIU16 a_u16Source, mTOStream< M > & a_streamDest )
 {
     a_streamDest << a_u16Source;
     return a_streamDest;
 }
 
 template< mEStreamType M >
-mCOStream< M > & operator >> ( MII32 a_i32Source, mCOStream< M > & a_streamDest )
+mTOStream< M > & operator >> ( MII32 a_i32Source, mTOStream< M > & a_streamDest )
 {
     a_streamDest << a_i32Source;
     return a_streamDest;
 }
 
 template< mEStreamType M >
-mCOStream< M > & operator >> ( MIU32 a_u32Source, mCOStream< M > & a_streamDest )
+mTOStream< M > & operator >> ( MIU32 a_u32Source, mTOStream< M > & a_streamDest )
 {
     a_streamDest << a_u32Source;
     return a_streamDest;
 }
 
 template< mEStreamType M >
-mCOStream< M > & operator >> ( MIInt a_iSource, mCOStream< M > & a_streamDest )
+mTOStream< M > & operator >> ( MIInt a_iSource, mTOStream< M > & a_streamDest )
 {
     a_streamDest << a_iSource;
     return a_streamDest;
 }
 
 template< mEStreamType M >
-mCOStream< M > & operator >> ( MIUInt a_uSource, mCOStream< M > & a_streamDest )
+mTOStream< M > & operator >> ( MIUInt a_uSource, mTOStream< M > & a_streamDest )
 {
     a_streamDest << a_uSource;
     return a_streamDest;
 }
 
 template< mEStreamType M >
-mCOStream< M > & operator >> ( MII64 a_i64Source, mCOStream< M > & a_streamDest )
+mTOStream< M > & operator >> ( MII64 a_i64Source, mTOStream< M > & a_streamDest )
 {
     a_streamDest << a_i64Source;
     return a_streamDest;
 }
 
 template< mEStreamType M >
-mCOStream< M > & operator >> ( MIU64 a_u64Source, mCOStream< M > & a_streamDest )
+mTOStream< M > & operator >> ( MIU64 a_u64Source, mTOStream< M > & a_streamDest )
 {
     a_streamDest << a_u64Source;
     return a_streamDest;
 }
 
 template< mEStreamType M >
-mCOStream< M > & operator >> ( MIBool a_bSource, mCOStream< M > & a_streamDest )
+mTOStream< M > & operator >> ( MIBool a_bSource, mTOStream< M > & a_streamDest )
 {
     a_streamDest << a_bSource;
     return a_streamDest;
 }
 
 template< mEStreamType M >
-mCOStream< M > & operator >> ( MIFloat a_fSource, mCOStream< M > & a_streamDest )
+mTOStream< M > & operator >> ( MIFloat a_fSource, mTOStream< M > & a_streamDest )
 {
     a_streamDest << a_fSource;
     return a_streamDest;
 }
 
 template< mEStreamType M >
-mCOStream< M > & operator >> ( MIDouble a_dSource, mCOStream< M > & a_streamDest )
+mTOStream< M > & operator >> ( MIDouble a_dSource, mTOStream< M > & a_streamDest )
 {
     a_streamDest << a_dSource;
     return a_streamDest;
 }
 
 template< mEStreamType M >
-mCOStream< M > & operator >> ( MIChar a_cSource, mCOStream< M > & a_streamDest )
+mTOStream< M > & operator >> ( MIChar a_cSource, mTOStream< M > & a_streamDest )
 {
     a_streamDest << a_cSource;
     return a_streamDest;
 }
 
 template< mEStreamType M >
-mCOStream< M > & operator >> ( MILPCChar a_pcSource, mCOStream< M > & a_streamDest )
+mTOStream< M > & operator >> ( MILPCChar a_pcSource, mTOStream< M > & a_streamDest )
 {
     a_streamDest << a_pcSource;
     return a_streamDest;
 }
 
 template< mEStreamType M >
-mCOStream< M > & operator >> ( mCString const & a_strSource, mCOStream< M > & a_streamDest )
+mTOStream< M > & operator >> ( mCString const & a_strSource, mTOStream< M > & a_streamDest )
 {
     a_streamDest << a_strSource;
     return a_streamDest;

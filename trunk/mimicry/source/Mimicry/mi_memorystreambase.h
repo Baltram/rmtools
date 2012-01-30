@@ -3,8 +3,8 @@
 
 template< mEStreamType M >
 class mTMemoryStreamBase :
-    public mCIStream< M >,
-    public mCOStream< M >,
+    public mTIStream< M >,
+    public mTOStream< M >,
     public mCStreamSeekable
 {
 public:

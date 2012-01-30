@@ -10,7 +10,7 @@ mCStreamSeekable::~mCStreamSeekable( void )
 }
 
 template< mEStreamType M, mEStreamType N >
-mCIStream< M > & operator >> ( mCIStream< M > & a_streamSource, mCOStream< N > & a_streamDest )
+mTIStream< M > & operator >> ( mTIStream< M > & a_streamSource, mTOStream< N > & a_streamDest )
 {
     mCStreamSeekable * pStreamSource = dynamic_cast< mCStreamSeekable * >( &a_streamSource );
     if ( pStreamSource )
@@ -25,7 +25,7 @@ mCIStream< M > & operator >> ( mCIStream< M > & a_streamSource, mCOStream< N > &
 }
 
 template< mEStreamType M, mEStreamType N >
-mCOStream< M > & operator << ( mCOStream< M > & a_streamDest, mCIStream< N > & a_streamSource )
+mTOStream< M > & operator << ( mTOStream< M > & a_streamDest, mTIStream< N > & a_streamSource )
 {
     a_streamSource >> a_streamDest;
     return a_streamDest;
