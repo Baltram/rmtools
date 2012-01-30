@@ -47,6 +47,7 @@
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="4"
+				DisableSpecificWarnings="4505"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -115,6 +116,7 @@
 				WarningLevel="4"
 				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="3"
+				DisableSpecificWarnings="4505"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -157,6 +159,18 @@
 			</File>
 			<File
 				RelativePath=".\Mimicry\mi_filestream.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Mimicry\mi_iostream.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Mimicry\mi_iostream.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Mimicry\mi_iostream.inl"
 				>
 			</File>
 			<File
@@ -205,14 +219,6 @@
 			</File>
 			<File
 				RelativePath=".\Mimicry\mi_stream.inl"
-				>
-			</File>
-			<File
-				RelativePath=".\Mimicry\mi_streamseekable.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Mimicry\mi_streamseekable.inl"
 				>
 			</File>
 			<File

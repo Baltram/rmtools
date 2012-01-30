@@ -1,18 +1,25 @@
-inline
-mEResult mCStreamSeekable::Skip( MIInt a_iCount )
+template< mEStreamType M >
+mTIOStream< M >::~mTIOStream( void )
 {
-    return Seek( ( Tell() + a_iCount ), mEStreamSeekMode_Begin );
 }
 
-inline
-mCStreamSeekable::~mCStreamSeekable( void )
+template< mEStreamType M >
+void mTIOStream< M >::SetInvertEndianness( MIBool a_bMode )
 {
+    mTIStream< M >::SetInvertEndianness( a_bMode );
+    mTOStream< M >::SetInvertEndianness( a_bMode );
+}
+
+template< mEStreamType M >
+mEResult mTIOStream< M >::Skip( MIInt a_iCount )
+{
+    return Seek( ( Tell() + a_iCount ), mEStreamSeekMode_Begin );
 }
 
 template< mEStreamType M, mEStreamType N >
 mTIStream< M > & operator >> ( mTIStream< M > & a_streamSource, mTOStream< N > & a_streamDest )
 {
-    mCStreamSeekable * pStreamSource = dynamic_cast< mCStreamSeekable * >( &a_streamSource );
+    mTIOStream * pStreamSource = dynamic_cast< mTIOStream * >( &a_streamSource );
     if ( pStreamSource )
     {
         MIUInt uSize = pStreamSource->GetSize() - pStreamSource->Tell();

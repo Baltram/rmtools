@@ -18,7 +18,7 @@ mCMemoryStream::mCMemoryStream( mCMemoryStream const & a_Source ) :
 {
 }
 
-mCMemoryStream::mCMemoryStream( mCStreamSeekable & a_Source ) :
+mCMemoryStream::mCMemoryStream( mCIOStreamBinary & a_Source ) :
     mCMemoryStreamBaseBinary( a_Source )
 {
 }

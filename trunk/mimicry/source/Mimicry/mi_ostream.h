@@ -3,7 +3,7 @@
 
 template< mEStreamType M >
 class mTOStream :
-    public virtual mCEndiannessHandler
+    public mCEndiannessHandler
 {
 public:
     virtual mEResult Write( MILPCVoid a_pSource, MIUInt a_uSize ) = 0;

@@ -9,7 +9,7 @@ public:
 public:
     mCMemoryStream( void );
     mCMemoryStream( mCMemoryStream const & a_Source );
-    mCMemoryStream( mCStreamSeekable & a_Source );
+    mCMemoryStream( mCIOStreamBinary & a_Source );
 public:
     mCMemoryStream & operator = ( mCMemoryStream const & a_Source );
 public:

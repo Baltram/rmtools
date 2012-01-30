@@ -7,7 +7,7 @@
 #include "mi_stream.h"
 #include "mi_istream.h"
 #include "mi_ostream.h"
-#include "mi_streamseekable.h"
+#include "mi_iostream.h"
 #include "mi_memorystreambase.h"
 #include "mi_memorystream.h"
 #include "mi_stringstream.h"

@@ -3,16 +3,15 @@
 
 template< mEStreamType M >
 class mTMemoryStreamBase :
-    public mTIStream< M >,
-    public mTOStream< M >,
-    public mCStreamSeekable
+    public mTIOStream< M >
 {
 public:
     virtual ~mTMemoryStreamBase( void );
 public:
     mTMemoryStreamBase( void );
     mTMemoryStreamBase( mTMemoryStreamBase< M > const & a_Source );
-    mTMemoryStreamBase( mCStreamSeekable & a_Source );
+    mTMemoryStreamBase( mCIOStreamBinary & a_Source );
+    mTMemoryStreamBase( mCIOStreamFormatted & a_Source );
 public:
     mTMemoryStreamBase< M > & operator = ( mTMemoryStreamBase< M > const & a_Source );
 public:

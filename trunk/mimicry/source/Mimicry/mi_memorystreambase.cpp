@@ -24,19 +24,26 @@ mTMemoryStreamBase< M >::mTMemoryStreamBase( mTMemoryStreamBase< M > const & a_S
 }
 
 template< mEStreamType M >
-mTMemoryStreamBase< M >::mTMemoryStreamBase( mCStreamSeekable & a_Source ) :
+mTMemoryStreamBase< M >::mTMemoryStreamBase( mCIOStreamBinary & a_Source ) :
     m_uPosition( 0 )
 {
     MIUInt const uSize = a_Source.GetSize();
     MIUInt const uPosition = a_Source.Tell();
     a_Source.Seek( 0 );
     m_arrBuffer.Resize( uSize );
-    mCIStreamBinary * pBinarySource = dynamic_cast< mCIStreamBinary * >( &a_Source );
-    mCIStreamFormatted * pFormattedSource = dynamic_cast< mCIStreamFormatted * >( &a_Source );
-    if ( pBinarySource )
-        pBinarySource->Read( m_arrBuffer.AccessBuffer(), uSize );
-    else if ( pFormattedSource )
-        pFormattedSource->Read( m_arrBuffer.AccessBuffer(), uSize );
+    a_Source.Read( m_arrBuffer.AccessBuffer(), uSize );
+    a_Source.Seek( uPosition );
+}
+
+template< mEStreamType M >
+mTMemoryStreamBase< M >::mTMemoryStreamBase( mCIOStreamFormatted & a_Source ) :
+    m_uPosition( 0 )
+{
+    MIUInt const uSize = a_Source.GetSize();
+    MIUInt const uPosition = a_Source.Tell();
+    a_Source.Seek( 0 );
+    m_arrBuffer.Resize( uSize );
+    a_Source.Read( m_arrBuffer.AccessBuffer(), uSize );
     a_Source.Seek( uPosition );
 }
 
