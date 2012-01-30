@@ -119,7 +119,7 @@ mCIStreamBinary & mCIStreamBinary::operator >> ( mCString & a_strDest )
 }
 
 template< mEStreamType M >
-MII8 mCIStream< M >::ReadI8( void )
+MII8 mTIStream< M >::ReadI8( void )
 {
     MII8 i8Result;
     *this >> i8Result;
@@ -127,7 +127,7 @@ MII8 mCIStream< M >::ReadI8( void )
 }
 
 template< mEStreamType M >
-MIU8 mCIStream< M >::ReadU8( void )
+MIU8 mTIStream< M >::ReadU8( void )
 {
     MIU8 u8Result;
     *this >> u8Result;
@@ -135,7 +135,7 @@ MIU8 mCIStream< M >::ReadU8( void )
 }
 
 template< mEStreamType M >
-MII16 mCIStream< M >::ReadI16( void )
+MII16 mTIStream< M >::ReadI16( void )
 {
     MII16 i16Result;
     *this >> i16Result;
@@ -143,7 +143,7 @@ MII16 mCIStream< M >::ReadI16( void )
 }
 
 template< mEStreamType M >
-MIU16 mCIStream< M >::ReadU16( void )
+MIU16 mTIStream< M >::ReadU16( void )
 {
     MIU16 u16Result;
     *this >> u16Result;
@@ -151,7 +151,7 @@ MIU16 mCIStream< M >::ReadU16( void )
 }
 
 template< mEStreamType M >
-MII32 mCIStream< M >::ReadI32( void )
+MII32 mTIStream< M >::ReadI32( void )
 {
     MII32 i32Result;
     *this >> i32Result;
@@ -159,7 +159,7 @@ MII32 mCIStream< M >::ReadI32( void )
 }
 
 template< mEStreamType M >
-MIU32 mCIStream< M >::ReadU32( void )
+MIU32 mTIStream< M >::ReadU32( void )
 {
     MIU32 u32Result;
     *this >> u32Result;
@@ -167,7 +167,7 @@ MIU32 mCIStream< M >::ReadU32( void )
 }
 
 template< mEStreamType M >
-MIInt mCIStream< M >::ReadInt( void )
+MIInt mTIStream< M >::ReadInt( void )
 {
     MIInt iResult;
     *this >> iResult;
@@ -175,7 +175,7 @@ MIInt mCIStream< M >::ReadInt( void )
 }
 
 template< mEStreamType M >
-MIUInt mCIStream< M >::ReadUInt( void )
+MIUInt mTIStream< M >::ReadUInt( void )
 {
     MIUInt uResult;
     *this >> uResult;
@@ -183,7 +183,7 @@ MIUInt mCIStream< M >::ReadUInt( void )
 }
 
 template< mEStreamType M >
-MII64 mCIStream< M >::ReadI64( void )
+MII64 mTIStream< M >::ReadI64( void )
 {
     MII64 i64Result;
     *this >> i64Result;
@@ -191,7 +191,7 @@ MII64 mCIStream< M >::ReadI64( void )
 }
 
 template< mEStreamType M >
-MIU64 mCIStream< M >::ReadU64( void )
+MIU64 mTIStream< M >::ReadU64( void )
 {
     MIU64 u64Result;
     *this >> u64Result;
@@ -199,7 +199,7 @@ MIU64 mCIStream< M >::ReadU64( void )
 }
 
 template< mEStreamType M >
-MIBool mCIStream< M >::ReadBool( void )
+MIBool mTIStream< M >::ReadBool( void )
 {
     MIBool bResult;
     *this >> bResult;
@@ -207,7 +207,7 @@ MIBool mCIStream< M >::ReadBool( void )
 }
 
 template< mEStreamType M >
-MIFloat mCIStream< M >::ReadFloat( void )
+MIFloat mTIStream< M >::ReadFloat( void )
 {
     MIFloat fResult;
     *this >> fResult;
@@ -215,7 +215,7 @@ MIFloat mCIStream< M >::ReadFloat( void )
 }
 
 template< mEStreamType M >
-MIDouble mCIStream< M >::ReadDouble( void )
+MIDouble mTIStream< M >::ReadDouble( void )
 {
     MIDouble dResult;
     *this >> dResult;
@@ -223,7 +223,7 @@ MIDouble mCIStream< M >::ReadDouble( void )
 }
 
 template< mEStreamType M >
-MIChar mCIStream< M >::ReadChar( void )
+MIChar mTIStream< M >::ReadChar( void )
 {
     MIChar cResult;
     *this >> cResult;
@@ -231,7 +231,7 @@ MIChar mCIStream< M >::ReadChar( void )
 }
 
 template< mEStreamType M >
-mCString mCIStream< M >::ReadString( void )
+mCString mTIStream< M >::ReadString( void )
 {
     mCString strResult;
     *this >> strResult;
@@ -363,105 +363,105 @@ mCIStreamFormatted & mCIStreamFormatted::operator >> ( mCString & a_strDest )
 }
 
 template< mEStreamType M >
-mCIStream< M > & operator << ( MII8 & a_i8Dest, mCIStream< M > & a_streamSource )
+mTIStream< M > & operator << ( MII8 & a_i8Dest, mTIStream< M > & a_streamSource )
 {
     a_streamSource >> a_i8Dest;
     return a_streamSource;
 }
 
 template< mEStreamType M >
-mCIStream< M > & operator << ( MIU8 & a_u8Dest, mCIStream< M > & a_streamSource )
+mTIStream< M > & operator << ( MIU8 & a_u8Dest, mTIStream< M > & a_streamSource )
 {
     a_streamSource >> a_u8Dest;
     return a_streamSource;
 }
 
 template< mEStreamType M >
-mCIStream< M > & operator << ( MII16 & a_i16Dest, mCIStream< M > & a_streamSource )
+mTIStream< M > & operator << ( MII16 & a_i16Dest, mTIStream< M > & a_streamSource )
 {
     a_streamSource >> a_i16Dest;
     return a_streamSource;
 }
 
 template< mEStreamType M >
-mCIStream< M > & operator << ( MIU16 & a_u16Dest, mCIStream< M > & a_streamSource )
+mTIStream< M > & operator << ( MIU16 & a_u16Dest, mTIStream< M > & a_streamSource )
 {
     a_streamSource >> a_u16Dest;
     return a_streamSource;
 }
 
 template< mEStreamType M >
-mCIStream< M > & operator << ( MII32 & a_i32Dest, mCIStream< M > & a_streamSource )
+mTIStream< M > & operator << ( MII32 & a_i32Dest, mTIStream< M > & a_streamSource )
 {
     a_streamSource >> a_i32Dest;
     return a_streamSource;
 }
 
 template< mEStreamType M >
-mCIStream< M > & operator << ( MIU32 & a_u32Dest, mCIStream< M > & a_streamSource )
+mTIStream< M > & operator << ( MIU32 & a_u32Dest, mTIStream< M > & a_streamSource )
 {
     a_streamSource >> a_u32Dest;
     return a_streamSource;
 }
 
 template< mEStreamType M >
-mCIStream< M > & operator << ( MIInt & a_iDest, mCIStream< M > & a_streamSource )
+mTIStream< M > & operator << ( MIInt & a_iDest, mTIStream< M > & a_streamSource )
 {
     a_streamSource >> a_iDest;
     return a_streamSource;
 }
 
 template< mEStreamType M >
-mCIStream< M > & operator << ( MIUInt & a_uDest, mCIStream< M > & a_streamSource )
+mTIStream< M > & operator << ( MIUInt & a_uDest, mTIStream< M > & a_streamSource )
 {
     a_streamSource >> a_uDest;
     return a_streamSource;
 }
 
 template< mEStreamType M >
-mCIStream< M > & operator << ( MII64 & a_i64Dest, mCIStream< M > & a_streamSource )
+mTIStream< M > & operator << ( MII64 & a_i64Dest, mTIStream< M > & a_streamSource )
 {
     a_streamSource >> a_i64Dest;
     return a_streamSource;
 }
 
 template< mEStreamType M >
-mCIStream< M > & operator << ( MIU64 & a_u64Dest, mCIStream< M > & a_streamSource )
+mTIStream< M > & operator << ( MIU64 & a_u64Dest, mTIStream< M > & a_streamSource )
 {
     a_streamSource >> a_u64Dest;
     return a_streamSource;
 }
 
 template< mEStreamType M >
-mCIStream< M > & operator << ( MIBool & a_bDest, mCIStream< M > & a_streamSource )
+mTIStream< M > & operator << ( MIBool & a_bDest, mTIStream< M > & a_streamSource )
 {
     a_streamSource >> a_bDest;
     return a_streamSource;
 }
 
 template< mEStreamType M >
-mCIStream< M > & operator << ( MIFloat & a_fDest, mCIStream< M > & a_streamSource )
+mTIStream< M > & operator << ( MIFloat & a_fDest, mTIStream< M > & a_streamSource )
 {
     a_streamSource >> a_fDest;
     return a_streamSource;
 }
 
 template< mEStreamType M >
-mCIStream< M > & operator << ( MIDouble & a_dDest, mCIStream< M > & a_streamSource )
+mTIStream< M > & operator << ( MIDouble & a_dDest, mTIStream< M > & a_streamSource )
 {
     a_streamSource >> a_dDest;
     return a_streamSource;
 }
 
 template< mEStreamType M >
-mCIStream< M > & operator << ( MIChar & a_cDest, mCIStream< M > & a_streamSource )
+mTIStream< M > & operator << ( MIChar & a_cDest, mTIStream< M > & a_streamSource )
 {
     a_streamSource >> a_cDest;
     return a_streamSource;
 }
 
 template< mEStreamType M >
-mCIStream< M > & operator << ( mCString & a_strDest, mCIStream< M > & a_streamSource )
+mTIStream< M > & operator << ( mCString & a_strDest, mTIStream< M > & a_streamSource )
 {
     a_streamSource >> a_strDest;
     return a_streamSource;
