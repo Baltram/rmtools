@@ -9,7 +9,7 @@ public:
     mCUnique( void );
    ~mCUnique( void );
 public:
-    ID GetID( void );
+    ID GetID( void ) const;
 private:
     mCUnique( mCUnique const & );
 private:

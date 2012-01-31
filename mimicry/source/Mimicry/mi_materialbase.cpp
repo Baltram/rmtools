@@ -4,6 +4,10 @@
 
 #include "mi_include_scene.h"
 
+mCMaterialBase::~mCMaterialBase( void )
+{
+}
+
 mCMaterialBase::mCMaterialBase( mCString const & a_strName ) :
     m_strName( a_strName )
 {

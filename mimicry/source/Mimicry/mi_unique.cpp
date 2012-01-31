@@ -14,7 +14,7 @@ mCUnique::~mCUnique( void )
 {
 }
 
-mCUnique::ID mCUnique::GetID( void )
+mCUnique::ID mCUnique::GetID( void ) const
 {
     return m_ID;
 }

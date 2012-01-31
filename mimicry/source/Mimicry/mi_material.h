@@ -24,11 +24,12 @@ public:
 public:
     virtual mCMaterial * Clone( void ) const;
 public:
+    void             Clear( void );
     mCTexMap const * GetTextureMapAt( EMapType a_enuMapType ) const;
     void             SetTextureMapAt( EMapType a_enuMapType, mCTexMap const & a_tmapSource );
     void             Swap( mCMaterial & a_matOther );
 private:
-    mCTexMap * m_arrMaps[ EMapType_Count ];
+    mCTexMap m_arrMaps[ EMapType_Count ];
 };
 
 #endif
