@@ -73,6 +73,11 @@ void mCScene::Clear( void )
     m_strName.Clear();
 }
 
+void mCScene::ClearNodeParent( MIUInt a_uNodeIndex )
+{
+    AccessNodeAt( a_uNodeIndex )->AccessParentID() = 0;
+}
+
 mCMaterialBase const * mCScene::GetMaterialAt( MIUInt a_uIndex ) const
 {
     return m_arrMaterials[ a_uIndex ];
@@ -111,6 +116,11 @@ MIUInt mCScene::GetNodeIndexByName( mCString a_strNodeName ) const
             return u;
     return MI_DW_INVALID;
 }
+
+MIUInt mCScene::GetNodeParentIndex( MIUInt a_uNodeIndex ) const
+{
+    return GetNodeIndexByID( GetNodeAt( a_uNodeIndex )->GetParentID() );
+}
  
 MIUInt mCScene::GetNumMaterials( void ) const
 {
@@ -143,6 +153,11 @@ void mCScene::RemoveNode( mCNode * a_pNode )
 void mCScene::SetName( mCString const & a_strName )
 {
     m_strName = a_strName;
+}
+
+void mCScene::SetNodeParent( MIUInt a_uNodeIndex, MIUInt a_uparentNodeIndex )
+{
+    AccessNodeAt( a_uNodeIndex )->AccessParentID() = GetNodeAt( a_uparentNodeIndex )->GetID();
 }
 
 void mCScene::Swap( mCScene & a_sceneOther )

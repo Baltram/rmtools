@@ -9,7 +9,8 @@ mCNode::mCNode( mCString const & a_strName, mCVec3 a_vecPosition, mCString const
     m_strMaterialName( a_strMaterialName ),
     m_vecPosition( a_vecPosition ),
     m_pMesh( a_pMesh ? new mCMesh( *a_pMesh ) : 0 ),
-    m_pSkin( a_pSkin ? new mCSkin( *a_pSkin ) : 0 )
+    m_pSkin( a_pSkin ? new mCSkin( *a_pSkin ) : 0 ),
+    m_idParent( 0 )
 {
 }
 
@@ -18,13 +19,15 @@ mCNode::mCNode( mCNode const & a_nodeSource ) :
     m_strMaterialName( a_nodeSource.m_strMaterialName ),
     m_vecPosition( a_nodeSource.m_vecPosition ),
     m_pMesh( a_nodeSource.m_pMesh ? new mCMesh( *a_nodeSource.m_pMesh ) : 0 ),
-    m_pSkin( a_nodeSource.m_pSkin ? new mCSkin( *a_nodeSource.m_pSkin ) : 0 )
+    m_pSkin( a_nodeSource.m_pSkin ? new mCSkin( *a_nodeSource.m_pSkin ) : 0 ),
+    m_idParent( a_nodeSource.m_idParent )
 {
 }
 
 mCNode::mCNode( void ) :
     m_pMesh( 0 ),
-    m_pSkin( 0 )
+    m_pSkin( 0 ),
+    m_idParent( 0 )
 {
 }
 
@@ -114,6 +117,7 @@ void mCNode::Swap( mCNode & a_nodeOther )
     m_vecPosition.Swap( a_nodeOther.m_vecPosition );
     g_swap( m_pMesh, a_nodeOther.m_pMesh );
     g_swap( m_pSkin, a_nodeOther.m_pSkin );
+    g_swap( m_idParent, a_nodeOther.m_idParent );
 }
 
 void mCNode::SwapMesh( mCMesh & a_meshOther )
@@ -128,6 +132,16 @@ void mCNode::SwapSkin( mCSkin & a_skinOther )
     if ( !m_pSkin )
         m_pSkin = new mCSkin;
     m_pSkin->Swap( a_skinOther );
+}
+
+mCUnique::ID & mCNode::AccessParentID( void )
+{
+    return m_idParent;
+}
+
+mCUnique::ID const & mCNode::GetParentID( void ) const
+{
+    return m_idParent;
 }
 
 #endif

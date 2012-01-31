@@ -50,6 +50,12 @@ mTArray< mCMaterial > & mCMultiMaterial::AccessSubMaterials( void )
     return m_arrSubMaterials;
 }
 
+void mCMultiMaterial::Clear( void )
+{
+    mCMultiMaterial matTemp;
+    Swap( matTemp );
+};
+
 mTArray< mCMaterial > const & mCMultiMaterial::GetSubMaterials( void ) const
 {
     return m_arrSubMaterials;

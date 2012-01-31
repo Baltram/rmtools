@@ -18,6 +18,7 @@ public:
     virtual mCMultiMaterial * Clone( void ) const;
 public:
     mTArray< mCMaterial > &       AccessSubMaterials( void );
+    void                          Clear( void );
     mTArray< mCMaterial > const & GetSubMaterials( void ) const;
     void                          Swap( mCMultiMaterial & a_matOther );
 private:

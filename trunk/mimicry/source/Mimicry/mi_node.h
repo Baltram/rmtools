@@ -28,11 +28,17 @@ public:
     void             SwapMesh( mCMesh & a_meshOther );
     void             SwapSkin( mCSkin & a_skinOther );
 private:
-    mCString m_strName;
-    mCString m_strMaterialName;
-    mCVec3   m_vecPosition;
-    mCMesh * m_pMesh;
-    mCSkin * m_pSkin;
+    mCUnique::ID &       AccessParentID( void );
+    mCUnique::ID const & GetParentID( void ) const;
+private:
+    mCString     m_strName;
+    mCString     m_strMaterialName;
+    mCVec3       m_vecPosition;
+    mCMesh *     m_pMesh;
+    mCSkin *     m_pSkin;
+    mCUnique::ID m_idParent;
+public:
+    friend class mCScene;
 };
 
 #endif

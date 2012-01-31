@@ -5,7 +5,7 @@ class mCMaterialBase :
     public mCUnique
 {
 public:
-    virtual ~mCMaterialBase( void ) = 0;
+    virtual ~mCMaterialBase( void );
 public:
     mCMaterialBase( mCString const & a_strName );
     mCMaterialBase( mCMaterialBase const & a_matSource );
