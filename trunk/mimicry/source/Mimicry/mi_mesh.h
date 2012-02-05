@@ -44,6 +44,7 @@ public:
     MIBool            HasVertexColors( void ) const;
     MIBool            HasVNFaces( void ) const;
     MIBool            HasVTFaces( void ) const;
+    void              SetHasVertexColors( MIBool a_bHasVertexColors );
     void              SetNumFaces( MIUInt a_uCount );
     void              SetNumTVerts( MIUInt a_uCount );
     void              SetNumVerts( MIUInt a_uCount );

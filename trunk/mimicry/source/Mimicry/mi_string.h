@@ -56,13 +56,13 @@ public:
     MIInt      CompareNoCase( MILPCChar a_pcOther ) const;
     MIUInt     Count( MILPCChar a_pcText ) const;
     MIUInt     Count( MIChar a_cChar ) const;
-    MILPCChar  FirstOf( MILPCChar a_pcText ) const;
-    MILPCChar  FirstOf( MIChar a_cChar ) const;
+    MIUInt     FirstOf( MILPCChar a_pcText ) const;
+    MIUInt     FirstOf( MIChar a_cChar ) const;
     mCString & Format( MILPCChar a_pcFormat, ... );  // Unsafe if resulting text is bigger than EMinStaticBufferSize.
     MIUInt     GetLength( void ) const;
     MILPCChar  GetText( void ) const;
-    MILPCChar  LastOf( MILPCChar a_pcText ) const;
-    MILPCChar  LastOf( MIChar a_cChar ) const;
+    MIUInt     LastOf( MILPCChar a_pcText ) const;
+    MIUInt     LastOf( MIChar a_cChar ) const;
     mCString   Left( MIUInt a_uCount ) const;
     mCString & Replace( MILPCChar a_pcText, MILPCChar a_pcNewText );
     mCString & Replace( MIChar a_cChar, MIChar a_cNewChar );

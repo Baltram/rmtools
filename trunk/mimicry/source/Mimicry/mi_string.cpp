@@ -237,16 +237,18 @@ MIUInt mCString::Count( MIChar a_cChar ) const
     return uResult;
 }
 
-MILPCChar mCString::FirstOf( MILPCChar a_pcText ) const
+MIUInt mCString::FirstOf( MILPCChar a_pcText ) const
 {
     MILPCChar pcText = m_pcText;
-    return mCString::NextOf( pcText, ( m_pcText + GetLength() ), a_pcText, static_cast< MIUInt >( g_strlen( a_pcText ) ) );
+    MILPCChar pcOccurance = mCString::NextOf( pcText, ( m_pcText + GetLength() ), a_pcText, static_cast< MIUInt >( g_strlen( a_pcText ) ) );
+    return ( pcOccurance ? static_cast< MIUInt >( pcOccurance - m_pcText ) : MI_DW_INVALID );
 }
 
-MILPCChar mCString::FirstOf( MIChar a_cChar ) const
+MIUInt mCString::FirstOf( MIChar a_cChar ) const
 {
     MILPCChar pcText = m_pcText;
-    return mCString::NextOf( pcText, ( m_pcText + GetLength() ), a_cChar );
+    MILPCChar pcOccurance = mCString::NextOf( pcText, ( m_pcText + GetLength() ), a_cChar );
+    return ( pcOccurance ? static_cast< MIUInt >( pcOccurance - m_pcText ) : MI_DW_INVALID );
 }
 
 mCString & mCString::Format( MILPCChar a_pcFormat, ... )
@@ -269,26 +271,26 @@ MILPCChar mCString::GetText( void ) const
     return m_pcText;
 }
 
-MILPCChar mCString::LastOf( MILPCChar a_pcText ) const
+MIUInt mCString::LastOf( MILPCChar a_pcText ) const
 {
     MIUInt uSeekStringLength = static_cast< MIUInt >( g_strlen( a_pcText ) );
     for ( MILPCChar pcText = ( m_pcText + GetLength() - uSeekStringLength ); pcText != m_pcText; --pcText )
     {
         if ( *pcText == *a_pcText )
             if ( !g_strncmp( pcText, a_pcText, uSeekStringLength ) )
-                return pcText;
+                return static_cast< MIUInt >( pcText - m_pcText );
     }
-    return 0;
+    return MI_DW_INVALID;
 }
 
-MILPCChar mCString::LastOf( MIChar a_cChar ) const
+MIUInt mCString::LastOf( MIChar a_cChar ) const
 {
     for ( MILPCChar pcText = ( m_pcText + GetLength() - 1 ); pcText != m_pcText; --pcText )
     {
         if ( *pcText == a_cChar )
-            return pcText;
+            return static_cast< MIUInt >( pcText - m_pcText );
     }
-    return 0;
+    return MI_DW_INVALID;
 }
 
 mCString mCString::Left( MIUInt a_uCount ) const

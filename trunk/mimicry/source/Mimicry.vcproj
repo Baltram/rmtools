@@ -39,7 +39,6 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				PreprocessorDefinitions="MI_UNITY"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -324,6 +323,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Mimicry\mi_include_converters.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Mimicry\mi_include_core.h"
 				>
 			</File>
@@ -521,6 +524,22 @@
 			</File>
 			<File
 				RelativePath=".\Mimicry\mi_unity_streams.cpp"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="converters"
+			>
+			<File
+				RelativePath=".\Mimicry\mi_converters.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Mimicry\mi_maxreader.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Mimicry\mi_maxreader.h"
 				>
 			</File>
 		</Filter>
