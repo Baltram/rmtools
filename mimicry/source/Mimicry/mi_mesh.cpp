@@ -214,6 +214,11 @@ MIBool mCMesh::HasVTFaces( void ) const
     return ( GetNumVTangents() != 0 );
 }
 
+void mCMesh::SetHasVertexColors( MIBool a_bHasVertexColors )
+{
+    m_arrVertexColors.Resize( a_bHasVertexColors ? GetNumVerts() : 0 );
+}
+
 void mCMesh::SetNumFaces( MIUInt a_uCount )
 {
     m_arrFaces.Resize( a_uCount );
@@ -234,6 +239,8 @@ void mCMesh::SetNumTVerts( MIUInt a_uCount )
 void mCMesh::SetNumVerts( MIUInt a_uCount )
 {
     m_arrVertices.Resize( a_uCount );
+    if ( HasVertexColors() )
+        m_arrVertexColors.Resize( a_uCount );
 }
 
 void mCMesh::SetNumVNormals( MIUInt a_uCount )

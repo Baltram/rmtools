@@ -5,6 +5,14 @@ MIBool mCVariant::IsEmpty( void ) const
 }
 
 template< typename T >
+T mCVariant::GetData( void ) const
+{
+    T Result;
+    GetData( Result );
+    return Result;
+}
+
+template< typename T >
 mEResult mCVariant::GetData( T & a_Dest ) const
 {
     if ( IsEmpty() )

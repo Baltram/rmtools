@@ -13,6 +13,7 @@ public:
     MIBool      operator != ( mCVariant const & a_vOther ) const;
 public:
                            void     Clear( void );
+    template< typename T > T        GetData( void ) const;
     template< typename T > mEResult GetData( T & a_Dest ) const;
                            MIBool   IsEmpty( void ) const;
     template< typename T > MIBool   IsOfType( void ) const;

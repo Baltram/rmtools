@@ -10,5 +10,6 @@
 #include "Mimicry\mi_include_streams.h"
 #include "Mimicry\mi_include_3d.h"
 #include "Mimicry\mi_include_scene.h"
+#include "Mimicry\mi_include_converters.h"
 
 #endif

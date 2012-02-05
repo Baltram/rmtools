@@ -82,7 +82,7 @@ mEResult mCSkin::InitSwapping( MIUInt a_uVertCount,
                        mTArray< MIUInt > & a_arrBoneIndices, 
                        mTArray< MIFloat > & a_arrWeights )
 {
-    MIUInt const uBoneCount = m_arrBoneIDs.GetCount();
+    MIUInt const uBoneCount = a_arrBoneIDs.GetCount();
     if ( ( a_arrVertexIndices.GetCount() != a_arrBoneIndices.GetCount() ) || 
          ( a_arrBoneIndices.GetCount() != a_arrWeights.GetCount() ) || 
          ( a_arrWeights.GetCount() != a_arrVertexIndices.GetCount() ) )
