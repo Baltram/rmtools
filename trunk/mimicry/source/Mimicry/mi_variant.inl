@@ -131,6 +131,7 @@ mCVariant::SPool::SFunctionAccessor mCVariant::SPool::SFunctionAccessor::GetObje
 {
     SFunctionAccessor Result;
     Result.m_funcClone = &SPool::CloneTemplated< T >;
+    Result.m_funcCollapse = &SPool::Collapse< T >;
     Result.m_funcCompare = &SPool::CompareTemplated< T >;
     Result.m_funcFree = &SPool::FreeTemplated< T >;
     return Result;
@@ -221,7 +222,7 @@ void mCVariant::SPool::FreeTemplated( SPool * a_pPool, SId & a_idID )
         return;
     for ( MIUInt u = 0, ue = s_arrPools.GetCount(); u != ue; ++u )
         if ( s_arrPools[ u ]->m_uElementCount <= EMaxMigrateCount )
-            Collapse< T >( u );
+            ( *s_arrPools[ u ]->m_FunctionAccessor->m_funcCollapse )( u );
 }
 
 inline
