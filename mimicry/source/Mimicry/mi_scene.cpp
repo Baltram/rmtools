@@ -91,7 +91,7 @@ MIUInt mCScene::GetMaterialIndexByName( mCString a_strMaterialName ) const
     return MI_DW_INVALID;
 }
 
-mCString const & mCScene::GetName( void )
+mCString const & mCScene::GetName( void ) const
 {
     return m_strName;
 }
