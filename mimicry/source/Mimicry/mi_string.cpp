@@ -539,3 +539,40 @@ MIBool operator >= ( MILPCChar a_pcText1, mCString const & a_strText2 )
 {
     return ( a_strText2 < a_pcText1 );
 }
+
+mCString g_GetFileName( mCString const & a_strFilePath )
+{
+    MIUInt const uLastSlash = a_strFilePath.LastOf( '/' );
+    MIUInt const uLastBackSlash = a_strFilePath.LastOf( '\\' );
+    MIUInt const uBeginFileNameA = uLastSlash != MI_DW_INVALID ? uLastSlash + 1 : 0;
+    MIUInt const uBeginFileNameB = uLastBackSlash != MI_DW_INVALID ? uLastBackSlash + 1 : 0;
+    return a_strFilePath.Right( a_strFilePath.GetLength() - g_max( uBeginFileNameA, uBeginFileNameB ) );
+}
+
+mCString g_GetFileNameNoExt( mCString const & a_strFilePath )
+{
+    mCString strResult = g_GetFileName( a_strFilePath );
+    MIUInt const uLastPoint = strResult.LastOf( '.' );
+    if ( uLastPoint != MI_DW_INVALID )
+        strResult.TrimRight( strResult.GetLength() - uLastPoint );
+    return strResult;
+}
+
+mCString g_GetDirectoryPath( mCString const & a_strFilePath )
+{
+    MIUInt const uLastSlash = a_strFilePath.LastOf( '/' );
+    MIUInt const uLastBackSlash = a_strFilePath.LastOf( '\\' );
+    return a_strFilePath.Left( g_max( ( uLastSlash != MI_DW_INVALID ? uLastSlash : 0 ), 
+                                      ( uLastBackSlash != MI_DW_INVALID ? uLastBackSlash : 0 ) ) );
+}
+
+mCString g_GetDirectoryName( mCString const & a_strFilePath )
+{
+    mCString strResult = g_GetDirectoryPath( a_strFilePath );
+    MIUInt const uLastSlash = strResult.LastOf( '/' );
+    MIUInt const uLastBackSlash = strResult.LastOf( '\\' );
+    strResult.TrimLeft( g_max( ( uLastSlash != MI_DW_INVALID ? uLastSlash + 1 : 0 ), 
+                               ( uLastBackSlash != MI_DW_INVALID ? uLastBackSlash + 1 : 0 ) ) );
+    return strResult;
+}
+
