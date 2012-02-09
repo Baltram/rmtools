@@ -44,11 +44,11 @@ namespace
                 arrMap[ 1 ].SwapData( strTexturePath );
                 mCTexMap mapDest( strType, strTexturePath );
                 if ( strType == "diffuse" )
-                    matDest.SetTextureMapAt( mCMaterial::EMapType_Diffuse, mapDest );
+                    matDest.SetTextureMapAt( mCMaterial::EMapType_Diffuse, &mapDest );
                 else if ( strType == "specular" )
-                    matDest.SetTextureMapAt( mCMaterial::EMapType_Specular, mapDest );
+                    matDest.SetTextureMapAt( mCMaterial::EMapType_Specular, &mapDest );
                 else if ( strType == "bump" )
-                    matDest.SetTextureMapAt( mCMaterial::EMapType_Normal, mapDest );
+                    matDest.SetTextureMapAt( mCMaterial::EMapType_Normal, &mapDest );
             }
             return &matDest;
         }
@@ -265,6 +265,7 @@ mEResult mCMaxReader::ReadInMaxFileData( mCScene & a_sceneDest, mCMaxFileStream 
                 break;
             }
         }
+        a_sceneDest.SetName( a_streamSource.GetFileName() );
         return mEResult_Ok;
     }
     MI_ERROR( mCConverterError, EBadFormat, "Unknown extended saving version." );
