@@ -26,10 +26,11 @@ public:
 public:
     void             Clear( void );
     mCTexMap const * GetTextureMapAt( EMapType a_enuMapType ) const;
-    void             SetTextureMapAt( EMapType a_enuMapType, mCTexMap const & a_tmapSource );
+    void             SetTextureMapAt( EMapType a_enuMapType, mCTexMap const * a_pSource );
     void             Swap( mCMaterial & a_matOther );
 private:
     mCTexMap m_arrMaps[ EMapType_Count ];
+    MIU32    m_u32MapStates;
 };
 
 #endif

@@ -74,22 +74,22 @@ MIU8 & mCColor::AccessAlpha( void )
     return m_u8Alpha;
 }
 
-MIU8 mCColor::GetRed( void )
+MIU8 mCColor::GetRed( void ) const
 {
     return m_u8Red;
 }
 
-MIU8 mCColor::GetGreen( void )
+MIU8 mCColor::GetGreen( void ) const
 {
     return m_u8Green;
 }
 
-MIU8 mCColor::GetBlue( void )
+MIU8 mCColor::GetBlue( void ) const
 {
     return m_u8Blue;
 }
 
-MIU8 mCColor::GetAlpha( void )
+MIU8 mCColor::GetAlpha( void ) const
 {
     return m_u8Alpha;
 }

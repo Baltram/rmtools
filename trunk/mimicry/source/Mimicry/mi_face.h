@@ -20,7 +20,7 @@ public:
     MIUInt & AccessA( void );
     MIUInt & AccessB( void );
     MIUInt & AccessC( void );
-    mCVec3   CalcNormal( mTArray< mCVec3 > const & a_arrVertices, MIFloat /*OUT*/ a_arrAngles[ 3 ] = 0 ) const;
+    mCVec3   CalcNormal( mCVec3 const * a_pVertices, MIUInt a_uVertexCount, MIFloat /*OUT*/ a_arrAngles[ 3 ] = 0 ) const;
     MIUInt   GetA( void ) const;
     MIUInt   GetB( void ) const;
     MIUInt   GetC( void ) const;

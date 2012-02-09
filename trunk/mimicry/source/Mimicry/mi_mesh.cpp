@@ -309,7 +309,7 @@ void mCMesh::CalcVNormals( MIBool const a_bUseAnglesNotSGs, MIFloat const a_fMin
     mTArray< SFaceAngles > arrFaceAnglesPerFace( uFaceCount );
     mTArray< mCVec3 >      arrFaceNormals( uFaceCount );
 
-    for ( MIUInt u = uFaceCount; u--; arrFaceNormals[ u ] = m_arrFaces[ u ].CalcNormal( m_arrVertices, arrFaceAnglesPerFace[ u ].m_arrFaceAngles ) );
+    for ( MIUInt u = uFaceCount; u--; arrFaceNormals[ u ] = m_arrFaces[ u ].CalcNormal( m_arrVertices.GetBuffer(), m_arrVertices.GetCount(), arrFaceAnglesPerFace[ u ].m_arrFaceAngles ) );
     CalcIndicesPerVert( arrFirstIndexPerVert, arrNextIndexPerIndex );
     m_arrVertexNormalFaces.Resize( uFaceCount );
 

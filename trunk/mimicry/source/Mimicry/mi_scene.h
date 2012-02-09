@@ -22,7 +22,7 @@ public:
     void                   ClearNodeParent( MIUInt a_uNodeIndex );
     mCMaterialBase const * GetMaterialAt( MIUInt a_uIndex ) const;
     MIUInt                 GetMaterialIndexByName( mCString a_strMaterialName ) const;
-    mCString const &       GetName( void );
+    mCString const &       GetName( void ) const;
     mCNode const *         GetNodeAt( MIUInt a_uIndex ) const;
     MIUInt                 GetNodeIndexByID( mCUnique::ID a_ID ) const;
     MIUInt                 GetNodeIndexByName( mCString a_strNodeName ) const; 

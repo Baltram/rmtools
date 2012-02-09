@@ -17,10 +17,10 @@ public:
     MIU8 & AccessGreen( void );
     MIU8 & AccessBlue( void );
     MIU8 & AccessAlpha( void );
-    MIU8   GetRed( void );
-    MIU8   GetGreen( void );
-    MIU8   GetBlue( void );
-    MIU8   GetAlpha( void );
+    MIU8   GetRed( void ) const;
+    MIU8   GetGreen( void ) const;
+    MIU8   GetBlue( void ) const;
+    MIU8   GetAlpha( void ) const;
     void   Swap( mCColor & a_colOther );
 private:
     MIU8 m_u8Red;

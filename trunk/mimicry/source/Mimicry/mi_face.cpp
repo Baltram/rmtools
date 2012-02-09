@@ -72,17 +72,16 @@ MIUInt & mCFace::AccessC( void )
     return m_uC;
 }
 
-mCVec3 mCFace::CalcNormal( mTArray< mCVec3 > const & a_arrVertices, MIFloat a_arrAngles[ 3 ] ) const
+mCVec3 mCFace::CalcNormal( mCVec3 const * a_pVertices, MIUInt a_uVertexCount, MIFloat a_arrAngles[ 3 ] ) const
 {
-    MIUInt const uVertexCount = a_arrVertices.GetCount();
-    if ( ( m_uA >= uVertexCount ) || ( m_uB >= uVertexCount ) || ( m_uC >= uVertexCount ) )
+    if ( ( m_uA >= a_uVertexCount ) || ( m_uB >= a_uVertexCount ) || ( m_uC >= a_uVertexCount ) )
         return mCVec3();
-    mCVec3 const vecAB = a_arrVertices[ m_uB ] - a_arrVertices[ m_uA ];
-    mCVec3 const vecAC = a_arrVertices[ m_uC ] - a_arrVertices[ m_uA ];
+    mCVec3 const vecAB = a_pVertices[ m_uB ] - a_pVertices[ m_uA ];
+    mCVec3 const vecAC = a_pVertices[ m_uC ] - a_pVertices[ m_uA ];
     if ( a_arrAngles )
     {
         a_arrAngles[ 0 ] = vecAB.CalcAngleRad( vecAC );
-        a_arrAngles[ 1 ] = vecAB.CalcAngleRad( a_arrVertices[ m_uB ] - a_arrVertices[ m_uC ] );
+        a_arrAngles[ 1 ] = vecAB.CalcAngleRad( a_pVertices[ m_uB ] - a_pVertices[ m_uC ] );
         a_arrAngles[ 2 ] = g_fPi - a_arrAngles[ 0 ] - a_arrAngles[ 1 ];
     }
     return mCVec3::CrossProduct( vecAB, vecAC ).Normalize();
