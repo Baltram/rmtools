@@ -161,10 +161,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Mimicry\mi_iostream.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\Mimicry\mi_iostream.h"
 				>
 			</File>
@@ -530,6 +526,18 @@
 		<Filter
 			Name="converters"
 			>
+			<File
+				RelativePath=".\Mimicry\mi_asewriter.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Mimicry\mi_asewriter.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Mimicry\mi_converters.cpp"
+				>
+			</File>
 			<File
 				RelativePath=".\Mimicry\mi_converters.h"
 				>

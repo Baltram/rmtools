@@ -6,5 +6,6 @@
 
 #include "mi_converters.h"
 #include "mi_maxreader.h"
+#include "mi_asewriter.h"
 
 #endif
