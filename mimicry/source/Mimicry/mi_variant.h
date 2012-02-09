@@ -63,6 +63,7 @@ private:
         template< typename T > static SFunctionAccessor const * GetPointer( void );
     public:
         void   ( * m_funcClone )( SId &, SId const & );
+        void   ( * m_funcCollapse )( MIUInt );
         MIBool ( * m_funcCompare )( SId const &, SId const & );
         void   ( * m_funcFree )( SPool *, SId & );
     };
