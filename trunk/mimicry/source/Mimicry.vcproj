@@ -108,7 +108,7 @@
 				PreprocessorDefinitions="MI_UNITY"
 				StringPooling="true"
 				ExceptionHandling="0"
-				RuntimeLibrary="2"
+				RuntimeLibrary="0"
 				BufferSecurityCheck="false"
 				EnableEnhancedInstructionSet="2"
 				ProgramDataBaseFileName="$(IntDir)\mi_vc80.pdb"
