@@ -30,6 +30,17 @@ namespace
         return GetIndent( -1 ) + "}\r\n";
     }
 
+    mCString GetSGString( MIU32 a_u32SGs )
+    {
+        mCString strResult;
+        for( MIU32 u = 1, uIt = 1; u != 33; uIt <<= 1, ++u )
+            if ( uIt & a_u32SGs )
+                strResult += mCString().Format( ",%u", u );
+        if ( strResult.GetLength() )
+            strResult.TrimLeft( ( MIUInt ) 1 );
+        return strResult;
+    }
+
     void WriteMap( mCTexMap const & a_mapSource, MIUInt uSubNo, mCIOStreamBinary & a_streamDest )
     {
         a_streamDest.Write( GetTokenLine( "MAP_NAME", "\""+ a_mapSource.GetName() + "\"" ) );
@@ -121,9 +132,9 @@ namespace
         a_streamDest.Write( EndBlock() );
         a_streamDest.Write( StartBlock( "MESH_FACE_LIST" ) );
         for ( MIUInt u = 0; u != uFaceCount; ++u )
-            a_streamDest.Write( GetTokenLine( "MESH_FACE", mCString().Format( "%u:\tA: %u\tB: %u\tC: %u\tAB: 1\tBC: 1\tCA: 0\t*MESH_SMOOTHING %u\t*MESH_MTLID %u",
+            a_streamDest.Write( GetTokenLine( "MESH_FACE", mCString().Format( "%u:\tA: %u\tB: %u\tC: %u\tAB: 1\tBC: 1\tCA: 0\t*MESH_SMOOTHING %s\t*MESH_MTLID %u",
                                                                               u, pFaces[ u ].GetA(), pFaces[ u ].GetB(), pFaces[ u ].GetC(), 
-                                                                              pFaces[ u ].GetSGs(), pFaces[ u ].GetMatID()) ) );
+                                                                              GetSGString( pFaces[ u ].GetSGs() ).GetText(), pFaces[ u ].GetMatID()) ) );
         a_streamDest.Write( EndBlock() );
         if ( a_meshSource.HasTVFaces() )
         {
