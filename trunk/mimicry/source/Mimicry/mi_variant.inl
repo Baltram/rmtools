@@ -181,7 +181,9 @@ void mCVariant::SPool::Collapse( MIUInt a_uPoolIndex )
         if ( pPool->m_arrVacantIndices[ u ] == u )
         {
             idOld.m_uIndex = u;
-            MigratingMap[ idOld ] = New( static_cast< T * >( pPool->m_arrElements ) + u );
+            SId idNew = New< T >();
+            g_memswap< T >( *Access< T >( idNew ), *Access< T >( idOld ) );
+            MigratingMap[ idOld ] = idNew;
         }
     }
     if ( MigratingMap.GetRemainingCapacity() < EMaxMigrateCount )
@@ -328,7 +330,7 @@ void mCVariant::SPool::Uncollapse( MIUInt a_uPoolIndex )
     {
         arrVacantIndices[ i->m_uIndex ] = i->m_uIndex;
         T & Dest = static_cast< T * >( pPool->m_arrElements )[ i->m_uIndex ];
-        Dest = *Access< T >( *i );
+        g_memswap( Dest, *Access< T >( *i ) );
     }
 
     MIU8 u = 0;
