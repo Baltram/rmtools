@@ -1,0 +1,29 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual C++ Express 2005
+Project("{AFFE19BB-8B4A-11D0-8D11-00A0C91BC942}") = "Mimicry", "..\..\mimicry\source\Mimicry.vcproj", "{39AE260D-5EC7-4A61-95EF-F938DDBABF3E}"
+EndProject
+Project("{AFFE19BB-8B4A-11D0-8D11-00A0C91BC942}") = "gmax2ase", "gmax2ase.vcproj", "{AFFE19BB-9ABA-42CE-94AD-FDB89D595A83}"
+	ProjectSection(ProjectDependencies) = postProject
+		{39AE260D-5EC7-4A61-95EF-F938DDBABF3E} = {39AE260D-5EC7-4A61-95EF-F938DDBABF3E}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{39AE260D-5EC7-4A61-95EF-F938DDBABF3E}.Debug|Win32.ActiveCfg = Debug|Win32
+		{39AE260D-5EC7-4A61-95EF-F938DDBABF3E}.Debug|Win32.Build.0 = Debug|Win32
+		{39AE260D-5EC7-4A61-95EF-F938DDBABF3E}.Release|Win32.ActiveCfg = Release|Win32
+		{39AE260D-5EC7-4A61-95EF-F938DDBABF3E}.Release|Win32.Build.0 = Release|Win32
+		{AFFE19BB-9ABA-42CE-94AD-FDB89D595A83}.Debug|Win32.ActiveCfg = Debug|Win32
+		{AFFE19BB-9ABA-42CE-94AD-FDB89D595A83}.Debug|Win32.Build.0 = Debug|Win32
+		{AFFE19BB-9ABA-42CE-94AD-FDB89D595A83}.Release|Win32.ActiveCfg = Release|Win32
+		{AFFE19BB-9ABA-42CE-94AD-FDB89D595A83}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
