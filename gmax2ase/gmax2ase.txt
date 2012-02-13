@@ -1,0 +1,10 @@
+------
+gmax2ase v0.1 by Baltram <baltram-lielb@web.de> (February 9th 2012)
+------
+
+gmax2ase converts .gmax files to .ase files. Only .gmax files that were created with Extended Saving enabled are compatible.
+
+Usage:
+  Simply drop a .gmax file onto the program icon.
+
+For making the program exit right after the conversion, change the .exe file name so it contains the character string "nopause".
