@@ -119,7 +119,7 @@
 				Name="VCCLCompilerTool"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				ExceptionHandling="0"
-				RuntimeLibrary="2"
+				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
 				ProgramDataBaseFileName="$(IntDir)\vc80.pdb"
 				WarningLevel="3"
