@@ -4,6 +4,16 @@
 class mCMesh
 {
 public:
+    struct SUniVert
+    {
+        mCVec3 const *  m_pVert;
+        mCVec3 const *  m_pTVert;
+        mCVec3 const *  m_pVNormal;
+        mCColor const * m_pVColor;
+        MIUInt          m_uMatID;
+        MIUInt          m_uBaseVertIndex;
+    };
+public:
     mCMesh( mCMesh const & a_meshSource );
     mCMesh( void );
    ~mCMesh( void );
@@ -20,6 +30,8 @@ public:
     mCVec3 *          AccessVTangents( void );
     mCFace *          AccessVTFaces( void );
     mCBox             CalcExtents( void ) const;
+    void              CalcFakeTexturing( void );
+    void              CalcUniVertMesh( mTArray< SUniVert > & a_arrUniVertsDest, mTArray< mCFace > & a_arrUVFacesDest ) const;
     void              CalcVNormalsBySGs( void );
     void              CalcVNormalsByAngle( MIFloat a_fMaxAngleDeg );
     void              Clear( void );
@@ -53,7 +65,7 @@ public:
     void              SortFacesByMatID( void );
     void              Swap( mCMesh & a_meshOther );
 private:
-    void CalcIndicesPerVert( mTArray< MIUInt > & a_arrFirstIndexPerVert, mTArray< MIUInt > & a_arrNextIndexPerIndex );
+    void CalcIndicesPerVert( mTArray< MIUInt > & a_arrFirstIndexPerVert, mTArray< MIUInt > & a_arrNextIndexPerIndex ) const;
     void CalcVNormals( MIBool a_bUseAnglesNotSGs, MIFloat a_fMinCosine = 0.0f );
 private:
     mTArray< mCVec3 >    m_arrVertices;
