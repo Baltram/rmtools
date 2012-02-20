@@ -25,6 +25,7 @@ mCFileStream::mCFileStream( void )
 
 mCFileStream::mCFileStream( mCString a_strFileName, mEFileOpenMode a_enuOpenMode )
 {
+    Clear();
     Open( a_strFileName, a_enuOpenMode );
 }
 

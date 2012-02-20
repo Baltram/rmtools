@@ -39,7 +39,21 @@ T & g_08( T & a_Arg )
 }
 
 template< typename T >
+T const & g_08( T const & a_Arg )
+{
+    MI_STATIC_ASSERT( sizeof( T ) == 1 )
+    return a_Arg;
+}
+
+template< typename T >
 T & g_16( T & a_Arg )
+{
+    MI_STATIC_ASSERT( sizeof( T ) == 2 )
+    return a_Arg;
+}
+
+template< typename T >
+T const & g_16( T const & a_Arg )
 {
     MI_STATIC_ASSERT( sizeof( T ) == 2 )
     return a_Arg;
@@ -53,7 +67,21 @@ T & g_32( T & a_Arg )
 }
 
 template< typename T >
+T const & g_32( T const & a_Arg )
+{
+    MI_STATIC_ASSERT( sizeof( T ) == 4 )
+    return a_Arg;
+}
+
+template< typename T >
 T & g_64( T & a_Arg )
+{
+    MI_STATIC_ASSERT( sizeof( T ) == 8 )
+    return a_Arg;
+}
+
+template< typename T >
+T const & g_64( T const & a_Arg )
 {
     MI_STATIC_ASSERT( sizeof( T ) == 8 )
     return a_Arg;
