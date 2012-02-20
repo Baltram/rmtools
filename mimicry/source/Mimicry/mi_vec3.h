@@ -41,7 +41,7 @@ public:
     MIFloat        GetX( void ) const;
     MIFloat        GetY( void ) const;
     MIFloat        GetZ( void ) const;
-    MIBool         IsSimilar( mCVec3 const & a_vecOther, MIFloat a_fCoordTolerance ) const;
+    MIBool         IsSimilar( mCVec3 const & a_vecOther, MIFloat a_fCoordTolerance, MIBool a_bIgnoreZ = MIFalse ) const;
     MIBool         IsZero( void ) const;
     mCVec3 const & Normalize( void );
     void           Swap( mCVec3 & a_vecOther );
@@ -59,5 +59,10 @@ private:
 };
 
 MI_UNNAMED_STRUCTS_NO_WARNINGS_END
+
+mCIOStreamBinary & operator >> ( mCIOStreamBinary & a_streamSource, mCVec3 & a_vecDest );
+mCIOStreamBinary & operator << ( mCVec3 & a_vecDest, mCIOStreamBinary & a_streamSource );
+mCIOStreamBinary & operator << ( mCIOStreamBinary & a_streamDest, mCVec3 const & a_vecSource );
+mCIOStreamBinary & operator >> ( mCVec3 const & a_vecSource, mCIOStreamBinary & a_streamDest );
 
 #endif

@@ -3,6 +3,7 @@
 #ifdef MI_IN_UNITY_FILE
 
 #include "mi_include_standard.h"
+#include "mi_include_streams.h"
 #include "mi_include_3d.h"
 
 mCVec3::mCVec3( MIFloat a_fX, MIFloat a_fY, MIFloat a_fZ ) :
@@ -203,11 +204,11 @@ MIFloat mCVec3::GetZ( void ) const
     return m_fZ;
 }
 
-MIBool mCVec3::IsSimilar( mCVec3 const & a_vecOther, MIFloat a_fCoordTolerance ) const
+MIBool mCVec3::IsSimilar( mCVec3 const & a_vecOther, MIFloat a_fCoordTolerance, MIBool a_bIgnoreZ ) const
 {
     return ( ( fabs( m_fX - a_vecOther.m_fX ) <= a_fCoordTolerance ) &&
              ( fabs( m_fY - a_vecOther.m_fY ) <= a_fCoordTolerance ) &&
-             ( fabs( m_fZ - a_vecOther.m_fZ ) <= a_fCoordTolerance ) );
+             ( a_bIgnoreZ || ( fabs( m_fZ - a_vecOther.m_fZ ) <= a_fCoordTolerance ) ) );
 }
 
 MIBool mCVec3::IsZero( void ) const
@@ -226,6 +227,32 @@ void mCVec3::Swap( mCVec3 & a_vecOther )
     g_swap( m_fX, a_vecOther.m_fX );
     g_swap( m_fY, a_vecOther.m_fY );
     g_swap( m_fZ, a_vecOther.m_fZ );
+}
+
+mCIOStreamBinary & operator >> ( mCIOStreamBinary & a_streamSource, mCVec3 & a_vecDest )
+{
+    a_streamSource >> a_vecDest.AccessX();
+    a_streamSource >> a_vecDest.AccessY();
+    a_streamSource >> a_vecDest.AccessZ();
+    return a_streamSource;
+}
+
+mCIOStreamBinary & operator << ( mCVec3 & a_vecDest, mCIOStreamBinary & a_streamSource )
+{
+    return ( a_streamSource >> a_vecDest );
+}
+
+mCIOStreamBinary & operator << ( mCIOStreamBinary & a_streamDest, mCVec3 const & a_vecSource )
+{
+    a_streamDest << a_vecSource.GetX();
+    a_streamDest << a_vecSource.GetY();
+    a_streamDest << a_vecSource.GetZ();
+    return a_streamDest;
+}
+
+mCIOStreamBinary & operator >> ( mCVec3 const & a_vecSource, mCIOStreamBinary & a_streamDest )
+{
+    return ( a_streamDest << a_vecSource );
 }
 
 #endif
