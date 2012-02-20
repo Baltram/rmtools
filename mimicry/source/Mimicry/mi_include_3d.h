@@ -1,7 +1,7 @@
 #ifndef MI_INCLUDE_3D_H_INCLUDED
 #define MI_INCLUDE_3D_H_INCLUDED
 
-#include "mi_include_array.h"
+#include "mi_include_streams.h"
 
 #include "mi_vec3.h"
 #include "mi_face.h"
