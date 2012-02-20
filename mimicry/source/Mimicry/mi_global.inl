@@ -36,7 +36,7 @@ void g_memswap( T & a_1, T & a_2 )
     }
 };
 
-MI_UNNAMED_STRUCTS_NO_WARNINGS_END
+MI_CONSTANT_CONDITIONAL_EXPRESSION_NO_WARNINGS_END
 
 template< typename T >
 T const & g_min ( T const & a_1, T const & a_2 )

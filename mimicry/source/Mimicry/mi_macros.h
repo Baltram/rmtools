@@ -21,6 +21,11 @@
 #endif
 
 #ifdef _MSC_VER
+#define MI_CONSTANT_CONDITIONAL_EXPRESSION_NO_WARNINGS_BEGIN \
+    __pragma( warning( push ) )                              \
+    __pragma( warning( disable : 4127 ) )
+#define MI_CONSTANT_CONDITIONAL_EXPRESSION_NO_WARNINGS_END \
+    __pragma( warning( pop ) )
 #define MI_UNNAMED_STRUCTS_NO_WARNINGS_BEGIN \
     __pragma( warning( push ) )              \
     __pragma( warning( disable : 4201 ) )
