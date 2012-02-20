@@ -19,12 +19,15 @@ mEResult mTIOStream< M >::Skip( MIInt a_iCount )
 template< mEStreamType M, mEStreamType N >
 mTIStream< M > & operator >> ( mTIStream< M > & a_streamSource, mTOStream< N > & a_streamDest )
 {
-    mTIOStream * pStreamSource = dynamic_cast< mTIOStream * >( &a_streamSource );
+    mTIOStream< M > * pStreamSource = dynamic_cast< mTIOStream< M > * >( &a_streamSource );
     if ( pStreamSource )
     {
-        MIUInt uSize = pStreamSource->GetSize() - pStreamSource->Tell();
+        MIUInt const uOffset = pStreamSource->Tell();
+        pStreamSource->Seek( 0 );
+        MIUInt uSize = pStreamSource->GetSize();
         MIByte * pBuffer = new MIByte [ uSize ];
         a_streamSource.Read( pBuffer, uSize );
+        pStreamSource->Seek( uOffset );
         a_streamDest.Write( pBuffer, uSize );
         delete [] pBuffer;
     }
