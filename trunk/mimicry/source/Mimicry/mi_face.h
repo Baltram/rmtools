@@ -41,4 +41,9 @@ union
 
 MI_UNNAMED_STRUCTS_NO_WARNINGS_END
 
+mCIOStreamBinary & operator >> ( mCIOStreamBinary & a_streamSource, mCFace & a_faceDest );
+mCIOStreamBinary & operator << ( mCFace & a_faceDest, mCIOStreamBinary & a_streamSource );
+mCIOStreamBinary & operator << ( mCIOStreamBinary & a_streamDest, mCFace const & a_faceSource );
+mCIOStreamBinary & operator >> ( mCFace const & a_faceSource, mCIOStreamBinary & a_streamDest );
+
 #endif
