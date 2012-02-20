@@ -111,12 +111,10 @@ mEResult mCSkin::InitSwapping( MIUInt a_uVertCount,
     m_arrBoneIndices.Swap( a_arrBoneIndices );
     m_arrWeights.Swap( a_arrWeights );
     m_arrFirstWeightIndexPerVertex.Resize( a_uVertCount );
-    uLastVertexIndex = a_uVertCount - 1;
-    for ( MIUInt u = a_arrVertexIndices.GetCount(); u--; )
-        while ( a_arrVertexIndices[ u ] < uLastVertexIndex )
-            m_arrFirstWeightIndexPerVertex[ uLastVertexIndex-- ] = u + 1;
-    do m_arrFirstWeightIndexPerVertex[ uLastVertexIndex ] = 0;
-    while( uLastVertexIndex-- );
+    MIUInt uNextVertexIndex = 0;
+    for ( MIUInt u = 0, ue = m_arrVertexIndices.GetCount(); u != ue; ++u )
+        if ( m_arrVertexIndices[ u ] == uNextVertexIndex )
+            m_arrFirstWeightIndexPerVertex[ uNextVertexIndex++ ] = u;
     return mEResult_Ok;
 }
 
