@@ -80,6 +80,8 @@ void mCScene::ClearNodeParent( MIUInt a_uNodeIndex )
 
 mCMaterialBase const * mCScene::GetMaterialAt( MIUInt a_uIndex ) const
 {
+    if ( a_uIndex >= GetNumMaterials() )
+        return 0;
     return m_arrMaterials[ a_uIndex ];
 }
 
@@ -98,6 +100,8 @@ mCString const & mCScene::GetName( void ) const
 
 mCNode const * mCScene::GetNodeAt( MIUInt a_uIndex ) const
 {
+    if ( a_uIndex >= GetNumNodes() )
+        return 0;
     return m_arrNodes[ a_uIndex ];
 }
 

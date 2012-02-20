@@ -20,8 +20,8 @@ public:
     mCString const & GetName( void ) const;
     mCSkin const *   GetSkin( void ) const;
     mCVec3 const &   GetPosition( void ) const;
-    MIBool           HasMesh( void );
-    MIBool           HasSkin( void );
+    MIBool           HasMesh( void ) const;
+    MIBool           HasSkin( void ) const;
     void             SetMesh( mCMesh const * a_pMesh );
     void             SetSkin( mCSkin const * a_pSkin );
     void             Swap( mCNode & a_nodeOther );

@@ -84,12 +84,12 @@ mCVec3 const & mCNode::GetPosition( void ) const
     return m_vecPosition;
 }
 
-MIBool mCNode::HasMesh( void )
+MIBool mCNode::HasMesh( void ) const
 {
     return ( m_pMesh != 0 );
 }
 
-MIBool mCNode::HasSkin( void )
+MIBool mCNode::HasSkin( void ) const
 {
     return ( m_pSkin != 0 );
 }
