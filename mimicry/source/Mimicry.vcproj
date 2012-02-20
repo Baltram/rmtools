@@ -543,6 +543,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Mimicry\mi_coordshifter.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Mimicry\mi_coordshifter.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Mimicry\mi_maxreader.cpp"
 				>
 			</File>

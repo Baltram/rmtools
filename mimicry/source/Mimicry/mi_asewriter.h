@@ -4,7 +4,7 @@
 class mCAseWriter
 {
 public:
-    class SOptions :
+    struct SOptions :
         public eSConverterOptions
     {
     };

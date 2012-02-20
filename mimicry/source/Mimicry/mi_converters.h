@@ -3,7 +3,8 @@
 
 MI_ERROR_DEFINE_DERIVED( mCConverterError, 
                          mCError, 
-                         EBadFormat )
+                         EBadFormat,
+                         EMiscellaneous )
 
 struct eSConverterOptions
 {
