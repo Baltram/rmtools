@@ -5,6 +5,7 @@
 #include "mi_include_streams.h"
 
 #include "mi_converters.h"
+#include "mi_coordshifter.h"
 #include "mi_maxreader.h"
 #include "mi_asewriter.h"
 
