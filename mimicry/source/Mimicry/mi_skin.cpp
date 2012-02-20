@@ -40,38 +40,38 @@ void mCSkin::Clear( void )
     m_arrFirstWeightIndexPerVertex.Clear();
 }
 
-mCUnique::ID mCSkin::GetBoneIDByIndex( MIUInt uBoneIndex )
+mCUnique::ID mCSkin::GetBoneIDByIndex( MIUInt uBoneIndex ) const
 {
     return m_arrBoneIDs[ uBoneIndex ];
 }
 
-MIUInt mCSkin::GetBoneIndex( MIUInt a_uVertexIndex, MIUInt a_uInfluencingBoneIndex )
+MIUInt mCSkin::GetBoneIndex( MIUInt a_uVertexIndex, MIUInt a_uInfluencingBoneIndex ) const
 {
     return m_arrBoneIndices[ m_arrFirstWeightIndexPerVertex[ a_uVertexIndex ] + a_uInfluencingBoneIndex ];
 }
 
-MIUInt mCSkin::GetNumBones( void )
+MIUInt mCSkin::GetNumBones( void ) const
 {
     return m_arrBoneIDs.GetCount();
 }
 
-MIUInt mCSkin::GetNumInfluencingBones( MIUInt a_uVertexIndex )
+MIUInt mCSkin::GetNumInfluencingBones( MIUInt a_uVertexIndex ) const
 {
     MIUInt const uNextFirstIndex = ( a_uVertexIndex + 1 < GetNumVerts() ) ? m_arrFirstWeightIndexPerVertex[ a_uVertexIndex + 1 ] : GetNumWeights();
     return uNextFirstIndex - m_arrFirstWeightIndexPerVertex[ a_uVertexIndex ];
 }
 
-MIUInt mCSkin::GetNumVerts( void )
+MIUInt mCSkin::GetNumVerts( void ) const
 {
     return m_arrFirstWeightIndexPerVertex.GetCount();
 }
 
-MIUInt mCSkin::GetNumWeights( void )
+MIUInt mCSkin::GetNumWeights( void ) const
 {
     return m_arrWeights.GetCount();
 }
 
-MIFloat mCSkin::GetWeight( MIUInt a_uVertexIndex, MIUInt a_uInfluencingBoneIndex )
+MIFloat mCSkin::GetWeight( MIUInt a_uVertexIndex, MIUInt a_uInfluencingBoneIndex ) const
 {
     return m_arrWeights[ m_arrFirstWeightIndexPerVertex[ a_uVertexIndex ] + a_uInfluencingBoneIndex ];
 }

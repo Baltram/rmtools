@@ -11,13 +11,13 @@ public:
     mCSkin & operator = ( mCSkin const & a_skinSource );
 public:
     void             Clear( void );
-    mCUnique::ID     GetBoneIDByIndex( MIUInt uBoneIndex );
-    MIUInt           GetBoneIndex( MIUInt a_uVertexIndex, MIUInt a_uInfluencingBoneIndex );
-    MIUInt           GetNumBones( void );
-    MIUInt           GetNumInfluencingBones( MIUInt a_uVertexIndex );
-    MIUInt           GetNumVerts( void );
-    MIUInt           GetNumWeights( void );
-    MIFloat          GetWeight( MIUInt a_uVertexIndex, MIUInt a_uInfluencingBoneIndex );
+    mCUnique::ID     GetBoneIDByIndex( MIUInt uBoneIndex ) const;
+    MIUInt           GetBoneIndex( MIUInt a_uVertexIndex, MIUInt a_uInfluencingBoneIndex ) const;
+    MIUInt           GetNumBones( void ) const;
+    MIUInt           GetNumInfluencingBones( MIUInt a_uVertexIndex ) const;
+    MIUInt           GetNumVerts( void ) const;
+    MIUInt           GetNumWeights( void ) const;
+    MIFloat          GetWeight( MIUInt a_uVertexIndex, MIUInt a_uInfluencingBoneIndex ) const;
     mEResult         InitSwapping( MIUInt a_uVertCount, 
                            mTArray< mCUnique::ID > & a_arrBoneIDs, 
                            mTArray< MIUInt > & a_arrVertexIndices, 
