@@ -9,6 +9,7 @@ public:
         mCVec3 const *  m_pVert;
         mCVec3 const *  m_pTVert;
         mCVec3 const *  m_pVNormal;
+        mCVec3 const *  m_pVTangent;
         mCColor const * m_pVColor;
         MIUInt          m_uMatID;
         MIUInt          m_uBaseVertIndex;
@@ -31,9 +32,11 @@ public:
     mCFace *          AccessVTFaces( void );
     mCBox             CalcExtents( void ) const;
     void              CalcFakeTexturing( void );
+    mEResult          CalcFTangents( mTArray< mCVec3 > & a_arrDest );
     void              CalcUniVertMesh( mTArray< SUniVert > & a_arrUniVertsDest, mTArray< mCFace > & a_arrUVFacesDest ) const;
     void              CalcVNormalsBySGs( void );
     void              CalcVNormalsByAngle( MIFloat a_fMaxAngleDeg );
+    mEResult          CalcVTangents( void );
     void              Clear( void );
     void              CopyTVFacesFromFaces( void );
     void              CopyVNFacesFromFaces( void );
