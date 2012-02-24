@@ -4,7 +4,7 @@ mCCoordShifter::~mCCoordShifter( void )
 {
 }
 
-void mCCoordShifter::ShiftMeshCoords( mCMesh & a_meshDest )
+mCMesh & mCCoordShifter::ShiftMeshCoords( mCMesh & a_meshDest )
 {
     mCVec3 * pVerts = a_meshDest.AccessVerts();
     mCMaxFace * pFaces = a_meshDest.AccessFaces();
@@ -31,28 +31,33 @@ void mCCoordShifter::ShiftMeshCoords( mCMesh & a_meshDest )
         for ( MIUInt u = a_meshDest.GetNumVTangents(); u--; ShiftVectorCoords( pVTangents[ u ] ) );
         for ( MIUInt u = a_meshDest.GetNumFaces(); u--; ShiftFaceCoords( pVTFaces[ u ] ) );
     }
+    return a_meshDest;
 }
 
 mCMaxRisenCoordShifter::~mCMaxRisenCoordShifter( void )
 {
 }
 
-void mCMaxRisenCoordShifter::ShiftFaceCoords( mCFace & a_faceDest )
+mCFace & mCMaxRisenCoordShifter::ShiftFaceCoords( mCFace & a_faceDest )
 {
     g_swap( a_faceDest.AccessA(), a_faceDest.AccessC() );
+    return a_faceDest;
 }
 
-void mCMaxRisenCoordShifter::ShiftFaceCoords( mCMaxFace & a_faceDest )
+mCMaxFace & mCMaxRisenCoordShifter::ShiftFaceCoords( mCMaxFace & a_faceDest )
 {
     g_swap( a_faceDest.AccessA(), a_faceDest.AccessC() );
+    return a_faceDest;
 }
 
-void mCMaxRisenCoordShifter::ShiftVectorCoords( mCVec3 & a_vecDest )
+mCVec3 & mCMaxRisenCoordShifter::ShiftVectorCoords( mCVec3 & a_vecDest )
 {
     g_swap( a_vecDest.AccessY(), a_vecDest.AccessZ() );
+    return a_vecDest;
 }
 
-void mCMaxRisenCoordShifter::ShiftTexCoords( mCVec3 & a_vecDest )
+mCVec3 & mCMaxRisenCoordShifter::ShiftTexCoords( mCVec3 & a_vecDest )
 {
     a_vecDest.AccessY() *= -1;
+    return a_vecDest;
 }
