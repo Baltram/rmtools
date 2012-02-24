@@ -434,6 +434,14 @@
 				RelativePath=".\Mimicry\mi_vec3.h"
 				>
 			</File>
+			<File
+				RelativePath=".\Mimicry\mi_vertexmatcher.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Mimicry\mi_vertexmatcher.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="scene"
