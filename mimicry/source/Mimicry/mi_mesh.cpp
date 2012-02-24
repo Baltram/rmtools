@@ -99,6 +99,39 @@ void mCMesh::CalcFakeTexturing( void )
     for ( MIUInt u = GetNumFaces(); u--; pTVFaces[ u ] = faceTemp );
 }
 
+mEResult mCMesh::CalcFTangents( mTArray< mCVec3 > & a_arrDest )
+{
+    if ( !HasTVFaces() )
+        return mEResult_False;
+    MIUInt const uFaceCount = GetNumFaces();
+    MIUInt const uVertexCount = GetNumVerts();
+    mCVec3 const * pVerts = GetVerts();
+    mCMaxFace const * pFaces = GetFaces();
+    mCVec3 const * pTVerts = GetTVerts();
+    mCFace const * pTVFaces = GetTVFaces();
+
+    a_arrDest.Resize( uFaceCount );
+    mCVec3 * pFTangents = a_arrDest.AccessBuffer();
+    for ( MIUInt u = uFaceCount; u--; )
+    {
+        mCVec3 const & vecVert0 = pVerts[ pFaces[ u ][ 0 ] ];
+        mCVec3 const & vecVert1 = pVerts[ pFaces[ u ][ 1 ] ];
+        mCVec3 const & vecVert2 = pVerts[ pFaces[ u ][ 2 ] ];
+        mCVec3 const & vecTVert0 = pTVerts[ pTVFaces[ u ][ 0 ] ];
+        mCVec3 const & vecTVert1 = pTVerts[ pTVFaces[ u ][ 1 ] ];
+        mCVec3 const & vecTVert2 = pTVerts[ pTVFaces[ u ][ 2 ] ];
+        mCVec3 const vecEdge1 = vecVert1 - vecVert0;
+        mCVec3 const vecEdge2 = vecVert2 - vecVert0;
+        MIFloat const fDeltaU1 = vecTVert1.GetX() - vecTVert0.GetX();
+        MIFloat const fDeltaU2 = vecTVert2.GetX() - vecTVert0.GetX();
+        MIFloat const fDeltaV1 = vecTVert1.GetY() - vecTVert0.GetY();
+        MIFloat const fDeltaV2 = vecTVert2.GetY() - vecTVert0.GetY();
+        MIFloat const fR = fDeltaU1 * fDeltaV2 - fDeltaU2 * fDeltaV1;
+        pFTangents[ u ] = ( ( vecEdge1 * fDeltaV2 ) - ( vecEdge2 * fDeltaV1 ) ) / fR;
+    }
+    return mEResult_Ok;
+}
+
 void mCMesh::CalcUniVertMesh( mTArray< SUniVert > & a_arrUniVertsDest, mTArray< mCFace > & a_arrUVFacesDest ) const
 {
     MIUInt const uVertCount = GetNumVerts();
@@ -109,10 +142,13 @@ void mCMesh::CalcUniVertMesh( mTArray< SUniVert > & a_arrUniVertsDest, mTArray< 
     mCVec3 const * const pTVerts = GetTVerts();
     mCFace const * const pTVFaces = GetTVFaces();
     mCVec3 const * const pVNormals = GetVNormals();
+    mCVec3 const * const pVTangents = GetVTangents();
     mCFace const * const pVNFaces = GetVNFaces();
+    mCFace const * const pVTFaces = GetVTFaces();
     mCColor const * const pVColors = GetVertexColors();
     MIBool const bHasTVFaces = HasTVFaces();
     MIBool const bHasVNFaces = HasVNFaces();
+    MIBool const bHasVTFaces = HasVTFaces();
     MIBool const bHasVColors = HasVertexColors();
     mTArray< MIUInt > arrFirstIndexPerVert, arrNextIndexPerIndex;
 
@@ -130,6 +166,7 @@ void mCMesh::CalcUniVertMesh( mTArray< SUniVert > & a_arrUniVertsDest, mTArray< 
             MIUInt const uMatIdA = pFaces[ v_3 ].GetMatID();
             mCVec3 const * const pTVertA = bHasTVFaces ? pTVerts + pTVFaces[ v_3 ][ v_m_3 ] : 0;
             mCVec3 const * const pVNormalA = bHasVNFaces ? pVNormals + pVNFaces[ v_3 ][ v_m_3 ] : 0;
+            mCVec3 const * const pVTangentA = bHasVTFaces ? pVTangents + pVTFaces[ v_3 ][ v_m_3 ] : 0;
             for ( MIUInt w = v, * pLast = &arrNextIndexPerIndex[ v ]; w != uIndexCount; w = *pLast )
             {
                 MIUInt const w_3 = w / 3, w_m_3 = w % 3;
@@ -138,9 +175,11 @@ void mCMesh::CalcUniVertMesh( mTArray< SUniVert > & a_arrUniVertsDest, mTArray< 
                     MIUInt const uMatIdB = pFaces[ w_3 ].GetMatID();
                     mCVec3 const * const pTVertB = bHasTVFaces ? pTVerts + pTVFaces[ w_3 ][ w_m_3 ] : 0;
                     mCVec3 const * const pVNormalB = bHasVNFaces ? pVNormals + pVNFaces[ w_3 ][ w_m_3 ] : 0;
+                    mCVec3 const * const pVTangentB = bHasVTFaces ? pVTangents + pVTFaces[ w_3 ][ w_m_3 ] : 0;
                     if ( ( uMatIdB != uMatIdA ) || 
                          ( bHasTVFaces && !pTVertB->IsSimilar( *pTVertA, 0.001f, MITrue ) ) || 
-                         ( bHasVNFaces && !pVNormalB->IsSimilar( *pVNormalA, 0.001f ) ) )
+                         ( bHasVNFaces && !pVNormalB->IsSimilar( *pVNormalA, 0.001f ) ) ||
+                         ( bHasVTFaces && !pVTangentB->IsSimilar( *pVTangentA, 0.001f ) ) )
                     {
                         pLast = &arrNextIndexPerIndex[ w ];
                         continue;
@@ -157,10 +196,28 @@ void mCMesh::CalcUniVertMesh( mTArray< SUniVert > & a_arrUniVertsDest, mTArray< 
                 UVert.m_pTVert = pTVerts + pTVFaces[ v_3 ][ v_m_3 ];
             if ( bHasVNFaces )
                 UVert.m_pVNormal = pVNormals + pVNFaces[ v_3 ][ v_m_3 ];
+            if ( bHasVTFaces )
+                UVert.m_pVTangent = pVTangents + pVTFaces[ v_3 ][ v_m_3 ];
             if ( bHasVColors )
                 UVert.m_pVColor = pVColors + UVert.m_uBaseVertIndex;
         }
     }
+    mTArray< MIUInt > arrNewUVertIndices( uUniVertCount, uUniVertCount );
+    mTArray< MIUInt > arrReorderPattern( 0, uUniVertCount );
+    for ( MIUInt u = 0, uNewUVertIndex = 0; u != uFaceCount; ++u )
+    {
+        for ( MIUInt v = 0; v != 3; ++v )
+        {
+            MIUInt & uUVertIndex = a_arrUVFacesDest[ u ][ v ];
+            if ( arrNewUVertIndices[ uUVertIndex ] == uUniVertCount )
+            {
+                arrReorderPattern[ uNewUVertIndex ] = uUVertIndex;
+                arrNewUVertIndices[ uUVertIndex ] = uNewUVertIndex++;
+            }
+            uUVertIndex = arrNewUVertIndices[ uUVertIndex ];
+        }
+    }
+    g_reorder( a_arrUniVertsDest.AccessBuffer(), arrReorderPattern.GetBuffer(), uUniVertCount );
     a_arrUniVertsDest.Resize( uUniVertCount );
     a_arrUniVertsDest.UnReserve();
 }
@@ -173,6 +230,60 @@ void mCMesh::CalcVNormalsBySGs( void )
 void mCMesh::CalcVNormalsByAngle( MIFloat a_fMaxAngleDeg )
 {
     CalcVNormals( MITrue, cos( a_fMaxAngleDeg * g_fPi / 180.0f ) );
+}
+
+mEResult mCMesh::CalcVTangents( void )
+{
+    mTArray< mCVec3 > arrFTangents;
+    if ( !HasVNFaces() || ( CalcFTangents( arrFTangents ) == mEResult_False ) )
+        return mEResult_False;
+    MIUInt const uFaceCount = GetNumFaces();
+    MIUInt const uIndexCount = uFaceCount * 3;
+    mCVec3 const * pTVerts = GetTVerts();
+    mCFace const * pTVFaces = GetTVFaces();
+    mCVec3 const * pVNormals = GetVNormals();
+    mCFace const * pVNFaces = GetVNFaces();
+
+    MIUInt uVTangentCount = 0;
+    mTArray< mCVec3 > arrVTangents( mCVec3( 0.0f, 0.0f, 0.0f ), uIndexCount );
+    mTArray< mCVec3 > arrVNormals = arrVTangents;
+    mTArray< MIUInt > arrFirstIndexPerVert, arrNextIndexPerIndex;
+    CalcIndicesPerVert( arrFirstIndexPerVert, arrNextIndexPerIndex );
+
+    m_arrVertexTangentFaces.Resize( uFaceCount );
+    for ( MIUInt u = GetNumVerts(); u--; )
+    {
+        for ( MIUInt v = arrFirstIndexPerVert[ u ]; v != uIndexCount; v = arrNextIndexPerIndex[ v ] )
+        {
+            MIUInt const v_3 = v / 3, v_m_3 = v % 3;
+            mCVec3 & vecVTangent = arrVTangents[ uVTangentCount ];
+            mCVec3 & vecVNormal = arrVNormals[ uVTangentCount++ ];
+            for ( MIUInt w = v, * pLast = &arrNextIndexPerIndex[ v ]; w != uIndexCount; w = *pLast )
+            {
+                MIUInt const w_3 = w / 3, w_m_3 = w % 3;
+                if ( w != v )
+                {
+                    if ( ( !pTVerts[ pTVFaces[ v_3 ][ v_m_3 ] ].IsSimilar( pTVerts[ pTVFaces[ w_3 ][ w_m_3 ] ], 0.001f, MITrue ) ) ||
+                         ( arrFTangents[ v_3 ].CalcAngleDeg( arrFTangents[ w_3 ] ) > 90.0f ) )
+                    {
+                        pLast = &arrNextIndexPerIndex[ w ];
+                        continue;
+                    }
+                    *pLast = arrNextIndexPerIndex[ w ];
+                }
+                vecVNormal += pVNormals[ pVNFaces[ w_3 ][ w_m_3 ] ];
+                vecVTangent += arrFTangents[ w_3 ];
+                m_arrVertexTangentFaces[ w_3 ][ w_m_3 ] = uVTangentCount - 1;
+            }
+            vecVNormal.Normalize();
+            vecVTangent = ( vecVTangent - vecVNormal * vecVNormal.CalcDotProduct( vecVTangent ) ).Normalize();
+        }
+    }
+
+    arrVTangents.Resize( uVTangentCount );
+    arrVTangents.UnReserve();
+    m_arrVertexTangents.Swap( arrVTangents );
+    return mEResult_Ok;
 }
 
 void mCMesh::Clear( void )
