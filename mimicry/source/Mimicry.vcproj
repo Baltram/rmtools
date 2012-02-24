@@ -566,6 +566,14 @@
 				RelativePath=".\Mimicry\mi_maxreader.h"
 				>
 			</File>
+			<File
+				RelativePath=".\Mimicry\mi_xactwriter.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Mimicry\mi_xactwriter.h"
+				>
+			</File>
 		</Filter>
 		<File
 			RelativePath=".\Mimicry.h"

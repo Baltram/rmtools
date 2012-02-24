@@ -8,5 +8,6 @@
 #include "mi_coordshifter.h"
 #include "mi_maxreader.h"
 #include "mi_asewriter.h"
+#include "mi_xactwriter.h"
 
 #endif
