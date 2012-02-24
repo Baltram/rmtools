@@ -8,5 +8,6 @@
 #include "mi_maxface.h"
 #include "mi_box.h"
 #include "mi_color.h"
+#include "mi_vertexmatcher.h"
 
 #endif

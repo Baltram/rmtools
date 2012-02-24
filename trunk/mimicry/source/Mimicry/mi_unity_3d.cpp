@@ -9,6 +9,7 @@
 #include "mi_face.cpp"
 #include "mi_maxface.cpp"
 #include "mi_vec3.cpp"
+#include "mi_vertexmatcher.cpp"
 
 #undef MI_IN_UNITY_FILE
 
