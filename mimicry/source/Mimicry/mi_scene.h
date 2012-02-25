@@ -13,7 +13,7 @@ public:
 public:
     mCMaterialBase *       AccessMaterialAt( MIUInt a_uIndex );
     mCNode *               AccessNodeAt( MIUInt a_uIndex );
-    void                   AddMaterial( mCMaterialBase const & a_matSource );
+    void                   AddMaterial( mCMaterialBase const & a_mtlSource );
     mCMaterial &           AddNewMaterial( void );
     mCMultiMaterial &      AddNewMultiMaterial( void );
     mCNode &               AddNewNode( void );

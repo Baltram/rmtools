@@ -17,17 +17,17 @@ public:
    virtual ~mCMaterial( void );
 public:
     mCMaterial( mCString const & a_strName );
-    mCMaterial( mCMaterial const & a_matSource );
+    mCMaterial( mCMaterial const & a_mtlSource );
     mCMaterial( void );
 public:
-    mCMaterial & operator = ( mCMaterial const & a_matSource );
+    mCMaterial & operator = ( mCMaterial const & a_mtlSource );
 public:
     virtual mCMaterial * Clone( void ) const;
 public:
     void             Clear( void );
     mCTexMap const * GetTextureMapAt( EMapType a_enuMapType ) const;
     void             SetTextureMapAt( EMapType a_enuMapType, mCTexMap const * a_pSource );
-    void             Swap( mCMaterial & a_matOther );
+    void             Swap( mCMaterial & a_mtlOther );
 private:
     mCTexMap m_arrMaps[ EMapType_Count ];
     MIU32    m_u32MapStates;

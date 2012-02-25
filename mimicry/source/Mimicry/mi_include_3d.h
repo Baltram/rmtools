@@ -9,5 +9,7 @@
 #include "mi_box.h"
 #include "mi_color.h"
 #include "mi_vertexmatcher.h"
+#include "mi_matrix4.h"
+#include "mi_quaternion.h"
 
 #endif

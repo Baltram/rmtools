@@ -419,11 +419,27 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Mimicry\mi_matrix4.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Mimicry\mi_matrix4.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Mimicry\mi_maxface.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\Mimicry\mi_maxface.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Mimicry\mi_quaternion.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Mimicry\mi_quaternion.h"
 				>
 			</File>
 			<File

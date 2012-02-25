@@ -8,10 +8,10 @@ public:
    virtual ~mCMultiMaterial( void );
 public:
     mCMultiMaterial( mCString const & a_strName );
-    mCMultiMaterial( mCMultiMaterial const & a_matSource );
+    mCMultiMaterial( mCMultiMaterial const & a_mtlSource );
     mCMultiMaterial( void );
 public:
-    mCMultiMaterial &  operator =  ( mCMultiMaterial const & a_matSource );
+    mCMultiMaterial &  operator =  ( mCMultiMaterial const & a_mtlSource );
     mCMaterial &       operator [] ( MIUInt a_uIndex );
     mCMaterial const & operator [] ( MIUInt a_uIndex ) const;
 public:
@@ -20,7 +20,7 @@ public:
     mTArray< mCMaterial > &       AccessSubMaterials( void );
     void                          Clear( void );
     mTArray< mCMaterial > const & GetSubMaterials( void ) const;
-    void                          Swap( mCMultiMaterial & a_matOther );
+    void                          Swap( mCMultiMaterial & a_mtlOther );
 private:
     mTArray< mCMaterial > m_arrSubMaterials;
 };

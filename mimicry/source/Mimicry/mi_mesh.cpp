@@ -104,7 +104,6 @@ mEResult mCMesh::CalcFTangents( mTArray< mCVec3 > & a_arrDest )
     if ( !HasTVFaces() )
         return mEResult_False;
     MIUInt const uFaceCount = GetNumFaces();
-    MIUInt const uVertexCount = GetNumVerts();
     mCVec3 const * pVerts = GetVerts();
     mCMaxFace const * pFaces = GetFaces();
     mCVec3 const * pTVerts = GetTVerts();

@@ -13,9 +13,9 @@ mCMultiMaterial::mCMultiMaterial( mCString const & a_strName ) :
 {
 }
 
-mCMultiMaterial::mCMultiMaterial( mCMultiMaterial const & a_matSource ) :
-    mCMaterialBase( a_matSource ),
-    m_arrSubMaterials( a_matSource.m_arrSubMaterials )
+mCMultiMaterial::mCMultiMaterial( mCMultiMaterial const & a_mtlSource ) :
+    mCMaterialBase( a_mtlSource ),
+    m_arrSubMaterials( a_mtlSource.m_arrSubMaterials )
 {
 }
 
@@ -23,10 +23,10 @@ mCMultiMaterial::mCMultiMaterial( void )
 {
 }
 
-mCMultiMaterial & mCMultiMaterial::operator = ( mCMultiMaterial const & a_matSource )
+mCMultiMaterial & mCMultiMaterial::operator = ( mCMultiMaterial const & a_mtlSource )
 {
-    mCMultiMaterial matCopy( a_matSource );
-    Swap( matCopy );
+    mCMultiMaterial mtlCopy( a_mtlSource );
+    Swap( mtlCopy );
     return *this;
 }
 
@@ -52,8 +52,8 @@ mTArray< mCMaterial > & mCMultiMaterial::AccessSubMaterials( void )
 
 void mCMultiMaterial::Clear( void )
 {
-    mCMultiMaterial matTemp;
-    Swap( matTemp );
+    mCMultiMaterial mtlTemp;
+    Swap( mtlTemp );
 };
 
 mTArray< mCMaterial > const & mCMultiMaterial::GetSubMaterials( void ) const
@@ -61,10 +61,10 @@ mTArray< mCMaterial > const & mCMultiMaterial::GetSubMaterials( void ) const
     return m_arrSubMaterials;
 }
 
-void mCMultiMaterial::Swap( mCMultiMaterial & a_matOther )
+void mCMultiMaterial::Swap( mCMultiMaterial & a_mtlOther )
 {
-    mCMaterialBase::Swap( a_matOther );
-    m_arrSubMaterials.Swap( a_matOther.m_arrSubMaterials );
+    mCMaterialBase::Swap( a_mtlOther );
+    m_arrSubMaterials.Swap( a_mtlOther.m_arrSubMaterials );
 }
 
 

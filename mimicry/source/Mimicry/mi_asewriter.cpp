@@ -204,7 +204,11 @@ namespace
         mCNode const & nodeSource = *a_sceneSource.GetNodeAt( a_uNodeIndex );
         MIUInt const uParentIndex = a_sceneSource.GetNodeParentIndex( a_uNodeIndex );
         mCNode const * pParent = uParentIndex != MI_DW_INVALID ? a_sceneSource.GetNodeAt( uParentIndex ) : 0;
-        mCVec3 vecPos = nodeSource.GetPosition();
+        mCVec3 const & vecPos = nodeSource.GetPosition();
+        mCMatrix4 const & matTransform = nodeSource.GetTransform();
+        mCString strRow0 = mCString().Format( "%.4f\t%.4f\t%.4f", matTransform.GetElement( 0, 0 ), matTransform.GetElement( 0, 1 ), matTransform.GetElement( 0, 2 ) );
+        mCString strRow1 = mCString().Format( "%.4f\t%.4f\t%.4f", matTransform.GetElement( 1, 0 ), matTransform.GetElement( 1, 1 ), matTransform.GetElement( 1, 2 ) );
+        mCString strRow2 = mCString().Format( "%.4f\t%.4f\t%.4f", matTransform.GetElement( 2, 0 ), matTransform.GetElement( 2, 1 ), matTransform.GetElement( 2, 2 ) );
         mCString strPos = mCString().Format( "%.4f\t%.4f\t%.4f", vecPos.GetX(), vecPos.GetY(), vecPos.GetZ() );
         MIUInt uMaterialIndex = a_sceneSource.GetMaterialIndexByName( nodeSource.GetMaterialName() );
         a_streamDest.Write( GetTokenLine( "NODE_NAME", "\"" + nodeSource.GetName() + "\"" ) );
@@ -215,9 +219,9 @@ namespace
         a_streamDest.Write( GetTokenLine( "INHERIT_POS", "0 0 0" ) );
         a_streamDest.Write( GetTokenLine( "INHERIT_ROT", "0 0 0" ) );
         a_streamDest.Write( GetTokenLine( "INHERIT_SCL", "0 0 0" ) );
-        a_streamDest.Write( GetTokenLine( "TM_ROW0", "1.0000\t0.0000\t0.0000" ) );
-        a_streamDest.Write( GetTokenLine( "TM_ROW1", "0.0000\t1.0000\t0.0000" ) );
-        a_streamDest.Write( GetTokenLine( "TM_ROW2", "0.0000\t0.0000\t1.0000" ) );
+        a_streamDest.Write( GetTokenLine( "TM_ROW0", strRow0 ) );
+        a_streamDest.Write( GetTokenLine( "TM_ROW1", strRow1 ) );
+        a_streamDest.Write( GetTokenLine( "TM_ROW2", strRow2 ) );
         a_streamDest.Write( GetTokenLine( "TM_ROW3", strPos ) );
         a_streamDest.Write( GetTokenLine( "TM_POS", strPos ) );
         a_streamDest.Write( GetTokenLine( "TM_ROTAXIS", "0.0000\t0.0000\t0.0000" ) );

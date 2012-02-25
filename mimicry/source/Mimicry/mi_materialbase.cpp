@@ -13,8 +13,8 @@ mCMaterialBase::mCMaterialBase( mCString const & a_strName ) :
 {
 }
 
-mCMaterialBase::mCMaterialBase( mCMaterialBase const & a_matSource ) :
-    m_strName( a_matSource.m_strName )
+mCMaterialBase::mCMaterialBase( mCMaterialBase const & a_mtlSource ) :
+    m_strName( a_mtlSource.m_strName )
 {
 }
 
@@ -24,9 +24,9 @@ mCMaterialBase::mCMaterialBase( void )
     m_strName.Format( "Material #%u", ++s_uCounter );
 }
 
-mCMaterialBase & mCMaterialBase::operator = ( mCMaterialBase const & a_matSource )
+mCMaterialBase & mCMaterialBase::operator = ( mCMaterialBase const & a_mtlSource )
 {
-    m_strName = a_matSource.m_strName;
+    m_strName = a_mtlSource.m_strName;
     return *this;
 }
 
@@ -40,9 +40,9 @@ void mCMaterialBase::SetName( mCString const & a_strName )
     m_strName = a_strName;
 }
 
-void mCMaterialBase::Swap( mCMaterialBase & a_matOther )
+void mCMaterialBase::Swap( mCMaterialBase & a_mtlOther )
 {
-    m_strName.Swap( a_matOther.m_strName );
+    m_strName.Swap( a_mtlOther.m_strName );
 }
 
 #endif

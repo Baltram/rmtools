@@ -39,9 +39,9 @@ mCNode * mCScene::AccessNodeAt( MIUInt a_uIndex )
     return m_arrNodes[ a_uIndex ];
 }
 
-void mCScene::AddMaterial( mCMaterialBase const & a_matSource )
+void mCScene::AddMaterial( mCMaterialBase const & a_mtlSource )
 {
-    m_arrMaterials.Add( a_matSource.Clone() );
+    m_arrMaterials.Add( a_mtlSource.Clone() );
 }
 
 mCMaterial & mCScene::AddNewMaterial( void )

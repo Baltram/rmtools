@@ -308,6 +308,19 @@ mEResult mCMaxFileStream::ReadPersistentGlobalData( mCVariant & a_vDest )
             a_vDest.SetData< mCVec3 >( mCVec3( arrCoords[ 0 ], arrCoords[ 1 ], arrCoords[ 2 ] ) );
             return mEResult_Ok;
         }
+    case 0xFC:
+        {
+            MIFloat arrComponents[ 4 ][ 3 ];
+            Read( *arrComponents, 12 * sizeof( MIFloat ) );
+            Skip( 4 );
+            Decrypt( *arrComponents, 12 * sizeof( MIFloat ), u8Type );
+            mCMatrix4 matMatrix;
+            matMatrix.SetToIdentity();
+            for ( MIUInt u = 4; u--; )
+                g_memcpy( matMatrix.AccessRow( u ), arrComponents[ u ], 3 * sizeof( MIFloat ) );
+            a_vDest.SetData< mCMatrix4 >( matMatrix );
+            return mEResult_Ok;
+        }
     case 0xFE:
         {
             MIFloat arrComponents[ 4 ];

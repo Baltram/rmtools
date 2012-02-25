@@ -35,10 +35,11 @@ namespace
         a_streamSource.Seek( a_uSourceOffset );
         a_streamSource.Read( s_arrBuffer.AccessBuffer(), a_uSize );
         a_streamDest.Write( s_arrBuffer.GetBuffer(), a_uSize );
+        a_streamSource.Seek( uSourceOffsetOld );
     }
 
     void WriteMeshSection( mCScene const & a_sceneSource, MIUInt a_uMeshIndex, MIUInt a_uFxaMeshIndex, MIUInt a_uMeshMaterialCount, MIU32 a_u32DW1, MIU32 a_u32DW2, 
-                           mCIOStreamBinary & a_streamDest, mCIOStreamBinary & a_streamMeshExtraDataDest, mCXactWriter::SOptions const & a_Options )
+                           mCIOStreamBinary & a_streamDest, mCIOStreamBinary & a_streamMeshExtraDataDest )
     {
         mCString const strMaterialName = a_sceneSource.GetNodeAt( a_uMeshIndex )->GetMaterialName();
         mCMesh meshSource( *a_sceneSource.GetNodeAt( a_uMeshIndex )->GetMesh() );
@@ -143,7 +144,7 @@ namespace
                 mCString const strBoneName = pBone->GetName();
                 for ( MIUInt v = a_arrFxaNodeNames.GetCount(); v--; )
                     if ( strBoneName == a_arrFxaNodeNames[ v ] )
-                        arrFxaNodeIndexPerBoneIndex[ u ] = v, v = 0;
+                        arrFxaNodeIndexPerBoneIndex[ u ] = static_cast< MIU16 >( v ), v = 0;
                 if ( arrFxaNodeIndexPerBoneIndex[ u ] == 666 )
                     return MIFalse;
             }
@@ -192,9 +193,9 @@ namespace
         
     }
 
-    void WriteMaterialSection( mCMaterial const & a_matSource, MIUInt a_uMaterialIndex, mCIOStreamBinary & a_streamDest )
+    void WriteMaterialSection( mCMaterial const & a_mtlSource, MIUInt a_uMaterialIndex, mCIOStreamBinary & a_streamDest )
     {
-        mCString const strMaterialName = a_matSource.GetName();
+        mCString const strMaterialName = a_mtlSource.GetName();
         a_streamDest << ( MIU32 ) ESection_Material << ( MIU32 ) ( 76 + strMaterialName.GetLength() ) << ( MIU32 ) 5;
         a_streamDest << 0.0f << 0.0f << 0.0f << 0.75f << 0.75f << 0.75f;
         a_streamDest << 1.0f << 1.0f << 1.0f << 0.0f << 0.0f << 0.0f;
@@ -204,9 +205,9 @@ namespace
         a_streamDest << 0.0f;
         mCTexMap const * arrMaps[ 3 ];
         ETexMapType arrMapTypes[ 3 ] = { ETexMapType_Diffuse, ETexMapType_Normal, ETexMapType_Specular };
-        arrMaps[ 0 ] = a_matSource.GetTextureMapAt( mCMaterial::EMapType_Diffuse );
-        arrMaps[ 1 ] = a_matSource.GetTextureMapAt( mCMaterial::EMapType_Normal );
-        arrMaps[ 2 ] = a_matSource.GetTextureMapAt( mCMaterial::EMapType_Specular );
+        arrMaps[ 0 ] = a_mtlSource.GetTextureMapAt( mCMaterial::EMapType_Diffuse );
+        arrMaps[ 1 ] = a_mtlSource.GetTextureMapAt( mCMaterial::EMapType_Normal );
+        arrMaps[ 2 ] = a_mtlSource.GetTextureMapAt( mCMaterial::EMapType_Specular );
         for ( MIUInt u = 0; u != 3; ++u )
             if ( arrMaps[ u ] )
                 WriteTextureMapSection( *arrMaps[ u ], arrMapTypes[ u ], a_uMaterialIndex, a_streamDest );
@@ -371,7 +372,7 @@ mEResult mCXactWriter::WriteXactFileData( mCScene const & a_sceneSource, mCIOStr
         for ( MIUInt u = 0; u != uMeshMaterialCount; ++u )
             WriteMaterialSection( pFirstMeshMaterial[ u ], u, streamMaterialSections );
     }
-    WriteMeshSection( a_sceneSource, uMeshIndex, uFxaMeshIndex, uMeshMaterialCount, u32DW1, u32DW2, streamMeshSection, streamMeshExtraData, a_Options );
+    WriteMeshSection( a_sceneSource, uMeshIndex, uFxaMeshIndex, uMeshMaterialCount, u32DW1, u32DW2, streamMeshSection, streamMeshExtraData );
     if ( !WriteSkinSection( a_sceneSource, uMeshIndex, uFxaMeshIndex, arrFxaNodeNames, arrOriginalVerts, arrOriginalSkinSection, streamSkinSection ) )
     {
         MI_ERROR( mCConverterError, EMiscellaneous, ( "Skinning of \"" + arrFxaNodeNames[ uFxaMeshIndex ] + "\" relies on a bone that doesn't exist in the .xact file." ).GetText() );

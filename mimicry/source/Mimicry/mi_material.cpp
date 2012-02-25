@@ -14,11 +14,11 @@ mCMaterial::mCMaterial( mCString const & a_strName ) :
 {
 }
 
-mCMaterial::mCMaterial( mCMaterial const & a_matSource ) :
-    mCMaterialBase( a_matSource ),
-    m_u32MapStates( a_matSource.m_u32MapStates )
+mCMaterial::mCMaterial( mCMaterial const & a_mtlSource ) :
+    mCMaterialBase( a_mtlSource ),
+    m_u32MapStates( a_mtlSource.m_u32MapStates )
 {
-    for ( MIUInt u = EMapType_Count; u--; m_arrMaps[ u ] = a_matSource.m_arrMaps[ u ] );
+    for ( MIUInt u = EMapType_Count; u--; m_arrMaps[ u ] = a_mtlSource.m_arrMaps[ u ] );
 }
 
 mCMaterial::mCMaterial( void ) :
@@ -26,10 +26,10 @@ mCMaterial::mCMaterial( void ) :
 {
 }
 
-mCMaterial & mCMaterial::operator = ( mCMaterial const & a_matSource )
+mCMaterial & mCMaterial::operator = ( mCMaterial const & a_mtlSource )
 {
-    mCMaterial matCopy( a_matSource );
-    Swap( matCopy );
+    mCMaterial mtlCopy( a_mtlSource );
+    Swap( mtlCopy );
     return *this;
 }
 
@@ -40,8 +40,8 @@ mCMaterial * mCMaterial::Clone( void ) const
 
 void mCMaterial::Clear( void )
 {
-    mCMaterial matTemp;
-    Swap( matTemp );
+    mCMaterial mtlTemp;
+    Swap( mtlTemp );
 }
 
 mCTexMap const * mCMaterial::GetTextureMapAt( EMapType a_enuMapType ) const
@@ -64,12 +64,12 @@ void mCMaterial::SetTextureMapAt( EMapType a_enuMapType, mCTexMap const * a_pSou
     }
 }
 
-void mCMaterial::Swap( mCMaterial & a_matOther )
+void mCMaterial::Swap( mCMaterial & a_mtlOther )
 {
-    mCMaterialBase::Swap( a_matOther );
-    g_swap( m_u32MapStates, a_matOther.m_u32MapStates );
+    mCMaterialBase::Swap( a_mtlOther );
+    g_swap( m_u32MapStates, a_mtlOther.m_u32MapStates );
     for ( MIUInt u = EMapType_Count; u--; )
-        m_arrMaps[ u ].Swap( a_matOther.m_arrMaps[ u ] );
+        m_arrMaps[ u ].Swap( a_mtlOther.m_arrMaps[ u ] );
 }
 
 #endif
