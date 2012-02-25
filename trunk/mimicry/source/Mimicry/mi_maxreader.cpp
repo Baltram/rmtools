@@ -5,8 +5,8 @@ namespace
 {
     mCMaterialBase * ReadMaterial( mTArray< mCVariant > & a_arrChunk ) 
     {
-        static mCMaterial matDest;
-        static mCMultiMaterial matDestMulti;
+        static mCMaterial mtlDest;
+        static mCMultiMaterial mtlDestMulti;
         mCString strName;
         MIBool bIsMultiMaterial = MIFalse;
         MIInt iCount = 0;
@@ -15,8 +15,8 @@ namespace
         a_arrChunk[ 5 ].SwapData( iCount );
         if ( bIsMultiMaterial )
         {
-            matDestMulti = mCMultiMaterial( strName );
-            mTArray< mCMaterial > & arrSubs = matDestMulti.AccessSubMaterials();
+            mtlDestMulti = mCMultiMaterial( strName );
+            mTArray< mCMaterial > & arrSubs = mtlDestMulti.AccessSubMaterials();
             arrSubs.Resize( iCount );
             for ( MIUInt u = iCount; u--; )
             {
@@ -29,11 +29,11 @@ namespace
                 else
                     arrSubs[ u ].SetName( pSub->GetName() );
             }
-            return &matDestMulti;
+            return &mtlDestMulti;
         }
         else
         {
-            matDest = mCMaterial( strName );
+            mtlDest = mCMaterial( strName );
             for ( MIUInt u = iCount; u--; )
             {
                 mTArray< mCVariant > arrMap;
@@ -44,13 +44,13 @@ namespace
                 arrMap[ 1 ].SwapData( strTexturePath );
                 mCTexMap mapDest( strType, strTexturePath );
                 if ( strType == "diffuse" )
-                    matDest.SetTextureMapAt( mCMaterial::EMapType_Diffuse, &mapDest );
+                    mtlDest.SetTextureMapAt( mCMaterial::EMapType_Diffuse, &mapDest );
                 else if ( strType == "specular" )
-                    matDest.SetTextureMapAt( mCMaterial::EMapType_Specular, &mapDest );
+                    mtlDest.SetTextureMapAt( mCMaterial::EMapType_Specular, &mapDest );
                 else if ( strType == "bump" )
-                    matDest.SetTextureMapAt( mCMaterial::EMapType_Normal, &mapDest );
+                    mtlDest.SetTextureMapAt( mCMaterial::EMapType_Normal, &mapDest );
             }
-            return &matDest;
+            return &mtlDest;
         }
     }
 
@@ -65,13 +65,15 @@ namespace
         MIInt iParent;
         MIInt iMaterial;
         mCVec3 vecPosition;
+        mCMatrix4 matRotation;
         a_arrChunk[ 3 ].SwapData( strName );
         a_arrChunk[ 4 ].SwapData( iParent );
         a_arrChunk[ 5 ].SwapData( iMaterial );
         a_arrChunk[ 6 ].SwapData( vecPosition );
+        a_arrChunk[ 7 ].SwapData( matRotation );
         mCNode & nodeDest = a_sceneDest.AddNewNode();
         nodeDest.AccessName() = strName;
-        nodeDest.AccessPosition() = vecPosition;
+        nodeDest.AccessTransform() = matRotation;
         if ( iMaterial-- )
             nodeDest.AccessMaterialName() = a_sceneDest.GetMaterialAt( iMaterial )->GetName();
         if ( iParent-- )

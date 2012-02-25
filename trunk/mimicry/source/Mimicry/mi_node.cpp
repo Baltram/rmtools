@@ -4,10 +4,10 @@
 
 #include "mi_include_scene.h"
 
-mCNode::mCNode( mCString const & a_strName, mCVec3 a_vecPosition, mCString const & a_strMaterialName, mCMesh const * a_pMesh, mCSkin const * a_pSkin ) :
+mCNode::mCNode( mCString const & a_strName, mCMatrix4 const & a_matTransform, mCString const & a_strMaterialName, mCMesh const * a_pMesh, mCSkin const * a_pSkin ) :
     m_strName( a_strName ),
     m_strMaterialName( a_strMaterialName ),
-    m_vecPosition( a_vecPosition ),
+    m_matTransform( a_matTransform ),
     m_pMesh( a_pMesh ? new mCMesh( *a_pMesh ) : 0 ),
     m_pSkin( a_pSkin ? new mCSkin( *a_pSkin ) : 0 ),
     m_idParent( 0 )
@@ -17,7 +17,7 @@ mCNode::mCNode( mCString const & a_strName, mCVec3 a_vecPosition, mCString const
 mCNode::mCNode( mCNode const & a_nodeSource ) :
     m_strName( a_nodeSource.m_strName ),
     m_strMaterialName( a_nodeSource.m_strMaterialName ),
-    m_vecPosition( a_nodeSource.m_vecPosition ),
+    m_matTransform( a_nodeSource.m_matTransform ),
     m_pMesh( a_nodeSource.m_pMesh ? new mCMesh( *a_nodeSource.m_pMesh ) : 0 ),
     m_pSkin( a_nodeSource.m_pSkin ? new mCSkin( *a_nodeSource.m_pSkin ) : 0 ),
     m_idParent( a_nodeSource.m_idParent )
@@ -56,7 +56,12 @@ mCString & mCNode::AccessName( void )
 
 mCVec3 & mCNode::AccessPosition( void )
 {
-    return m_vecPosition;
+    return m_matTransform.AccessTranslation();
+}
+
+mCMatrix4 & mCNode::AccessTransform( void )
+{
+    return m_matTransform;
 }
 
 mCString const & mCNode::GetMaterialName( void ) const
@@ -81,7 +86,12 @@ mCSkin const * mCNode::GetSkin( void ) const
 
 mCVec3 const & mCNode::GetPosition( void ) const
 {
-    return m_vecPosition;
+    return m_matTransform.GetTranslation();
+}
+
+mCMatrix4 const & mCNode::GetTransform( void ) const
+{
+    return m_matTransform;
 }
 
 MIBool mCNode::HasMesh( void ) const
@@ -114,7 +124,7 @@ void mCNode::Swap( mCNode & a_nodeOther )
 {
     m_strName.Swap( a_nodeOther.m_strName );
     m_strMaterialName.Swap( a_nodeOther.m_strMaterialName );
-    m_vecPosition.Swap( a_nodeOther.m_vecPosition );
+    m_matTransform.Swap( a_nodeOther.m_matTransform );
     g_swap( m_pMesh, a_nodeOther.m_pMesh );
     g_swap( m_pSkin, a_nodeOther.m_pSkin );
     g_swap( m_idParent, a_nodeOther.m_idParent );
