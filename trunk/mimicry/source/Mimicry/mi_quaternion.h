@@ -20,6 +20,7 @@ public:
     MIFloat &      AccessZ( void );
     MIFloat &      AccessW( void );
     void           Clear( void );
+    mCQuaternion & Inverse( void );
     MIFloat        GetX( void ) const;
     MIFloat        GetY( void ) const;
     MIFloat        GetZ( void ) const;

@@ -4,26 +4,34 @@
 class mCCoordShifter
 {
 public:
+    virtual mCFace &    ShiftFaceCoords( mCFace & a_faceDest ) const = 0;
+    virtual mCMaxFace & ShiftFaceCoords( mCMaxFace & a_faceDest ) const = 0;
+    virtual mCMatrix4 & ShiftMatrixCoords( mCMatrix4 & a_matDest ) const = 0;
+    virtual mCVec3 &    ShiftVectorCoords( mCVec3 & a_vecDest ) const = 0;
+    virtual mCVec3 &    ShiftTexCoords( mCVec3 & a_vecDest ) const = 0;
+public:
+    mCMesh & ShiftMeshCoords( mCMesh & a_meshDest ) const;
+protected:
     virtual ~mCCoordShifter( void ) = 0;
-public:
-    virtual mCFace & ShiftFaceCoords( mCFace & a_faceDest ) = 0;
-    virtual mCMaxFace & ShiftFaceCoords( mCMaxFace & a_faceDest ) = 0;
-    virtual mCVec3 & ShiftVectorCoords( mCVec3 & a_vecDest ) = 0;
-    virtual mCVec3 & ShiftTexCoords( mCVec3 & a_vecDest ) = 0;
-public:
-    mCMesh & ShiftMeshCoords( mCMesh & a_meshDest );
+protected:
+    mCMatrix4 m_matTransform;
 };
 
 class mCMaxRisenCoordShifter :
     public mCCoordShifter
 {
 public:
-    virtual ~mCMaxRisenCoordShifter( void );
+    static mCMaxRisenCoordShifter const & GetInstance( void );
 public:
-    virtual mCFace & ShiftFaceCoords( mCFace & a_faceDest );
-    virtual mCMaxFace & ShiftFaceCoords( mCMaxFace & a_faceDest );
-    virtual mCVec3 & ShiftVectorCoords( mCVec3 & a_vecDest );
-    virtual mCVec3 & ShiftTexCoords( mCVec3 & a_vecDest );
+    virtual mCFace &    ShiftFaceCoords( mCFace & a_faceDest ) const;
+    virtual mCMaxFace & ShiftFaceCoords( mCMaxFace & a_faceDest ) const;
+    virtual mCMatrix4 & ShiftMatrixCoords( mCMatrix4 & a_matDest ) const;
+    virtual mCVec3 &    ShiftVectorCoords( mCVec3 & a_vecDest ) const;
+    virtual mCVec3 &    ShiftTexCoords( mCVec3 & a_vecDest ) const;
+protected:
+    virtual ~mCMaxRisenCoordShifter( void );
+protected:
+    mCMaxRisenCoordShifter( void );
 };
 
 #endif
