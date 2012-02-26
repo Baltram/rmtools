@@ -30,6 +30,8 @@ mCVariant::~mCVariant( void )
 
 mCVariant & mCVariant::operator = ( mCVariant const & a_vSource )
 {
+    if ( this == &a_vSource )
+        return *this;
     mCVariant Temp( a_vSource );
     Swap( Temp );
     return *this;
@@ -53,5 +55,7 @@ void mCVariant::Clear( void )
 
 void mCVariant::Swap( mCVariant & a_vOther )
 {
+    if ( this == &a_vOther )
+        return;
     g_swap( m_idElem, a_vOther.m_idElem );
 }

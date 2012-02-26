@@ -116,6 +116,8 @@ mCVec3 & mCVec3::operator -= ( mCVec3 const & a_vecVector )
 
 mCVec3 & mCVec3::operator = ( mCVec3 const & a_vecSource )
 {
+    if ( this == &a_vecSource )
+        return *this;
     m_fX = a_vecSource.m_fX;
     m_fY = a_vecSource.m_fY;
     m_fZ = a_vecSource.m_fZ;
@@ -224,6 +226,8 @@ mCVec3 const & mCVec3::Normalize( void )
 
 void mCVec3::Swap( mCVec3 & a_vecOther )
 {
+    if ( this == &a_vecOther )
+        return;
     g_swap( m_fX, a_vecOther.m_fX );
     g_swap( m_fY, a_vecOther.m_fY );
     g_swap( m_fZ, a_vecOther.m_fZ );

@@ -26,6 +26,8 @@ mCTexMap::~mCTexMap( void )
 
 mCTexMap & mCTexMap::operator = ( mCTexMap const & a_tmapSource )
 {
+    if ( this == &a_tmapSource )
+        return *this;
     m_strName = a_tmapSource.m_strName;
     m_strTextureFilePath = a_tmapSource.m_strTextureFilePath;
     return *this;
@@ -53,6 +55,8 @@ void mCTexMap::SetTextureFilePath( mCString const & a_strTextureFilePath )
 
 void mCTexMap::Swap( mCTexMap & a_tmapOther )
 {
+    if ( this == &a_tmapOther )
+        return;
     g_swap( m_strName, a_tmapOther.m_strName );
     g_swap( m_strTextureFilePath, a_tmapOther.m_strTextureFilePath );
 }

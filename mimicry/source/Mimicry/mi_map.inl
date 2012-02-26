@@ -7,7 +7,7 @@ mTMap< K, T, C >::mTMap( MIUInt a_uMinCapacity ) :
 }
 
 template< typename K, typename T, class C >
-mTMap< K, T, C >::mTMap( mTMap< K, T, C > const & a_mapOther ) :
+mTMap< K, T, C >::mTMap( mTMap< K, T, C > const & a_mapSource ) :
     m_arrBuckets( a_mapOther.m_arrBuckets ),
     m_uElementCount( a_mapOther.m_uElementCount ),
     m_u32BucketMask( a_mapOther.m_u32BucketMask )
@@ -27,8 +27,10 @@ T const & mTMap< K, T, C >::operator [] ( K const & a_Key ) const
 }
 
 template< typename K, typename T, class C >
-mTMap< K, T, C > & mTMap< K, T, C >::operator = ( mTMap< K, T, C > const & a_mapOther )
+mTMap< K, T, C > & mTMap< K, T, C >::operator = ( mTMap< K, T, C > const & a_mapSource )
 {
+    if ( this == &a_mapSource )
+        return *this;
     mTMap< K, T, C > mapNew( a_mapOther );
     Swap( mapNew );
 }
@@ -157,6 +159,8 @@ MIBool mTMap< K, T, C >::Shrink( void )
 template< typename K, typename T, class C >
 void mTMap< K, T, C >::Swap( mTMap< K, T, C > & a_mapOther )
 {
+    if ( this == &a_mapOther )
+        return;
     m_arrBuckets.Swap( a_mapOther.m_arrBuckets );
     g_swap( m_uElementCount, a_mapOther.m_uElementCount );
     g_swap( m_u32BucketMask, a_mapOther.m_u32BucketMask );

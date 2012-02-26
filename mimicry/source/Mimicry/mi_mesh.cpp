@@ -28,6 +28,8 @@ mCMesh::~mCMesh( void )
 
 mCMesh & mCMesh::operator = ( mCMesh const & a_meshSource )
 {
+    if ( this == &a_meshSource )
+        return *this;
     mCMesh meshCopy( a_meshSource );
     Swap( meshCopy );
     return *this;
@@ -477,6 +479,8 @@ void mCMesh::SortFacesByMatID( void )
 
 void mCMesh::Swap( mCMesh & a_meshOther )
 {
+    if ( this == &a_meshOther )
+        return;
     m_arrVertices.Swap( a_meshOther.m_arrVertices );
     m_arrTextureVertices.Swap( a_meshOther.m_arrTextureVertices );
     m_arrVertexNormals.Swap( a_meshOther.m_arrVertexNormals );

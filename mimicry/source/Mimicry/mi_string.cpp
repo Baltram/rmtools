@@ -47,6 +47,8 @@ mCString::~mCString( void )
 
 mCString & mCString::operator = ( mCString const & a_strText )
 {
+    if ( this == &a_strText )
+        return *this;
     SetText( a_strText );
     return *this;
 }
@@ -417,6 +419,8 @@ void mCString::SetText( MIChar a_cChar, MIUInt a_uCount )
 
 void mCString::Swap( mCString & a_strOther )
 {
+    if ( this == &a_strOther )
+        return;
     g_swap( m_pcText, a_strOther.m_pcText );
 }
 

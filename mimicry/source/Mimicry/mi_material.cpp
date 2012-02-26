@@ -28,6 +28,8 @@ mCMaterial::mCMaterial( void ) :
 
 mCMaterial & mCMaterial::operator = ( mCMaterial const & a_mtlSource )
 {
+    if ( this == &a_mtlSource )
+        return *this;
     mCMaterial mtlCopy( a_mtlSource );
     Swap( mtlCopy );
     return *this;
@@ -66,6 +68,8 @@ void mCMaterial::SetTextureMapAt( EMapType a_enuMapType, mCTexMap const * a_pSou
 
 void mCMaterial::Swap( mCMaterial & a_mtlOther )
 {
+    if ( this == &a_mtlOther )
+        return;
     mCMaterialBase::Swap( a_mtlOther );
     g_swap( m_u32MapStates, a_mtlOther.m_u32MapStates );
     for ( MIUInt u = EMapType_Count; u--; )

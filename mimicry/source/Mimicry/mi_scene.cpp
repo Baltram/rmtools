@@ -24,6 +24,8 @@ mCScene::~mCScene( void )
 
 mCScene & mCScene::operator = ( mCScene const & a_sceneSource )
 {
+    if ( this == &a_sceneSource )
+        return *this;
     mCScene sceneCopy( a_sceneSource );
     Swap( sceneCopy );
     return *this;
@@ -125,6 +127,32 @@ MIUInt mCScene::GetNodeParentIndex( MIUInt a_uNodeIndex ) const
 {
     return GetNodeIndexByID( GetNodeAt( a_uNodeIndex )->GetParentID() );
 }
+
+namespace
+{
+    void AddNodeIndex( mCScene const & a_sceneScene, MIUInt a_uNodeIndex, mTArray< MIUInt > & a_arrNodeIndices, mTArray< MIBool > & a_arrNodeStates )
+    {
+        if ( a_arrNodeStates[ a_uNodeIndex ] )
+            return;
+        MIUInt const uParentIndex = a_sceneScene.GetNodeParentIndex( a_uNodeIndex );
+        if ( uParentIndex != MI_DW_INVALID )
+            AddNodeIndex( a_sceneScene, uParentIndex, a_arrNodeIndices, a_arrNodeStates );
+        a_arrNodeIndices.Add( a_uNodeIndex );
+        a_arrNodeStates[ a_uNodeIndex ] = MITrue;
+    }
+}
+
+void mCScene::GetNodesSortedByLinks( mTArray< mCNode * > & a_arrDest ) const
+{
+    MIUInt const uNodeCount = GetNumNodes();
+    mTArray< MIBool > arrNodeStates( MIFalse, uNodeCount );
+    mTArray< MIUInt > arrPattern;
+    arrPattern.Reserve( uNodeCount );
+    for ( MIUInt u = uNodeCount; u--; )
+        AddNodeIndex( *this, u, arrPattern, arrNodeStates );
+    a_arrDest = m_arrNodes;
+    g_reorder( a_arrDest.AccessBuffer(), arrPattern.GetBuffer(), uNodeCount );
+}
  
 MIUInt mCScene::GetNumMaterials( void ) const
 {
@@ -164,8 +192,15 @@ void mCScene::SetNodeParent( MIUInt a_uNodeIndex, MIUInt a_uparentNodeIndex )
     AccessNodeAt( a_uNodeIndex )->AccessParentID() = GetNodeAt( a_uparentNodeIndex )->GetID();
 }
 
+void mCScene::SortNodesByLinks( void )
+{
+    GetNodesSortedByLinks( m_arrNodes );
+}
+
 void mCScene::Swap( mCScene & a_sceneOther )
 {
+    if ( this == &a_sceneOther )
+        return;
     m_strName.Swap( a_sceneOther.m_strName );
     m_arrMaterials.Swap( a_sceneOther.m_arrMaterials );
     m_arrNodes.Swap( a_sceneOther.m_arrNodes );

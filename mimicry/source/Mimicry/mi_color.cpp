@@ -47,6 +47,8 @@ MIBool mCColor::operator != ( mCColor const & a_colOther ) const
 
 mCColor & mCColor::operator = ( mCColor const & a_colSource )
 {
+    if ( this == &a_colSource )
+        return *this;
     m_u8Red = a_colSource.m_u8Red;
     m_u8Green = a_colSource.m_u8Green;
     m_u8Blue = a_colSource.m_u8Blue;
@@ -96,6 +98,8 @@ MIU8 mCColor::GetAlpha( void ) const
 
 void mCColor::Swap( mCColor & a_colOther )
 {
+    if ( this == &a_colOther )
+        return;
     g_swap( m_u8Red, a_colOther.m_u8Red );
     g_swap( m_u8Green, a_colOther.m_u8Green );
     g_swap( m_u8Blue, a_colOther.m_u8Blue );
