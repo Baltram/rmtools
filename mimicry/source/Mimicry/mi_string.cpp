@@ -274,7 +274,7 @@ MILPCChar mCString::GetText( void ) const
 MIUInt mCString::LastOf( MILPCChar a_pcText ) const
 {
     MIUInt uSeekStringLength = static_cast< MIUInt >( g_strlen( a_pcText ) );
-    for ( MILPCChar pcText = ( m_pcText + GetLength() - uSeekStringLength ); pcText != m_pcText; --pcText )
+    for ( MILPCChar pcText = g_max( ( m_pcText + GetLength() - uSeekStringLength ), m_pcText ); pcText != m_pcText; --pcText )
     {
         if ( *pcText == *a_pcText )
             if ( !g_strncmp( pcText, a_pcText, uSeekStringLength ) )
@@ -285,7 +285,7 @@ MIUInt mCString::LastOf( MILPCChar a_pcText ) const
 
 MIUInt mCString::LastOf( MIChar a_cChar ) const
 {
-    for ( MILPCChar pcText = ( m_pcText + GetLength() - 1 ); pcText != m_pcText; --pcText )
+    for ( MILPCChar pcText = g_max( ( m_pcText + GetLength() - 1 ), m_pcText ); pcText != m_pcText; --pcText )
     {
         if ( *pcText == a_cChar )
             return static_cast< MIUInt >( pcText - m_pcText );
