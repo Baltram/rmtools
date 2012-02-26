@@ -571,3 +571,15 @@ MIBool mTStringKeyManager< mCString >::Compare( mCString const & a_StringLeft, m
 }
 
 #endif
+
+template< typename T >
+mTStringMap< T >::mTStringMap( MIUInt a_uMinCapacity ) :
+    mTMap( a_uMinCapacity )
+{
+}
+
+template< typename T >
+mTStringMap< T >::mTStringMap( mTStringMap< T > const & a_mapSource ) :
+    mTMap( a_mapSource )
+{
+}
