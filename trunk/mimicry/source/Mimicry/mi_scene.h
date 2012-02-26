@@ -27,7 +27,8 @@ public:
     MIUInt                 GetNodeIndexByID( mCUnique::ID a_ID ) const;
     MIUInt                 GetNodeIndexByName( mCString a_strNodeName ) const; 
     MIUInt                 GetNodeParentIndex( MIUInt a_uNodeIndex ) const;
-    void                   GetNodesSortedByLinks( mTArray< mCNode * > & a_arrDest ) const;
+    void                   GetNodesSortedByLinks( mTArray< mCNode const * > & a_arrDest ) const;
+    void                   GetNodesSortedByLinks( mTArray< mCNode * > & a_arrDest );
     MIUInt                 GetNumMaterials( void ) const;
     MIUInt                 GetNumNodes( void ) const;
     void                   RemoveMaterial( mCMaterialBase * a_pMaterial );
