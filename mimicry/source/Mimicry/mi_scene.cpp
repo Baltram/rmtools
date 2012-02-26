@@ -140,18 +140,31 @@ namespace
         a_arrNodeIndices.Add( a_uNodeIndex );
         a_arrNodeStates[ a_uNodeIndex ] = MITrue;
     }
+
+    void GetNodeReorderPattern( mCScene const & a_sceneScene, mTArray< MIUInt > & a_arrDest )
+    {
+        MIUInt const uNodeCount = a_sceneScene.GetNumNodes();
+        mTArray< MIBool > arrNodeStates( MIFalse, uNodeCount );
+        a_arrDest.Reserve( uNodeCount );
+        for ( MIUInt u = uNodeCount; u--; )
+            AddNodeIndex( a_sceneScene, u, a_arrDest, arrNodeStates );
+    }
 }
 
-void mCScene::GetNodesSortedByLinks( mTArray< mCNode * > & a_arrDest ) const
+void mCScene::GetNodesSortedByLinks( mTArray< mCNode const * > & a_arrDest ) const
 {
-    MIUInt const uNodeCount = GetNumNodes();
-    mTArray< MIBool > arrNodeStates( MIFalse, uNodeCount );
     mTArray< MIUInt > arrPattern;
-    arrPattern.Reserve( uNodeCount );
-    for ( MIUInt u = uNodeCount; u--; )
-        AddNodeIndex( *this, u, arrPattern, arrNodeStates );
+    GetNodeReorderPattern( *this, arrPattern );
+    a_arrDest.SetAt( 0, m_arrNodes.GetBuffer(), GetNumNodes() );
+    g_reorder( a_arrDest.AccessBuffer(), arrPattern.GetBuffer(), GetNumNodes() );
+};
+
+void mCScene::GetNodesSortedByLinks( mTArray< mCNode * > & a_arrDest )
+{
+    mTArray< MIUInt > arrPattern;
+    GetNodeReorderPattern( *this, arrPattern );
     a_arrDest = m_arrNodes;
-    g_reorder( a_arrDest.AccessBuffer(), arrPattern.GetBuffer(), uNodeCount );
+    g_reorder( a_arrDest.AccessBuffer(), arrPattern.GetBuffer(), GetNumNodes() );
 }
  
 MIUInt mCScene::GetNumMaterials( void ) const
