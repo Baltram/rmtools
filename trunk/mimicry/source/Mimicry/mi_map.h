@@ -136,6 +136,17 @@ public:
     static MIBool Compare( K const & a_StringLeft, K const & a_StringRight );
 };
 
+class mCString;
+
+template< typename T >
+class mTStringMap : 
+    public mTMap< mCString, T, mTStringKeyManager< mCString > >
+{
+public:
+    explicit mTStringMap( MIUInt a_uMinCapacity = 28 );
+             mTStringMap( mTStringMap< T > const & a_mapSource );
+};
+
 #include "mi_map.inl"
 
 #endif
