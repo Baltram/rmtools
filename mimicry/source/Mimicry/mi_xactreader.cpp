@@ -47,8 +47,15 @@ namespace
 
 mEResult mCXactReader::ReadXactFileData( mCScene & a_sceneDest, mCIOStreamBinary & a_streamSource, SOptions a_Options )
 {
+    a_sceneDest.Clear();
+    if ( dynamic_cast< mCFileStream * >( &a_streamSource ) )
+    {
+        a_sceneDest.SetName( g_GetFileName( dynamic_cast< mCFileStream * >( &a_streamSource )->GetFileName() ) );
+    }
     mTArray< mCString > arrParentNames;
+    mCString const strMultiMatName = "MultiMat_" + a_sceneDest.GetName();
     mCMultiMaterial matMultiDest;
+    matMultiDest.SetName( strMultiMatName );
     a_streamSource.Seek( 74 );
     MIUInt const uEndFxaOffset = a_streamSource.ReadU32() + 78;
     if ( a_streamSource.ReadU32() != 0x20415846 )
@@ -140,6 +147,7 @@ mEResult mCXactReader::ReadXactFileData( mCScene & a_sceneDest, mCIOStreamBinary
             }
             mCMaxRisenCoordShifter::GetInstance().ShiftMeshCoords( meshDest );
             a_sceneDest.AccessNodeAt( uNodeIndex )->SwapMesh( meshDest );
+            a_sceneDest.AccessNodeAt( uNodeIndex )->AccessMaterialName() = strMultiMatName;
         }
         else if ( uSectionID == ESection_Skin )
         {
@@ -189,6 +197,7 @@ mEResult mCXactReader::ReadXactFileData( mCScene & a_sceneDest, mCIOStreamBinary
                 matDest.SetTextureMapAt( mCMaterial::EMapType_Specular, &tmapDest );
         }
     }
+    a_sceneDest.AddNewMultiMaterial().Swap( matMultiDest );
     mTArray< MIBool > arrIsNodeInitialized( MIFalse, a_sceneDest.GetNumNodes() );
         for ( MIUInt u = a_sceneDest.GetNumNodes(); u--; )
             InitNode( a_sceneDest, u, arrParentNames, arrIsNodeInitialized );
