@@ -583,6 +583,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Mimicry\mi_xactreader.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Mimicry\mi_xactreader.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Mimicry\mi_xactwriter.cpp"
 				>
 			</File>
