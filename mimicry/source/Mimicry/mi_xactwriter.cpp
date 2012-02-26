@@ -48,7 +48,7 @@ namespace
         if ( !meshSource.HasTVFaces() )
             meshSource.CalcFakeTexturing();
         meshSource.CalcVTangents();
-        mCMaxRisenCoordShifter().ShiftMeshCoords( meshSource );
+        mCMaxRisenCoordShifter::GetInstance().ShiftMeshCoords( meshSource );
 
         mTArray< mCMesh::SUniVert > arrUVerts;
         mTArray< mCFace > arrUVFaces;
@@ -266,7 +266,7 @@ mEResult mCXactWriter::WriteXactFileData( mCScene const & a_sceneSource, mCIOStr
             MIUInt const uMaterialCount = streamBaseXact.ReadU32();
             MIUInt const uChannelCount = streamBaseXact.ReadU32();
             u32DW1 = streamBaseXact.ReadU32();
-            mCMaxRisenCoordShifter CoordShifter;
+            mCMaxRisenCoordShifter const & CoordShifter = mCMaxRisenCoordShifter::GetInstance();
             for ( MIUInt u = uMaterialCount; u--; )
             {
                 u32DW2 = streamBaseXact.ReadU32();
@@ -330,7 +330,7 @@ mEResult mCXactWriter::WriteXactFileData( mCScene const & a_sceneSource, mCIOStr
             return mEResult_False;
         }
         a_streamDest << streamBaseXact;
-        mCMaxRisenCoordShifter CoordShifter;
+        mCMaxRisenCoordShifter const & CoordShifter = mCMaxRisenCoordShifter::GetInstance();
         mCVec3 const * pVerts = meshSource.GetVerts();
         MIUInt uPassedUVertCount = 0;
         streamBaseXact.Skip( 4 );

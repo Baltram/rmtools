@@ -37,6 +37,29 @@ MIBool mCMatrix4::operator == ( mCMatrix4 const & a_matOther ) const
     return memcmp( this, &a_matOther, sizeof( mCMatrix4 ) ) == 0;
 }
 
+mCMatrix4 mCMatrix4::operator * ( mCMatrix4 const & a_matRight ) const
+{
+    mCMatrix4 matResult;
+    matResult.SetToProduct( *this, a_matRight );
+    return matResult;
+}
+
+mCMatrix4 mCMatrix4::operator * ( mCQuaternion const & a_quatRotation ) const
+{
+    return *this * mCMatrix4( a_quatRotation );
+}
+
+mCMatrix4 & mCMatrix4::operator *= ( mCMatrix4 const & a_matRight )
+{
+    SetToProduct( *this, a_matRight );
+    return *this;
+}
+
+mCMatrix4 & mCMatrix4::operator *= ( mCQuaternion const & a_quatRotation )
+{
+    return ( *this *= mCMatrix4( a_quatRotation ) );
+}
+
 MIBool mCMatrix4::operator != ( mCMatrix4 const & a_matOther ) const
 {
     return !( *this ==a_matOther );

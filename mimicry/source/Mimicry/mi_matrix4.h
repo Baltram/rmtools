@@ -54,6 +54,10 @@ public:
     mCMatrix4 & operator =  ( mCMatrix4 const & a_matSource );
     MIBool      operator == ( mCMatrix4 const & a_matOther ) const;
     MIBool      operator != ( mCMatrix4 const & a_matOther ) const;
+    mCMatrix4   operator *  ( mCMatrix4 const & a_matRight ) const;
+    mCMatrix4   operator *  ( mCQuaternion const & a_quatRotation ) const;
+    mCMatrix4 & operator *= ( mCMatrix4 const & a_matRight );
+    mCMatrix4 & operator *= ( mCQuaternion const & a_quatRotation );
 public:
     MIFloat &       AccessElement( MIUInt a_uElementIndex );
     MIFloat &       AccessElement( MIUInt a_uRowIndex, MIUInt a_uColumnIndex );

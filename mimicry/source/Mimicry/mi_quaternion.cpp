@@ -111,6 +111,14 @@ void mCQuaternion::Clear( void )
     m_fW = 1.0f;
 }
 
+mCQuaternion & mCQuaternion::Inverse( void )
+{
+    m_fX *= -1.0f;
+    m_fY *= -1.0f;
+    m_fZ *= -1.0f;
+    return *this;
+}
+
 MIFloat mCQuaternion::GetX( void ) const
 {
     return m_fX;

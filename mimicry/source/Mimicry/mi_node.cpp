@@ -29,6 +29,7 @@ mCNode::mCNode( void ) :
     m_pSkin( 0 ),
     m_idParent( 0 )
 {
+    m_matTransform.SetToIdentity();
 }
 
 mCNode::~mCNode( void )
