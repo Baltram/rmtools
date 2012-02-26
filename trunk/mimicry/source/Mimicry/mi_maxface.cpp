@@ -43,6 +43,8 @@ MIBool mCMaxFace::operator != ( mCMaxFace const & a_faceOther ) const
 
 mCMaxFace & mCMaxFace::operator = ( mCMaxFace const & a_faceSource )
 {
+    if ( this == &a_faceSource )
+        return *this;
     mCFace::operator = ( a_faceSource );
     m_uMatID = a_faceSource.m_uMatID;
     m_u32SGs = a_faceSource.m_u32SGs;
@@ -71,6 +73,8 @@ MIU32 mCMaxFace::GetSGs( void ) const
 
 void mCMaxFace::Swap( mCMaxFace & a_faceOther )
 {
+    if ( this == &a_faceOther )
+        return;
     mCFace::Swap( a_faceOther );
     g_swap( m_uMatID, a_faceOther.m_uMatID );
     g_swap( m_u32SGs, a_faceOther.m_u32SGs );

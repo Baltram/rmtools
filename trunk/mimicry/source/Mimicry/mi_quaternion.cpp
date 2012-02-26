@@ -68,6 +68,8 @@ mCQuaternion::~mCQuaternion( void )
 
 mCQuaternion & mCQuaternion::operator = ( mCQuaternion const & a_quatSource )
 {
+    if ( this == &a_quatSource )
+        return *this;
     m_fX = a_quatSource.m_fX;
     m_fY = a_quatSource.m_fY;
     m_fZ = a_quatSource.m_fZ;
@@ -141,6 +143,8 @@ MIFloat mCQuaternion::GetW( void ) const
 
 void mCQuaternion::Swap( mCQuaternion & a_quatOther )
 {
+    if ( this == &a_quatOther )
+        return;
     g_memswap( *this, a_quatOther );
 }
 

@@ -51,6 +51,8 @@ T const & mTArray< T >::operator [] ( MIUInt a_uIndex ) const
 template< typename T >
 mTArray< T > & mTArray< T >::operator = ( mTArray< T > const & a_arrSource )
 {
+    if ( this == &a_arrSource )
+        return *this;
     mTArray< T > arrCopy( a_arrSource );
     Swap( arrCopy );
     return *this;
@@ -275,6 +277,8 @@ void mTArray< T >::SetAt( MIUInt a_uIndex, T const * a_pSource, MIUInt a_uCount 
 template< typename T >
 void mTArray< T >::Swap( mTArray< T > & a_arrOther )
 {
+    if ( this == &a_arrOther )
+        return;
     g_swap( m_pElements, a_arrOther.m_pElements );
     g_swap( m_uCapacity, a_arrOther.m_uCapacity );
     g_swap( m_uCount, a_arrOther.m_uCount );
@@ -411,6 +415,8 @@ mTArray< T >::CConstIterator::CConstIterator( void ) :
 template< typename T >
 typename mTArray< T >::CConstIterator & mTArray< T >::CConstIterator::operator = ( CConstIterator const & a_itIterator )
 {
+    if ( this == &a_itIterator )
+        return *this;
     m_uIndex = a_itIterator.m_uIndex;
     m_pElements = a_itIterator.m_pElements;
     return *this;

@@ -40,6 +40,8 @@ mCNode::~mCNode( void )
 
 mCNode & mCNode::operator = ( mCNode const & a_nodeSource )
 {
+    if ( this == &a_nodeSource )
+        return *this;
     mCNode nodeCopy( a_nodeSource );
     Swap( nodeCopy );
     return *this;
@@ -123,6 +125,8 @@ void mCNode::SetSkin( mCSkin const * a_pSkin )
 
 void mCNode::Swap( mCNode & a_nodeOther )
 {
+    if ( this == &a_nodeOther )
+        return;
     m_strName.Swap( a_nodeOther.m_strName );
     m_strMaterialName.Swap( a_nodeOther.m_strMaterialName );
     m_matTransform.Swap( a_nodeOther.m_matTransform );

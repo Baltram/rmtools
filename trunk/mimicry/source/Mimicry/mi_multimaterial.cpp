@@ -25,6 +25,8 @@ mCMultiMaterial::mCMultiMaterial( void )
 
 mCMultiMaterial & mCMultiMaterial::operator = ( mCMultiMaterial const & a_mtlSource )
 {
+    if ( this == &a_mtlSource )
+        return *this;
     mCMultiMaterial mtlCopy( a_mtlSource );
     Swap( mtlCopy );
     return *this;
@@ -63,6 +65,8 @@ mTArray< mCMaterial > const & mCMultiMaterial::GetSubMaterials( void ) const
 
 void mCMultiMaterial::Swap( mCMultiMaterial & a_mtlOther )
 {
+    if ( this == &a_mtlOther )
+        return;
     mCMaterialBase::Swap( a_mtlOther );
     m_arrSubMaterials.Swap( a_mtlOther.m_arrSubMaterials );
 }

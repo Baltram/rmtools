@@ -15,11 +15,11 @@ public:
     class CIterator;
 public:
     explicit mTMap( MIUInt a_uMinCapacity = 28 );
-             mTMap( mTMap< K, T, C > const & a_mapOther );
+             mTMap( mTMap< K, T, C > const & a_mapSource );
 public:
     T &                operator [] ( K const & a_Key );
     T const &          operator [] ( K const & a_Key ) const;
-    mTMap< K, T, C > & operator =  ( mTMap< K, T, C > const & a_mapOther );
+    mTMap< K, T, C > & operator =  ( mTMap< K, T, C > const & a_mapSource );
 public:
     CConstIterator Begin( void ) const;
     CIterator      Begin( void );

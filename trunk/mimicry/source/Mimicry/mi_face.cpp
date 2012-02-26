@@ -51,6 +51,8 @@ MIUInt const & mCFace::operator [] ( MIUInt a_uCoordIndex ) const
 
 mCFace & mCFace::operator =  ( mCFace const & a_faceSource )
 {
+    if ( this == &a_faceSource )
+        return *this;
     m_uA = a_faceSource.m_uA;
     m_uB = a_faceSource.m_uB;
     m_uC = a_faceSource.m_uC;
@@ -109,6 +111,8 @@ void mCFace::Invert( void )
 
 void mCFace::Swap( mCFace & a_faceOther )
 {
+    if ( this == &a_faceOther )
+        return;
     g_swap( m_uA, a_faceOther.m_uA );
     g_swap( m_uB, a_faceOther.m_uB );
     g_swap( m_uC, a_faceOther.m_uC );

@@ -15,6 +15,8 @@ MI_CONSTANT_CONDITIONAL_EXPRESSION_NO_WARNINGS_BEGIN
 template< typename T >
 void g_memswap( T & a_1, T & a_2 )
 {
+    if ( &a_1 == &a_2 )
+        return;
     if ( sizeof( T ) > 12 )
     {
         MIByte arrBuffer[ sizeof( T ) ];

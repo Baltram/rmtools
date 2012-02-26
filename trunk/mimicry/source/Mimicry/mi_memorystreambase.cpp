@@ -50,6 +50,8 @@ mTMemoryStreamBase< M >::mTMemoryStreamBase( mCIOStreamFormatted & a_Source ) :
 template< mEStreamType M >
 mTMemoryStreamBase< M > & mTMemoryStreamBase< M >::operator = ( mTMemoryStreamBase< M > const & a_Source )
 {
+    if ( this == &a_Source )
+        return *this;
     if ( &a_Source != this )
     {
         m_arrBuffer = a_Source.m_arrBuffer;
@@ -187,6 +189,8 @@ mEResult mTMemoryStreamBase< M >::ToFile( mCString a_strFileName )
 template< mEStreamType M >
 void mTMemoryStreamBase< M >::Swap( mTMemoryStreamBase< M > & a_Other )
 {
+    if ( this == &a_Other )
+        return;
     m_arrBuffer.Swap( a_Other.m_arrBuffer );
     g_swap( m_uPosition, a_Other.m_uPosition );
 }

@@ -23,6 +23,8 @@ mCSkin::~mCSkin( void )
 
 mCSkin & mCSkin::operator = ( mCSkin const & a_skinSource )
 {
+    if ( this == &a_skinSource )
+        return *this;
     m_arrBoneIDs = a_skinSource.m_arrBoneIDs;
     m_arrVertexIndices = a_skinSource.m_arrVertexIndices;
     m_arrBoneIndices = a_skinSource.m_arrBoneIndices;
@@ -120,6 +122,8 @@ mEResult mCSkin::InitSwapping( MIUInt a_uVertCount,
 
 void mCSkin::Swap( mCSkin & a_skinOther )
 {
+    if ( this == &a_skinOther )
+        return;
     m_arrBoneIDs.Swap( a_skinOther.m_arrBoneIDs );
     m_arrVertexIndices.Swap( a_skinOther.m_arrVertexIndices );
     m_arrBoneIndices.Swap( a_skinOther.m_arrBoneIndices );

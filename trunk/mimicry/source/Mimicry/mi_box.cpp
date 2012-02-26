@@ -159,6 +159,8 @@ mCBox & mCBox::operator |= ( mCVec3 const & a_vecVector )
 
 mCBox & mCBox::operator = ( mCBox const & a_boxSource )
 {
+    if ( this == &a_boxSource )
+        return *this;
     m_vecMin = a_boxSource.m_vecMin;
     m_vecMax = a_boxSource.m_vecMax;
     return *this;

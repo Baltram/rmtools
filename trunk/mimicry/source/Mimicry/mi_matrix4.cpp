@@ -28,6 +28,8 @@ mCMatrix4::~mCMatrix4( void )
 
 mCMatrix4 & mCMatrix4::operator = ( mCMatrix4 const & a_matSource )
 {
+    if ( this == &a_matSource )
+        return *this;
     g_memcpy( m_arrElements, a_matSource.m_arrElements, sizeof( MIFloat ) * EElement_Count );
     return *this;
 }
