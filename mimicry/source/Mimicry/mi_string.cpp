@@ -257,8 +257,7 @@ mCString & mCString::Format( MILPCChar a_pcFormat, ... )
 {
     va_list argp;
     va_start( argp, a_pcFormat );
-    MI_CRT_NO_WARNINGS( vsprintf( s_pcBuffer, a_pcFormat, argp ); )
-    m_pcText = Alloc( s_pcBuffer );
+    VFormat( a_pcFormat, argp );
     va_end( argp );
     return *this;
 }
@@ -478,6 +477,13 @@ mCString & mCString::TrimRight( MIChar a_cChar )
 mCString & mCString::TrimRight( MIUInt a_uCount )
 {
     m_pcText[ GetLength() - a_uCount ] = 0;
+    return *this;
+}
+
+mCString & mCString::VFormat( MILPCChar a_pcFormat, va_list a_Arguments )
+{
+    MI_CRT_NO_WARNINGS( vsprintf( s_pcBuffer, a_pcFormat, a_Arguments ); )
+    m_pcText = Alloc( s_pcBuffer );
     return *this;
 }
 

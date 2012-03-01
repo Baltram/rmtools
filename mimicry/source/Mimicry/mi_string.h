@@ -79,6 +79,7 @@ public:
     mCString & TrimLeft( MIUInt a_uCount );
     mCString & TrimRight( MIChar a_cChar );
     mCString & TrimRight( MIUInt a_uCount );
+    mCString & VFormat( MILPCChar a_pcFormat, va_list a_Arguments );
 private:
     static MILPChar  Alloc( MILPCChar a_pcText, MIUInt a_uCount = 0, MILPVoid a_Memory = 0 );
     static MILPChar  Alloc( MILPCChar a_pcText1, MILPCChar a_pcText2, MILPVoid a_Memory = 0 );
