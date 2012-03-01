@@ -5,5 +5,6 @@
 
 #include <new>
 #include <typeinfo>
+#include <cstdarg>
 
 #endif
