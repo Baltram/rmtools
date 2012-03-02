@@ -353,44 +353,9 @@ MIInt mCString::Scan( MILPCChar a_pcFormat, ... ) const
 {
     va_list argp;
     va_start( argp, a_pcFormat );
-    MIU32 uCount = 0;
-    MILPCChar pcFormat = a_pcFormat;
-    MILPCChar pcEndFormat = a_pcFormat + g_strlen( a_pcFormat );
-    MIInt ( MI_CDECL * funcSscanf )( MILPCChar, MILPCChar, ... );
-    MI_CRT_NO_WARNINGS( funcSscanf = &sscanf; )
-    while ( NextOf( pcFormat, pcEndFormat, '%' ) )
-    {
-        ++pcFormat;
-        if ( ( *pcFormat != '%' ) && ( *pcFormat != '*' ) )
-            ++uCount;
-        else
-            ++pcFormat;
-    }
-    if ( uCount )
-    {
-        MIU32 ** pLastArg = &va_arg( argp, MIU32 * ) + ( uCount - 1 );
-        MI_ASSERT_32_BIT
-        MI_ASSERT_MSVC
-        MI_ASM {
-            mov  esi, esp
-            mov  eax, uCount
-            mov  edx, pLastArg
-label_loop:
-            push [ edx ]
-            sub  edx, 4
-            sub  eax, 1
-            test eax, eax
-            jnz  label_loop
-            push a_pcFormat
-            mov  eax, this
-            push [ eax ]
-            call funcSscanf
-            mov  uCount, eax
-            mov  esp, esi
-        }
-    }
+    MIInt iCount = VScan( a_pcFormat, argp );
     va_end( argp );
-    return uCount;
+    return iCount;
 }
 
 void mCString::SetText( mCString const & a_strText )
@@ -485,6 +450,50 @@ mCString & mCString::VFormat( MILPCChar a_pcFormat, va_list a_Arguments )
     MI_CRT_NO_WARNINGS( vsprintf( s_pcBuffer, a_pcFormat, a_Arguments ); )
     m_pcText = Alloc( s_pcBuffer );
     return *this;
+}
+
+MIInt mCString::VScan( MILPCChar a_pcFormat, va_list a_Arguments ) const
+{
+    MIInt iCount = 0;
+#ifdef _MSC_VER
+    MILPCChar pcFormat = a_pcFormat;
+    MILPCChar pcEndFormat = a_pcFormat + g_strlen( a_pcFormat );
+    MIInt ( MI_CDECL * funcSscanf )( MILPCChar, MILPCChar, ... );
+    MI_CRT_NO_WARNINGS( funcSscanf = &sscanf; )
+    while ( NextOf( pcFormat, pcEndFormat, '%' ) )
+    {
+        ++pcFormat;
+        if ( ( *pcFormat != '%' ) && ( *pcFormat != '*' ) )
+            ++iCount;
+        else
+            ++pcFormat;
+    }
+    if ( iCount )
+    {
+        MIU32 ** pLastArg = &va_arg( a_Arguments, MIU32 * ) + ( iCount - 1 );
+        MI_ASSERT_32_BIT
+        MI_ASM {
+            mov  esi, esp
+            mov  eax, iCount
+            mov  edx, pLastArg
+label_loop:
+            push [ edx ]
+            sub  edx, 4
+            sub  eax, 1
+            test eax, eax
+            jnz  label_loop
+            push a_pcFormat
+            mov  eax, this
+            push [ eax ]
+            call funcSscanf
+            mov  iCount, eax
+            mov  esp, esi
+        }
+    }
+#else
+    iCount = vsscanf( a_pcFormat, a_Arguments );
+#endif
+    return iCount;
 }
 
 MILPChar mCString::Alloc( MILPCChar a_pcText, MIUInt a_uCount, MILPVoid a_Memory )
