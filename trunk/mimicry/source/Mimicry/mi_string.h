@@ -75,8 +75,10 @@ public:
     void       Swap( mCString & a_strOther );
     mCString & ToLower( void );
     mCString & ToUpper( void );
+    mCString & TrimLeft( MILPCChar a_pcChars );
     mCString & TrimLeft( MIChar a_cChar );
     mCString & TrimLeft( MIUInt a_uCount );
+    mCString & TrimRight( MILPCChar a_pcChars );
     mCString & TrimRight( MIChar a_cChar );
     mCString & TrimRight( MIUInt a_uCount );
     mCString & VFormat( MILPCChar a_pcFormat, va_list a_Arguments );

@@ -112,9 +112,15 @@ MILPVoid g_realloc( MILPVoid a_pDest, MISize a_sizeSize )
 }
 
 inline
-MIInt g_strncmp( MILPCChar a_pcText1, MILPCChar a_pcText2, MISize a_sizeNum )
+MILPCChar g_strchr( MILPCChar a_pcText, MIInt a_iValue )
 {
-    return ( *g_funcStrncmp )( a_pcText1, a_pcText2, a_sizeNum );
+    return ( *g_funcStrchr_c )( a_pcText, a_iValue );
+}
+
+inline
+MILPChar g_strchr( MILPChar a_pcText, MIInt a_iValue )
+{
+    return ( *g_funcStrchr )( a_pcText, a_iValue );
 }
 
 inline
@@ -133,4 +139,10 @@ inline
 MISize g_strlen( MILPCChar a_pcText )
 {
     return ( *g_funcStrlen )( a_pcText );
+}
+
+inline
+MIInt g_strncmp( MILPCChar a_pcText1, MILPCChar a_pcText2, MISize a_sizeNum )
+{
+    return ( *g_funcStrncmp )( a_pcText1, a_pcText2, a_sizeNum );
 }
