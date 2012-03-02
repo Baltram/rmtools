@@ -17,9 +17,11 @@ MILPVoid  ( MI_CDECL * const g_funcMemcpy )( MILPVoid, MILPCVoid, MISize )   = &
 MILPVoid  ( MI_CDECL * const g_funcMemmove )( MILPVoid, MILPCVoid, MISize )  = &memmove;
 MILPVoid  ( MI_CDECL * const g_funcMemset )( MILPVoid, MIInt, MISize )       = &memset;
 MILPVoid  ( MI_CDECL * const g_funcRealloc )( MILPVoid, MISize )             = &realloc;
-MIInt     ( MI_CDECL * const g_funcStrncmp )( MILPCChar, MILPCChar, MISize ) = &strncmp;
+MILPCChar ( MI_CDECL * const g_funcStrchr_c )( MILPCChar, MIInt )            = &strchr;
+MILPChar  ( MI_CDECL * const g_funcStrchr )( MILPChar, MIInt )               = &strchr;
 MIInt     ( MI_CDECL * const g_funcStrcmp )( MILPCChar, MILPCChar )          = &strcmp;
 MISize    ( MI_CDECL * const g_funcStrlen )( MILPCChar )                     = &strlen;
+MIInt     ( MI_CDECL * const g_funcStrncmp )( MILPCChar, MILPCChar, MISize ) = &strncmp;
 
 MI_CRT_NO_WARNINGS( MILPChar  ( MI_CDECL * const g_funcStrcpy )( MILPChar, MILPCChar ) = &strcpy; )
 

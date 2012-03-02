@@ -404,6 +404,13 @@ mCString & mCString::ToUpper( void )
     return *this;
 }
 
+mCString & mCString::TrimLeft( MILPCChar a_pcChars )
+{
+    MILPCChar pcText = m_pcText - 1;
+    while ( *++pcText && g_strchr( a_pcChars, *pcText ) );
+    return TrimLeft( static_cast< MIUInt >( pcText - m_pcText ) );
+}
+
 mCString & mCString::TrimLeft( MIChar a_cChar )
 {
     if ( a_cChar == 0 )
@@ -419,6 +426,8 @@ mCString & mCString::TrimLeft( MIChar a_cChar )
 
 mCString & mCString::TrimLeft( MIUInt a_uCount )
 {
+    if ( !a_uCount )
+        return *this;
     mCString strNew( ( m_pcText + a_uCount ), ( GetLength() - a_uCount ) );
     Swap( strNew );
     return *this;
@@ -437,6 +446,14 @@ mCString & mCString::TrimRight( MIChar a_cChar )
     if ( uCount )
         TrimRight( uCount );
     return *this;
+}
+
+mCString & mCString::TrimRight( MILPCChar a_pcChars )
+{
+    MIUInt const uLength = GetLength();
+    MILPCChar pcText = m_pcText + uLength;
+    while ( ( pcText-- != m_pcText ) && g_strchr( a_pcChars, *pcText ) );
+    return TrimRight( uLength - static_cast< MIUInt >( pcText - m_pcText + 1 ) );
 }
 
 mCString & mCString::TrimRight( MIUInt a_uCount )
