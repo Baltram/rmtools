@@ -200,9 +200,9 @@ void mCScene::SetName( mCString const & a_strName )
     m_strName = a_strName;
 }
 
-void mCScene::SetNodeParent( MIUInt a_uNodeIndex, MIUInt a_uparentNodeIndex )
+void mCScene::SetNodeParent( MIUInt a_uNodeIndex, MIUInt a_uParentNodeIndex )
 {
-    AccessNodeAt( a_uNodeIndex )->AccessParentID() = GetNodeAt( a_uparentNodeIndex )->GetID();
+    AccessNodeAt( a_uNodeIndex )->AccessParentID() = GetNodeAt( a_uParentNodeIndex )->GetID();
 }
 
 void mCScene::SortNodesByLinks( void )

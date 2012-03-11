@@ -10,7 +10,7 @@ void mCError::ClearError( mCError const * a_pError )
 {
     mCError ** pErrorPointer = &s_pLastError;
     mCError * pError;
-    while( pError = *pErrorPointer )
+    while( ( pError = *pErrorPointer ) != 0 )
     {
         if ( pError == a_pError )
         {

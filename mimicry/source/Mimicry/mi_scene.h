@@ -34,7 +34,7 @@ public:
     void                   RemoveMaterial( mCMaterialBase * a_pMaterial );
     void                   RemoveNode( mCNode * a_pNode );
     void                   SetName( mCString const & a_strName );
-    void                   SetNodeParent( MIUInt a_uNodeIndex, MIUInt a_uparentNodeIndex );
+    void                   SetNodeParent( MIUInt a_uNodeIndex, MIUInt a_uParentNodeIndex );
     void                   SortNodesByLinks( void );
     void                   Swap( mCScene & a_sceneOther );
 private:
