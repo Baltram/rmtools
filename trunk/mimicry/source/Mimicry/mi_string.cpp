@@ -437,8 +437,7 @@ mCString & mCString::TrimLeft( MIUInt a_uCount )
 {
     if ( !a_uCount )
         return *this;
-    mCString strNew( ( m_pcText + a_uCount ), ( GetLength() - a_uCount ) );
-    Swap( strNew );
+    g_memcpy( m_pcText, m_pcText + a_uCount, ( GetLength() - a_uCount + 1 ) );
     return *this;
 }
 
