@@ -8,9 +8,9 @@ mTMap< K, T, C >::mTMap( MIUInt a_uMinCapacity ) :
 
 template< typename K, typename T, class C >
 mTMap< K, T, C >::mTMap( mTMap< K, T, C > const & a_mapSource ) :
-    m_arrBuckets( a_mapOther.m_arrBuckets ),
-    m_uElementCount( a_mapOther.m_uElementCount ),
-    m_u32BucketMask( a_mapOther.m_u32BucketMask )
+    m_arrBuckets( a_mapSource.m_arrBuckets ),
+    m_uElementCount( a_mapSource.m_uElementCount ),
+    m_u32BucketMask( a_mapSource.m_u32BucketMask )
 {
 }
 

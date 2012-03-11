@@ -111,8 +111,16 @@ mCString mCStringStream::ReadLine( void )
     MILPCChar pcEndLineB = strchr( pcBeginLine, '\n' );
     MILPCChar pcEndLine = g_min( pcEndLineA ? pcEndLineA : pcEndLineB, pcEndLineB ? pcEndLineB : pcEndLineA );
     if ( !pcEndLine )
+    {
         pcEndLine = m_arrBuffer.GetBuffer() + m_arrBuffer.GetCount();
+        if ( pcEndLine == pcBeginLine )
+            MI_ERROR( mCStreamError, ESizeExceeded, "Buffer size exceeded when reading formatted data." );
+    }
     MIUInt const uLength = static_cast< MIUInt >( pcEndLine - pcBeginLine );
+    if ( *pcEndLine == '\r' )
+        ++pcEndLine, ++m_uPosition;
+    if ( *pcEndLine == '\n' )
+        ++m_uPosition;
     m_uPosition += uLength;
     return mCString( pcBeginLine, uLength );
 }

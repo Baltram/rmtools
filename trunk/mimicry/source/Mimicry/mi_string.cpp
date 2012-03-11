@@ -15,7 +15,7 @@ mCString::mCString( MILPCChar a_pcText ) :
 }
 
 mCString::mCString( MILPCChar a_pcText, MIUInt a_uCount ) :
-    m_pcText( Alloc( a_pcText, a_uCount ) )
+m_pcText( Alloc( ( a_uCount ? a_pcText : 0 ), a_uCount ) )
 {
 }
 
@@ -218,6 +218,16 @@ MIInt mCString::CompareNoCase( MILPCChar a_pcOther ) const
     return 0;
 }
 
+MIBool mCString::Contains( MIChar a_cChar ) const
+{
+    return ( FirstOf( a_cChar ) != MI_DW_INVALID );
+}
+
+MIBool mCString::Contains( MILPCChar a_pcString ) const
+{
+    return ( FirstOf( a_pcString ) != MI_DW_INVALID );
+}
+
 MIUInt mCString::Count( MILPCChar a_pcText ) const
 {
     MIUInt uResult = 0;
@@ -248,8 +258,7 @@ MIUInt mCString::FirstOf( MILPCChar a_pcText ) const
 
 MIUInt mCString::FirstOf( MIChar a_cChar ) const
 {
-    MILPCChar pcText = m_pcText;
-    MILPCChar pcOccurance = mCString::NextOf( pcText, ( m_pcText + GetLength() ), a_cChar );
+    MILPCChar pcOccurance = g_strchr( m_pcText, a_cChar );
     return ( pcOccurance ? static_cast< MIUInt >( pcOccurance - m_pcText ) : MI_DW_INVALID );
 }
 
@@ -371,7 +380,7 @@ void mCString::SetText( MILPCChar a_pcText )
 
 void mCString::SetText( MILPCChar a_pcText, MIUInt a_uCount )
 {
-    m_pcText = Alloc( a_pcText, a_uCount, m_pcText );
+    m_pcText = Alloc( ( a_uCount ? a_pcText : 0 ), a_uCount, m_pcText );
 }
 
 void mCString::SetText( MIChar a_cChar, MIUInt a_uCount )
@@ -482,8 +491,7 @@ MIInt mCString::VScan( MILPCChar a_pcFormat, va_list a_Arguments ) const
         ++pcFormat;
         if ( ( *pcFormat != '%' ) && ( *pcFormat != '*' ) )
             ++iCount;
-        else
-            ++pcFormat;
+        ++pcFormat;
     }
     if ( iCount )
     {
