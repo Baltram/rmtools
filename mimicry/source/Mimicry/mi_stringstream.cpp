@@ -125,6 +125,28 @@ mCString mCStringStream::ReadLine( void )
     return mCString( pcBeginLine, uLength );
 }
 
+mEResult mCStringStream::ReadStringInQuotes( mCString & a_strDest )
+{
+    MILPChar const pcBuffer = m_arrBuffer.AccessBuffer();
+    MILPChar pcBegin = pcBuffer + m_uPosition;
+    MILPChar pcEnd;
+    SkipWhiteSpaceCharacters( pcBegin, GetWhiteSpaceIndicator() );
+    for ( ; ; )
+    {
+        if ( *pcBegin != '\"' )
+            break;
+        for ( pcEnd = pcBegin + 1; *pcEnd && ( *pcEnd != '\"' ); ++pcEnd );
+        if ( !*pcEnd )
+            break;
+        a_strDest.SetText( pcBegin + 1, static_cast< MIUInt >( pcEnd - pcBegin - 1 ) );
+        m_uPosition = static_cast< MIUInt >( pcEnd - pcBuffer + 1 );
+        return mEResult_Ok;
+    }
+    MI_ERROR( mCStreamError, EBadFormat, "Enclosing quotes are missing." );
+    return mEResult_False;
+
+}
+
 void mCStringStream::ToString( mCString & a_strDest )
 {
     a_strDest.SetText( m_arrBuffer.GetBuffer(), m_arrBuffer.GetCount() );

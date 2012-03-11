@@ -7,6 +7,7 @@
 #include "mi_converters.h"
 #include "mi_coordshifter.h"
 #include "mi_maxreader.h"
+#include "mi_asereader.h"
 #include "mi_asewriter.h"
 #include "mi_xactreader.h"
 #include "mi_xactwriter.h"
