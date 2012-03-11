@@ -54,6 +54,8 @@ public:
     MIInt      Compare( MILPCChar a_pcOther ) const;
     MIInt      CompareNoCase( mCString const & a_strOther ) const;
     MIInt      CompareNoCase( MILPCChar a_pcOther ) const;
+    MIBool     Contains( MIChar a_cChar ) const;
+    MIBool     Contains( MILPCChar a_pcString ) const;
     MIUInt     Count( MILPCChar a_pcText ) const;
     MIUInt     Count( MIChar a_cChar ) const;
     MIUInt     FirstOf( MILPCChar a_pcText ) const;
