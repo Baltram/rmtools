@@ -551,6 +551,14 @@
 			Name="converters"
 			>
 			<File
+				RelativePath=".\Mimicry\mi_asereader.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Mimicry\mi_asereader.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Mimicry\mi_asewriter.cpp"
 				>
 			</File>

@@ -18,6 +18,7 @@ public:
     virtual mEResult                   Read( mCString & a_strDest );
 public:
     mCString ReadLine( void );
+    mEResult ReadStringInQuotes( mCString & a_strDest );
     void     ToString( mCString & a_strDest );
     void     WriteLine( mCString const & a_strText );
 private:
