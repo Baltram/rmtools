@@ -472,8 +472,8 @@ mCString & mCString::TrimRight( MIUInt a_uCount )
 
 mCString & mCString::VFormat( MILPCChar a_pcFormat, va_list a_Arguments )
 {
-    MI_CRT_NO_WARNINGS( vsprintf( s_pcBuffer, a_pcFormat, a_Arguments ); )
-    m_pcText = Alloc( s_pcBuffer );
+    MI_CRT_NO_WARNINGS( MIUInt uSize = vsprintf( s_pcBuffer, a_pcFormat, a_Arguments ); )
+    SetText( s_pcBuffer, uSize );
     return *this;
 }
 
