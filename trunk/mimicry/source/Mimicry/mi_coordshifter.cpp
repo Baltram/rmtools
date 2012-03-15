@@ -79,3 +79,93 @@ mCMaxRisenCoordShifter::mCMaxRisenCoordShifter( void )
     m_matTransform.AccessElement( 0, 0 ) = m_matTransform.AccessElement( 1, 2 ) = 1.0f;
     m_matTransform.AccessElement( 2, 1 ) = m_matTransform.AccessElement( 3, 3 ) = 1.0f;
 }
+
+mCMaxToObjCoordShifter const & mCMaxToObjCoordShifter::GetInstance( void )
+{
+    static mCMaxToObjCoordShifter s_CoordShifter;
+    return s_CoordShifter;
+}
+
+mCFace & mCMaxToObjCoordShifter::ShiftFaceCoords( mCFace & a_faceDest ) const
+{
+    return a_faceDest;
+}
+
+mCMaxFace & mCMaxToObjCoordShifter::ShiftFaceCoords( mCMaxFace & a_faceDest ) const
+{
+    return a_faceDest;
+}
+
+mCMatrix4 & mCMaxToObjCoordShifter::ShiftMatrixCoords( mCMatrix4 & a_matDest ) const
+{
+    return ( a_matDest *= m_matTransform );
+}
+
+mCVec3 & mCMaxToObjCoordShifter::ShiftVectorCoords( mCVec3 & a_vecDest ) const
+{
+    g_swap( a_vecDest.AccessY(), a_vecDest.AccessZ() );
+    a_vecDest.AccessZ() *= -1;
+    return a_vecDest;
+}
+
+mCVec3 & mCMaxToObjCoordShifter::ShiftTexCoords( mCVec3 & a_vecDest ) const
+{
+    return a_vecDest;
+}
+
+mCMaxToObjCoordShifter::~mCMaxToObjCoordShifter( void )
+{
+}
+
+mCMaxToObjCoordShifter::mCMaxToObjCoordShifter( void )
+{
+    m_matTransform.SetToZero();
+    m_matTransform.AccessElement( 0, 0 ) = m_matTransform.AccessElement( 1, 2 ) = 1.0f;
+    m_matTransform.AccessElement( 2, 1 ) = -1.0f;
+    m_matTransform.AccessElement( 3, 3 ) = 1.0f;
+}
+
+mCObjToMaxCoordShifter const & mCObjToMaxCoordShifter::GetInstance( void )
+{
+    static mCObjToMaxCoordShifter s_CoordShifter;
+    return s_CoordShifter;
+}
+
+mCFace & mCObjToMaxCoordShifter::ShiftFaceCoords( mCFace & a_faceDest ) const
+{
+    return a_faceDest;
+}
+
+mCMaxFace & mCObjToMaxCoordShifter::ShiftFaceCoords( mCMaxFace & a_faceDest ) const
+{
+    return a_faceDest;
+}
+
+mCMatrix4 & mCObjToMaxCoordShifter::ShiftMatrixCoords( mCMatrix4 & a_matDest ) const
+{
+    return ( a_matDest *= m_matTransform );
+}
+
+mCVec3 & mCObjToMaxCoordShifter::ShiftVectorCoords( mCVec3 & a_vecDest ) const
+{
+    g_swap( a_vecDest.AccessY(), a_vecDest.AccessZ() );
+    a_vecDest.AccessY() *= -1;
+    return a_vecDest;
+}
+
+mCVec3 & mCObjToMaxCoordShifter::ShiftTexCoords( mCVec3 & a_vecDest ) const
+{
+    return a_vecDest;
+}
+
+mCObjToMaxCoordShifter::~mCObjToMaxCoordShifter( void )
+{
+}
+
+mCObjToMaxCoordShifter::mCObjToMaxCoordShifter( void )
+{
+    m_matTransform.SetToZero();
+    m_matTransform.AccessElement( 0, 0 ) = 1.0f;
+    m_matTransform.AccessElement( 1, 2 ) = -1.0f;
+    m_matTransform.AccessElement( 2, 1 ) = m_matTransform.AccessElement( 3, 3 ) = 1.0f;
+}
