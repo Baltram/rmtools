@@ -115,6 +115,7 @@ template<> inline
 mCOStreamBinary & mCOStreamBinary::operator << ( MILPCChar a_pcSource )
 {
     Write( a_pcSource, static_cast< MIUInt >( g_strlen( a_pcSource ) ) );
+    return *this;
 }
 
 template<> inline

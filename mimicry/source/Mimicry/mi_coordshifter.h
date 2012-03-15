@@ -34,4 +34,38 @@ protected:
     mCMaxRisenCoordShifter( void );
 };
 
+class mCMaxToObjCoordShifter :
+    public mCCoordShifter
+{
+public:
+    static mCMaxToObjCoordShifter const & GetInstance( void );
+public:
+    virtual mCFace &    ShiftFaceCoords( mCFace & a_faceDest ) const;
+    virtual mCMaxFace & ShiftFaceCoords( mCMaxFace & a_faceDest ) const;
+    virtual mCMatrix4 & ShiftMatrixCoords( mCMatrix4 & a_matDest ) const;
+    virtual mCVec3 &    ShiftVectorCoords( mCVec3 & a_vecDest ) const;
+    virtual mCVec3 &    ShiftTexCoords( mCVec3 & a_vecDest ) const;
+protected:
+    virtual ~mCMaxToObjCoordShifter( void );
+protected:
+    mCMaxToObjCoordShifter( void );
+};
+
+class mCObjToMaxCoordShifter :
+    public mCCoordShifter
+{
+public:
+    static mCObjToMaxCoordShifter const & GetInstance( void );
+public:
+    virtual mCFace &    ShiftFaceCoords( mCFace & a_faceDest ) const;
+    virtual mCMaxFace & ShiftFaceCoords( mCMaxFace & a_faceDest ) const;
+    virtual mCMatrix4 & ShiftMatrixCoords( mCMatrix4 & a_matDest ) const;
+    virtual mCVec3 &    ShiftVectorCoords( mCVec3 & a_vecDest ) const;
+    virtual mCVec3 &    ShiftTexCoords( mCVec3 & a_vecDest ) const;
+protected:
+    virtual ~mCObjToMaxCoordShifter( void );
+protected:
+    mCObjToMaxCoordShifter( void );
+};
+
 #endif
