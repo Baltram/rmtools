@@ -9,6 +9,7 @@
 #include "mi_maxreader.h"
 #include "mi_asereader.h"
 #include "mi_asewriter.h"
+#include "mi_objreader.h"
 #include "mi_objwriter.h"
 #include "mi_xactreader.h"
 #include "mi_xactwriter.h"
