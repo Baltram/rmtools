@@ -56,8 +56,12 @@ mEResult mCObjWriter::WriteObjFileData( mCScene const & a_sceneSource, mCIOStrea
                 WriteMaterial( pMultiMat->GetSubMaterials()[ v ], streamMtl );
         }
         streamMtl.Close();
+        streamDest << "mtllib " << g_GetFileName( a_Options.m_strMtlFilePath ) << EndLine() << EndLine();
     }
 
+    MIUInt uVertCountTotal = 1;
+    MIUInt uTVertCountTotal = 1;
+    MIUInt uVNormalCountTotal = 1;
     for ( MIUInt u = 0, ue = a_sceneSource.GetNumNodes(); u != ue; ++u )
     {
         mCNode const & nodeSource = *a_sceneSource.GetNodeAt( u );
@@ -132,18 +136,22 @@ mEResult mCObjWriter::WriteObjFileData( mCScene const & a_sceneSource, mCIOStrea
             streamDest << "f";
             for ( MIUInt v = 0; v != 3; ++v )
             {
-                streamDest << " " << ( ( *pFace )[ v ] + 1 );
+                streamDest << " " << ( ( *pFace )[ v ] + uVertCountTotal );
                 if ( bHasVNormals || bHasTVerts )
                     streamDest << "/";
                 if ( bHasTVerts )
-                    streamDest << ( ( *pTVFace )[ v ] + 1 );
+                    streamDest << ( ( *pTVFace )[ v ] + uTVertCountTotal );
                 if ( bHasVNormals )
-                    streamDest << "/" << ( ( *pVNFace )[ v ] + 1 );
+                    streamDest << "/" << ( ( *pVNFace )[ v ] + uVNormalCountTotal );
             }
             streamDest << EndLine();
             ++pFace; ++pTVFace; ++pVNFace;
         }
         streamDest << EndLine();
+
+        uVertCountTotal += meshSource.GetNumVerts();
+        uTVertCountTotal += meshSource.GetNumTVerts();
+        uVNormalCountTotal += meshSource.GetNumVNormals();
     }
 
     a_streamDest << streamDest;
