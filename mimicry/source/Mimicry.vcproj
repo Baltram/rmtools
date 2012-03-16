@@ -591,6 +591,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Mimicry\mi_objreader.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Mimicry\mi_objreader.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Mimicry\mi_objwriter.cpp"
 				>
 			</File>
