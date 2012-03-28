@@ -59,7 +59,7 @@ namespace
 mEResult mCObjReader::ReadObjFileData( mCScene & a_sceneDest, mCIOStreamBinary & a_streamSource, MILPCChar a_pcFolderPath )
 {
     a_sceneDest.Clear();
-    mCMultiMaterial matMultiDest = a_sceneDest.AddNewMultiMaterial();
+    mCMultiMaterial & matMultiDest = a_sceneDest.AddNewMultiMaterial();
     matMultiDest.SetName( "mtl_default" );
 
     mCStringStream streamSource;
@@ -218,6 +218,7 @@ mEResult mCObjReader::ReadObjFileData( mCScene & a_sceneDest, mCIOStreamBinary &
     }
     if ( matMultiDest.GetSubMaterials().GetCount() == 0 )
         matMultiDest.AccessSubMaterials().AddNew().SetName( "mtl_sub_default" );
+    for ( MIUInt u = a_sceneDest.GetNumNodes(); u--; a_sceneDest.AccessNodeAt( u )->AccessMaterialName() = matMultiDest.GetName() );
 
     return mEResult_Ok;
 }
