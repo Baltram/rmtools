@@ -24,10 +24,12 @@ public:
     virtual mEResult Write( MILPCVoid a_pSource, MIUInt a_uSize );
     virtual mEResult Write( mCString const & a_strSource );
 public:
-    void     Clear( void );
-    mEResult FromFile( mCString a_strFileName );
-    mEResult ToFile( mCString a_strFileName );
-    void     Swap( mTMemoryStreamBase< M > & a_Other );
+    MILPVoid  AccessBuffer( void );
+    void      Clear( void );
+    mEResult  FromFile( mCString a_strFileName );
+    MILPCVoid GetBuffer( void ) const;
+    mEResult  ToFile( mCString a_strFileName );
+    void      Swap( mTMemoryStreamBase< M > & a_Other );
 private:
     virtual mEResult ReadFormatted( MILPVoid a_pDest, MILPCChar a_Format ) = 0;
     virtual mEResult WriteFormatted( MILPCVoid a_pSource, MILPCChar a_Format ) = 0;

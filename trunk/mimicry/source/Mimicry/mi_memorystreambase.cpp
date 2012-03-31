@@ -131,6 +131,12 @@ mEResult mTMemoryStreamBase< M >::Write( mCString const & a_strSource )
 }
 
 template< mEStreamType M >
+MILPVoid mTMemoryStreamBase< M >::AccessBuffer( void )
+{
+    return m_arrBuffer.AccessBuffer();
+}
+
+template< mEStreamType M >
 void mTMemoryStreamBase< M >::Clear( void )
 {
     m_arrBuffer.Clear();
@@ -160,6 +166,12 @@ mEResult mTMemoryStreamBase< M >::FromFile( mCString a_strFileName )
     fclose( pSourceFile );
     Seek( 0 );
     return mEResult_Ok;
+}
+
+template< mEStreamType M >
+MILPCVoid mTMemoryStreamBase< M >::GetBuffer( void ) const
+{
+    return m_arrBuffer.GetBuffer();
 }
 
 template< mEStreamType M >
