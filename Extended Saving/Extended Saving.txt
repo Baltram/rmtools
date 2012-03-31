@@ -1,8 +1,9 @@
 ------
-Extended Saving v0.3 by Baltram <baltram-lielb@web.de> (February 9th 2012)
+Extended Saving v0.4 by Baltram <baltram-lielb@web.de> (March 31th 2012)
 ------
 
-Extended Saving is a collection of macro scripts and callbacks in the MAXScript language that extend GMax's file saving process.
+Extended Saving is a collection of macro scripts and callbacks in the MAXScript language that extend GMax's file 
+saving process and allow the import of .3db files.
 
 Installation:
   Open the file "installExtendedSaving.gmax" with GMax.
@@ -12,3 +13,4 @@ Usage:
   ...enable/disable Extended Saving for the current .gmax file.
   ...enable/disable Extended Saving by default (this is applied every time you create a new scene or do a reset).
   ...enable Extended Saving for once and trigger a file save.
+  ...import a .3db file.

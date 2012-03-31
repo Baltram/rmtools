@@ -1,7 +1,7 @@
 fn installExtendedSaving =
 (
 	local cName = "Extended Saving"
-	local esVersion = 1
+	local esVersion = 2
 	
 	while ( menuMan.findMenu cName ) != undefined do
 	(
@@ -20,15 +20,17 @@ fn installExtendedSaving =
 	try
 	(
 		global createExtraInfoString
+		global import3dbString
 		global invokeOnceString
-		global showAbouString
+		global showAboutString
 		global startupString
 		global toggleString
 		global toggleDefaultString
 		global uninstallString
 		execute createExtraInfoString
+		execute import3dbString
 		execute invokeOnceString
-		execute showAbouString
+		execute showAboutString
 		execute startupString
 		execute toggleString
 		execute toggleDefaultString
@@ -44,6 +46,8 @@ fn installExtendedSaving =
 	local separatorItem1 = menuMan.createSeparatorItem()
 	local invokeOnceItem = menuMan.createActionItem "invokeOnce" cName
 	local separatorItem2 = menuMan.createSeparatorItem()
+	local import3dbIten = menuMan.createActionItem "import3db" cName
+	local separatorItem3 = menuMan.createSeparatorItem()
 	local uninstallItem = menuMan.createActionItem "uninstall" cName
 	local showAboutItem = menuMan.createActionItem "showAbout" cName
 	local startupItem = menuMan.createActionItem "startup" cName
@@ -51,11 +55,13 @@ fn installExtendedSaving =
 	toggleItem.setUseCustomTitle true
 	toggleDefaultItem.setUseCustomTitle true
 	invokeOnceItem.setUseCustomTitle true
+	import3dbIten.setUseCustomTitle true
 	uninstallItem.setUseCustomTitle true
 	showAboutItem.setUseCustomTitle true
 	startupItem.setUseCustomTitle true
 	
 	invokeOnceItem.setTitle "Invoke Once"
+	import3dbIten.setTitle "Import 3db file..."
 	uninstallItem.setTitle "Uninstall"
 	showAboutItem.setTitle "About"
 	startupItem.setTitle ""
@@ -65,6 +71,8 @@ fn installExtendedSaving =
 	esMenu.addItem separatorItem1 -1
 	esMenu.addItem invokeOnceItem -1
 	esMenu.addItem separatorItem2 -1
+	esMenu.addItem import3dbIten -1
+	esMenu.addItem separatorItem3 -1
 	esMenu.addItem uninstallItem -1
 	esMenu.addItem showAboutItem -1
 	esMenu.addItem startupItem -1
