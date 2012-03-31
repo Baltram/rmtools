@@ -6,6 +6,7 @@
 
 #include "mi_converters.h"
 #include "mi_coordshifter.h"
+#include "mi_3dbreader.h"
 #include "mi_3dbwriter.h"
 #include "mi_maxreader.h"
 #include "mi_asereader.h"

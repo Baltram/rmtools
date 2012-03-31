@@ -13,6 +13,7 @@ public:
     mCNode & operator = ( mCNode const & a_nodeSource );
 public:
     mCString &        AccessMaterialName( void );
+    mCMesh *          AccessMesh( void );
     mCString &        AccessName( void );
     mCVec3 &          AccessPosition( void );
     mCMatrix4 &       AccessTransform( void );

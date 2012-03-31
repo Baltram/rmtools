@@ -551,6 +551,14 @@
 			Name="converters"
 			>
 			<File
+				RelativePath=".\Mimicry\mi_3dbreader.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Mimicry\mi_3dbreader.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Mimicry\mi_3dbwriter.cpp"
 				>
 			</File>
