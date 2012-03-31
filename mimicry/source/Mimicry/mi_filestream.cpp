@@ -99,6 +99,10 @@ mEResult mCFileStream::Read( mCString & a_strDest )
         Read( strTemp );
         a_strDest.Append( strTemp );
     }
+    else
+    {
+        m_uOffset += 1;
+    }
     return mEResult_Ok;
 }
 
