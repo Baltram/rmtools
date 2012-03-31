@@ -52,6 +52,11 @@ mCString & mCNode::AccessMaterialName( void )
     return m_strMaterialName;
 }
 
+mCMesh * mCNode::AccessMesh( void )
+{
+    return m_pMesh;
+}
+
 mCString & mCNode::AccessName( void )
 {
     return m_strName;
