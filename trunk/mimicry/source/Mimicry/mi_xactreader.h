@@ -13,7 +13,7 @@ public:
         mCString m_strTextureFileExtension;
     };
 public:
-    static mEResult ReadXactFileData( mCScene & a_sceneDest, mCIOStreamBinary & a_streamSource, SOptions a_Options ); 
+    static mEResult ReadXactFileData( mCScene & a_sceneDest, mCIOStreamBinary & a_streamSource, SOptions a_Options = SOptions() ); 
 };
 
 #endif

@@ -1,6 +1,7 @@
 #include "mi_include_converters.h"
 
-mCXactReader::SOptions::SOptions( void )
+mCXactReader::SOptions::SOptions( void ) :
+    m_strTextureFileExtension( "jpg" )
 {
 }
 
@@ -188,7 +189,7 @@ mEResult mCXactReader::ReadXactFileData( mCScene & a_sceneDest, mCIOStreamBinary
             a_streamSource.Skip( 27 );
             a_streamSource.Read( strPath, a_streamSource.ReadU32() );
             mCMaterial & matDest = matMultiDest.AccessSubMaterials().Back();
-            mCTexMap tmapDest( "", strPath + a_Options.m_strTextureFileExtension );
+            mCTexMap tmapDest( "", strPath + "." + a_Options.m_strTextureFileExtension );
             if ( u8Type == ETexMapType_Diffuse )
                 matDest.SetTextureMapAt( mCMaterial::EMapType_Diffuse, &tmapDest );
             else if ( u8Type == ETexMapType_Normal )
