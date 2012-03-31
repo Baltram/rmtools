@@ -85,21 +85,21 @@ mEResult mCSkin::InitSwapping( MIUInt a_uVertCount,
                        mTArray< MIFloat > & a_arrWeights )
 {
     MIUInt const uBoneCount = a_arrBoneIDs.GetCount();
-    if ( ( a_arrVertexIndices.GetCount() != a_arrBoneIndices.GetCount() ) || 
-         ( a_arrBoneIndices.GetCount() != a_arrWeights.GetCount() ) || 
-         ( a_arrWeights.GetCount() != a_arrVertexIndices.GetCount() ) )
+    MIUInt const uWeightCount = a_arrWeights.GetCount();
+    if ( ( a_arrVertexIndices.GetCount() != uWeightCount ) || 
+         ( a_arrBoneIndices.GetCount() != uWeightCount ) )
     {
         MI_ERROR( mCSkinError, EInvalidInitArguments, "Array sizes differ." );
         return mEResult_False;
     }
-    for ( MIUInt u = a_arrBoneIndices.GetCount(); u--; )
+    for ( MIUInt u = uWeightCount; u--; )
         if ( a_arrBoneIndices[ u ] >= uBoneCount )
         {
             MI_ERROR( mCSkinError, EInvalidInitArguments, "Bone ID array size exceeded." );
             return mEResult_False;
         }
     MIUInt uLastVertexIndex = a_uVertCount - 1;
-    for ( MIUInt u = a_arrVertexIndices.GetCount(); u--; )
+    for ( MIUInt u = uWeightCount; u--; )
     {
         if ( a_arrVertexIndices[ u ] > uLastVertexIndex )
         {
@@ -114,9 +114,11 @@ mEResult mCSkin::InitSwapping( MIUInt a_uVertCount,
     m_arrWeights.Swap( a_arrWeights );
     m_arrFirstWeightIndexPerVertex.Resize( a_uVertCount );
     MIUInt uNextVertexIndex = 0;
-    for ( MIUInt u = 0, ue = m_arrVertexIndices.GetCount(); u != ue; ++u )
-        if ( m_arrVertexIndices[ u ] == uNextVertexIndex )
+    for ( MIUInt u = 0, ue = uWeightCount; u != ue; ++u )
+        while ( m_arrVertexIndices[ u ] >= uNextVertexIndex )
             m_arrFirstWeightIndexPerVertex[ uNextVertexIndex++ ] = u;
+    while ( uNextVertexIndex != a_uVertCount )
+        m_arrFirstWeightIndexPerVertex[ uNextVertexIndex++ ] = uWeightCount;
     return mEResult_Ok;
 }
 

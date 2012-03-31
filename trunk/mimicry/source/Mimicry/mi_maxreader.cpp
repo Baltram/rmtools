@@ -206,7 +206,7 @@ namespace
         for ( MIUInt u = uWeightCount; u--; arrVertexIndices[ u ] = arrVariantVertexIndices[ u ].GetData< MIInt >() - 1 );
         for ( MIUInt u = uWeightCount; u--; arrBoneIndices[ u ] = arrVariantBoneIndices[ u ].GetData< MIInt >() - 1 );
         for ( MIUInt u = uWeightCount; u--; arrWeights[ u ] = arrVariantWeights[ u ].GetData< MIFloat >() );
-        uVertCount = arrVertexIndices[ uWeightCount - 1 ] + 1;
+        uVertCount = a_sceneDest.AccessNodeAt( iNode - 1 )->GetMesh()->GetNumVerts();
 
         mCSkin skinDest;
         skinDest.InitSwapping( uVertCount, arrBoneIDs, arrVertexIndices, arrBoneIndices, arrWeights );
