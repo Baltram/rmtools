@@ -1,7 +1,3 @@
-#include "mi_include_unity.h"
-
-#ifdef MI_IN_UNITY_FILE
-
 #include "mi_include_core.h"
 #include "mi_include_standard.h"
 
@@ -24,5 +20,3 @@ MISize    ( MI_CDECL * const g_funcStrlen )( MILPCChar )                     = &
 MIInt     ( MI_CDECL * const g_funcStrncmp )( MILPCChar, MILPCChar, MISize ) = &strncmp;
 
 MI_CRT_NO_WARNINGS( MILPChar  ( MI_CDECL * const g_funcStrcpy )( MILPChar, MILPCChar ) = &strcpy; )
-
-#endif

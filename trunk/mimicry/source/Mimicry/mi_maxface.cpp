@@ -1,7 +1,3 @@
-#include "mi_include_unity.h"
-
-#ifdef MI_IN_UNITY_FILE
-
 #include "mi_include_3d.h"
 
 mCMaxFace::mCMaxFace( MIUInt a_uA, MIUInt a_uB, MIUInt a_uC, MIUInt a_uMatID, MIU32 a_u32SGs ) :
@@ -79,6 +75,3 @@ void mCMaxFace::Swap( mCMaxFace & a_faceOther )
     g_swap( m_uMatID, a_faceOther.m_uMatID );
     g_swap( m_u32SGs, a_faceOther.m_u32SGs );
 }
-
-
-#endif

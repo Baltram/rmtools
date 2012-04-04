@@ -1,7 +1,3 @@
-#include "mi_include_unity.h"
-
-#ifdef MI_IN_UNITY_FILE
-
 #include "mi_include_3d.h"
 #include "mi_include_standard.h"
 
@@ -175,5 +171,3 @@ mCIOStreamBinary & operator >> ( mCQuaternion const & a_quatSource, mCIOStreamBi
 {
     return ( a_streamDest << a_quatSource );
 }
-
-#endif

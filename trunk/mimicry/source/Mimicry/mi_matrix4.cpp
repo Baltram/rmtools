@@ -1,7 +1,3 @@
-#include "mi_include_unity.h"
-
-#ifdef MI_IN_UNITY_FILE
-
 #include "mi_include_standard.h"
 #include "mi_include_3d.h"
 
@@ -198,5 +194,3 @@ void mCMatrix4::Swap( mCMatrix4 & a_matOther )
     if ( this != &a_matOther )
         g_memswap( *this, a_matOther );
 }
-
-#endif

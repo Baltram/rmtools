@@ -1,7 +1,3 @@
-#include "mi_include_unity.h"
-
-#ifdef MI_IN_UNITY_FILE
-
 #include "mi_include_scene.h"
 
 mCMaterial::~mCMaterial( void )
@@ -75,5 +71,3 @@ void mCMaterial::Swap( mCMaterial & a_mtlOther )
     for ( MIUInt u = EMapType_Count; u--; )
         m_arrMaps[ u ].Swap( a_mtlOther.m_arrMaps[ u ] );
 }
-
-#endif

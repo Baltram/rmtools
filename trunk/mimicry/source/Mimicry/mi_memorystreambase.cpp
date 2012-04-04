@@ -1,7 +1,3 @@
-#include "mi_include_unity.h"
-
-#ifdef MI_IN_UNITY_FILE
-
 #include "mi_include_standard.h"
 #include "mi_include_streams.h"
 
@@ -209,5 +205,3 @@ void mTMemoryStreamBase< M >::Swap( mTMemoryStreamBase< M > & a_Other )
 
 template class mTMemoryStreamBase< mEStreamType_Binary >;
 template class mTMemoryStreamBase< mEStreamType_Formatted >;
-
-#endif

@@ -1,7 +1,3 @@
-#include "mi_include_unity.h"
-
-#ifdef MI_IN_UNITY_FILE
-
 #include "mi_include_scene.h"
 
 mCScene::mCScene( mCScene const & a_sceneSource ) :
@@ -218,5 +214,3 @@ void mCScene::Swap( mCScene & a_sceneOther )
     m_arrMaterials.Swap( a_sceneOther.m_arrMaterials );
     m_arrNodes.Swap( a_sceneOther.m_arrNodes );
 }
-
-#endif

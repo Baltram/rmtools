@@ -1,7 +1,3 @@
-#include "mi_include_unity.h"
-
-#ifdef MI_IN_UNITY_FILE
-
 #include "mi_include_scene.h"
 
 mCMultiMaterial::~mCMultiMaterial( void )
@@ -70,6 +66,3 @@ void mCMultiMaterial::Swap( mCMultiMaterial & a_mtlOther )
     mCMaterialBase::Swap( a_mtlOther );
     m_arrSubMaterials.Swap( a_mtlOther.m_arrSubMaterials );
 }
-
-
-#endif

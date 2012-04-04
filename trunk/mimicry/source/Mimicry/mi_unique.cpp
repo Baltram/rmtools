@@ -1,7 +1,3 @@
-#include "mi_include_unity.h"
-
-#ifdef MI_IN_UNITY_FILE
-
 #include "mi_include_core.h"
 
 mCUnique::mCUnique( void )
@@ -27,5 +23,3 @@ mCUnique & mCUnique::operator = ( mCUnique const & )
 {
     return *this;
 }
-
-#endif

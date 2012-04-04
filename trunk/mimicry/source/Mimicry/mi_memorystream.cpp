@@ -1,7 +1,3 @@
-#include "mi_include_unity.h"
-
-#ifdef MI_IN_UNITY_FILE
-
 #include "mi_include_standard.h"
 #include "mi_include_streams.h"
 
@@ -54,5 +50,3 @@ mEResult mCMemoryStream::WriteFormatted( MILPCVoid, MILPCChar )  // Not used.
 {
     return mEResult_Ok;
 }
-
-#endif

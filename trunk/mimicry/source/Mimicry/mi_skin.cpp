@@ -1,7 +1,3 @@
-#include "mi_include_unity.h"
-
-#ifdef MI_IN_UNITY_FILE
-
 #include "mi_include_scene.h"
 
 mCSkin::mCSkin( mCSkin const & a_skinSource ) :
@@ -132,5 +128,3 @@ void mCSkin::Swap( mCSkin & a_skinOther )
     m_arrWeights.Swap( a_skinOther.m_arrWeights );
     m_arrFirstWeightIndexPerVertex.Swap( a_skinOther.m_arrFirstWeightIndexPerVertex );
 }
-
-#endif

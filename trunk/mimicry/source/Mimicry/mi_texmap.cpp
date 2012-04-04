@@ -1,7 +1,3 @@
-#include "mi_include_unity.h"
-
-#ifdef MI_IN_UNITY_FILE
-
 #include "mi_include_scene.h"
 
 mCTexMap::mCTexMap( mCString const & a_strName, mCString const & a_strTextureFilePath ) :
@@ -60,5 +56,3 @@ void mCTexMap::Swap( mCTexMap & a_tmapOther )
     g_swap( m_strName, a_tmapOther.m_strName );
     g_swap( m_strTextureFilePath, a_tmapOther.m_strTextureFilePath );
 }
-
-#endif

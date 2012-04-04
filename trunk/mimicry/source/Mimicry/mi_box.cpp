@@ -1,7 +1,3 @@
-#include "mi_include_unity.h"
-
-#ifdef MI_IN_UNITY_FILE
-
 #include "mi_include_3d.h"
 
 mCBox::mCBox( mCVec3 a_vecMin, mCVec3 a_vecMax ) :
@@ -240,5 +236,3 @@ void mCBox::SetTo( mCVec3 const & a_vecMin, mCVec3 const & a_vecMax )
 
 mCVec3 const mCBox::s_vecPosInfinity( g_fPosInfinity, g_fPosInfinity, g_fPosInfinity );
 mCVec3 const mCBox::s_vecNegInfinity( g_fNegInfinity, g_fNegInfinity, g_fNegInfinity );
-
-#endif

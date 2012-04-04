@@ -1,7 +1,3 @@
-#include "mi_include_unity.h"
-
-#ifdef MI_IN_UNITY_FILE
-
 #include "mi_include_3d.h"
 
 mCColor::mCColor( MIU8 a_u8Red, MIU8 a_u8Green, MIU8 a_u8Blue, MIU8 a_u8Alpha ) :
@@ -105,5 +101,3 @@ void mCColor::Swap( mCColor & a_colOther )
     g_swap( m_u8Blue, a_colOther.m_u8Blue );
     g_swap( m_u8Alpha, a_colOther.m_u8Alpha );
 }
-
-#endif
