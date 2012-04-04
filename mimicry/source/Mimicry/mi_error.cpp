@@ -1,7 +1,3 @@
-#include "mi_include_unity.h"
-
-#ifdef MI_IN_UNITY_FILE
-
 #include "mi_include_core.h"
 
 mCError * mCError::s_pLastError = 0;
@@ -75,5 +71,3 @@ void mCError::Init( MIInt a_iErrorCode, MILPCChar a_pcText, MILPCChar a_pcFile, 
     m_uLine = a_uLine;
     m_pPrevious = a_pPrevious;
 }
-
-#endif

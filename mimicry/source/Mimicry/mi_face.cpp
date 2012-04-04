@@ -1,7 +1,3 @@
-#include "mi_include_unity.h"
-
-#ifdef MI_IN_UNITY_FILE
-
 #include "mi_include_3d.h"
 
 mCFace::mCFace( MIUInt a_uA, MIUInt a_uB, MIUInt a_uC ) :
@@ -143,5 +139,3 @@ mCIOStreamBinary & operator >> ( mCFace const & a_faceSource, mCIOStreamBinary &
 {
     return ( a_streamDest << a_faceSource );
 }
-
-#endif

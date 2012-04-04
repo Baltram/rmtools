@@ -1,7 +1,3 @@
-#include "mi_include_unity.h"
-
-#ifdef MI_IN_UNITY_FILE
-
 #include "mi_include_scene.h"
 
 mCNode::mCNode( mCString const & a_strName, mCMatrix4 const & a_matTransform, mCString const & a_strMaterialName, mCMesh const * a_pMesh, mCSkin const * a_pSkin ) :
@@ -163,5 +159,3 @@ mCUnique::ID const & mCNode::GetParentID( void ) const
 {
     return m_idParent;
 }
-
-#endif

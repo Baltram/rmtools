@@ -1,7 +1,3 @@
-#include "mi_include_unity.h"
-
-#ifdef MI_IN_UNITY_FILE
-
 #include "mi_include_standard.h"
 #include "mi_include_streams.h"
 
@@ -232,5 +228,3 @@ mEResult mCStringStream::WriteFormatted( MILPCVoid a_pSource, MILPCChar a_Format
     Write( s_pcBuffer, uSize );
     return mEResult_Ok;
 }
-
-#endif

@@ -16,10 +16,6 @@
 #define MI_ASSERT_32_BIT { ONLY_32_BIT_COMPATIBLE }
 #endif
 
-#ifndef MI_UNITY
-    #define MI_IN_UNITY_FILE
-#endif
-
 #ifdef _MSC_VER
 #define MI_CONSTANT_CONDITIONAL_EXPRESSION_NO_WARNINGS_BEGIN \
     __pragma( warning( push ) )                              \

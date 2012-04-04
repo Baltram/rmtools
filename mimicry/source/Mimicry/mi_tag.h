@@ -23,7 +23,6 @@ struct mSTypeTagHelper< const x > \
 };
 
 MI_TAG_AS_SCALAR( MIChar )
-MI_TAG_AS_SCALAR( MIUnicodeChar )
 MI_TAG_AS_SCALAR( MIFloat )
 MI_TAG_AS_SCALAR( MIDouble )
 MI_TAG_AS_SCALAR( MIBool )

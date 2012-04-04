@@ -1,7 +1,3 @@
-#include "mi_include_unity.h"
-
-#ifdef MI_IN_UNITY_FILE
-
 #include "mi_include_scene.h"
 
 mCMaterialBase::~mCMaterialBase( void )
@@ -48,5 +44,3 @@ void mCMaterialBase::Swap( mCMaterialBase & a_mtlOther )
         return;
     m_strName.Swap( a_mtlOther.m_strName );
 }
-
-#endif

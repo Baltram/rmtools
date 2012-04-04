@@ -1,7 +1,3 @@
-#include "mi_include_unity.h"
-
-#ifdef MI_IN_UNITY_FILE
-
 #include "mi_include_standard.h"
 #include "mi_include_streams.h"
 #include "mi_include_3d.h"
@@ -258,5 +254,3 @@ mCIOStreamBinary & operator >> ( mCVec3 const & a_vecSource, mCIOStreamBinary & 
 {
     return ( a_streamDest << a_vecSource );
 }
-
-#endif

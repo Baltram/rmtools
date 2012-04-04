@@ -1,7 +1,3 @@
-#include "mi_include_unity.h"
-
-#ifdef MI_IN_UNITY_FILE
-
 #include "mi_include_scene.h"
 #include "mi_include_standard.h"
 
@@ -561,5 +557,3 @@ void mCMesh::CalcVNormals( MIBool const a_bUseAnglesNotSGs, MIFloat const a_fMin
     arrVertexNormals.UnReserve();
     m_arrVertexNormals.Swap( arrVertexNormals );
 }
-
-#endif

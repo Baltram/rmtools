@@ -1,7 +1,3 @@
-#include "mi_include_unity.h"
-
-#ifdef MI_IN_UNITY_FILE
-
 #include "mi_include_3d.h"
 #include "mi_include_standard.h"
 
@@ -596,5 +592,3 @@ void mCVertexMatcher::Shift( void )
     if ( s_u64Temp )
         s_pCurBlock[ s_uNext ] |= s_u64Temp;
 }
-
-#endif

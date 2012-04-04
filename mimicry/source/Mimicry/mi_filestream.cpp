@@ -1,7 +1,3 @@
-#include "mi_include_unity.h"
-
-#ifdef MI_IN_UNITY_FILE
-
 #include "mi_include_standard.h"
 #include "mi_include_streams.h"
 
@@ -350,5 +346,3 @@ void mCFileStream::Clear( void )
     m_uOffsetPending = 0;
     m_bPendingData = MIFalse;
 }
-
-#endif

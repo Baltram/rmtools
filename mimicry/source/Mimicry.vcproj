@@ -105,7 +105,6 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				PreprocessorDefinitions="MI_UNITY"
 				StringPooling="true"
 				ExceptionHandling="0"
 				RuntimeLibrary="0"
@@ -351,10 +350,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Mimicry\mi_include_unity.h"
-				>
-			</File>
-			<File
 				RelativePath=".\Mimicry\mi_include_variant.h"
 				>
 			</File>
@@ -524,26 +519,6 @@
 			</File>
 			<File
 				RelativePath=".\Mimicry\mi_texmap.h"
-				>
-			</File>
-		</Filter>
-		<Filter
-			Name="unity"
-			>
-			<File
-				RelativePath=".\Mimicry\mi_unity_3d.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Mimicry\mi_unity_core.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Mimicry\mi_unity_scene.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Mimicry\mi_unity_streams.cpp"
 				>
 			</File>
 		</Filter>

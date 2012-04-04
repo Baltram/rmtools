@@ -1,7 +1,3 @@
-#include "mi_include_unity.h"
-
-#ifdef MI_IN_UNITY_FILE
-
 #include "mi_include_standard.h"
 #include "mi_include_variant.h"
 #include "mi_include_3d.h"
@@ -339,5 +335,3 @@ mEResult mCMaxFileStream::ReadPersistentGlobalData( mCVariant & a_vDest )
         }
     }
 }
-
-#endif
