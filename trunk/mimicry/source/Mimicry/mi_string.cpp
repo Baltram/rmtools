@@ -321,7 +321,7 @@ mCString & mCString::Replace( MILPCChar a_pcText, MILPCChar a_pcNewText )
     }
 
     MILPCChar * ppcOccurrences = reinterpret_cast< MILPCChar * >( s_pcBuffer ) - 1;
-    while ( *( ++ppcOccurrences ) = NextOf( pcText, pcEndText, a_pcText, uStringLength ) )
+    while ( ( *( ++ppcOccurrences ) = NextOf( pcText, pcEndText, a_pcText, uStringLength ) ) != 0 )
         ++pcText;
     pcText = m_pcText;
     
