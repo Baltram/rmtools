@@ -61,7 +61,7 @@ mEResult mCXactReader::ReadXactFileData( mCScene & a_sceneDest, mCIOStreamBinary
     MIUInt const uEndFxaOffset = a_streamSource.ReadU32() + 78;
     if ( a_streamSource.ReadU32() != 0x20415846 )
     {
-        MI_ERROR( mCConverterError, EBadFormat, "Invalid source .xact file." );
+        MI_ERROR( mCConverterError, EBadFormat, "Invalid .xact file." );
         return mEResult_False;
     }
     MIUInt uNextSection = a_streamSource.Tell() + 2;

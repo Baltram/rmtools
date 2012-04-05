@@ -222,7 +222,7 @@ mEResult mCMaxReader::ReadInMaxFileData( mCScene & a_sceneDest, mCMaxFileStream 
     a_sceneDest.Clear();
     if ( a_streamSource.ReadPersistentGlobal( "_extendedSaveData", rootVariant ) != mEResult_Ok )
     {
-        MI_ERROR( mCConverterError, EBadFormat, "No valid max file with extended saving." );
+        MI_ERROR( mCConverterError, EBadFormat, "Invalid .gmax file. The file might have been saved without Extended Saving enabled." );
         return mEResult_False;
     }
     for ( ; ; )
@@ -270,6 +270,6 @@ mEResult mCMaxReader::ReadInMaxFileData( mCScene & a_sceneDest, mCMaxFileStream 
         a_sceneDest.SetName( g_GetFileName( a_streamSource.GetFileName() ) );
         return mEResult_Ok;
     }
-    MI_ERROR( mCConverterError, EBadFormat, "Unknown extended saving version." );
+    MI_ERROR( mCConverterError, EBadFormat, "Unknown Extended Saving version." );
     return mEResult_False;
 }
