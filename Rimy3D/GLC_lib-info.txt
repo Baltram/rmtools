@@ -1,0 +1,12 @@
+This project uses GLC_lib 2.2 by Laurent Ribon (http://www.glc-lib.net/) which is licensed under the GNU Lesser General Public License.
+
+How to set up GLC_lib for this project:
+- Download and install GLC_lib 2.2 (GLC_lib_2.2.0-setup.exe)
+- Compile GLC_lib\src\GLC_lib.pro in debug mode (Qt 4.7x is recommended)
+- Copy the resulting GLC_lib2.lib in GLC_lib\lib
+- Copy the resulting GLC_lib2.dll in all of your debug build directories for this project
+
+To get rid of some compiler warnings:
+- In GLC_lib\src\3rdparty\lib3ds\types.h, comment out the two __declspec expressions so that LIB3DSAPI is defined empty
+- In GLC_lib\src\3rdparty\glext\glext.h, insert the line "#undef GL_BLEND_EQUATION_RGB" just before line 370
+- In GLC_lib\src\maths\glc_geomtools.cpp, insert the line "intersect;" just before line 528
