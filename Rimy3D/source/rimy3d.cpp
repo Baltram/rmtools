@@ -1,8 +1,10 @@
+#include <QMessageBox>
 #include "rimy3d.h"
 
 Rimy3D::ELanguage Rimy3D::s_enuCurrentLanguage = ELanguage_English;
 Rimy3D * Rimy3D::s_pInstance = 0;
 QSettings * Rimy3D::s_pSettings = 0;
+QWidget * Rimy3D::s_pMainWindow = 0;
 QTranslator * Rimy3D::s_pCurrentQtTranslator = 0;
 QTranslator * Rimy3D::s_pCurrentAppTranslator = 0;
 QTranslator * Rimy3D::s_pGermanQtTranslator = 0;
@@ -67,6 +69,26 @@ void Rimy3D::setLanguage( ELanguage a_enuLanguage )
         installTranslator( s_pCurrentAppTranslator );
     }
     s_enuCurrentLanguage = a_enuLanguage;
+}
+
+void Rimy3D::setMainWindow( QWidget * a_pMainWindow )
+{
+    s_pMainWindow = a_pMainWindow;
+}
+
+void Rimy3D::showError( QString a_strText, QString a_strTitle )
+{
+    QMessageBox::critical( s_pMainWindow, a_strTitle, a_strText );
+}
+
+void Rimy3D::showMessage( QString a_strText, QString a_strTitle )
+{
+    QMessageBox::about( s_pMainWindow, a_strTitle, a_strText );
+}
+
+void Rimy3D::showWarning( QString a_strText, QString a_strTitle )
+{
+    QMessageBox::warning( s_pMainWindow, a_strTitle, a_strText );
 }
 
 Rimy3D::Rimy3D( int & argc, char * argv[] ) :
