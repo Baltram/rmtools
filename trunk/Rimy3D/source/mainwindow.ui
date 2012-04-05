@@ -37,10 +37,19 @@
     <property name="title">
      <string>File</string>
     </property>
+    <property name="separatorsCollapsible">
+     <bool>true</bool>
+    </property>
     <addaction name="actionOpen"/>
     <addaction name="actionClose"/>
     <addaction name="separator"/>
     <addaction name="actionSave_As"/>
+    <addaction name="separator"/>
+    <addaction name="actionRecent1"/>
+    <addaction name="actionRecent2"/>
+    <addaction name="actionRecent3"/>
+    <addaction name="actionRecent4"/>
+    <addaction name="actionRecent5"/>
     <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
@@ -106,6 +115,37 @@
    </property>
    <property name="text">
     <string>Deutsch</string>
+   </property>
+  </action>
+  <action name="actionRecent1">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string notr="true">Recent1</string>
+   </property>
+   <property name="visible">
+    <bool>true</bool>
+   </property>
+  </action>
+  <action name="actionRecent2">
+   <property name="text">
+    <string notr="true">Recent2</string>
+   </property>
+  </action>
+  <action name="actionRecent3">
+   <property name="text">
+    <string notr="true">Recent3</string>
+   </property>
+  </action>
+  <action name="actionRecent4">
+   <property name="text">
+    <string notr="true">Recent4</string>
+   </property>
+  </action>
+  <action name="actionRecent5">
+   <property name="text">
+    <string notr="true">Recent5</string>
    </property>
   </action>
  </widget>

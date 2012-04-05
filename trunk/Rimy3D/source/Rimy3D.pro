@@ -10,11 +10,13 @@ include("GLC_lib.pri")
 SOURCES += main.cpp \
            mainwindow.cpp \
            rimy3d.cpp \
-           glwidget.cpp
+           glwidget.cpp \
+           sceneinfo.cpp
 
 HEADERS += mainwindow.h \
            rimy3d.h \
-           glwidget.h
+           glwidget.h \
+           sceneinfo.h
 
 FORMS += mainwindow.ui
 
