@@ -158,7 +158,7 @@ mEResult mC3dbReader::Read3dbFileData( mCScene & a_sceneDest, mCIOStreamBinary &
 {
     if ( a_streamSource.ReadString() != "3db" )
     {
-        MI_ERROR( mCConverterError, EBadFormat, "Invalid source .3db file." );
+        MI_ERROR( mCConverterError, EBadFormat, "Invalid .3db file." );
         return mEResult_False;
     }
     MIFloat const f_Angle = a_streamSource.ReadFloat();

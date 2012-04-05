@@ -240,7 +240,7 @@ mEResult mCXactWriter::WriteXactFileData( mCScene const & a_sceneSource, mCIOStr
     MIUInt uEndFxaOffset = streamBaseXact.ReadU32() + 78;
     if ( streamBaseXact.ReadU32() != 0x20415846 )
     {
-        MI_ERROR( mCConverterError, EBadFormat, "Source .xact file is not valid." );
+        MI_ERROR( mCConverterError, EBadFormat, "Invalid source .xact file." );
         return mEResult_False;
     }
     MIUInt uNextSection = streamBaseXact.Tell() + 2;
@@ -313,7 +313,7 @@ mEResult mCXactWriter::WriteXactFileData( mCScene const & a_sceneSource, mCIOStr
     }
     if ( uMeshIndex == 666 )
     {
-        MI_ERROR( mCConverterError, EMiscellaneous, ( "Cannot find a same-named replacement for the xact mesh \"" + arrFxaNodeNames[ uFxaMeshIndex ] + "\"." ).GetText() );
+        MI_ERROR( mCConverterError, EMiscellaneous, "Cannot find same-named mesh in source .xact file." );
         return mEResult_False;
     }
     if ( a_Options.m_bReplaceOnlyVertices )
@@ -326,7 +326,7 @@ mEResult mCXactWriter::WriteXactFileData( mCScene const & a_sceneSource, mCIOStr
         MIUInt uChannelCount = streamBaseXact.ReadU32();
         if ( meshSource.GetNumVerts() != uVertCount )
         {
-            MI_ERROR( mCConverterError, EMiscellaneous, ( "Wrong vertex count: \"" + arrFxaNodeNames[ uFxaMeshIndex ] + "\"." ).GetText() );
+            MI_ERROR( mCConverterError, EMiscellaneous, "New mesh has wrong vertex count." );
             return mEResult_False;
         }
         a_streamDest << streamBaseXact;
@@ -355,7 +355,7 @@ mEResult mCXactWriter::WriteXactFileData( mCScene const & a_sceneSource, mCIOStr
     mCMaterialBase const * pMaterial = a_sceneSource.GetMaterialAt( a_sceneSource.GetMaterialIndexByName( a_sceneSource.GetNodeAt( uMeshIndex )->GetMaterialName() ) );
     if ( !pMaterial )
     {
-        MI_ERROR( mCConverterError, EMiscellaneous, ( "The mesh \"" + arrFxaNodeNames[ uFxaMeshIndex ] + "\" has no material." ).GetText() );
+        MI_ERROR( mCConverterError, EMiscellaneous, "New mesh has no material." );
         return mEResult_False;
     }
     if ( dynamic_cast< mCMaterial const * >( pMaterial ) )
@@ -375,7 +375,7 @@ mEResult mCXactWriter::WriteXactFileData( mCScene const & a_sceneSource, mCIOStr
     WriteMeshSection( a_sceneSource, uMeshIndex, uFxaMeshIndex, uMeshMaterialCount, u32DW1, u32DW2, streamMeshSection, streamMeshExtraData );
     if ( !WriteSkinSection( a_sceneSource, uMeshIndex, uFxaMeshIndex, arrFxaNodeNames, arrOriginalVerts, arrOriginalSkinSection, streamSkinSection ) )
     {
-        MI_ERROR( mCConverterError, EMiscellaneous, ( "Skinning of \"" + arrFxaNodeNames[ uFxaMeshIndex ] + "\" relies on a bone that doesn't exist in the .xact file." ).GetText() );
+        MI_ERROR( mCConverterError, EMiscellaneous, "Skinning includes bone not present in .xact file." );
         return mEResult_False;
     }
 

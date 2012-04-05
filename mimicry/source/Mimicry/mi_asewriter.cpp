@@ -284,7 +284,7 @@ namespace
         MIUInt uVertCount = skinSource.GetNumVerts();
         if ( uVertCount != nodeSource.GetMesh()->GetNumVerts() )
         {
-            MI_ERROR( mCConverterError, EMiscellaneous, ( "Not all vertices of the mesh \"" + nodeSource.GetName() + "\" are connected to bones." ).GetText() );
+            MI_ERROR( mCConverterError, EMiscellaneous, "Skinning does not cover all vertices." );
             return;
         }
         mTArray< mCString > arrBoneNames( mCString(), skinSource.GetNumBones() );
