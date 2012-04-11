@@ -91,53 +91,7 @@ mEResult mCObjReader::ReadObjFileData( mCScene & a_sceneDest, mCIOStreamBinary &
         strLine.TrimLeft( strToken.GetLength() );
         strLine.TrimLeft( " \t" );
         strLine.TrimRight( " \t" );
-        if ( ( strToken == "o" ) || ( streamSource.Tell() == uOffsetEnd ) )
-        {
-            mCMesh meshDest;
-            if ( arrVerts.GetCount() )
-            {
-                uVertCountTotal += arrVerts.GetCount();
-                meshDest.SetNumVerts( arrVerts.GetCount() );
-                g_memcpy( meshDest.AccessVerts(), arrVerts.AccessBuffer(), sizeof( mCVec3 ) * arrVerts.GetCount() );
-                arrVerts.Clear();
-                meshDest.SetNumFaces( arrFaces.GetCount() );
-                g_memcpy( meshDest.AccessFaces(), arrFaces.AccessBuffer(), sizeof( mCMaxFace ) * arrFaces.GetCount() );
-                arrFaces.Clear();
-
-                if ( arrTVFaces.GetCount() && arrTVerts.GetCount() )
-                {
-                    uTVertCountTotal += arrTVerts.GetCount();
-                    meshDest.SetNumTVerts( arrTVerts.GetCount() );
-                    g_memcpy( meshDest.AccessTVerts(), arrTVerts.AccessBuffer(), sizeof( mCVec3 ) * arrTVerts.GetCount() );
-                    arrTVerts.Clear();
-                    g_memcpy( meshDest.AccessTVFaces(), arrTVFaces.AccessBuffer(), sizeof( mCFace ) * arrTVFaces.GetCount() );
-                    arrTVFaces.Clear();
-                }
-
-                if ( arrVNFaces.GetCount() && arrVNormals.GetCount() )
-                {
-                    uVNormalCountTotal += arrVNormals.GetCount();
-                    meshDest.SetNumVNormals( arrVNormals.GetCount() );
-                    g_memcpy( meshDest.AccessVNormals(), arrVNormals.AccessBuffer(), sizeof( mCVec3 ) * arrVNormals.GetCount() );
-                    arrVNormals.Clear();
-                    g_memcpy( meshDest.AccessVNFaces(), arrVNFaces.AccessBuffer(), sizeof( mCFace ) * arrVNFaces.GetCount() );
-                    arrVNFaces.Clear();
-                }
-
-                mCObjToMaxCoordShifter::GetInstance().ShiftMeshCoords( meshDest );
-                pCurrentNode->SwapMesh( meshDest );
-            }
-            if ( strToken == "o" )
-            {
-                if ( pCurrentNode->HasMesh() || ( pCurrentNode->AccessName() != "obj_default" ) )
-                    pCurrentNode = &a_sceneDest.AddNewNode();
-                pCurrentNode->AccessName() = strLine;
-            }
-        }
-
-        if ( ( strToken == "" ) || ( strLine.GetLength() == 0 ) )
-            continue;
-        else if ( strToken == "f" )
+        if ( strToken == "f" )
         {
             mCMaxFace & faceDest = arrFaces.AddNew();
             faceDest.AccessMatID() = uCurrentMatID;
@@ -214,6 +168,49 @@ mEResult mCObjReader::ReadObjFileData( mCScene & a_sceneDest, mCIOStreamBinary &
             strMtlPath += "\\";
             strMtlPath += strLine;
             ReadMtlFile( a_sceneDest, strMtlPath );
+        }
+        if ( ( strToken == "o" ) || ( streamSource.Tell() == uOffsetEnd ) )
+        {
+            mCMesh meshDest;
+            if ( arrVerts.GetCount() )
+            {
+                uVertCountTotal += arrVerts.GetCount();
+                meshDest.SetNumVerts( arrVerts.GetCount() );
+                g_memcpy( meshDest.AccessVerts(), arrVerts.AccessBuffer(), sizeof( mCVec3 ) * arrVerts.GetCount() );
+                arrVerts.Clear();
+                meshDest.SetNumFaces( arrFaces.GetCount() );
+                g_memcpy( meshDest.AccessFaces(), arrFaces.AccessBuffer(), sizeof( mCMaxFace ) * arrFaces.GetCount() );
+                arrFaces.Clear();
+
+                if ( arrTVFaces.GetCount() && arrTVerts.GetCount() )
+                {
+                    uTVertCountTotal += arrTVerts.GetCount();
+                    meshDest.SetNumTVerts( arrTVerts.GetCount() );
+                    g_memcpy( meshDest.AccessTVerts(), arrTVerts.AccessBuffer(), sizeof( mCVec3 ) * arrTVerts.GetCount() );
+                    arrTVerts.Clear();
+                    g_memcpy( meshDest.AccessTVFaces(), arrTVFaces.AccessBuffer(), sizeof( mCFace ) * arrTVFaces.GetCount() );
+                    arrTVFaces.Clear();
+                }
+
+                if ( arrVNFaces.GetCount() && arrVNormals.GetCount() )
+                {
+                    uVNormalCountTotal += arrVNormals.GetCount();
+                    meshDest.SetNumVNormals( arrVNormals.GetCount() );
+                    g_memcpy( meshDest.AccessVNormals(), arrVNormals.AccessBuffer(), sizeof( mCVec3 ) * arrVNormals.GetCount() );
+                    arrVNormals.Clear();
+                    g_memcpy( meshDest.AccessVNFaces(), arrVNFaces.AccessBuffer(), sizeof( mCFace ) * arrVNFaces.GetCount() );
+                    arrVNFaces.Clear();
+                }
+
+                mCObjToMaxCoordShifter::GetInstance().ShiftMeshCoords( meshDest );
+                pCurrentNode->SwapMesh( meshDest );
+            }
+            if ( strToken == "o" )
+            {
+                if ( pCurrentNode->HasMesh() || ( pCurrentNode->AccessName() != "obj_default" ) )
+                    pCurrentNode = &a_sceneDest.AddNewNode();
+                pCurrentNode->AccessName() = strLine;
+            }
         }
     }
     if ( matMultiDest.GetSubMaterials().GetCount() == 0 )
