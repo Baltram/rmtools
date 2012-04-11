@@ -111,8 +111,6 @@ namespace
             uVertsPassedTotal += uVertsPassed;
             pUVFaces += uFacesPassed;
             uFacesPassedTotal += uFacesPassed;
-            if ( uFacesPassedTotal == uFaceCount )
-                break;
         }
         
         a_streamDest.Seek( 4 );
