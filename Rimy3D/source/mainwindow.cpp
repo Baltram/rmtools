@@ -8,6 +8,7 @@ MainWindow::MainWindow(QWidget * a_pParent) :
 {
     m_pUi->setupUi( this );
     updateLanguage();
+    connect( &m_SceneInfo, SIGNAL( sceneChanged( void ) ), this, SLOT( onSceneChanged( void ) ) );
     connect( Rimy3D::getInstance(), SIGNAL( onSaveSettings( QSettings & ) ), this, SLOT( saveSettings( QSettings & ) ) );
     connect( Rimy3D::getInstance(), SIGNAL( onLoadSettings( QSettings & ) ), this, SLOT( loadSettings( QSettings & ) ) );
     Rimy3D::setMainWindow( this );
@@ -67,7 +68,6 @@ void MainWindow::open( QString a_strFileName )
     if ( m_SceneInfo.openSceneFile( a_strFileName ) )
         m_RecentFiles.enqueue( a_strFileName );
     updateRecentFiles();
-    m_pUi->widget->setWorld( m_SceneInfo.buildGlcWorld() );
 }
 
 void MainWindow::updateLanguage( void )
@@ -101,8 +101,13 @@ void MainWindow::updateRecentFiles( void )
     }
 }
 
-void MainWindow::on_actionAbout_triggered()
+void MainWindow::on_actionAbout_triggered( void )
 {
+}
+
+void MainWindow::on_actionClose_triggered( void )
+{
+    m_SceneInfo.clearScene();
 }
 
 void MainWindow::on_actionEnglish_triggered( void )
@@ -110,12 +115,17 @@ void MainWindow::on_actionEnglish_triggered( void )
     Rimy3D::setLanguage( Rimy3D::ELanguage_English );
 }
 
+void MainWindow::on_actionExit_triggered( void )
+{
+    close();
+}
+
 void MainWindow::on_actionGerman_triggered( void )
 {
     Rimy3D::setLanguage( Rimy3D::ELanguage_German );
 }
 
-void MainWindow::on_actionOpen_triggered()
+void MainWindow::on_actionOpen_triggered( void )
 {
     QString strFilter = tr( "All known types" ).append( " (*.obj *.3db *.gmax *.ase *.asc *.xact);;"
                                                         "Wavefront OBJ format (*.obj);;"
@@ -127,27 +137,32 @@ void MainWindow::on_actionOpen_triggered()
     open( QFileDialog::getOpenFileName( this, tr( "Open" ), m_SceneInfo.getCurrentDir(), strFilter ) );
 }
 
-void MainWindow::on_actionRecent1_triggered()
+void MainWindow::on_actionRecent1_triggered( void )
 {
     open( m_pUi->actionRecent1->text() );
 }
 
-void MainWindow::on_actionRecent2_triggered()
+void MainWindow::on_actionRecent2_triggered( void )
 {
     open( m_pUi->actionRecent2->text() );
 }
 
-void MainWindow::on_actionRecent3_triggered()
+void MainWindow::on_actionRecent3_triggered( void )
 {
     open( m_pUi->actionRecent3->text() );
 }
 
-void MainWindow::on_actionRecent4_triggered()
+void MainWindow::on_actionRecent4_triggered( void )
 {
     open( m_pUi->actionRecent4->text() );
 }
 
-void MainWindow::on_actionRecent5_triggered()
+void MainWindow::on_actionRecent5_triggered( void )
 {
     open( m_pUi->actionRecent5->text() );
+}
+
+void MainWindow::onSceneChanged( void )
+{
+    m_pUi->widget->setWorld( m_SceneInfo.buildGlcWorld() );
 }
