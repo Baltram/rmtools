@@ -7,11 +7,11 @@ MainWindow::MainWindow(QWidget * a_pParent) :
     m_pUi( new Ui::MainWindow )
 {
     m_pUi->setupUi( this );
+    updateLanguage();
     connect( Rimy3D::getInstance(), SIGNAL( onSaveSettings( QSettings & ) ), this, SLOT( saveSettings( QSettings & ) ) );
     connect( Rimy3D::getInstance(), SIGNAL( onLoadSettings( QSettings & ) ), this, SLOT( loadSettings( QSettings & ) ) );
     Rimy3D::setMainWindow( this );
     Rimy3D::loadSettings();
-    updateLanguage();
 }
 
 MainWindow::~MainWindow()
@@ -67,6 +67,7 @@ void MainWindow::open( QString a_strFileName )
     if ( m_SceneInfo.openSceneFile( a_strFileName ) )
         m_RecentFiles.enqueue( a_strFileName );
     updateRecentFiles();
+    m_pUi->widget->setWorld( m_SceneInfo.buildGlcWorld() );
 }
 
 void MainWindow::updateLanguage( void )
@@ -89,6 +90,8 @@ void MainWindow::updateRecentFiles( void )
     arrActions[ 2 ] = m_pUi->actionRecent3;
     arrActions[ 3 ] = m_pUi->actionRecent4;
     arrActions[ 4 ] = m_pUi->actionRecent5;
+    while ( m_RecentFiles.count() > ERecentFileCountMax )
+        m_RecentFiles.dequeue();
     int iRecentFileCount = m_RecentFiles.count();
     for ( int i = ERecentFileCountMax; i-- > iRecentFileCount; arrActions[ i ]->setVisible( false ) );
     for ( QList< QString >::iterator it = m_RecentFiles.begin(); iRecentFileCount--; ++it )
@@ -96,7 +99,10 @@ void MainWindow::updateRecentFiles( void )
         arrActions[ iRecentFileCount ]->setVisible( true );
         arrActions[ iRecentFileCount ]->setText( *it );
     }
-Q_OS_WIN32
+}
+
+void MainWindow::on_actionAbout_triggered()
+{
 }
 
 void MainWindow::on_actionEnglish_triggered( void )
@@ -112,12 +118,12 @@ void MainWindow::on_actionGerman_triggered( void )
 void MainWindow::on_actionOpen_triggered()
 {
     QString strFilter = tr( "All known types" ).append( " (*.obj *.3db *.gmax *.ase *.asc *.xact);;"
-                        "Wavefront OBJ format (*.obj);;"
-                        "Baltram's 3D format (*.3db);;"
-                        "GMax Scene (*.gmax);;"
-                        "3ds Max ASCII Scene (*.ase);;"
-                        "Gothic ASCII Scene (*.asc);;"
-                        "Gothic 3 Motion Actor (*.xact);;" );
+                                                        "Wavefront OBJ format (*.obj);;"
+                                                        "Baltram's 3D format (*.3db);;"
+                                                        "GMax Scene (*.gmax);;"
+                                                        "3ds Max ASCII Scene (*.ase);;"
+                                                        "Gothic ASCII Scene (*.asc);;"
+                                                        "Gothic 3 Motion Actor (*.xact);;" );
     open( QFileDialog::getOpenFileName( this, tr( "Open" ), m_SceneInfo.getCurrentDir(), strFilter ) );
 }
 

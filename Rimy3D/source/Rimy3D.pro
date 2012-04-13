@@ -11,12 +11,14 @@ SOURCES += main.cpp \
            mainwindow.cpp \
            rimy3d.cpp \
            glwidget.cpp \
-           sceneinfo.cpp
+           sceneinfo.cpp \
+           texturefinder.cpp
 
 HEADERS += mainwindow.h \
            rimy3d.h \
            glwidget.h \
-           sceneinfo.h
+           sceneinfo.h \
+           texturefinder.h
 
 FORMS += mainwindow.ui
 
