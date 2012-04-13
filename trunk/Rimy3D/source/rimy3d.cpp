@@ -15,6 +15,11 @@ Rimy3D * Rimy3D::getInstance( void )
     return s_pInstance;
 }
 
+Rimy3D::ELanguage Rimy3D::getLanguage( void )
+{
+    return s_enuCurrentLanguage;
+}
+
 void Rimy3D::init( int & argc, char * argv[] )
 {
     if ( s_pInstance )
@@ -29,11 +34,6 @@ void Rimy3D::loadSettings( void )
 {
     if ( s_pSettings && getInstance() )
         getInstance()->loadSettingsIntern();
-}
-
-Rimy3D::ELanguage Rimy3D::getLanguage( void )
-{
-    return s_enuCurrentLanguage;
 }
 
 void Rimy3D::saveSettings( void )

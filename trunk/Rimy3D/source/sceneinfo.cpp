@@ -1,5 +1,8 @@
 #include <QFileInfo>
+#include <QVector>
+#include <GLC_Mesh>
 #include "sceneinfo.h"
+#include "texturefinder.h"
 #include "rimy3d.h"
 
 SceneInfo::SceneInfo( void )
@@ -10,6 +13,95 @@ SceneInfo::SceneInfo( void )
 
 SceneInfo::~SceneInfo( void )
 {
+}
+
+GLC_World SceneInfo::buildGlcWorld( void )
+{
+    GLC_World world;
+
+    unsigned int uMaterialCount = m_sceneCurrentScene.GetNumMaterials();
+    QVector< QVector< GLC_Material * > > arrMaterialArrays( uMaterialCount );
+    mCMultiMaterial matMultiDummy;
+    mCMaterial & matSubDummy = matMultiDummy.AccessSubMaterials().AddNew();
+    for ( int i = 0; i != uMaterialCount; ++i )
+    {
+        mCMaterialBase const * pCurrentMaterial = m_sceneCurrentScene.GetMaterialAt( i );
+        mCMultiMaterial const * pMultiMat = dynamic_cast< mCMultiMaterial const * >( pCurrentMaterial );
+        if ( !pMultiMat )
+        {
+            pMultiMat = &matMultiDummy;
+            matSubDummy = *dynamic_cast< mCMaterial const * >( pCurrentMaterial );
+        }
+        for ( int j = 0, je = pMultiMat->GetSubMaterials().GetCount(); j != je; ++j )
+        {
+            mCMaterial const & mtlSub = pMultiMat->GetSubMaterials()[ j ];
+            mCTexMap const * pDiffuseMap = mtlSub.GetTextureMapAt( mCMaterial::EMapType_Diffuse );
+            QImage Texture( pDiffuseMap ? TextureFinder::getInstance().findTextureFile( pDiffuseMap->GetTextureFilePath().GetText() ) : "" );
+            arrMaterialArrays[ i ].append( new GLC_Material( Texture.isNull() ? new GLC_Texture : new GLC_Texture( Texture ), mtlSub.GetName().GetText() ) );
+        }
+        if ( !arrMaterialArrays[ i ].count() )
+            arrMaterialArrays[ i ].append( 0 );
+    }
+
+    for ( int i = 0, ie = m_sceneCurrentScene.GetNumNodes(); i != ie; ++i )
+    {
+        if ( !m_sceneCurrentScene.GetNodeAt( i )->HasMesh() )
+            continue;
+        mCMesh meshCurrent = *m_sceneCurrentScene.GetNodeAt( i )->GetMesh();
+        unsigned int uMaterialIndex = m_sceneCurrentScene.GetMaterialIndexByName( m_sceneCurrentScene.GetNodeAt( i )->GetMaterialName() );
+        QVector< GLC_Material * > * pSubMaterials = uMaterialIndex != MI_DW_INVALID ? &arrMaterialArrays[ uMaterialIndex ] : 0;
+        mTArray< mCMesh::SUniVert > arrUniVerts;
+        mTArray< mCFace > arrUVFaces;
+        if ( !meshCurrent.HasTVFaces() )
+            meshCurrent.CalcFakeTexturing();
+        if ( !meshCurrent.HasVNFaces() )
+            meshCurrent.CalcVNormalsBySGs();
+        meshCurrent.SortFacesByMatID();
+        meshCurrent.CalcUniVertMesh( arrUniVerts, arrUVFaces );
+        int iUniVertCount = arrUniVerts.GetCount();
+        QVector< GLfloat > arrVertexFloats( iUniVertCount * 3 );
+        QVector< GLfloat > arrNormalFloats( iUniVertCount * 3 );
+        QVector< GLfloat > arrTexelFloats( iUniVertCount * 2 + 1 );
+        QList< GLuint > listIndices;
+        for ( int i = 0; i != iUniVertCount; ++i )
+        {
+            mCMesh::SUniVert & UniVert = arrUniVerts[ i ];
+            for ( int j = 0; j != 3; ++j )
+            {
+                arrVertexFloats[ 3 * i + j ] = ( *UniVert.m_pVert )[ j ];
+                arrNormalFloats[ 3 * i + j ] = ( *UniVert.m_pVNormal )[ j ];
+                arrTexelFloats[ 2 * i + j ] = ( *UniVert.m_pTVert )[ j ];
+            }
+        }
+        arrTexelFloats.pop_back();
+        GLC_Mesh * pMesh = new GLC_Mesh;
+        pMesh->addVertice( arrVertexFloats );
+        pMesh->addTexels( arrTexelFloats );
+        pMesh->addNormals( arrNormalFloats );
+        for ( int i = 0, j = 0, ie = arrUVFaces.GetCount(), iCurrentMatId = 0; i != ie; ++i )
+        {
+            int iMatId = arrUniVerts[ arrUVFaces[ i ][ 0 ] ].m_uMatID;
+            if ( ( i + 1 ) == ie )
+                ++i, ++ie, iMatId = iCurrentMatId + 1;
+            if ( i && ( iMatId != iCurrentMatId ) )
+            {
+                for ( ; j != i; ++j )
+                    for ( int k = 0; k != 3; ++k )
+                        listIndices.append( arrUVFaces[ j ][ k ] );
+                pMesh->addTriangles( pSubMaterials ? pSubMaterials->at( iCurrentMatId % pSubMaterials->count() ) : 0, listIndices );
+                listIndices.clear();
+            }
+            iCurrentMatId = iMatId;
+        }
+        pMesh->finish();
+        world.rootOccurence()->addChild( new GLC_StructInstance( new GLC_3DRep( pMesh ) ) );
+    }
+
+    for ( int i = arrMaterialArrays.count(); i--; )
+        for ( int j = arrMaterialArrays[ i ].count(); j--; )
+            if ( arrMaterialArrays[ i ][ j ]->isUnused() )
+                delete arrMaterialArrays[ i ][ j ];
+    return world;
 }
 
 void SceneInfo::clearScene( void )

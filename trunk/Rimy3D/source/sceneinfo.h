@@ -2,6 +2,7 @@
 #define SCENEINFO_H_INCLUDED
 
 #include <QSettings>
+#include <GLC_World>
 #include "Mimicry.h"
 
 class SceneInfo :
@@ -12,6 +13,7 @@ public:
     SceneInfo( void );
    ~SceneInfo( void );
 public:
+    GLC_World       buildGlcWorld( void );
     void            clearScene( void );
     QString const & getCurrentDir( void );
     QString const & getCurrentFile( void );

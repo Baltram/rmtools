@@ -1,5 +1,5 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef MAINWINDOW_H_INCLUDED
+#define MAINWINDOW_H_INCLUDED
 
 #include <QMainWindow>
 #include <QSettings>
@@ -11,12 +11,13 @@ namespace Ui
     class MainWindow;
 }
 
-class MainWindow : public QMainWindow
+class MainWindow :
+    public QMainWindow
 {
     Q_OBJECT
 public:
     explicit MainWindow( QWidget * a_pParent = 0 );
-    ~MainWindow();
+            ~MainWindow();
 public slots:
     void loadSettings( QSettings & a_Settings );
     void saveSettings( QSettings & a_Settings );
@@ -28,23 +29,19 @@ private:
     void updateLanguage( void );
     void updateRecentFiles( void );
 private slots:
+    void on_actionAbout_triggered( void );
     void on_actionEnglish_triggered( void );
     void on_actionGerman_triggered( void );
-    void on_actionOpen_triggered();
-    void on_actionRecent1_triggered();
-
-    void on_actionRecent2_triggered();
-
-    void on_actionRecent3_triggered();
-
-    void on_actionRecent4_triggered();
-
-    void on_actionRecent5_triggered();
-
+    void on_actionOpen_triggered( void );
+    void on_actionRecent1_triggered( void );
+    void on_actionRecent2_triggered( void );
+    void on_actionRecent3_triggered( void );
+    void on_actionRecent4_triggered( void );
+    void on_actionRecent5_triggered( void );
 private:
     Ui::MainWindow *  m_pUi;
     SceneInfo         m_SceneInfo;
     QQueue< QString > m_RecentFiles;
 };
 
-#endif // MAINWINDOW_H
+#endif  // MAINWINDOW_H_INCLUDED
