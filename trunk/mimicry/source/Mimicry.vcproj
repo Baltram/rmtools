@@ -208,6 +208,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Mimicry\mi_refstream.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Mimicry\mi_refstream.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Mimicry\mi_stream.h"
 				>
 			</File>
@@ -315,6 +323,10 @@
 			</File>
 			<File
 				RelativePath=".\Mimicry\mi_include_array.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Mimicry\mi_include_buffer.h"
 				>
 			</File>
 			<File
@@ -611,6 +623,18 @@
 			</File>
 			<File
 				RelativePath=".\Mimicry\mi_xactwriter.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="buffer"
+			>
+			<File
+				RelativePath=".\Mimicry\mi_buffer.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Mimicry\mi_buffer.h"
 				>
 			</File>
 		</Filter>

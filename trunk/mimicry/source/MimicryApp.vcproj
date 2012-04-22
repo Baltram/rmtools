@@ -175,7 +175,15 @@
 	</References>
 	<Files>
 		<File
+			RelativePath="..\..\r2\icon_r2tab.RES"
+			>
+		</File>
+		<File
 			RelativePath=".\MimicryApp.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\MimicryApp.rc"
 			>
 		</File>
 	</Files>
