@@ -88,6 +88,12 @@ MILPVoid g_memchr( MILPVoid a_pBlock, MIInt a_iValue, MISize a_sizeNum )
 }
 
 inline
+MIInt g_memcmp( MILPCVoid a_p1, MILPCVoid a_p2, MISize a_sizeSize )
+{
+    return ( *g_funcMemcmp )( a_p1, a_p2, a_sizeSize );
+}
+
+inline
 MILPVoid g_memcpy( MILPVoid a_pDestination, MILPCVoid a_pSource, MISize a_sizeSize )
 {
     return ( *g_funcMemcpy )( a_pDestination, a_pSource, a_sizeSize );

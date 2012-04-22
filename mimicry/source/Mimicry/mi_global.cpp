@@ -9,6 +9,7 @@ void      ( MI_CDECL * const g_funcFree )( MILPVoid )                        = &
 MILPVoid  ( MI_CDECL * const g_funcMalloc )( MISize )                        = &malloc;
 MILPCVoid ( MI_CDECL * const g_funcMemchr_c )( MILPCVoid, MIInt, MISize )    = &memchr;
 MILPVoid  ( MI_CDECL * const g_funcMemchr )( MILPVoid, MIInt, MISize )       = &memchr;
+MIInt     ( MI_CDECL * const g_funcMemcmp )( MILPCVoid, MILPCVoid, MISize )  = &memcmp;
 MILPVoid  ( MI_CDECL * const g_funcMemcpy )( MILPVoid, MILPCVoid, MISize )   = &memcpy;
 MILPVoid  ( MI_CDECL * const g_funcMemmove )( MILPVoid, MILPCVoid, MISize )  = &memmove;
 MILPVoid  ( MI_CDECL * const g_funcMemset )( MILPVoid, MIInt, MISize )       = &memset;
