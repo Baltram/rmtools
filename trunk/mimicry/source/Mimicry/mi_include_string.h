@@ -3,6 +3,7 @@
 
 #include "mi_include_core.h"
 
+#include "mi_stringallocator.h"
 #include "mi_string.h"
 
 #endif

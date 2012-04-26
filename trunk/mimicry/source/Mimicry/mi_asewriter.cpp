@@ -61,7 +61,7 @@ namespace
         return s_pMap;
     }
 
-    mCString GetNodeName( mCString a_strPlainNodeName )
+    mCString GetNodeName( mCString const & a_strPlainNodeName )
     {
         mTStringMap< mCString > * pMap = AccessNodeNameMap();
         if ( !pMap )

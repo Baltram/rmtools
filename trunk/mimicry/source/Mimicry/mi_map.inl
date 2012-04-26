@@ -1,3 +1,13 @@
+inline
+MIU32 g_djb2( MILPCChar a_pcText )
+{
+    MIU32 uResult = 5381;
+    if ( a_pcText )
+        while ( *a_pcText )
+            uResult += ( uResult << 5 ) + *a_pcText++;
+    return uResult;
+}
+
 template< typename K, typename T, class C >
 mTMap< K, T, C >::mTMap( MIUInt a_uMinCapacity ) :
     m_uElementCount( 0 ),
@@ -495,9 +505,7 @@ MIBool mTPointerKeyManager< K >::Compare( K * const & a_pValLeft, K * const & a_
 template<> inline
 MIU32 mTStringKeyManager< MILPCChar >::Hash( MILPCChar const & a_String )
 {
-    MIU32 uResult;
-    g_MurmurHash3( a_String, ( sizeof( MIChar ) * static_cast< MIUInt >( g_strlen( a_String ) ) ), &uResult );
-    return uResult;
+    return g_djb2( a_String );
 }
 
 template<> inline
@@ -556,8 +564,6 @@ MIBool mTStringKeyManager< MILPUnicodeChar >::Compare( MILPUnicodeChar const & a
     return mTStringKeyManager< MILPCUnicodeChar >::Compare( a_StringLeft, a_StringRight );
 }
 
-#ifdef MI_STRING_H_INCLUDED
-
 template<> inline
 MIU32 mTStringKeyManager< mCString >::Hash( mCString const & a_String )
 {
@@ -570,7 +576,18 @@ MIBool mTStringKeyManager< mCString >::Compare( mCString const & a_StringLeft, m
     return ( a_StringLeft.Compare( a_StringRight ) == 0 );
 }
 
-#endif
+template< typename K >
+MIU32 mTHashKeyManager32< K >::Hash( K const & a_Val )
+{
+    MI_STATIC_ASSERT( sizeof( K ) == 4 )
+    return *reinterpret_cast< MIU32 const * >( &a_Val );
+}
+
+template< typename K >
+MIBool mTHashKeyManager32< K >::Compare( K const & a_ValLeft, K const & a_ValRight )
+{
+    return ( a_ValLeft == a_ValRight );
+}
 
 template< typename T >
 mTStringMap< T >::mTStringMap( MIUInt a_uMinCapacity ) :
@@ -580,6 +597,18 @@ mTStringMap< T >::mTStringMap( MIUInt a_uMinCapacity ) :
 
 template< typename T >
 mTStringMap< T >::mTStringMap( mTStringMap< T > const & a_mapSource ) :
+    mTMap( a_mapSource )
+{
+}
+
+template< typename T >
+mTNameMap< T >::mTNameMap( MIUInt a_uMinCapacity ) :
+    mTMap( a_uMinCapacity )
+{
+}
+
+template< typename T >
+mTNameMap< T >::mTNameMap( mTNameMap< T > const & a_mapSource ) :
     mTMap( a_mapSource )
 {
 }

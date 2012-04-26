@@ -26,9 +26,9 @@ public:
 public:
     MILPVoid  AccessBuffer( void );
     void      Clear( void );
-    mEResult  FromFile( mCString a_strFileName );
+    mEResult  FromFile( mCString const & a_strFileName );
     MILPCVoid GetBuffer( void ) const;
-    mEResult  ToFile( mCString a_strFileName );
+    mEResult  ToFile( mCString const & a_strFileName );
     void      Swap( mTMemoryStreamBase< M > & a_Other );
 private:
     virtual mEResult ReadFormatted( MILPVoid a_pDest, MILPCChar a_Format ) = 0;

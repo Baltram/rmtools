@@ -21,11 +21,11 @@ public:
     void                   Clear( void );
     void                   ClearNodeParent( MIUInt a_uNodeIndex );
     mCMaterialBase const * GetMaterialAt( MIUInt a_uIndex ) const;
-    MIUInt                 GetMaterialIndexByName( mCString a_strMaterialName ) const;
+    MIUInt                 GetMaterialIndexByName( mCString const & a_strMaterialName ) const;
     mCString const &       GetName( void ) const;
     mCNode const *         GetNodeAt( MIUInt a_uIndex ) const;
     MIUInt                 GetNodeIndexByID( mCUnique::ID a_ID ) const;
-    MIUInt                 GetNodeIndexByName( mCString a_strNodeName ) const; 
+    MIUInt                 GetNodeIndexByName( mCString const & a_strNodeName ) const; 
     MIUInt                 GetNodeParentIndex( MIUInt a_uNodeIndex ) const;
     void                   GetNodesSortedByLinks( mTArray< mCNode const * > & a_arrDest ) const;
     void                   GetNodesSortedByLinks( mTArray< mCNode * > & a_arrDest );

@@ -56,18 +56,18 @@ mCMaxFileStream::mCMaxFileStream( void )
 {
 }
 
-mCMaxFileStream::mCMaxFileStream( mCString a_strFileName ) :
+mCMaxFileStream::mCMaxFileStream( mCString const & a_strFileName ) :
     mCFileStream()
 {
     Open( a_strFileName );
 }
 
-mEResult mCMaxFileStream::Open( mCString a_strFileName )
+mEResult mCMaxFileStream::Open( mCString const & a_strFileName )
 {
     return mCFileStream::Open( a_strFileName, mEFileOpenMode_Read );
 }
 
-mEResult mCMaxFileStream::ReadPersistentGlobal( mCString const a_strName, mCVariant & a_vDest )
+mEResult mCMaxFileStream::ReadPersistentGlobal( mCString const & a_strName, mCVariant & a_vDest )
 {
     mCError const * const pLastError = mCError::GetLastError< mCError >();
     a_vDest.Clear();
@@ -156,7 +156,7 @@ void mCMaxFileStream::DirectRead( MILPVoid a_pDest, MIUInt a_uPosition, MIUInt a
     }
 }
 
-void mCMaxFileStream::Init( MILPVoid a_pFile, mCString a_strFileName, mEFileOpenMode a_enuOpenMode )
+void mCMaxFileStream::Init( MILPVoid a_pFile, mCString const & a_strFileName, mEFileOpenMode a_enuOpenMode )
 {
     if ( a_enuOpenMode != mEFileOpenMode_Read )
     {

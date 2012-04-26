@@ -2,25 +2,25 @@
 #define MI_GLOBAL_H_INCLUDED
 
 template< MIBool B >
-struct mSStaticAssert
-{
-};
-
+struct mTStaticAssert;
 template<>
-struct mSStaticAssert< MIFalse >
-{
-private:
-    ~mSStaticAssert< MIFalse >( void );
-};
+struct mTStaticAssert< MITrue > {};
+template< MIInt N >
+struct mTStaticAssert_Test {};
 
-#define MI_STATIC_ASSERT( _EXPR_ ) { mSStaticAssert< ( _EXPR_ ) > mcrStaticAssert; mcrStaticAssert; }
+#define MI_STATIC_ASSERT( _EXPR_ ) typedef mTStaticAssert_Test< sizeof( mTStaticAssert< _EXPR_ > ) > MI_PASTE_TOKENS( mi_static_assert_, __COUNTER__ );
 
 template< typename T > T const & g_limit( T const & a_Number, T const & a_LowerBound, T const & a_UpperBound );
 template< typename T > T const & g_max( T const & a_1, T const & a_2 );
-template< typename T > void      g_memswap( T & a_1, T & a_2 );
 template< typename T > T const & g_min( T const & a_1, T const & a_2 );
+
+template< typename T > void      g_memswap( T & a_1, T & a_2 );
 template< typename T > void      g_reorder( T * a_pElements, MIUInt const * a_pPattern, MIUInt a_uElementCount );
 template< typename T > void      g_swap( T & a_1, T & a_2 );
+
+MIBool g_getbit( MILPVoid a_pBase, MIUInt uOffset );
+void   g_setbit( MILPVoid a_pBase, MIUInt uOffset );
+void   g_unsetbit( MILPVoid a_pBase, MIUInt uOffset );
 
 void      g_free( MILPVoid a_pDest );
 MILPVoid  g_malloc( MISize a_sizeSize );

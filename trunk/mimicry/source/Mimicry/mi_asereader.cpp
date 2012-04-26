@@ -30,7 +30,7 @@ namespace
         return iResult;
     }
 
-    MIBool ReadTokenLine( mCString a_strToken, MILPCChar a_pcFormat, ... )
+    MIBool ReadTokenLine( mCString const & a_strToken, MILPCChar a_pcFormat, ... )
     {
         va_list argp;
         va_start( argp, a_pcFormat );
@@ -76,7 +76,7 @@ namespace
         return bResult;
     }
 
-    MIBool ReadStringTokenLine( mCString a_strToken, mCString & a_strDest )
+    MIBool ReadStringTokenLine( mCString const & a_strToken, mCString & a_strDest )
     {
         mCStringStream & streamSource = *AccessStream();
         MIUInt uOffset = streamSource.Tell();
@@ -100,7 +100,7 @@ namespace
         return bResult;
     };
 
-    MIBool EnterBlock( mCString a_strToken )
+    MIBool EnterBlock( mCString const & a_strToken )
     {
         return ReadTokenLine( a_strToken, "{" );
     }

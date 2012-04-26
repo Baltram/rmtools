@@ -140,7 +140,7 @@ void mTMemoryStreamBase< M >::Clear( void )
 }
 
 template< mEStreamType M >
-mEResult mTMemoryStreamBase< M >::FromFile( mCString a_strFileName )
+mEResult mTMemoryStreamBase< M >::FromFile( mCString const & a_strFileName )
 {
     MI_CRT_NO_WARNINGS( FILE * pSourceFile = fopen( a_strFileName.GetText(), "rb" ); )
     if ( !pSourceFile )
@@ -171,7 +171,7 @@ MILPCVoid mTMemoryStreamBase< M >::GetBuffer( void ) const
 }
 
 template< mEStreamType M >
-mEResult mTMemoryStreamBase< M >::ToFile( mCString a_strFileName )
+mEResult mTMemoryStreamBase< M >::ToFile( mCString const & a_strFileName )
 {
     MI_CRT_NO_WARNINGS( FILE * pDestFile = fopen( a_strFileName.GetText(), "wb" ); )
     if ( !pDestFile )

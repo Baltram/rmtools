@@ -313,6 +313,14 @@
 				RelativePath=".\Mimicry\mi_string.inl"
 				>
 			</File>
+			<File
+				RelativePath=".\Mimicry\mi_stringallocator.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Mimicry\mi_stringallocator.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="include"
@@ -379,6 +387,14 @@
 			</File>
 			<File
 				RelativePath=".\Mimicry\mi_map.inl"
+				>
+			</File>
+			<File
+				RelativePath=".\Mimicry\mi_name.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Mimicry\mi_name.h"
 				>
 			</File>
 		</Filter>
