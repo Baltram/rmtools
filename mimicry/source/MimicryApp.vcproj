@@ -40,6 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
+				AdditionalIncludeDirectories=""
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -117,6 +118,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalIncludeDirectories=""
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				ExceptionHandling="0"
 				RuntimeLibrary="0"
@@ -175,15 +177,7 @@
 	</References>
 	<Files>
 		<File
-			RelativePath="..\..\r2\icon_r2tab.RES"
-			>
-		</File>
-		<File
 			RelativePath=".\MimicryApp.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\MimicryApp.rc"
 			>
 		</File>
 	</Files>

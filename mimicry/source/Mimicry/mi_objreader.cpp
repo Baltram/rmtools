@@ -3,7 +3,7 @@
 
 namespace
 {
-    void ReadMtlFile( mCScene & a_sceneDest, mCString a_strFilePath )
+    void ReadMtlFile( mCScene & a_sceneDest, mCString const & a_strFilePath )
     {
         mCFileStream streamSourceBin;
         if ( streamSourceBin.Open( a_strFilePath, mEFileOpenMode_Read ) == mEResult_False )

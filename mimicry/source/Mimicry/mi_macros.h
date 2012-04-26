@@ -42,4 +42,8 @@
 #define MI_ASSERT_MSVC { NOT_MSVC }
 #endif
 
+#define MI_PASTE_TOKENS( A, B ) MI_PASTE_TOKENS_( A, B )
+#define MI_PASTE_TOKENS_( A, B ) MI_PASTE_TOKENS__( A, B )
+#define MI_PASTE_TOKENS__( A, B ) A##B
+
 #endif

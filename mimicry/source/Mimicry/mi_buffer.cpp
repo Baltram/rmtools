@@ -81,6 +81,8 @@ MIUInt mCBuffer::GetSize( void ) const
 
 void mCBuffer::Resize( MIUInt a_uNewSize )
 {
+    if ( m_uSize == a_uNewSize )
+        return;
     mCBuffer bufNew( a_uNewSize );
     g_memcpy( bufNew.AccessMemory(), GetMemory(), g_min( a_uNewSize, m_uSize ) );
     Swap( bufNew );

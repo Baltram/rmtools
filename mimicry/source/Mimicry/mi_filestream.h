@@ -17,7 +17,7 @@ public:
     virtual ~mCFileStream( void );
 public:
     mCFileStream( void );
-    mCFileStream( mCString a_strFileName, mEFileOpenMode a_enuOpenMode );
+    mCFileStream( mCString const & a_strFileName, mEFileOpenMode a_enuOpenMode );
 public:
     virtual MIUInt   GetSize( void ) const;
     virtual mEResult Read( MILPVoid a_pDest, MIUInt a_uSize );
@@ -28,15 +28,15 @@ public:
     virtual mEResult Write( MILPCVoid a_pSource, MIUInt a_uSize );
     virtual mEResult Write( mCString const & a_strSource );
 public:
-    void     Buffer( MIUInt a_uPosition );
-    void     Close( void );
-    void     Flush( void );
-    mCString GetFileName( void );
-    MIBool   IsOpen( void );
-    mEResult Open( mCString a_strFileName, mEFileOpenMode a_enuOpenMode );
+    void             Buffer( MIUInt a_uPosition );
+    void             Close( void );
+    void             Flush( void );
+    mCString const & GetFileName( void );
+    MIBool           IsOpen( void );
+    mEResult         Open( mCString const & a_strFileName, mEFileOpenMode a_enuOpenMode );
 protected:
     virtual void DirectRead( MILPVoid a_pDest, MIUInt a_uPosition, MIUInt a_uSize );
-    virtual void Init( MILPVoid a_pFile, mCString a_strFileName, mEFileOpenMode a_enuOpenMode );
+    virtual void Init( MILPVoid a_pFile, mCString const & a_strFileName, mEFileOpenMode a_enuOpenMode );
 protected:
     void Clear( void );
 private:

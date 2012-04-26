@@ -10,6 +10,12 @@ T const & g_max ( T const & a_1, T const & a_2 )
     return ( a_1 > a_2 ) ? a_1 : a_2;
 }
 
+template< typename T >
+T const & g_min ( T const & a_1, T const & a_2 )
+{
+    return ( a_1 < a_2 ) ? a_1 : a_2;
+}
+
 MI_CONSTANT_CONDITIONAL_EXPRESSION_NO_WARNINGS_BEGIN
 
 template< typename T >
@@ -41,12 +47,6 @@ void g_memswap( T & a_1, T & a_2 )
 MI_CONSTANT_CONDITIONAL_EXPRESSION_NO_WARNINGS_END
 
 template< typename T >
-T const & g_min ( T const & a_1, T const & a_2 )
-{
-    return ( a_1 < a_2 ) ? a_1 : a_2;
-}
-
-template< typename T >
 void g_reorder( T * a_pElements, MIUInt const * a_pPattern, MIUInt a_uElementCount )
 {
     T * pBuffer = static_cast< T * >( g_malloc( sizeof( T ) * a_uElementCount ) );
@@ -62,6 +62,24 @@ void g_swap( T & a_1, T & a_2 )
     a_1 = a_2;
     a_2 = Temp;
 };
+
+inline
+MIBool g_getbit( MILPVoid a_pBase, MIUInt uOffset )
+{
+    return ( static_cast< MILPByte >( a_pBase )[ uOffset / 8 ] & ( ( MIByte ) 1 << uOffset % 8 ) ) != 0;
+}
+
+inline
+void g_setbit( MILPVoid a_pBase, MIUInt uOffset )
+{
+    static_cast< MILPByte >( a_pBase )[ uOffset / 8 ] |= ( ( MIByte ) 1 << uOffset % 8 );
+}
+
+inline
+void g_unsetbit( MILPVoid a_pBase, MIUInt uOffset )
+{
+    static_cast< MILPByte >( a_pBase )[ uOffset / 8 ] &= ~( ( MIByte ) 1 << uOffset % 8 );
+}
 
 inline
 void g_free( MILPVoid a_pDest )

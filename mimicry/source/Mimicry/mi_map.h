@@ -1,7 +1,8 @@
 #ifndef MI_MAP_H_INCLUDED
 #define MI_MAP_H_INCLUDED
 
-void g_MurmurHash3( MILPCVoid a_pKey, MIUInt a_uKeyLength, MIU32 * a_pOut );  // Based on the MurmurHash3_x86_32 function by Austin Appleby.
+void  g_MurmurHash3( MILPCVoid a_pKey, MIUInt a_uKeyLength, MIU32 * a_pOut );  // Based on the MurmurHash3_x86_32 function by Austin Appleby.
+MIU32 g_djb2( MILPCChar a_pcText );  // By Professor Daniel J. Bernstein.
 
 template< typename K > class mTKeyManager;
 template< typename K > class mTPointerKeyManager;
@@ -136,7 +137,13 @@ public:
     static MIBool Compare( K const & a_StringLeft, K const & a_StringRight );
 };
 
-class mCString;
+template< typename K >
+class mTHashKeyManager32
+{
+public:
+    static MIU32  Hash( K const & a_Val );
+    static MIBool Compare( K const & a_ValLeft, K const & a_ValRight );
+};
 
 template< typename T >
 class mTStringMap : 
@@ -145,6 +152,17 @@ class mTStringMap :
 public:
     explicit mTStringMap( MIUInt a_uMinCapacity = 28 );
              mTStringMap( mTStringMap< T > const & a_mapSource );
+};
+
+class mCName;
+
+template< typename T >
+class mTNameMap : 
+    public mTMap< mCName, T, mTHashKeyManager32< mCName > >
+{
+public:
+    explicit mTNameMap( MIUInt a_uMinCapacity = 28 );
+             mTNameMap( mTNameMap< T > const & a_mapSource );
 };
 
 #include "mi_map.inl"

@@ -83,7 +83,7 @@ mCMaterialBase const * mCScene::GetMaterialAt( MIUInt a_uIndex ) const
     return m_arrMaterials[ a_uIndex ];
 }
 
-MIUInt mCScene::GetMaterialIndexByName( mCString a_strMaterialName ) const
+MIUInt mCScene::GetMaterialIndexByName( mCString const & a_strMaterialName ) const
 {
     for ( MIUInt u = m_arrMaterials.GetCount(); u--; )
         if ( m_arrMaterials[ u ]->GetName() == a_strMaterialName )
@@ -111,7 +111,7 @@ MIUInt mCScene::GetNodeIndexByID( mCUnique::ID a_ID ) const
     return MI_DW_INVALID;
 }
 
-MIUInt mCScene::GetNodeIndexByName( mCString a_strNodeName ) const
+MIUInt mCScene::GetNodeIndexByName( mCString const & a_strNodeName ) const
 {
     for ( MIUInt u = m_arrNodes.GetCount(); u--; )
         if ( m_arrNodes[ u ]->GetName() == a_strNodeName )

@@ -19,7 +19,7 @@ mCFileStream::mCFileStream( void )
     Clear();
 }
 
-mCFileStream::mCFileStream( mCString a_strFileName, mEFileOpenMode a_enuOpenMode )
+mCFileStream::mCFileStream( mCString const & a_strFileName, mEFileOpenMode a_enuOpenMode )
 {
     Clear();
     Open( a_strFileName, a_enuOpenMode );
@@ -257,7 +257,7 @@ void mCFileStream::Flush( void )
     m_bPendingData = MIFalse;
 }
 
-mCString mCFileStream::GetFileName( void )
+mCString const & mCFileStream::GetFileName( void )
 {
     return m_strFileName;
 }
@@ -267,7 +267,7 @@ MIBool mCFileStream::IsOpen( void )
     return ( m_enuOpenMode != mEFileOpenMode_Invalid );
 }
 
-mEResult mCFileStream::Open( mCString a_strFileName, mEFileOpenMode a_enuOpenMode )
+mEResult mCFileStream::Open( mCString const & a_strFileName, mEFileOpenMode a_enuOpenMode )
 {
     if ( a_enuOpenMode == mEFileOpenMode_Invalid )
         return mEResult_Ok; 
@@ -302,7 +302,7 @@ void mCFileStream::DirectRead( MILPVoid a_pDest, MIUInt a_uPosition, MIUInt a_uS
     fread( a_pDest, sizeof( MIChar ), a_uSize, pFile );
 }
 
-void mCFileStream::Init( MILPVoid a_pFile, mCString a_strFileName, mEFileOpenMode a_enuOpenMode )
+void mCFileStream::Init( MILPVoid a_pFile, mCString const & a_strFileName, mEFileOpenMode a_enuOpenMode )
 {
     FILE * const pFile = static_cast< FILE * >( a_pFile );
     fseek( pFile, 0, SEEK_END );
