@@ -2,21 +2,21 @@
 
 mCBuffer::mCBuffer( MILPCVoid a_pSource, MIUInt a_uSize ) :
     m_uSize( a_uSize ),
-    m_pData( a_uSize > sizeof( m_pData ) ? new MIByte [ a_uSize ] : 0 )
+    m_pData( a_uSize > sizeof( m_pData ) ? static_cast< MILPByte >( mCStringAllocator::Alloc( a_uSize ) ) : 0 )
 {
     g_memcpy( AccessMemory(), a_pSource, m_uSize );
 }
 
 mCBuffer::mCBuffer( MIUInt a_uSize, MIByte a_byteValue ) :
     m_uSize( a_uSize ),
-    m_pData( a_uSize > sizeof( m_pData ) ? new MIByte [ a_uSize ] : 0 )
+    m_pData( a_uSize > sizeof( m_pData ) ? static_cast< MILPByte >( mCStringAllocator::Alloc( a_uSize ) ) : 0 )
 {
     g_memset( AccessMemory(), a_byteValue, m_uSize );
 }
     
 mCBuffer::mCBuffer( mCBuffer const & a_bufSource ) :
     m_uSize( a_bufSource.m_uSize ),
-    m_pData( a_bufSource.m_uSize > sizeof( m_pData ) ? new MIByte [ a_bufSource.m_uSize ] : 0 )
+    m_pData( a_bufSource.m_uSize > sizeof( m_pData ) ? static_cast< MILPByte >( mCStringAllocator::Alloc( a_bufSource.m_uSize ) ) : 0 )
 {
     g_memcpy( AccessMemory(), a_bufSource.GetMemory(), m_uSize );
 }
@@ -30,7 +30,7 @@ mCBuffer::mCBuffer( void ) :
 mCBuffer::~mCBuffer( void )
 {
     if ( m_uSize > sizeof( m_pData ) )
-        delete [] m_pData;
+        mCStringAllocator::Free( m_pData );
 }
 
 mCBuffer & mCBuffer::operator = ( mCBuffer const & a_bufSource )
@@ -60,18 +60,18 @@ MIBool mCBuffer::operator != ( mCBuffer const & a_bufOther ) const
     return !( *this == a_bufOther );
 }
 
-MIByte * mCBuffer::AccessMemory( void )
+MILPByte mCBuffer::AccessMemory( void )
 {
     if ( m_uSize > sizeof( m_pData ) )
         return m_pData;
-    return reinterpret_cast< MIByte * >( &m_pData );
+    return reinterpret_cast< MILPByte >( &m_pData );
 }
 
-MIByte const * mCBuffer::GetMemory( void ) const
+MILPCByte mCBuffer::GetMemory( void ) const
 {
     if ( m_uSize > sizeof( m_pData ) )
         return m_pData;
-    return reinterpret_cast< MIByte const * >( &m_pData );
+    return reinterpret_cast< MILPCByte >( &m_pData );
 }
 
 MIUInt mCBuffer::GetSize( void ) const
@@ -79,13 +79,22 @@ MIUInt mCBuffer::GetSize( void ) const
     return m_uSize;
 }
 
-void mCBuffer::Resize( MIUInt a_uNewSize )
+MILPByte mCBuffer::Resize( MIUInt a_uNewSize )
 {
     if ( m_uSize == a_uNewSize )
-        return;
-    mCBuffer bufNew( a_uNewSize );
-    g_memcpy( bufNew.AccessMemory(), GetMemory(), g_min( a_uNewSize, m_uSize ) );
+        return AccessMemory();
+    if ( a_uNewSize > sizeof( m_pData ) )
+    {
+        if ( m_uSize > sizeof( m_pData ) )
+            return m_pData = static_cast< MILPByte >( mCStringAllocator::Realloc( m_pData, m_uSize = a_uNewSize ) );
+        mCBuffer bufNew( a_uNewSize );
+        bufNew.SetAt( 0, &m_pData, m_uSize );
+        Swap( bufNew );
+        return m_pData;
+    }
+    mCBuffer bufNew( GetMemory(), a_uNewSize );
     Swap( bufNew );
+    return reinterpret_cast< MILPByte >( &m_pData );
 }
 
 void mCBuffer::SetAt( MIUInt a_uOffset, MILPVoid a_pSource, MIUInt a_uSize )

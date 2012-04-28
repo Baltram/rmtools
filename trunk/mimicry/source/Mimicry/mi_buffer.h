@@ -16,15 +16,15 @@ public:
     MIBool         operator == ( mCBuffer const & a_bufOther ) const;
     MIBool         operator != ( mCBuffer const & a_bufOther ) const;
 public:
-    MIByte *       AccessMemory( void );
-    MIByte const * GetMemory( void ) const;
-    MIUInt         GetSize( void ) const;
-    void           Resize( MIUInt a_uNewSize );
-    void           SetAt( MIUInt a_uOffset, MILPVoid a_pSource, MIUInt a_uSize );
-    void           SetAt( MIUInt a_uOffset, MIByte a_byteValue, MIUInt a_uSize );
-    void           Swap( mCBuffer & a_bufOther );
+    MILPByte  AccessMemory( void );
+    MILPCByte GetMemory( void ) const;
+    MIUInt    GetSize( void ) const;
+    MILPByte  Resize( MIUInt a_uNewSize );
+    void      SetAt( MIUInt a_uOffset, MILPVoid a_pSource, MIUInt a_uSize );
+    void      SetAt( MIUInt a_uOffset, MIByte a_byteValue, MIUInt a_uSize );
+    void      Swap( mCBuffer & a_bufOther );
 protected:
-    MIByte * m_pData;
+    MILPByte m_pData;
     MIUInt   m_uSize;
 };
 

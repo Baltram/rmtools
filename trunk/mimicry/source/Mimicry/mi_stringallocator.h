@@ -12,17 +12,17 @@ private:
     struct SMemChunkBase;
     template< MIUInt N >
     struct TMemChunk;
+    class  CChunkManager;
     struct SMemChunkSizeAssertion;
     struct SInitializer;
 private:
-    static SMemChunkBase * FindMemChunk( MIUInt a_uSize );
-    static void            FreeBlock( SMemChunkBase * a_pChunk, MILPVoid a_pBlock, MIUInt a_uBlockFlags );
-    static void            ReallocNewPtrs( void );
+    static void FreeBlock( SMemChunkBase * a_pChunk, MILPVoid a_pBlock, MIUInt a_uBlockFlags );
+    static void ReallocNewPtrs( void );
 private:
     static MIU32 **        s_pNewMemoryPtrs;
     static MIUInt          s_uNewMemoryPtrsCapacity;
     static MIUInt          s_uFirstFreeNewMemoryPtr;
-    static SMemChunkBase * s_arrChunkCircles[ 6 ];
+    static CChunkManager * s_arrChunkManagers[ 6 ];
     static SInitializer    s_Initializer;
 };
 
@@ -36,11 +36,12 @@ public:
         MIU32 m_u32Previous;
     };
 public:
-    MIUInt          GetBlockSizeExp( void ) const;
-    MIUInt          GetNumBlocks( void ) const;
-    SMemChunkBase * GetNext( void ) const;
+    MIUInt GetBlockSizeExp( void ) const;
+    MIU32  GetFirstFreeBlock( void );
+    MIUInt GetNumBlocks( void ) const;
+    void   SetFirstFreeBlock( MIU32 a_uFirstFreeBlock );
 protected:
-    SMemChunkBase( MIUInt a_uBlockSize, MIUInt a_uNumBlocks, SMemChunkBase * a_pCreator );
+    SMemChunkBase( MIUInt a_uBlockSize, MIUInt a_uNumBlocks, CChunkManager * a_pChunkManager, MIUInt a_uIndex );
    ~SMemChunkBase( void );
 protected:
     static MILPVoid s_pChunkBuffer;
@@ -50,12 +51,13 @@ private:
 private:
     SMemChunkBase & operator = ( SMemChunkBase const & );
 private:
-    MIU64 m_u64NextChunk;  // Circular.
-    MIU16 m_u16NumBlocks;
-    MIU16 m_u16BlockSizeExp;
-public:
+    MIU64 m_u64ChunkManager;
+    MIU32 m_u32NumBlocks;
+    MIU32 m_u32BlockSizeExp;
+    MIU32 m_u32Index;
     MIU32 m_u32FirstFreeBlock;
-    MIU64 m_arrBlocks[ EChunkSize / sizeof( MIU64 ) - 2 ];
+public:
+    MIU64 m_arrBlocks[ EChunkSize / sizeof( MIU64 ) - 3 ];
     // The first ( EChunkSize * 2 / EBlockSize ) bits (plus two spare bits) are reserved.
     // If the bit at ( ( BlockAddress % EChunkSize ) * 2 / EBlockSize ) is set, the block at BlockAddress is allocated.
     // If the bit at ( ( BlockAddress % EChunkSize ) * 2 / EBlockSize + 1 ) is set, the block at BlockAddress is attached.
@@ -68,13 +70,42 @@ struct mCStringAllocator::TMemChunk :
 public:
     enum { EBlockSize = 8 << N };  // 8, 16, ..., 256
     enum { EReservedSize = ( EChunkSize * 2 / EBlockSize + 2 + 7 ) / 8 };
-    enum { ENumBlocks = ( EChunkSize - 16 - EReservedSize ) / EBlockSize };
+    enum { ENumBlocks = ( EChunkSize - 24 - EReservedSize ) / EBlockSize };
     enum { ENumChunksPerBuffer = 7 };
 public:
-    static TMemChunk< N > * GetNewInstance( TMemChunk< N > * a_pCreator );
+    static TMemChunk< N > * GetNewInstance( CChunkManager * a_pChunkManager, MIUInt a_uIndex );
 private:
-    TMemChunk( TMemChunk< N > * a_pCreator );
+    TMemChunk( CChunkManager * a_pChunkManager, MIUInt a_uIndex );
    ~TMemChunk( void );
+};
+
+class mCStringAllocator::CChunkManager
+{
+public:
+    explicit CChunkManager( MIUInt a_uLevel );
+            ~CChunkManager( void );
+public:
+    SMemChunkBase * GetActiveChunk( void );
+private:
+    void ActivateChunk( MIUInt a_uIndex );
+    void DeactivateChunk( MIUInt a_uIndex );
+    void GenerateActiveChunk( void );
+    void RemoveChunk( MIUInt a_uIndex );
+private:
+    struct SRecord
+    {
+        SMemChunkBase * m_pChunk;
+        MIUInt          m_uNextActive;
+        MIUInt          m_uPreviousActive;
+    };
+private:
+    MIUInt    m_uLevel;
+    MIUInt    m_uCount;
+    MIUInt    m_uCapacity;
+    MIUInt    m_uFirstActiveChunk;
+    SRecord * m_pRecords;
+private:
+    friend struct mCStringAllocator::SMemChunkBase;
 };
 
 struct mCStringAllocator::SMemChunkSizeAssertion

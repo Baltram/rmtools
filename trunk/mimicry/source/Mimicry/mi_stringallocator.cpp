@@ -43,7 +43,7 @@ MIU32 ** mCStringAllocator::s_pNewMemoryPtrs = 0;
 MIUInt mCStringAllocator::s_uNewMemoryPtrsCapacity = 0;
 MIUInt mCStringAllocator::s_uFirstFreeNewMemoryPtr = 0;
 MILPVoid mCStringAllocator::SMemChunkBase::s_pChunkBuffer = 0;
-mCStringAllocator::SMemChunkBase * mCStringAllocator::s_arrChunkCircles[ 6 ];
+mCStringAllocator::CChunkManager * mCStringAllocator::s_arrChunkManagers[ 6 ];
 mCStringAllocator::SInitializer mCStringAllocator::s_Initializer;
 
 MILPVoid mCStringAllocator::Alloc( MIUInt a_uSize )
@@ -61,11 +61,13 @@ MILPVoid mCStringAllocator::Alloc( MIUInt a_uSize )
         s_uFirstFreeNewMemoryPtr = uNextFree;
         return pResult + 2;
     }
-    SMemChunkBase * pChunk = FindMemChunk( a_uSize );
-    SMemChunkBase::SVacantBlockHeader * pBlock = static_cast< SMemChunkBase::SVacantBlockHeader * >( s_getComposedPtr( pChunk, pChunk->m_u32FirstFreeBlock ) );
+    MIUInt uLevel = 0;
+    for ( MIUInt uBlockSize = TMemChunk< 0 >::EBlockSize; a_uSize > uBlockSize; ++uLevel, uBlockSize <<= 1 );
+    SMemChunkBase * pChunk = s_arrChunkManagers[ uLevel ]->GetActiveChunk();
+    SMemChunkBase::SVacantBlockHeader * pBlock = static_cast< SMemChunkBase::SVacantBlockHeader * >( s_getComposedPtr( pChunk, pChunk->GetFirstFreeBlock() ) );
     if ( pBlock->m_u32Next )
         static_cast< SMemChunkBase::SVacantBlockHeader * >( s_getComposedPtr( pChunk, pBlock->m_u32Next ) )->m_u32Previous = 0;
-    pChunk->m_u32FirstFreeBlock = pBlock->m_u32Next;
+    pChunk->SetFirstFreeBlock( pBlock->m_u32Next );
     g_setbit( pChunk->m_arrBlocks, static_cast< MIUInt >( s_andPtr_i( pBlock, SMemChunkBase::EChunkSize - 1 ) >> ( pChunk->GetBlockSizeExp() - 1 ) ) );
     return pBlock;
 }
@@ -144,47 +146,18 @@ MILPVoid mCStringAllocator::Realloc( MILPVoid const a_pMemory, MIUInt const a_uN
     if ( pAttachedBlock->m_u32Previous )
         static_cast< SMemChunkBase::SVacantBlockHeader * >( s_getComposedPtr( pChunk, pAttachedBlock->m_u32Previous ) )->m_u32Next = pAttachedBlock->m_u32Next;
     else
-        pChunk->m_u32FirstFreeBlock = pAttachedBlock->m_u32Next;
+        pChunk->SetFirstFreeBlock( pAttachedBlock->m_u32Next );
     return a_pMemory;
-}
-
-inline
-mCStringAllocator::SMemChunkBase * mCStringAllocator::FindMemChunk( MIUInt a_uSize )
-{
-    MIUInt u = 0;
-    for ( MIUInt uBlockSize = TMemChunk< 0 >::EBlockSize; a_uSize > uBlockSize; ++u, uBlockSize <<= 1 );
-    SMemChunkBase * pChunk = s_arrChunkCircles[ u ];
-    if ( pChunk->m_u32FirstFreeBlock )
-        return pChunk;
-    for ( SMemChunkBase * p = pChunk->GetNext(); p != pChunk; p = p->GetNext() )
-        if ( p->m_u32FirstFreeBlock )
-            return s_arrChunkCircles[ u ] = p;
-    switch ( u )
-    {
-    case 0:
-        return s_arrChunkCircles[ u ] = TMemChunk< 0 >::GetNewInstance( static_cast< TMemChunk< 0 > * >( pChunk ) );
-    case 1:
-        return s_arrChunkCircles[ u ] = TMemChunk< 1 >::GetNewInstance( static_cast< TMemChunk< 1 > * >( pChunk ) );
-    case 2:
-        return s_arrChunkCircles[ u ] = TMemChunk< 2 >::GetNewInstance( static_cast< TMemChunk< 2 > * >( pChunk ) );
-    case 3:
-        return s_arrChunkCircles[ u ] = TMemChunk< 3 >::GetNewInstance( static_cast< TMemChunk< 3 > * >( pChunk ) );
-    case 4:
-        return s_arrChunkCircles[ u ] = TMemChunk< 4 >::GetNewInstance( static_cast< TMemChunk< 4 > * >( pChunk ) );
-    case 5:
-        return s_arrChunkCircles[ u ] = TMemChunk< 5 >::GetNewInstance( static_cast< TMemChunk< 5 > * >( pChunk ) );
-    }
-    return 0;
 }
 
 inline
 void mCStringAllocator::FreeBlock( SMemChunkBase * a_pChunk, MILPVoid a_pBlock, MIUInt a_uBlockFlags )
 {
     static_cast< mCStringAllocator::SMemChunkBase::SVacantBlockHeader * >( a_pBlock )->m_u32Previous = 0;
-    static_cast< mCStringAllocator::SMemChunkBase::SVacantBlockHeader * >( a_pBlock )->m_u32Next = a_pChunk->m_u32FirstFreeBlock;
-    if ( a_pChunk->m_u32FirstFreeBlock )
-        static_cast< mCStringAllocator::SMemChunkBase::SVacantBlockHeader * >( s_getComposedPtr( a_pChunk, a_pChunk->m_u32FirstFreeBlock ) )->m_u32Previous = s_getDecomposedPtr( a_pBlock );
-    a_pChunk->m_u32FirstFreeBlock = s_getDecomposedPtr( a_pBlock );
+    static_cast< mCStringAllocator::SMemChunkBase::SVacantBlockHeader * >( a_pBlock )->m_u32Next = a_pChunk->GetFirstFreeBlock();
+    if ( a_pChunk->GetFirstFreeBlock() )
+        static_cast< mCStringAllocator::SMemChunkBase::SVacantBlockHeader * >( s_getComposedPtr( a_pChunk, a_pChunk->GetFirstFreeBlock() ) )->m_u32Previous = s_getDecomposedPtr( a_pBlock );
+    a_pChunk->SetFirstFreeBlock( s_getDecomposedPtr( a_pBlock ) );
     g_unsetbit( a_pChunk->m_arrBlocks, a_uBlockFlags );
     g_unsetbit( a_pChunk->m_arrBlocks, a_uBlockFlags + 1 );
 }
@@ -206,45 +179,50 @@ void mCStringAllocator::ReallocNewPtrs( void )
 inline
 MIUInt mCStringAllocator::SMemChunkBase::GetBlockSizeExp( void ) const
 {
-    return m_u16BlockSizeExp;
+    return m_u32BlockSizeExp;
+}
+
+inline
+MIU32 mCStringAllocator::SMemChunkBase::GetFirstFreeBlock( void )
+{
+    return m_u32FirstFreeBlock;
 }
 
 inline
 MIUInt mCStringAllocator::SMemChunkBase::GetNumBlocks( void ) const
 {
-    return m_u16NumBlocks;
+    return m_u32NumBlocks;
 }
 
 inline
-mCStringAllocator::SMemChunkBase * mCStringAllocator::SMemChunkBase::GetNext( void ) const
+void mCStringAllocator::SMemChunkBase::SetFirstFreeBlock( MIU32 a_uFirstFreeBlock )
 {
-    return *reinterpret_cast< SMemChunkBase * const * >( &m_u64NextChunk );
+    if ( a_uFirstFreeBlock )
+    {
+        if ( !m_u32FirstFreeBlock )
+            ( *reinterpret_cast< CChunkManager ** >( &m_u64ChunkManager ) )->ActivateChunk( m_u32Index );
+    }
+    else
+    {
+        if ( m_u32FirstFreeBlock )
+            ( *reinterpret_cast< CChunkManager ** >( &m_u64ChunkManager ) )->DeactivateChunk( m_u32Index );
+    }
+    m_u32FirstFreeBlock = a_uFirstFreeBlock;
 }
 
-mCStringAllocator::SMemChunkBase::SMemChunkBase( MIUInt a_uBlockSize, MIUInt a_uNumBlocks, SMemChunkBase * a_pCreator ) :
-    m_u16NumBlocks( static_cast< MIU16 >( a_uNumBlocks ) ),
-    m_u16BlockSizeExp( 0 )
+mCStringAllocator::SMemChunkBase::SMemChunkBase( MIUInt a_uBlockSize, MIUInt a_uNumBlocks, CChunkManager * a_pChunkManager, MIUInt a_uIndex ) :
+    m_u32NumBlocks( static_cast< MIU16 >( a_uNumBlocks ) ),
+    m_u32BlockSizeExp( 0 ),
+    m_u32FirstFreeBlock( 0 ),
+    m_u32Index( static_cast< MIU32 >( a_uIndex ) )
 {
-    for ( ; a_uBlockSize != 1; a_uBlockSize >>= 1, ++m_u16BlockSizeExp );
-    SMemChunkBase *& pNextChunk = *reinterpret_cast< SMemChunkBase ** >( &m_u64NextChunk );
-    if ( !a_pCreator )
-    {
-        pNextChunk = this;
-        return;
-    }
-    pNextChunk = a_pCreator;
-    while ( a_pCreator->GetNext() != pNextChunk )
-        a_pCreator = a_pCreator->GetNext();
-    *reinterpret_cast< SMemChunkBase ** >( &a_pCreator->m_u64NextChunk ) = this;
+    for ( ; a_uBlockSize != 1; a_uBlockSize >>= 1, ++m_u32BlockSizeExp );
+    *reinterpret_cast< CChunkManager ** >( &m_u64ChunkManager ) = a_pChunkManager;
 }
 
 mCStringAllocator::SMemChunkBase::~SMemChunkBase( void )
 {
-    SMemChunkBase * pNextChunk = *reinterpret_cast< SMemChunkBase ** >( &m_u64NextChunk );
-    SMemChunkBase * pPreviousChunk = pNextChunk;
-    while ( pPreviousChunk->GetNext() != this )
-        pPreviousChunk = pPreviousChunk->GetNext();
-    *reinterpret_cast< SMemChunkBase ** >( &pPreviousChunk->m_u64NextChunk ) = pNextChunk;
+    ( *reinterpret_cast< CChunkManager ** >( &m_u64ChunkManager ) )->RemoveChunk( m_u32Index );
 }
 
 mCStringAllocator::SMemChunkBase::SMemChunkBase( SMemChunkBase const & )
@@ -261,7 +239,7 @@ mCStringAllocator::SMemChunkBase & mCStringAllocator::SMemChunkBase::operator = 
 }
 
 template< MIUInt N >
-mCStringAllocator::TMemChunk< N > * mCStringAllocator::TMemChunk< N >::GetNewInstance( TMemChunk< N > * a_pCreator )
+mCStringAllocator::TMemChunk< N > * mCStringAllocator::TMemChunk< N >::GetNewInstance( CChunkManager * a_pChunkManager, MIUInt a_uIndex )
 {
     if ( ( !s_pChunkBuffer ) || ( !*static_cast< MIByte * >( s_pChunkBuffer ) ) )
     {
@@ -274,12 +252,12 @@ mCStringAllocator::TMemChunk< N > * mCStringAllocator::TMemChunk< N >::GetNewIns
     }
     MILPByte pMemory = static_cast< MILPByte >( static_cast< MILPVoid * >( s_pChunkBuffer )[ 1 ] );
     pMemory += EChunkSize * ( *static_cast< MIByte * >( s_pChunkBuffer ) )--;
-    return new ( pMemory ) TMemChunk< N >( a_pCreator );
+    return new ( pMemory ) TMemChunk< N >( a_pChunkManager, a_uIndex );
 }
 
 template< MIUInt N >
-mCStringAllocator::TMemChunk< N >::TMemChunk( TMemChunk< N > * a_pCreator ) :
-    SMemChunkBase( EBlockSize, ENumBlocks, a_pCreator )
+mCStringAllocator::TMemChunk< N >::TMemChunk( CChunkManager * a_pChunkManager, MIUInt a_uIndex ) :
+    SMemChunkBase( EBlockSize, ENumBlocks, a_pChunkManager, a_uIndex )
 {
     enum { EBlockQWORDs = EBlockSize / sizeof( MIU64 ) };
     enum { EReservedQWORDs = ( EReservedSize + 7 ) / 8 };
@@ -304,12 +282,99 @@ mCStringAllocator::TMemChunk< N >::TMemChunk( TMemChunk< N > * a_pCreator ) :
     }
     p->m_u32Next = 0;
     pFirstBlock->m_u32Previous = 0;
-    m_u32FirstFreeBlock = s_getDecomposedPtr( pFirstBlock );
+    SetFirstFreeBlock( s_getDecomposedPtr( pFirstBlock ) );
 }
 
 template< MIUInt N >
 mCStringAllocator::TMemChunk< N >::~TMemChunk( void )
 {
+}
+
+mCStringAllocator::CChunkManager::CChunkManager( MIUInt a_uLevel ) :
+    m_uLevel( a_uLevel ),
+    m_uCount( 0 ),
+    m_uCapacity( 0 ),
+    m_uFirstActiveChunk( MI_DW_INVALID ),
+    m_pRecords( 0 )
+{
+}
+
+mCStringAllocator::CChunkManager::~CChunkManager( void )
+{
+    delete [] m_pRecords;
+}
+
+inline
+mCStringAllocator::SMemChunkBase * mCStringAllocator::CChunkManager::GetActiveChunk( void )
+{
+    if ( m_uFirstActiveChunk == MI_DW_INVALID )
+        GenerateActiveChunk();
+    return m_pRecords[ m_uFirstActiveChunk ].m_pChunk;
+}
+
+inline
+void mCStringAllocator::CChunkManager::ActivateChunk( MIUInt a_uIndex )
+{
+    m_pRecords[ a_uIndex ].m_uNextActive = m_uFirstActiveChunk;
+    m_pRecords[ a_uIndex ].m_uPreviousActive = MI_DW_INVALID;
+    if ( m_uFirstActiveChunk != MI_DW_INVALID )
+        m_pRecords[ m_uFirstActiveChunk ].m_uPreviousActive = a_uIndex;
+    m_uFirstActiveChunk = a_uIndex;
+}
+
+inline
+void mCStringAllocator::CChunkManager::DeactivateChunk( MIUInt a_uIndex )
+{
+    SRecord & Record = m_pRecords[ a_uIndex ];
+    if ( Record.m_uNextActive != MI_DW_INVALID )
+        m_pRecords[ Record.m_uNextActive ].m_uPreviousActive = Record.m_uPreviousActive;
+    if ( Record.m_uPreviousActive != MI_DW_INVALID )
+        m_pRecords[ Record.m_uPreviousActive ].m_uNextActive = Record.m_uNextActive;
+    else
+        m_uFirstActiveChunk = Record.m_uNextActive;
+    Record.m_uPreviousActive = MI_DW_INVALID;
+}
+
+void mCStringAllocator::CChunkManager::GenerateActiveChunk( void )
+{
+    if ( m_uCapacity == m_uCount )
+    {
+        m_uCapacity = m_uCapacity * 5 / 4 + 256;
+        SRecord * pRecords = new SRecord [ m_uCapacity ];
+        g_memcpy( pRecords, m_pRecords, sizeof( SRecord ) * m_uCount );
+        delete [] m_pRecords;
+        m_pRecords = pRecords;
+    }
+    switch ( m_uLevel )
+    {
+    case 0:
+        m_pRecords[ m_uCount ].m_pChunk = TMemChunk< 0 >::GetNewInstance( this, m_uCount );
+        break;
+    case 1:
+        m_pRecords[ m_uCount ].m_pChunk = TMemChunk< 1 >::GetNewInstance( this, m_uCount );
+        break;
+    case 2:
+        m_pRecords[ m_uCount ].m_pChunk = TMemChunk< 2 >::GetNewInstance( this, m_uCount );
+        break;
+    case 3:
+        m_pRecords[ m_uCount ].m_pChunk = TMemChunk< 3 >::GetNewInstance( this, m_uCount );
+        break;
+    case 4:
+        m_pRecords[ m_uCount ].m_pChunk = TMemChunk< 4 >::GetNewInstance( this, m_uCount );
+        break;
+    case 5:
+        m_pRecords[ m_uCount ].m_pChunk = TMemChunk< 5 >::GetNewInstance( this, m_uCount );
+        break;
+    }
+    ++m_uCount;
+}
+
+void mCStringAllocator::CChunkManager::RemoveChunk( MIUInt a_uIndex )
+{
+    SRecord & Record = m_pRecords[ a_uIndex ];
+    if ( ( Record.m_uPreviousActive != MI_DW_INVALID ) || ( m_uFirstActiveChunk == a_uIndex ) )
+        DeactivateChunk( a_uIndex );
+    Record.m_pChunk = 0;
 }
 
 mCStringAllocator::SInitializer::SInitializer( void )
@@ -318,12 +383,12 @@ mCStringAllocator::SInitializer::SInitializer( void )
     if ( s_bIsInitialized )
         return;
     s_bIsInitialized = MITrue;
-    mCStringAllocator::s_arrChunkCircles[ 0 ] = TMemChunk< 0 >::GetNewInstance( 0 );
-    mCStringAllocator::s_arrChunkCircles[ 1 ] = TMemChunk< 1 >::GetNewInstance( 0 );
-    mCStringAllocator::s_arrChunkCircles[ 2 ] = TMemChunk< 2 >::GetNewInstance( 0 );
-    mCStringAllocator::s_arrChunkCircles[ 3 ] = TMemChunk< 3 >::GetNewInstance( 0 );
-    mCStringAllocator::s_arrChunkCircles[ 4 ] = TMemChunk< 4 >::GetNewInstance( 0 );
-    mCStringAllocator::s_arrChunkCircles[ 5 ] = TMemChunk< 5 >::GetNewInstance( 0 );
+    mCStringAllocator::s_arrChunkManagers[ 0 ] = new CChunkManager( 0 );
+    mCStringAllocator::s_arrChunkManagers[ 1 ] = new CChunkManager( 1 );
+    mCStringAllocator::s_arrChunkManagers[ 2 ] = new CChunkManager( 2 );
+    mCStringAllocator::s_arrChunkManagers[ 3 ] = new CChunkManager( 3 );
+    mCStringAllocator::s_arrChunkManagers[ 4 ] = new CChunkManager( 4 );
+    mCStringAllocator::s_arrChunkManagers[ 5 ] = new CChunkManager( 5 );
 }
 
 template struct mCStringAllocator::TMemChunk< 0 >;

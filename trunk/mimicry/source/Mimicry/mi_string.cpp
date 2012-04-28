@@ -2,7 +2,7 @@
 #include "mi_include_string.h"
 
 MIUInt mCString::s_uBufferSize = EMinStaticBufferSize;
-MILPChar mCString::s_pcBuffer = static_cast< MILPChar >( malloc( EMinStaticBufferSize ) );
+MILPChar mCString::s_pcBuffer = new MIChar [ EMinStaticBufferSize ];
 
 mCString::mCString( MIUInt a_uCount ) :
     m_pcText( Alloc( 0, a_uCount ) )
@@ -15,7 +15,7 @@ mCString::mCString( MILPCChar a_pcText ) :
 }
 
 mCString::mCString( MILPCChar a_pcText, MIUInt a_uCount ) :
-m_pcText( Alloc( ( a_uCount ? a_pcText : 0 ), a_uCount ) )
+m_pcText( Alloc( a_uCount ? a_pcText : 0, a_uCount ) )
 {
 }
 
@@ -26,12 +26,17 @@ mCString::mCString( MIChar a_cChar, MIUInt a_uCount ) :
 }
 
 mCString::mCString( MILPCChar a_pcText1, MILPCChar a_pcText2 ) :
-    m_pcText( Alloc( a_pcText1, a_pcText2 ) )
+    m_pcText( Alloc( a_pcText1, 0, a_pcText2, 0 ) )
+{
+}
+
+mCString::mCString( MILPCChar a_pcText1, MIUInt uLength1, MILPCChar a_pcText2, MIUInt uLength2 ) :
+    m_pcText( Alloc( a_pcText1, uLength1, a_pcText2, uLength2 ) )
 {
 }
 
 mCString::mCString( mCString const & a_strText ) :
-    m_pcText( Alloc( a_strText.m_pcText ) )
+    m_pcText( Alloc( a_strText.GetText(), a_strText.GetLength() ) )
 {
 }
 
@@ -42,7 +47,7 @@ mCString::mCString( void ) :
 
 mCString::~mCString( void )
 {
-    free( m_pcText );
+    mCStringAllocator::Free( m_pcText );
 }
 
 mCString & mCString::operator = ( mCString const & a_strText )
@@ -87,27 +92,27 @@ MIBool mCString::operator != ( MILPCChar a_pcOther ) const
 
 MIChar & mCString::operator [] ( MIInt a_uIndex )
 {
-    return m_pcText[ a_uIndex ];
+    return AccessText()[ a_uIndex ];
 }
 
 MIChar mCString::operator [] ( MIInt a_uIndex ) const
 {
-    return m_pcText[ a_uIndex ];
+    return GetText()[ a_uIndex ];
 }
 
 mCString mCString::operator + ( mCString const & a_strText ) const
 {
-    return mCString( m_pcText, a_strText.m_pcText );
+    return mCString( GetText(), GetLength(), a_strText.GetText(), a_strText.GetLength() );
 }
 
 mCString mCString::operator + ( MIChar a_cChar ) const
 {
-    return mCString( m_pcText, Stringize( a_cChar ) );
+    return mCString( GetText(), GetLength(), &a_cChar, 1 );
 }
 
 mCString mCString::operator + ( MILPCChar a_pcText ) const
 {
-    return mCString( m_pcText, a_pcText );
+    return mCString( GetText(), GetLength(), a_pcText, 0 );
 }
 
 MIBool mCString::operator < ( mCString const & a_strOther ) const
@@ -170,44 +175,44 @@ mCString & mCString::operator += ( MILPCChar a_pcText )
 
 MILPChar mCString::AccessText( void )
 {
-    return m_pcText;
+    return ( *m_pcText == -1 ) ? m_pcText + 5 : m_pcText + 1;
 }
 
 mCString & mCString::Append( mCString const & a_strText )
 {
-    return Append( a_strText.m_pcText );
+    m_pcText = Alloc( GetText(), GetLength(), a_strText.GetText(), a_strText.GetLength(), m_pcText );
+    return *this;
 } 
 
 mCString & mCString::Append( MILPCChar a_pcText )
 {
-    mCString strNew( m_pcText, a_pcText );
-    Swap( strNew );
+    m_pcText = Alloc( GetText(), GetLength(), a_pcText, 0, m_pcText );
     return *this;
 }
 
 void mCString::Clear( void )
 {
-    SetText( "" );
+    SetText( ( MILPCChar ) 0, 0 );
 }
 
 MIInt mCString::Compare( mCString const & a_strOther ) const
 {
-    return Compare( a_strOther.m_pcText );
+    return Compare( a_strOther.GetText() );
 }
 
 MIInt mCString::Compare( MILPCChar a_pcOther ) const
 {
-    return g_strcmp( m_pcText, a_pcOther );
+    return g_strcmp( GetText(), a_pcOther );
 }
 
 MIInt mCString::CompareNoCase( mCString const & a_strOther ) const
 {
-    return CompareNoCase( a_strOther.m_pcText );
+    return CompareNoCase( a_strOther.GetText() );
 }
 
 MIInt mCString::CompareNoCase( MILPCChar a_pcOther ) const
 {
-    MILPCChar pcText = m_pcText;
+    MILPCChar pcText = GetText();
     do
     {
         MIInt iDiff = toupper( *pcText ) - toupper( *a_pcOther );
@@ -232,9 +237,7 @@ MIUInt mCString::Count( MILPCChar a_pcText ) const
 {
     MIUInt uResult = 0;
     MIUInt uSeekStringLength = static_cast< MIUInt >( g_strlen( a_pcText ) );
-    MILPCChar pcText = m_pcText;
-    MILPCChar pcEndText = ( pcText-- ) + GetLength();
-    while ( NextOf( ( pcText += uSeekStringLength ), pcEndText, a_pcText, uSeekStringLength ) )
+    for ( MILPCChar pcText = GetText(), pcEndText = pcText + GetLength(); NextOf( pcText, pcEndText, a_pcText, uSeekStringLength ); pcText += uSeekStringLength )
         ++uResult;
     return uResult;
 }
@@ -242,24 +245,23 @@ MIUInt mCString::Count( MILPCChar a_pcText ) const
 MIUInt mCString::Count( MIChar a_cChar ) const
 {
     MIUInt uResult = 0;
-    MILPCChar pcText = m_pcText;
-    MILPCChar pcEndText = ( pcText-- ) + GetLength();
-    while ( NextOf( ++pcText, pcEndText, a_cChar ) )
+    for ( MILPCChar pcText = GetText(), pcEndText = pcText + GetLength(); NextOf( pcText, pcEndText, a_cChar ); ++pcText )
         ++uResult;
     return uResult;
 }
 
 MIUInt mCString::FirstOf( MILPCChar a_pcText ) const
 {
-    MILPCChar pcText = m_pcText;
-    MILPCChar pcOccurance = mCString::NextOf( pcText, ( m_pcText + GetLength() ), a_pcText, static_cast< MIUInt >( g_strlen( a_pcText ) ) );
-    return ( pcOccurance ? static_cast< MIUInt >( pcOccurance - m_pcText ) : MI_DW_INVALID );
+    MILPCChar pcText = GetText(), pcTextIt = pcText;
+    MILPCChar pcOccurance = mCString::NextOf( pcTextIt, pcText + GetLength(), a_pcText, static_cast< MIUInt >( g_strlen( a_pcText ) ) );
+    return ( pcOccurance ? static_cast< MIUInt >( pcOccurance - pcText ) : MI_DW_INVALID );
 }
 
 MIUInt mCString::FirstOf( MIChar a_cChar ) const
 {
-    MILPCChar pcOccurance = g_strchr( m_pcText, a_cChar );
-    return ( pcOccurance ? static_cast< MIUInt >( pcOccurance - m_pcText ) : MI_DW_INVALID );
+    MILPCChar pcText = GetText();
+    MILPCChar pcOccurance = g_strchr( pcText, a_cChar );
+    return ( pcOccurance ? static_cast< MIUInt >( pcOccurance - pcText ) : MI_DW_INVALID );
 }
 
 mCString & mCString::Format( MILPCChar a_pcFormat, ... )
@@ -273,80 +275,78 @@ mCString & mCString::Format( MILPCChar a_pcFormat, ... )
 
 MIUInt mCString::GetLength( void ) const
 {
-    return static_cast< MIUInt >( g_strlen( m_pcText ) );
+    return ( *m_pcText != -1 ) ? *reinterpret_cast< MIU8 * >( m_pcText ) : *reinterpret_cast< MIU32 * >( m_pcText + 1 );
 }
 
 MILPCChar mCString::GetText( void ) const
 {
-    return m_pcText;
+    return ( *m_pcText == -1 ) ? m_pcText + 5 : m_pcText + 1;
 }
 
 MIUInt mCString::LastOf( MILPCChar a_pcText ) const
 {
     MIUInt uSeekStringLength = static_cast< MIUInt >( g_strlen( a_pcText ) );
-    for ( MILPCChar pcText = g_max( ( m_pcText + GetLength() - uSeekStringLength ), m_pcText ); pcText != m_pcText; --pcText )
-    {
-        if ( *pcText == *a_pcText )
-            if ( !g_strncmp( pcText, a_pcText, uSeekStringLength ) )
-                return static_cast< MIUInt >( pcText - m_pcText );
-    }
+    MILPCChar pcText = GetText();
+    MILPCChar pcTextIt = pcText + GetLength() - uSeekStringLength;
+    for ( ; pcTextIt >= pcText; --pcTextIt )
+        if ( ( *pcTextIt == *a_pcText ) && ( !g_strncmp( pcTextIt, a_pcText, uSeekStringLength ) ) )
+            return static_cast< MIUInt >( pcTextIt - pcText );
     return MI_DW_INVALID;
 }
 
 MIUInt mCString::LastOf( MIChar a_cChar ) const
 {
-    for ( MILPCChar pcText = g_max( ( m_pcText + GetLength() - 1 ), m_pcText ); pcText != m_pcText; --pcText )
-    {
-        if ( *pcText == a_cChar )
-            return static_cast< MIUInt >( pcText - m_pcText );
-    }
+    MILPCChar pcText = GetText();
+    MILPCChar pcTextIt = pcText + GetLength() - 1;
+    for ( ; pcTextIt >= pcText; --pcTextIt )
+        if ( *pcTextIt == a_cChar )
+            return static_cast< MIUInt >( pcTextIt - pcText );
     return MI_DW_INVALID;
 }
 
 mCString mCString::Left( MIUInt a_uCount ) const
 {
-    return mCString( m_pcText, a_uCount );
+    return mCString( GetText(), a_uCount );
 }
 
 mCString & mCString::Replace( MILPCChar a_pcText, MILPCChar a_pcNewText )
 {
-    MILPCChar pcText           = m_pcText;
-    MILPCChar pcEndText        = pcText + GetLength();
-    MIUInt    uStringLength    = static_cast< MIUInt >( g_strlen( a_pcText ) );
-    MIUInt    uNewStringLength = static_cast< MIUInt >( g_strlen( a_pcNewText ) );
-
-    if ( MIInt uMaxBufferOverhead = g_max( static_cast< MIInt >( ( ( pcEndText - pcText ) / uStringLength * sizeof( MILPCChar ) ) - s_uBufferSize ), 0 ) )
+    MIUInt const uSearchTextLength  = static_cast< MIUInt >( g_strlen( a_pcText ) );
+    MIUInt const uReplaceTextLength = static_cast< MIUInt >( g_strlen( a_pcNewText ) );
+    AssureStaticBufferSize( GetLength() + uReplaceTextLength );
+    MILPCChar pcTextIt1    = GetText();
+    MILPCChar pcTextIt2    = pcTextIt1;
+    MILPCChar pcEndText    = pcTextIt1 + GetLength();
+    MILPChar  pcNewText    = AccessStaticBuffer();
+    MILPChar  pcNewTextIt  = pcNewText;
+    MILPChar  pcEndNewText = pcNewText + GetStaticBufferSize();
+    while ( NextOf( pcTextIt2, pcEndText, a_pcText, uSearchTextLength ), MITrue )
     {
-        s_pcBuffer = static_cast< MILPChar >( realloc( s_pcBuffer, ( s_uBufferSize += uMaxBufferOverhead ) ) );
+        if ( !pcTextIt2 )
+            pcTextIt2 = pcEndText;
+        MIUInt const uCopyLength = static_cast< MIUInt >( pcTextIt2 - pcTextIt1 );
+        if ( uCopyLength + uReplaceTextLength > static_cast< MIUInt >( pcEndNewText - pcNewTextIt ) )
+        {
+            mCString str1( pcNewText, static_cast< MIUInt >( pcNewTextIt - pcNewText ) );
+            mCString str2( pcTextIt1, static_cast< MIUInt >( pcEndText - pcTextIt1 ) );
+            return *this = str1 + str2.Replace( a_pcText, a_pcNewText );
+        }
+        g_memcpy( pcNewTextIt, pcTextIt1, uCopyLength );
+        pcNewTextIt += uCopyLength;
+        if ( pcTextIt2 == pcEndText )
+            break;
+        g_memcpy( pcNewTextIt, a_pcNewText, uReplaceTextLength );
+        pcNewTextIt += uReplaceTextLength;
+        pcTextIt2 += uSearchTextLength;
+        pcTextIt1 = pcTextIt2;
     }
-
-    MILPCChar * ppcOccurrences = reinterpret_cast< MILPCChar * >( s_pcBuffer ) - 1;
-    while ( ( *( ++ppcOccurrences ) = NextOf( pcText, pcEndText, a_pcText, uStringLength ) ) != 0 )
-        ++pcText;
-    pcText = m_pcText;
-    
-    MIInt iSizeIncrease = ( uNewStringLength - uStringLength ) * ( ppcOccurrences - reinterpret_cast< MILPCChar * >( s_pcBuffer ) );
-    ppcOccurrences = reinterpret_cast< MILPCChar * >( s_pcBuffer ) - 1;
-    MILPChar pcNewText = Alloc( 0, static_cast< MIUInt >( ( pcEndText - pcText ) + iSizeIncrease ) );
-    MILPChar pcNewTextIt = pcNewText;
-    while ( *( ++ppcOccurrences ) )
-    {
-        MIUInt uLength = static_cast< MIUInt >( *ppcOccurrences - pcText );
-        g_memcpy( pcNewTextIt, pcText, uLength );
-        pcText += ( uLength + uStringLength );
-        g_memcpy( ( pcNewTextIt += uLength ), a_pcNewText, uNewStringLength );
-        pcNewTextIt += uNewStringLength;
-    }
-    g_memcpy( pcNewTextIt, pcText, ( pcEndText - pcText ) );
-
-    free( m_pcText );
-    m_pcText = pcNewText;
+    SetText( pcNewText, static_cast< MIUInt >( pcNewTextIt - pcNewText ) );
     return *this;
 }
 
 mCString & mCString::Replace( MIChar a_cChar, MIChar a_cNewChar )
 {
-    MILPChar pcText = m_pcText;
+    MILPChar pcText = AccessText();
     MILPCChar pcEndText = pcText + GetLength();
     while ( NextOf( *const_cast< MILPCChar * >( &pcText ), pcEndText, a_cChar ) )
         *( pcText++ ) = a_cNewChar;
@@ -355,7 +355,7 @@ mCString & mCString::Replace( MIChar a_cChar, MIChar a_cNewChar )
 
 mCString mCString::Right( MIUInt a_uCount ) const
 {
-    return mCString( ( m_pcText + GetLength() - a_uCount ), a_uCount );
+    return mCString( GetText() + GetLength() - a_uCount, a_uCount );
 }
 
 MIInt mCString::Scan( MILPCChar a_pcFormat, ... ) const
@@ -370,103 +370,97 @@ MIInt mCString::Scan( MILPCChar a_pcFormat, ... ) const
 void mCString::SetText( mCString const & a_strText )
 {
     if ( &a_strText != this )
-        m_pcText = Alloc( a_strText.m_pcText, static_cast< MIUInt >( 0 ), m_pcText );
+        m_pcText = Alloc( a_strText.GetText(), a_strText.GetLength(), m_pcText );
 }
 
 void mCString::SetText( MILPCChar a_pcText )
 {
-    m_pcText = Alloc( a_pcText, static_cast< MIUInt >( 0 ), m_pcText );
+    m_pcText = Alloc( a_pcText, 0u, m_pcText );
 }
 
 void mCString::SetText( MILPCChar a_pcText, MIUInt a_uCount )
 {
-    m_pcText = Alloc( ( a_uCount ? a_pcText : 0 ), a_uCount, m_pcText );
+    m_pcText = Alloc( a_uCount ? a_pcText : 0, a_uCount, m_pcText );
 }
 
 void mCString::SetText( MIChar a_cChar, MIUInt a_uCount )
 {
     m_pcText = Alloc( 0, a_uCount, m_pcText );
-    for ( MIUInt i = 0; i != a_uCount; ++i )
-        m_pcText[ i ] = a_cChar;
+    for ( MILPChar pcText = AccessText(); a_uCount--; pcText[ a_uCount ] = a_cChar );
 }
 
 void mCString::Swap( mCString & a_strOther )
 {
-    if ( this == &a_strOther )
-        return;
     g_swap( m_pcText, a_strOther.m_pcText );
 }
 
 mCString & mCString::ToLower( void )
 {
-    MILPChar pcText = m_pcText;
-    while ( *pcText )
-        *pcText++ = static_cast< MIChar >( tolower( *pcText ) );
+    for ( MILPChar pcText = AccessText(); *pcText; ++pcText )
+        *pcText = static_cast< MIChar >( tolower( *pcText ) );
     return *this;
 }
 
 mCString & mCString::ToUpper( void )
 {
-    MILPChar pcText = m_pcText;
-    while ( *pcText )
-        *pcText++ = static_cast< MIChar >( toupper( *pcText ) );
+    for ( MILPChar pcText = AccessText(); *pcText; ++pcText )
+        *pcText = static_cast< MIChar >( toupper( *pcText ) );
     return *this;
 }
 
 mCString & mCString::TrimLeft( MILPCChar a_pcChars )
 {
-    MILPCChar pcText = m_pcText - 1;
-    while ( *++pcText && g_strchr( a_pcChars, *pcText ) );
-    return TrimLeft( static_cast< MIUInt >( pcText - m_pcText ) );
+    MILPCChar pcText = GetText(), pcTextIt = pcText;
+    for ( ; *pcTextIt && g_strchr( a_pcChars, *pcTextIt ); ++pcTextIt );
+    return TrimLeft( static_cast< MIUInt >( pcTextIt - pcText ) );
 }
 
 mCString & mCString::TrimLeft( MIChar a_cChar )
 {
     if ( a_cChar == 0 )
         return *this;
-    MILPChar pcText = m_pcText;
-    while ( *pcText == a_cChar )
-        ++pcText;
-    MIUInt uCount = static_cast< MIUInt >( pcText - m_pcText );
-    if ( uCount )
-        TrimLeft( uCount );
-    return *this;
+    MIUInt u = 0;
+    for ( MILPChar pcText = AccessText(); pcText[ u ] == a_cChar; ++u );
+    return TrimLeft( u );
 }
 
 mCString & mCString::TrimLeft( MIUInt a_uCount )
 {
     if ( !a_uCount )
         return *this;
-    g_memcpy( m_pcText, m_pcText + a_uCount, ( GetLength() - a_uCount + 1 ) );
+    MIUInt uNewLength = GetLength();
+    a_uCount = g_min( uNewLength, a_uCount );
+    uNewLength -= a_uCount;
+    AssureStaticBufferSize( uNewLength );
+    g_memcpy( AccessStaticBuffer(), AccessText() + a_uCount, uNewLength );
+    SetText( AccessStaticBuffer(), uNewLength );
     return *this;
 }
 
 mCString & mCString::TrimRight( MIChar a_cChar )
 {
-    if ( a_cChar == 0 )
-        return *this;
     MIUInt uLength = GetLength();
-    MILPChar pcText = m_pcText + uLength;
-    while ( pcText-- != m_pcText )
-        if ( *pcText != a_cChar )
-            break;
-    MIUInt uCount = uLength - ( pcText - m_pcText + 1 );
-    if ( uCount )
-        TrimRight( uCount );
+    MIUInt u = uLength;
+    for ( MILPChar pcText = AccessText(); u && ( pcText[ u - 1 ] == a_cChar ); --u );
+    TrimRight( uLength - u );
     return *this;
 }
 
 mCString & mCString::TrimRight( MILPCChar a_pcChars )
 {
     MIUInt const uLength = GetLength();
-    MILPCChar pcText = m_pcText + uLength;
-    while ( ( pcText-- != m_pcText ) && g_strchr( a_pcChars, *pcText ) );
-    return TrimRight( uLength - static_cast< MIUInt >( pcText - m_pcText + 1 ) );
+    if ( !uLength )
+        return *this;
+    MILPCChar pcText = AccessText();
+    MILPCChar pcTextIt = pcText + uLength;
+    while ( ( pcTextIt-- >= pcText ) && g_strchr( a_pcChars, *pcTextIt ) );
+    return TrimRight( uLength - static_cast< MIUInt >( pcTextIt - pcText + 1 ) );
 }
 
 mCString & mCString::TrimRight( MIUInt a_uCount )
 {
-    m_pcText[ GetLength() - a_uCount ] = 0;
+    a_uCount = g_min( a_uCount, GetLength() );
+    m_pcText = Alloc( 0, GetLength() - a_uCount, m_pcText );
     return *this;
 }
 
@@ -494,6 +488,7 @@ MIInt mCString::VScan( MILPCChar a_pcFormat, va_list a_Arguments ) const
     }
     if ( iCount )
     {
+        MILPCChar pcText = GetText();
         MIU32 ** pLastArg = &va_arg( a_Arguments, MIU32 * ) + ( iCount - 1 );
         MI_ASSERT_32_BIT
         MI_ASM {
@@ -507,40 +502,66 @@ label_loop:
             test eax, eax
             jnz  label_loop
             push a_pcFormat
-            mov  eax, this
-            push [ eax ]
+            mov  eax, pcText
+            push eax
             call funcSscanf
             mov  iCount, eax
             mov  esp, esi
         }
     }
 #else
-    iCount = vsscanf( a_pcFormat, a_Arguments );
+    iCount = vsscanf( GetText(), a_pcFormat, a_Arguments );
 #endif
     return iCount;
 }
 
-MILPChar mCString::Alloc( MILPCChar a_pcText, MIUInt a_uCount, MILPVoid a_Memory )
+namespace
 {
-    if ( a_pcText )
-        if ( !a_uCount )
-            a_uCount = static_cast< MIUInt >( g_strlen( a_pcText ) );
-    MILPChar pcText = static_cast< MILPChar >( realloc( a_Memory, ( a_uCount + 1 ) ) );
-    pcText[ a_uCount ] = 0;
-    if ( a_pcText )
-        g_memcpy( pcText, a_pcText, a_uCount );
-    return pcText;
+    inline
+    MILPChar _Alloc( MIUInt a_uTextLength, MILPChar & a_pcTextPart, MILPVoid a_Memory )
+    {
+        MILPChar pcResult; 
+        if ( a_uTextLength > 0xFE )
+        {
+            pcResult = static_cast< MILPChar >( mCStringAllocator::Realloc( a_Memory, a_uTextLength + 6 ) );
+            pcResult[ a_uTextLength + 5 ] = 0;
+            *pcResult = -1;
+            *reinterpret_cast< MIU32 * >( pcResult + 1 ) = static_cast< MIU32 >( a_uTextLength );
+            a_pcTextPart = pcResult + 5;
+        }
+        else
+        {
+            pcResult = static_cast< MILPChar >( mCStringAllocator::Realloc( a_Memory, a_uTextLength + 2 ) );
+            pcResult[ a_uTextLength + 1 ] = 0;
+            *reinterpret_cast< MIU8 * >( pcResult ) = static_cast< MIU8 >( a_uTextLength );
+            a_pcTextPart = pcResult + 1;
+        }
+        return pcResult;
+    }
 }
 
-MILPChar mCString::Alloc( MILPCChar a_pcText1, MILPCChar a_pcText2, MILPVoid a_Memory )
+MILPChar mCString::Alloc( MILPCChar a_pcText, MIUInt a_uLength, MILPVoid a_Memory )
 {
-    MIUInt uLength1 = static_cast< MIUInt >( g_strlen( a_pcText1 ) );
-    MIUInt uLength2 = static_cast< MIUInt >( g_strlen( a_pcText2 ) );
-    MILPChar pcText = static_cast< MILPChar >( realloc( a_Memory, ( uLength1 + uLength2 + 1 ) ) );
-    pcText[ uLength1 + uLength2 ] = 0;
-    g_memcpy( pcText, a_pcText1, uLength1 );
-    g_memcpy( ( pcText + uLength1 ), a_pcText2, uLength2 );
-    return pcText;
+    if ( !a_uLength && a_pcText )
+        a_uLength = static_cast< MIUInt >( g_strlen( a_pcText ) );
+    MILPChar pcText; 
+    MILPChar pcResult = _Alloc( a_uLength, pcText, a_Memory );
+    if ( a_pcText )
+        g_memcpy( pcText, a_pcText, a_uLength );
+    return pcResult;
+}
+
+MILPChar mCString::Alloc( MILPCChar a_pcText1, MIUInt a_uLength1, MILPCChar a_pcText2, MIUInt a_uLength2, MILPVoid a_Memory )
+{
+    if ( !a_uLength1 && a_pcText1 )
+        a_uLength1 = static_cast< MIUInt >( g_strlen( a_pcText1 ) );
+    if ( !a_uLength2 && a_pcText2 )
+        a_uLength2 = static_cast< MIUInt >( g_strlen( a_pcText2 ) );
+    MILPChar pcText; 
+    MILPChar pcResult = _Alloc( a_uLength1 + a_uLength2, pcText, a_Memory );
+    g_memcpy( pcText, a_pcText1, a_uLength1 );
+    g_memcpy( pcText + a_uLength1, a_pcText2, a_uLength2 );
+    return pcResult;
 }
 
 MIBool operator == ( MILPCChar a_pcText1, mCString const & a_strText2 )
@@ -555,12 +576,12 @@ MIBool operator != ( MILPCChar a_pcText1, mCString const & a_strText2 )
 
 mCString operator + ( MIChar a_cLeft, mCString const & a_strRight )
 {
-    return mCString( mCString::Stringize( a_cLeft ), a_strRight.GetText() );
+    return mCString( &a_cLeft, 1, a_strRight.GetText(), a_strRight.GetLength() );
 }
 
 mCString operator + ( MILPCChar a_pcLeft, mCString const & a_strRight )
 {
-    return mCString( a_pcLeft, a_strRight.GetText() );
+    return mCString( a_pcLeft, static_cast< MIUInt >( g_strlen( a_pcLeft ) ), a_strRight.GetText(), a_strRight.GetLength() );
 }
 
 MIBool operator < ( MILPCChar a_pcText1, mCString const & a_strText2 )

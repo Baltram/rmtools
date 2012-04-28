@@ -6,7 +6,7 @@ class mCString
 public:
     enum
     {
-        EMinStaticBufferSize = 2048
+        EMinStaticBufferSize = 8096
     };
 public:
     explicit mCString( MIUInt a_uCount );
@@ -14,6 +14,7 @@ public:
              mCString( MILPCChar a_pcText, MIUInt a_uCount );
              mCString( MIChar a_cChar, MIUInt a_uCount );
              mCString( MILPCChar a_pcText1, MILPCChar a_pcText2 );
+             mCString( MILPCChar a_pcText1, MIUInt uLength1, MILPCChar a_pcText2, MIUInt uLength2 );
              mCString( mCString const & a_strText );
              mCString( void );
             ~mCString( void );
@@ -42,6 +43,7 @@ public:
     mCString & operator +=        ( MIChar a_cChar );
     mCString & operator +=        ( MILPCChar a_pcText );
 public:
+    static void     AssureStaticBufferSize( MIUInt a_uSize );
     static MILPChar AccessStaticBuffer( void );
     static MIUInt   GetStaticBufferSize( void );
     static MILPChar Stringize( MIChar a_cChar );
@@ -86,8 +88,8 @@ public:
     mCString & VFormat( MILPCChar a_pcFormat, va_list a_Arguments );
     MIInt      VScan( MILPCChar a_pcFormat, va_list a_Arguments ) const;
 private:
-    static MILPChar  Alloc( MILPCChar a_pcText, MIUInt a_uCount = 0, MILPVoid a_Memory = 0 );
-    static MILPChar  Alloc( MILPCChar a_pcText1, MILPCChar a_pcText2, MILPVoid a_Memory = 0 );
+    static MILPChar  Alloc( MILPCChar a_pcText, MIUInt a_uLength = 0, MILPVoid a_Memory = 0 );
+    static MILPChar  Alloc( MILPCChar a_pcText1, MIUInt a_uLength1, MILPCChar a_pcText2, MIUInt a_uLength2, MILPVoid a_Memory = 0 );
     static MILPCChar NextOf( MILPCChar & a_pcText, MILPCChar a_pcEndText, MIChar a_cChar );
     static MILPCChar NextOf( MILPCChar & a_pcText, MILPCChar a_pcEndText, MILPCChar a_pcString, MIUInt a_uStringLength );
 private:
