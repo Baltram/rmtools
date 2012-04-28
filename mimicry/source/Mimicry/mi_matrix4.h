@@ -3,7 +3,7 @@
 
 class mCQuaternion;
 
-class __declspec( dllexport ) mCMatrix4
+class mCMatrix4
 {
 public:
     enum EElement
