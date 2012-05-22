@@ -11,6 +11,12 @@ enum mEResult
 class mCError
 {
 public:
+    enum
+    {
+        EGeneral,
+        EForceDWORD = MI_FORCE_DWORD
+    };
+public:
     template< typename T > static void            ClearAllErrors();
                            static void            ClearError( mCError const * a_pError ); 
     template< typename T > static void            Error( MIInt a_iErrorCode, MILPCChar a_pcText, MILPCChar a_pcFile, MIUInt a_uLine );

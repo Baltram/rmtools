@@ -42,14 +42,19 @@ mCName & mCName::operator = ( mCName const & a_nameSource )
     return *this;
 }
 
-MIU32 mCName::GetID( void )
+MIU32 mCName::GetID( void )const
 {
     return m_u32ID;
 }
 
-mCString const & mCName::GetString( void )
+mCString const & mCName::GetString( void ) const
 {
     return s_mapNames[ *this ].m_strString;
+}
+
+MIBool mCName::IsValid( void ) const
+{
+    return ( m_u32ID != 0 );
 }
 
 mCName::mCName( void ) :

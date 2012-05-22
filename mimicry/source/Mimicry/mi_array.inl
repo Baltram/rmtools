@@ -1,3 +1,24 @@
+template< typename T, typename U >
+struct _SZeroHelper;
+
+template< typename T >
+struct _SZeroHelper< T, mSTagScalar >
+{
+    static void Zero( T & a_Dest ) { a_Dest = 0; }
+};
+
+template< typename T >
+struct _SZeroHelper< T, mSTagNonScalar >
+{
+    static void Zero( T & ) {}
+};
+
+template< typename T > inline
+void g_zero( T & a_Dest )
+{
+    _SZeroHelper< T, mSTypeTagHelper< T >::msTag >::Zero( a_Dest );
+}
+
 template< typename T >
 typename mSTypeTagHelper< T >::msTag mTArray< T >::s_Tag;
 

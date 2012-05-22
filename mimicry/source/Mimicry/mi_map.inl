@@ -220,6 +220,7 @@ T & mTMap< K, T, C >::Add( MIU32 a_u32Hash, K const & a_Key )
         pBaseBucket->m_u32HopInfo |= ( 1 << ( pBucket - pBaseBucket ) );
         pBucket->m_u32Hash = a_u32Hash;
         pBucket->m_Key = a_Key;
+        g_zero( pBucket->m_Data );
         return pBucket->m_Data;
     }
     Reserve( m_arrBuckets.GetCount() );  // Causes a resize.
