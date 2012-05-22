@@ -13,15 +13,16 @@ public:
     MIBool   operator != ( mCName const & a_nameOther ) const;
     mCName & operator =  ( mCName const & a_nameSource );
 public:
-    MIU32            GetID( void );
-    mCString const & GetString( void );
+    MIU32            GetID( void ) const;
+    mCString const & GetString( void ) const;
+    MIBool           IsValid( void ) const;
 protected:
     struct StringRecord;
 protected:
     mCName( void );
 protected:
     static mTNameMap< StringRecord > s_mapNames;
-protected:
+private:
     MIU32 m_u32ID;
 private:
     template< typename K, typename T, class C >

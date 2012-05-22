@@ -29,6 +29,7 @@ public:
     mEResult  FromFile( mCString const & a_strFileName );
     MILPCVoid GetBuffer( void ) const;
     mEResult  ToFile( mCString const & a_strFileName );
+    MIBool    SkipTo( MILPCVoid a_pData, MIUInt a_uSize );
     void      Swap( mTMemoryStreamBase< M > & a_Other );
 private:
     virtual mEResult ReadFormatted( MILPVoid a_pDest, MILPCChar a_Format ) = 0;

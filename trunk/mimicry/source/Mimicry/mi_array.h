@@ -2,6 +2,9 @@
 #define MI_ARRAY_H_INCLUDED
 
 template< typename T >
+void g_zero( T & a_Dest );
+
+template< typename T >
 class mTArray
 {
 public:

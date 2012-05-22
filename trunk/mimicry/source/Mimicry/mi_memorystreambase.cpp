@@ -195,6 +195,24 @@ mEResult mTMemoryStreamBase< M >::ToFile( mCString const & a_strFileName )
 }
 
 template< mEStreamType M >
+MIBool mTMemoryStreamBase< M >::SkipTo( MILPCVoid a_pData, MIUInt a_uSize )
+{
+    if ( ( m_uPosition == GetSize() ) || !a_uSize )
+        return MIFalse;
+    MILPCChar pcData = static_cast< MILPCChar >( a_pData );
+    MILPCChar pcIt = &m_arrBuffer[ m_uPosition ];
+    MILPCChar pcEnd = &m_arrBuffer.Back() + 1;
+    for ( ; ( pcIt = static_cast< MILPCChar >( g_memchr( pcIt, *pcData, pcEnd - pcIt ) ) ) != 0; ++pcIt )
+    {
+        if ( static_cast< MIUInt >( pcEnd - pcIt ) < a_uSize )
+            return MIFalse;
+        if ( g_memcmp( pcIt, pcData, a_uSize ) == 0 )
+            return Seek( static_cast< MIUInt >( pcIt - m_arrBuffer.GetBuffer() ) ), MITrue;
+    }
+    return MIFalse;
+}
+
+template< mEStreamType M >
 void mTMemoryStreamBase< M >::Swap( mTMemoryStreamBase< M > & a_Other )
 {
     if ( this == &a_Other )
