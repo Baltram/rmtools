@@ -44,10 +44,10 @@ MIUInt mCStringAllocator::s_uNewMemoryPtrsCapacity = 0;
 MIUInt mCStringAllocator::s_uFirstFreeNewMemoryPtr = 0;
 MILPVoid mCStringAllocator::SMemChunkBase::s_pChunkBuffer = 0;
 mCStringAllocator::CChunkManager * mCStringAllocator::s_arrChunkManagers[ 6 ];
-mCStringAllocator::SInitializer mCStringAllocator::s_Initializer;
 
 MILPVoid mCStringAllocator::Alloc( MIUInt a_uSize )
 {
+    static SInitializer s_Initializer;
     if ( a_uSize > TMemChunk< 5 >::EBlockSize )
     {
         a_uSize = ( a_uSize + 3 ) / 4;
