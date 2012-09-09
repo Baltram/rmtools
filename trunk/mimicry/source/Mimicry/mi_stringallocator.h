@@ -23,7 +23,6 @@ private:
     static MIUInt          s_uNewMemoryPtrsCapacity;
     static MIUInt          s_uFirstFreeNewMemoryPtr;
     static CChunkManager * s_arrChunkManagers[ 6 ];
-    static SInitializer    s_Initializer;
 };
 
 struct mCStringAllocator::SMemChunkBase
