@@ -350,6 +350,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Mimicry\mi_include_risen2.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Mimicry\mi_include_scene.h"
 				>
 			</File>
@@ -651,6 +655,22 @@
 			</File>
 			<File
 				RelativePath=".\Mimicry\mi_buffer.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="risen2"
+			>
+			<File
+				RelativePath=".\Mimicry\mi_error_risen2.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Mimicry\mi_risen2name.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Mimicry\mi_risen2name.h"
 				>
 			</File>
 		</Filter>
