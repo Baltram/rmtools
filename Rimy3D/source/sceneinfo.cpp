@@ -38,7 +38,9 @@ GLC_World SceneInfo::buildGlcWorld( void )
             mCMaterial const & mtlSub = pMultiMat->GetSubMaterials()[ j ];
             mCTexMap const * pDiffuseMap = mtlSub.GetTextureMapAt( mCMaterial::EMapType_Diffuse );
             QImage Texture( pDiffuseMap ? TextureFinder::getInstance().findTextureFile( pDiffuseMap->GetTextureFilePath().GetText(), getCurrentDir() ) : "" );
-            arrMaterialArrays[ i ].append( new GLC_Material( Texture.isNull() ? new GLC_Texture : new GLC_Texture( Texture ), mtlSub.GetName().GetText() ) );
+            GLC_Texture * pTexture = Texture.isNull() ? new GLC_Texture : new GLC_Texture( Texture );
+            pTexture->setMaxTextureSize( QSize( 2048, 2048 ) );
+            arrMaterialArrays[ i ].append( new GLC_Material( pTexture, mtlSub.GetName().GetText() ) );
         }
         if ( !arrMaterialArrays[ i ].count() )
             arrMaterialArrays[ i ].append( 0 );
