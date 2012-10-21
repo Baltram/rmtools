@@ -70,7 +70,14 @@
     <addaction name="actionEnglish"/>
     <addaction name="actionGerman"/>
    </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <addaction name="actionConfigure_Bitmap_Paths"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuEdit"/>
    <addaction name="menuHelp"/>
    <addaction name="menuLanguage"/>
   </widget>
@@ -146,6 +153,11 @@
   <action name="actionRecent5">
    <property name="text">
     <string notr="true">Recent5</string>
+   </property>
+  </action>
+  <action name="actionConfigure_Bitmap_Paths">
+   <property name="text">
+    <string>Configure Bitmap Paths...</string>
    </property>
   </action>
  </widget>

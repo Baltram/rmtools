@@ -2,9 +2,10 @@
 #define MAINWINDOW_H_INCLUDED
 
 #include <QMainWindow>
-#include <QSettings>
 #include <QQueue>
 #include "sceneinfo.h"
+
+class QSettings;
 
 namespace Ui
 {
@@ -41,6 +42,7 @@ private slots:
     void on_actionRecent4_triggered( void );
     void on_actionRecent5_triggered( void );
     void onSceneChanged( void );
+    void on_actionConfigure_Bitmap_Paths_triggered();
 private:
     Ui::MainWindow *  m_pUi;
     SceneInfo         m_SceneInfo;

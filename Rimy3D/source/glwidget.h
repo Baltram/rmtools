@@ -15,6 +15,7 @@ public:
     GLWidget( QWidget * a_pParent );
    ~GLWidget( void );
 public:
+    void resetCamera( void );
     void setWorld( GLC_World const & a_Source );
 private:
     void initializeGL( void );

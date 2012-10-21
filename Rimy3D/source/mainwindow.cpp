@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "rimy3d.h"
+#include "texturefinder.h"
 
 MainWindow::MainWindow(QWidget * a_pParent) :
     QMainWindow( a_pParent ),
@@ -10,6 +11,7 @@ MainWindow::MainWindow(QWidget * a_pParent) :
     updateLanguage();
     connect( &m_SceneInfo, SIGNAL( sceneChanged( void ) ), this, SLOT( onSceneChanged( void ) ) );
     connect( Rimy3D::getInstance(), SIGNAL( onSaveSettings( QSettings & ) ), this, SLOT( saveSettings( QSettings & ) ) );
+    TextureFinder::getInstance();
     connect( Rimy3D::getInstance(), SIGNAL( onLoadSettings( QSettings & ) ), this, SLOT( loadSettings( QSettings & ) ) );
     Rimy3D::setMainWindow( this );
     Rimy3D::loadSettings();
@@ -23,8 +25,7 @@ MainWindow::~MainWindow()
 void MainWindow::loadSettings( QSettings & a_Settings )
 {
     a_Settings.beginGroup( "MainWindow" );
-    resize( a_Settings.value( "size", size() ).toSize() );
-    move( a_Settings.value( "pos", pos() ).toPoint() );
+    restoreGeometry( a_Settings.value( "geometry", saveGeometry() ).toByteArray() );
     m_RecentFiles.clear();
     for ( int i = a_Settings.value( "recentfilecount", 0 ).toInt(); i--; )
         m_RecentFiles.enqueue( a_Settings.value( "recentfile" + QString::number( i ) ).toString() );
@@ -35,8 +36,7 @@ void MainWindow::loadSettings( QSettings & a_Settings )
 void MainWindow::saveSettings( QSettings & a_Settings )
 {
     a_Settings.beginGroup( "MainWindow" );
-    a_Settings.setValue( "size", size() );
-    a_Settings.setValue( "pos", pos() );
+    a_Settings.setValue( "geometry", saveGeometry() );
     int iQueueSize = m_RecentFiles.size();
     a_Settings.setValue( "recentfilecount", iQueueSize );
     for ( QList< QString >::iterator it = m_RecentFiles.begin(); iQueueSize--; ++it )
@@ -103,6 +103,12 @@ void MainWindow::updateRecentFiles( void )
 
 void MainWindow::on_actionAbout_triggered( void )
 {
+    Rimy3D::showMessage( "<p></p><b>Rimy3D v0.1</b> (April 13th 2012)"
+                         "<div style='text-indent:16px;'>by <a href='mailto:baltram-lielb@web.de'>Baltram</a> @<a href='http://forum.worldofplayers.de/forum/members/33859'>WoP</a></div>"
+                         "<p>Support: <a href='http://www.baltr.de/Rimy3D.htm'>www.baltr.de/Rimy3D.htm</a></p>"
+                         "<p>This program uses the <a href='http://www.glc-lib.net'>GLC_lib</a> library by Laurent Ribon.</p>"
+                         "<p></p>",
+                         tr( "About Rimy3D" ) );
 }
 
 void MainWindow::on_actionClose_triggered( void )
@@ -164,5 +170,11 @@ void MainWindow::on_actionRecent5_triggered( void )
 
 void MainWindow::onSceneChanged( void )
 {
+    m_pUi->widget->resetCamera();
     m_pUi->widget->setWorld( m_SceneInfo.buildGlcWorld() );
+}
+
+void MainWindow::on_actionConfigure_Bitmap_Paths_triggered()
+{
+    TextureFinder::getInstance().showDialog();
 }
