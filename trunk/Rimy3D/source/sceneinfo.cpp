@@ -1,9 +1,10 @@
-#include <QFileInfo>
-#include <QVector>
-#include <GLC_Mesh>
 #include "sceneinfo.h"
 #include "texturefinder.h"
 #include "rimy3d.h"
+#include <QFileInfo>
+#include <QVector>
+#include <GLC_World>
+#include <GLC_Mesh>
 
 SceneInfo::SceneInfo( void )
 {
@@ -36,7 +37,7 @@ GLC_World SceneInfo::buildGlcWorld( void )
         {
             mCMaterial const & mtlSub = pMultiMat->GetSubMaterials()[ j ];
             mCTexMap const * pDiffuseMap = mtlSub.GetTextureMapAt( mCMaterial::EMapType_Diffuse );
-            QImage Texture( pDiffuseMap ? TextureFinder::getInstance().findTextureFile( pDiffuseMap->GetTextureFilePath().GetText() ) : "" );
+            QImage Texture( pDiffuseMap ? TextureFinder::getInstance().findTextureFile( pDiffuseMap->GetTextureFilePath().GetText(), getCurrentDir() ) : "" );
             arrMaterialArrays[ i ].append( new GLC_Material( Texture.isNull() ? new GLC_Texture : new GLC_Texture( Texture ), mtlSub.GetName().GetText() ) );
         }
         if ( !arrMaterialArrays[ i ].count() )

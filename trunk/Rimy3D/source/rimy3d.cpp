@@ -1,5 +1,6 @@
-#include <QMessageBox>
 #include "rimy3d.h"
+#include <QMessageBox>
+
 
 Rimy3D::ELanguage Rimy3D::s_enuCurrentLanguage = ELanguage_English;
 Rimy3D * Rimy3D::s_pInstance = 0;

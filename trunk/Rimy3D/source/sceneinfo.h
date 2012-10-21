@@ -1,9 +1,10 @@
 #ifndef SCENEINFO_H_INCLUDED
 #define SCENEINFO_H_INCLUDED
 
-#include <QSettings>
-#include <GLC_World>
 #include "Mimicry.h"
+#include <QSettings>
+
+class GLC_World;
 
 class SceneInfo :
     public QObject

@@ -7,20 +7,23 @@ TEMPLATE = app
 include("../../mimicry/source/Mimicry.pri")
 include("GLC_lib.pri")
 
-SOURCES += main.cpp \
+SOURCES += glwidget.cpp \
+           main.cpp \
            mainwindow.cpp \
            rimy3d.cpp \
-           glwidget.cpp \
            sceneinfo.cpp \
+           searchpathsdialog.cpp \
            texturefinder.cpp
 
-HEADERS += mainwindow.h \
+HEADERS += glwidget.h \
+           mainwindow.h \
            rimy3d.h \
-           glwidget.h \
            sceneinfo.h \
+           searchpathsdialog.h \
            texturefinder.h
 
-FORMS += mainwindow.ui
+FORMS += mainwindow.ui \
+         searchpathsdialog.ui
 
 TRANSLATIONS = resources/translations/Rimy3D_de.ts
 
