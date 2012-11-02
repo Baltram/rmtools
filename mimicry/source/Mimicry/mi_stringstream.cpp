@@ -103,9 +103,7 @@ mEResult mCStringStream::Read( mCString & a_strDest )
 mCString mCStringStream::ReadLine( void )
 {
     MILPCChar const pcBeginLine = m_arrBuffer.GetBuffer() + m_uPosition;
-    MILPCChar pcEndLineA = strchr( pcBeginLine, '\r' );
-    MILPCChar pcEndLineB = strchr( pcBeginLine, '\n' );
-    MILPCChar pcEndLine = g_min( pcEndLineA ? pcEndLineA : pcEndLineB, pcEndLineB ? pcEndLineB : pcEndLineA );
+    MILPCChar pcEndLine = strpbrk( pcBeginLine, "\r\n" );
     if ( !pcEndLine )
     {
         pcEndLine = m_arrBuffer.GetBuffer() + m_arrBuffer.GetCount();
