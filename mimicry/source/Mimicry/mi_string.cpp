@@ -309,8 +309,9 @@ mCString mCString::Left( MIUInt a_uCount ) const
     return mCString( GetText(), a_uCount );
 }
 
-mCString & mCString::Replace( MILPCChar a_pcText, MILPCChar a_pcNewText )
+mCString & mCString::Replace( MILPCChar a_pcText, MILPCChar a_pcNewText, MIUInt & a_uNumReplaced )
 {
+    a_uNumReplaced = 0;
     MIUInt const uSearchTextLength  = static_cast< MIUInt >( g_strlen( a_pcText ) );
     MIUInt const uReplaceTextLength = static_cast< MIUInt >( g_strlen( a_pcNewText ) );
     AssureStaticBufferSize( GetLength() + uReplaceTextLength );
@@ -339,18 +340,35 @@ mCString & mCString::Replace( MILPCChar a_pcText, MILPCChar a_pcNewText )
         pcNewTextIt += uReplaceTextLength;
         pcTextIt2 += uSearchTextLength;
         pcTextIt1 = pcTextIt2;
+        ++a_uNumReplaced;
     }
     SetText( pcNewText, static_cast< MIUInt >( pcNewTextIt - pcNewText ) );
     return *this;
 }
 
-mCString & mCString::Replace( MIChar a_cChar, MIChar a_cNewChar )
+mCString & mCString::Replace( MILPCChar a_pcText, MILPCChar a_pcNewText )
 {
+    MIUInt uCount;
+    return Replace( a_pcText, a_pcNewText, uCount );
+}
+
+mCString & mCString::Replace( MIChar a_cChar, MIChar a_cNewChar, MIUInt & a_uNumReplaced )
+{
+    a_uNumReplaced = 0;
     MILPChar pcText = AccessText();
     MILPCChar pcEndText = pcText + GetLength();
     while ( NextOf( *const_cast< MILPCChar * >( &pcText ), pcEndText, a_cChar ) )
+    {
         *( pcText++ ) = a_cNewChar;
+        ++a_uNumReplaced;
+    }
     return *this;
+}
+
+mCString & mCString::Replace( MIChar a_cChar, MIChar a_cNewChar )
+{
+    MIUInt uCount;
+    return Replace( a_cChar, a_cNewChar, uCount );
 }
 
 mCString mCString::Right( MIUInt a_uCount ) const

@@ -68,7 +68,9 @@ public:
     MIUInt     LastOf( MILPCChar a_pcText ) const;
     MIUInt     LastOf( MIChar a_cChar ) const;
     mCString   Left( MIUInt a_uCount ) const;
+    mCString & Replace( MILPCChar a_pcText, MILPCChar a_pcNewText, MIUInt & a_uNumReplaced );
     mCString & Replace( MILPCChar a_pcText, MILPCChar a_pcNewText );
+    mCString & Replace( MIChar a_cChar, MIChar a_cNewChar, MIUInt & a_uNumReplaced );
     mCString & Replace( MIChar a_cChar, MIChar a_cNewChar );
     mCString   Right( MIUInt a_uCount ) const;
     MIInt      Scan( MILPCChar a_pcFormat, ... ) const;
