@@ -93,48 +93,36 @@ mEResult mCObjReader::ReadObjFileData( mCScene & a_sceneDest, mCIOStreamBinary &
         strLine.TrimRight( " \t" );
         if ( strToken == "f" )
         {
-            mCMaxFace & faceDest = arrFaces.AddNew();
-            faceDest.AccessMatID() = uCurrentMatID;
-            mCFace faceTDest, faceNDest;
-            MIBool bHasTIndex = MIFalse, bHasNIndex = MIFalse;
-            MILPCChar pcNumbers = "0123456789";
-            for ( MIUInt u = 0; u != 3; ++u )
+            MIUInt uSlashCount;
+            strLine.Replace( '/', ' ', uSlashCount );
+            MIUInt arrIndices[ 18 ];
+            MIUInt uIndexCount = strLine.Scan( "%u %u %u %u %u %u %u %u %u %u %u %u %u %u %u %u %u %u", arrIndices, arrIndices + 1, arrIndices + 2,
+                                               arrIndices + 3, arrIndices + 4, arrIndices + 5, arrIndices + 6, arrIndices + 7, arrIndices + 8,
+                                               arrIndices + 9, arrIndices + 10, arrIndices + 11, arrIndices + 12, arrIndices + 13, arrIndices + 14,
+                                               arrIndices + 15, arrIndices + 16, arrIndices + 17 );
+            MIUInt uRatio_2 = uSlashCount ? ( 2 * uIndexCount ) / uSlashCount : 0;
+            MIUInt uHasTIndices = ( uRatio_2 / 3 ), uHasNIndices = ( uRatio_2 / 2 % 2 );
+            MIUInt uPackSize = 1 + uHasTIndices + uHasNIndices;
+            mCMaxFace faceDest( arrIndices[ 0 ] - uVertCountTotal, 0, 0, uCurrentMatID );
+            mCFace faceTDest( arrIndices[ 1 ] - uTVertCountTotal, 0, 0 );
+            mCFace faceNDest( arrIndices[ 1 + uHasTIndices ] - uVNormalCountTotal, 0, 0 );
+            for ( MIUInt u = uPackSize, u2 = u + uPackSize, ue = uIndexCount - uPackSize; u != ue; u = u2, u2 += uPackSize )
             {
-                strLine.TrimLeft( " \t" );
-                strLine.Scan( "%u", &( faceDest[ u ] ) );
-                strLine.TrimLeft( pcNumbers );
-                if ( strLine[ 0 ] == '/' )
+                faceDest[ 1 ] = arrIndices[ u ] - uVertCountTotal;
+                faceDest[ 2 ] = arrIndices[ u2 ] - uVertCountTotal;
+                arrFaces.Add( faceDest );
+                if ( uHasTIndices )
                 {
-                    strLine.TrimLeft( ( MIUInt ) 1 );
-                    if ( strLine[ 0 ] != '/' )
-                    {
-                        bHasTIndex = ( strLine.Scan( "%u", &( faceTDest[ u ] ) ) == 1 );
-                        strLine.TrimLeft( pcNumbers );
-                    }
+                    faceTDest[ 1 ] = arrIndices[ 1 + u ] - uTVertCountTotal;
+                    faceTDest[ 2 ] = arrIndices[ 1 + u2 ] - uTVertCountTotal;
+                    arrTVFaces.Add( faceTDest );
                 }
-                if ( strLine[ 0 ] == '/' )
+                if ( uHasNIndices )
                 {
-                    strLine.TrimLeft( ( MIUInt ) 1 );
-                    bHasNIndex = ( strLine.Scan( "%u", &( faceNDest[ u ] ) ) == 1 );
-                    strLine.TrimLeft( pcNumbers );
+                    faceNDest[ 1 ] = arrIndices[ uHasTIndices + 1 + u ] - uVNormalCountTotal;
+                    faceNDest[ 2 ] = arrIndices[ uHasTIndices + 1 + u2 ] - uVNormalCountTotal;
+                    arrVNFaces.Add( faceNDest );
                 }
-            }
-            faceDest[ 0 ] -= uVertCountTotal;
-            faceDest[ 1 ] -= uVertCountTotal;
-            faceDest[ 2 ] -= uVertCountTotal;
-            if ( bHasTIndex )
-            {
-                faceTDest[ 0 ] -= uTVertCountTotal;
-                faceTDest[ 1 ] -= uTVertCountTotal;
-                faceTDest[ 2 ] -= uTVertCountTotal;
-                arrTVFaces.Add( faceTDest );
-            }
-            if ( bHasNIndex )
-            {
-                faceNDest[ 0 ] -= uVNormalCountTotal;
-                faceNDest[ 1 ] -= uVNormalCountTotal;
-                faceNDest[ 2 ] -= uVNormalCountTotal;
-                arrVNFaces.Add( faceNDest );
             }
         }
         else if ( strToken == "v" )
