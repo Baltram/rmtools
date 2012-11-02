@@ -21,7 +21,7 @@ private:
     static MIBool                 s_bInitialized;
     static mTNameMap< MIU32 >     s_mapRisen2Hashes;
     static mTMap< MIU32, mCName > s_mapRisen2Names;
-    static MILPCChar const        s_arrRisen2Strings[  ];
+    static MILPCChar const        s_arrRisen2Strings[];
 };
 
 mCIOStreamBinary & operator >> ( mCIOStreamBinary & a_streamSource, mCRisen2Name & a_nameDest );

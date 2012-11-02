@@ -67,7 +67,7 @@ mCIOStreamBinary & operator << ( mCIOStreamBinary & a_streamDest, mCRisen2Name c
     return ( a_nameSource >> a_streamDest );
 }
 
-MILPCChar const mCRisen2Name::s_arrRisen2Strings[  ] = {
+MILPCChar const mCRisen2Name::s_arrRisen2Strings[] = {
 	"*",
 	"2D",
 	"AIDelay",
