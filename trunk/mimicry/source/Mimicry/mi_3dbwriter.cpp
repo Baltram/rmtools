@@ -201,7 +201,7 @@ mEResult mC3dbWriter::Write3dbFileData( mCScene const & a_sceneSource, mCIOStrea
     s_arrIsBone.Swap( arrIsBone );
     WriteString( a_streamDest, "3db" );
     MIFloat fAngle = -1.0f;
-    if ( a_Options.m_bRecalculateVertexNormals )
+    if ( a_Options.m_bRecalculateVertexNormals && a_Options.m_bUseAnglesInsteadOfSGs )
         fAngle = a_Options.m_fMaxAngleInDegrees;
     a_streamDest << fAngle;
     a_streamDest << ( MIU32 ) 0;
