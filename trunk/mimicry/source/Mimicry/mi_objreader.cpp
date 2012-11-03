@@ -88,15 +88,13 @@ mEResult mCObjReader::ReadObjFileData( mCScene & a_sceneDest, mCIOStreamBinary &
             *pcBuffer = 0;
         mCString strToken = pcBuffer;
         strToken.ToLower();
-        strLine.TrimLeft( strToken.GetLength() );
-        strLine.TrimLeft( " \t" );
-        strLine.TrimRight( " \t" );
+        strLine.TrimLeft( strToken.GetLength() + 1 );
         if ( strToken == "f" )
         {
             MIUInt uSlashCount;
             strLine.Replace( '/', ' ', uSlashCount );
             MIUInt arrIndices[ 18 ];
-            MIUInt uIndexCount = strLine.Scan( "%u %u %u %u %u %u %u %u %u %u %u %u %u %u %u %u %u %u", arrIndices, arrIndices + 1, arrIndices + 2,
+            MIUInt uIndexCount = strLine.Scan( " %u %u %u %u %u %u %u %u %u %u %u %u %u %u %u %u %u %u", arrIndices, arrIndices + 1, arrIndices + 2,
                                                arrIndices + 3, arrIndices + 4, arrIndices + 5, arrIndices + 6, arrIndices + 7, arrIndices + 8,
                                                arrIndices + 9, arrIndices + 10, arrIndices + 11, arrIndices + 12, arrIndices + 13, arrIndices + 14,
                                                arrIndices + 15, arrIndices + 16, arrIndices + 17 );
@@ -128,20 +126,21 @@ mEResult mCObjReader::ReadObjFileData( mCScene & a_sceneDest, mCIOStreamBinary &
         else if ( strToken == "v" )
         {
             mCVec3 & vecDest = arrVerts.AddNew();
-            strLine.Scan( "%f %f %f", &vecDest.AccessX(), &vecDest.AccessY(), &vecDest.AccessZ() );
+            strLine.Scan( " %f %f %f", &vecDest.AccessX(), &vecDest.AccessY(), &vecDest.AccessZ() );
         }
         else if ( strToken == "vt" )
         {
             mCVec3 & vecDest = arrTVerts.AddNew();
-            strLine.Scan( "%f %f %f", &vecDest.AccessX(), &vecDest.AccessY(), &vecDest.AccessZ() );
+            strLine.Scan( " %f %f %f", &vecDest.AccessX(), &vecDest.AccessY(), &vecDest.AccessZ() );
         }
         else if ( strToken == "vn" )
         {
             mCVec3 & vecDest = arrVNormals.AddNew();
-            strLine.Scan( "%f %f %f", &vecDest.AccessX(), &vecDest.AccessY(), &vecDest.AccessZ() );
+            strLine.Scan( " %f %f %f", &vecDest.AccessX(), &vecDest.AccessY(), &vecDest.AccessZ() );
         }
         else if ( strToken == "usemtl" )
         {
+            strLine.TrimLeft( " \t" ).TrimRight( " \t" );
             uCurrentMatID = 0;
             for ( MIUInt ue = matMultiDest.GetSubMaterials().GetCount(); uCurrentMatID != ue; ++uCurrentMatID )
                 if ( matMultiDest.GetSubMaterials()[ uCurrentMatID ].GetName() == strLine )
@@ -154,7 +153,7 @@ mEResult mCObjReader::ReadObjFileData( mCScene & a_sceneDest, mCIOStreamBinary &
             mCString strMtlPath = a_pcFolderPath;
             strMtlPath.TrimRight( "/\\" );
             strMtlPath += "\\";
-            strMtlPath += strLine;
+            strMtlPath += strLine.TrimLeft( " \t" ).TrimRight( " \t" );
             ReadMtlFile( a_sceneDest, strMtlPath );
         }
         if ( ( strToken == "o" ) || ( streamSource.Tell() == uOffsetEnd ) )
@@ -197,7 +196,7 @@ mEResult mCObjReader::ReadObjFileData( mCScene & a_sceneDest, mCIOStreamBinary &
             {
                 if ( pCurrentNode->HasMesh() || ( pCurrentNode->AccessName() != "obj_default" ) )
                     pCurrentNode = &a_sceneDest.AddNewNode();
-                pCurrentNode->AccessName() = strLine;
+                pCurrentNode->AccessName() = strLine.TrimLeft( " \t" ).TrimRight( " \t" );
             }
         }
     }
