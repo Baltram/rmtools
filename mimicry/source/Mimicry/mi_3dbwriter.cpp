@@ -129,14 +129,14 @@ namespace
         MI_3DB_CHUNK_END( a_streamDest );
     }
 
-    void WriteMeshChunk( mCIOStreamBinary & a_streamDest, mCMesh const & a_meshSource )
+    void WriteMeshChunk( mCIOStreamBinary & a_streamDest, mCMesh const & a_meshSource, mC3dbWriter::SOptions a_Options )
     {
         MI_3DB_CHUNK_BEGIN( a_streamDest, Mesh );
         a_streamDest << AsIndex( s_uCurrentNodeIndex );
         MIUInt const uVertCount = a_meshSource.GetNumVerts();
         MIUInt const uFaceCount = a_meshSource.GetNumFaces();
         MIUInt const uTVertCount = a_meshSource.GetNumTVerts();
-        MIUInt const uVColorCount = a_meshSource.HasVertexColors() ? uVertCount : 0;
+        MIUInt const uVColorCount = ( a_meshSource.HasVertexColors() && a_Options.m_bDropVertexColors ) ? uVertCount : 0;
         mCVec3 const * pVerts = a_meshSource.GetVerts();
         mCMaxFace const * pFaces = a_meshSource.GetFaces();
         mCVec3 const * pTVerts = a_meshSource.GetTVerts();
@@ -176,7 +176,7 @@ namespace
         a_streamDest << g_32( uBoneCount ); 
         for ( MIUInt u = 0; u != uBoneCount; ++u )
             a_streamDest << AsIndex( a_sceneSource.GetNodeIndexByID( skinSource.GetBoneIDByIndex( u ) ) );
-        a_streamDest << g_32( uVertCount ); 
+        a_streamDest << g_32( uVertCount );
         for ( MIUInt u = 0; u != uVertCount; ++u )
         {
             MIUInt uVertBoneCount = skinSource.GetNumInfluencingBones( u );
@@ -212,7 +212,7 @@ mEResult mC3dbWriter::Write3dbFileData( mCScene const & a_sceneSource, mCIOStrea
         WriteNodeChunk( a_streamDest, a_sceneSource );
     for ( s_uCurrentNodeIndex = 0; s_uCurrentNodeIndex != a_sceneSource.GetNumNodes(); ++s_uCurrentNodeIndex )
         if ( a_sceneSource.GetNodeAt( s_uCurrentNodeIndex )->HasMesh() )
-            WriteMeshChunk( a_streamDest, *a_sceneSource.GetNodeAt( s_uCurrentNodeIndex )->GetMesh() );
+            WriteMeshChunk( a_streamDest, *a_sceneSource.GetNodeAt( s_uCurrentNodeIndex )->GetMesh(), a_Options );
     for ( s_uCurrentNodeIndex = 0; s_uCurrentNodeIndex != a_sceneSource.GetNumNodes(); ++s_uCurrentNodeIndex )
         if ( a_sceneSource.GetNodeAt( s_uCurrentNodeIndex )->HasSkin() )
             WriteSkinChunk( a_streamDest, a_sceneSource );
