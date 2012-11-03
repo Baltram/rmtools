@@ -47,6 +47,11 @@ MIBool mCVariant::operator != ( mCVariant const & a_vOther ) const
     return !( *this == a_vOther );
 }
 
+void mCVariant::CondenseMemory( void )
+{
+    SPool::CondenseMemory();
+}
+
 void mCVariant::Clear( void )
 {
     if ( m_idElem.IsValid() )

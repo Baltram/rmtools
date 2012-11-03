@@ -12,6 +12,8 @@ public:
     MIBool      operator == ( mCVariant const & a_vOther ) const;
     MIBool      operator != ( mCVariant const & a_vOther ) const;
 public:
+    static void CondenseMemory( void );
+public:
                            void     Clear( void );
     template< typename T > T        GetData( void ) const;
     template< typename T > mEResult GetData( T & a_Dest ) const;
@@ -51,6 +53,7 @@ public:
     template< typename T > static T *    Access( SId const & a_idID );
                            static SId    Clone( SId const & a_idID );
                            static MIBool Compare( SId const & a_idLeft, SId const & a_idRight );
+                           static void   CondenseMemory( void );
                            static void   Free( SId & a_idID );
     template< typename T > static SId    New( T const * a_pData = 0 );
 private:
