@@ -268,6 +268,7 @@ mEResult mCMaxReader::ReadInMaxFileData( mCScene & a_sceneDest, mCMaxFileStream 
             }
         }
         a_sceneDest.SetName( g_GetFileName( a_streamSource.GetFileName() ) );
+        mCVariant::CondenseMemory();
         return mEResult_Ok;
     }
     MI_ERROR( mCConverterError, EBadFormat, "Unknown Extended Saving version." );

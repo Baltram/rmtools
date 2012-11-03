@@ -103,6 +103,14 @@ MIBool mCVariant::SPool::Compare( SId const & a_idLeft, SId const & a_idRight )
 }
 
 inline
+void mCVariant::SPool::CondenseMemory( void )
+{
+    for ( MIUInt u = 0, ue = s_arrPools.GetCount(); u != ue; ++u )
+        if ( s_arrPools[ u ]->m_uElementCount <= EMaxMigrateCount )
+            ( *s_arrPools[ u ]->m_FunctionAccessor->m_funcCollapse )( u );
+}
+
+inline
 void mCVariant::SPool::Free( SId & a_idID )
 {
     SPool * const pPool = GetPool( a_idID );
@@ -193,7 +201,9 @@ void mCVariant::SPool::Collapse( MIUInt a_uPoolIndex )
     delete [] pPool->m_arrVacantIndices;
     pPool->m_uMigratingMapIndex = uMigratingMapIndex;
     pPool->m_uElementCount = MI_DW_INVALID;
+#ifdef MI_VARIANT_CONDENSE_AUTOMATICALLY
     --s_uCollapsablePoolCount;
+#endif
     s_arrCollapsedPoolIndices.AddNew() = a_uPoolIndex;
 }
 
@@ -218,13 +228,12 @@ void mCVariant::SPool::FreeTemplated( SPool * a_pPool, SId & a_idID )
     }
     a_pPool->m_arrVacantIndices[ EIndexCardinality ] = a_idID.m_uIndex;
     a_idID.Invalidate();
-    if ( --( a_pPool->m_uElementCount ) != EMaxMigrateCount )  // If a_pPool doesn't change from "non-collapsable" to "collapsable".
-        return;
-    if ( ++s_uCollapsablePoolCount < 4 )
-        return;
-    for ( MIUInt u = 0, ue = s_arrPools.GetCount(); u != ue; ++u )
-        if ( s_arrPools[ u ]->m_uElementCount <= EMaxMigrateCount )
-            ( *s_arrPools[ u ]->m_FunctionAccessor->m_funcCollapse )( u );
+    --a_pPool->m_uElementCount;
+#ifdef MI_VARIANT_CONDENSE_AUTOMATICALLY
+    if ( a_pPool->m_uElementCount == EMaxMigrateCount )  // If a_pPool has just become collapsable.
+        if ( ++s_uCollapsablePoolCount >= 4 )
+            CondenseMemory();
+#endif
 }
 
 inline
