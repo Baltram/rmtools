@@ -180,13 +180,13 @@ MILPChar mCString::AccessText( void )
 
 mCString & mCString::Append( mCString const & a_strText )
 {
-    m_pcText = Alloc( GetText(), GetLength(), a_strText.GetText(), a_strText.GetLength(), m_pcText );
+    m_pcText = Alloc( 0, GetLength(), a_strText.GetText(), a_strText.GetLength(), m_pcText );
     return *this;
 } 
 
 mCString & mCString::Append( MILPCChar a_pcText )
 {
-    m_pcText = Alloc( GetText(), GetLength(), a_pcText, 0, m_pcText );
+    m_pcText = Alloc( 0, GetLength(), a_pcText, 0, m_pcText );
     return *this;
 }
 
@@ -577,7 +577,8 @@ MILPChar mCString::Alloc( MILPCChar a_pcText1, MIUInt a_uLength1, MILPCChar a_pc
         a_uLength2 = static_cast< MIUInt >( g_strlen( a_pcText2 ) );
     MILPChar pcText; 
     MILPChar pcResult = _Alloc( a_uLength1 + a_uLength2, pcText, a_Memory );
-    g_memcpy( pcText, a_pcText1, a_uLength1 );
+    if ( a_pcText1 )
+        g_memcpy( pcText, a_pcText1, a_uLength1 );
     g_memcpy( pcText + a_uLength1, a_pcText2, a_uLength2 );
     return pcResult;
 }
