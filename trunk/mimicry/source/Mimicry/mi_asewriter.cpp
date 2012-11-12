@@ -98,7 +98,7 @@ namespace
     {
         mCMaterial const * pMaterial = dynamic_cast< mCMaterial const * >( a_pMaterial );
         mCMultiMaterial const * pMultiMaterial = dynamic_cast< mCMultiMaterial const * >( a_pMaterial );
-        a_streamDest.Write( GetTokenLine( "MATERIAL_NAME", mCString().Format( "\"%s\"", a_pMaterial->GetName() ) ) );
+        a_streamDest.Write( GetTokenLine( "MATERIAL_NAME", mCString().Format( "\"%s\"", a_pMaterial->GetName().GetText() ) ) );
         a_streamDest.Write( GetTokenLine( "MATERIAL_CLASS", mCString().Format( "\"%s\"", ( pMultiMaterial ? "Multi/Sub-Object" : "Standard" ) ) ) );
         a_streamDest.Write( GetTokenLine( "MATERIAL_AMBIENT", "0.5000\t0.5000\t0.5000" ) );
         a_streamDest.Write( GetTokenLine( "MATERIAL_DIFFUSE", "0.5000\t0.5000\t0.5000" ) );
@@ -299,7 +299,7 @@ namespace
             MIUInt uBoneCount = skinSource.GetNumInfluencingBones( u );
             mCString strSkinText = mCString().Format( "%u", uBoneCount );
             for ( MIUInt v = 0; v != uBoneCount; ++v )
-                strSkinText += mCString().Format( "\t\"%s\"\t%f", arrBoneNames[ skinSource.GetBoneIndex( u, v ) ], skinSource.GetWeight( u, v ) );
+                strSkinText += mCString().Format( "\t\"%s\"\t%f", arrBoneNames[ skinSource.GetBoneIndex( u, v ) ].GetText(), skinSource.GetWeight( u, v ) );
             a_streamDest.Write( GetLine( strSkinText ) );
         }
         GetIndent( 1 );
