@@ -54,7 +54,13 @@ mCMaxFace & mCMaxRisenCoordShifter::ShiftFaceCoords( mCMaxFace & a_faceDest ) co
 
 mCMatrix4 & mCMaxRisenCoordShifter::ShiftMatrixCoords( mCMatrix4 & a_matDest ) const
 {
-    return ( a_matDest *= m_matTransform );
+    g_swap( a_matDest[ 1 ], a_matDest[ 2 ] );
+    g_swap( a_matDest[ 4 ], a_matDest[ 8 ] );
+    g_swap( a_matDest[ 5 ], a_matDest[ 10 ] );
+    g_swap( a_matDest[ 6 ], a_matDest[ 9 ] );
+    g_swap( a_matDest[ 7 ], a_matDest[ 11 ] );
+    g_swap( a_matDest[ 13 ], a_matDest[ 14 ] );
+    return a_matDest;
 }
 
 mCVec3 & mCMaxRisenCoordShifter::ShiftVectorCoords( mCVec3 & a_vecDest ) const
