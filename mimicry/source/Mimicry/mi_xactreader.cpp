@@ -38,10 +38,6 @@ namespace
             nodeDest.AccessTransform() *= a_sceneDest.GetNodeAt( uParentIndex )->GetTransform();
             a_sceneDest.SetNodeParent( a_uNodeIndex, uParentIndex );
         }
-        else
-        {
-            mCMaxRisenCoordShifter::GetInstance().ShiftMatrixCoords( nodeDest.AccessTransform() );
-        }
         a_arrIsNodeInitialized[ a_uNodeIndex ] = MITrue;
     }
 }
@@ -86,6 +82,7 @@ mEResult mCXactReader::ReadXactFileData( mCScene & a_sceneDest, mCIOStreamBinary
             nodeDest.AccessName() = strName;
             nodeDest.AccessTransform().ModifyRotation( quatRotation.Inverse() );
             nodeDest.AccessPosition() = vecPos;
+            mCMaxRisenCoordShifter::GetInstance().ShiftMatrixCoords( nodeDest.AccessTransform() );
         }
         else if ( uSectionID == ESection_Mesh )
         {
