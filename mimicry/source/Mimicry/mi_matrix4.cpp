@@ -35,6 +35,16 @@ MIBool mCMatrix4::operator == ( mCMatrix4 const & a_matOther ) const
     return memcmp( this, &a_matOther, sizeof( mCMatrix4 ) ) == 0;
 }
 
+MIFloat & mCMatrix4::operator [] ( MIUInt a_uElementIndex )
+{
+    return AccessElement( a_uElementIndex );
+}
+
+MIFloat mCMatrix4::operator [] ( MIUInt a_uElementIndex ) const
+{
+    return GetElement( a_uElementIndex );
+}
+
 mCMatrix4 mCMatrix4::operator * ( mCMatrix4 const & a_matRight ) const
 {
     mCMatrix4 matResult;
