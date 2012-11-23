@@ -152,21 +152,32 @@ mEResult mCXactReader::ReadXactFileData( mCScene & a_sceneDest, mCIOStreamBinary
             mCNode & nodeDest = *a_sceneDest.AccessNodeAt( a_streamSource.ReadU32() );
             MIUInt const uVertCount = nodeDest.GetMesh()->GetNumVerts();
             MIUInt const uWeightCount = ( uSectionSize - 12 - 4 - uVertCount ) / 8;
-            mTArray< mCUnique::ID > arrBoneIDs( mCUnique::ID(), a_sceneDest.GetNumNodes() );
-            mTArray< MIUInt > arrVertexIndices( 0, uWeightCount ); 
-            mTArray< MIUInt > arrBoneIndices( 0, uWeightCount ); 
+            MIUInt const uNodeCount = a_sceneDest.GetNumNodes();
+            mTArray< MIUInt > arrVertexIndices( 0, uWeightCount );
+            mTArray< MIUInt > arrBoneIndices( 0, uWeightCount );
             mTArray< MIFloat > arrWeights( 0.0f, uWeightCount );
-            for ( MIUInt u = a_sceneDest.GetNumNodes(); u--; arrBoneIDs[ u ] = a_sceneDest.GetNodeAt( u )->GetID() );
+            mTArray< MIBool > arrNodesUsedInSkin( MIFalse, uNodeCount );
             for ( MIUInt u = 0, w = 0; u != uVertCount; ++u )
             {
                 for ( MIUInt v = a_streamSource.ReadU8(); v--; w++ )
                 {
                     arrVertexIndices[ w ] = u;
                     arrBoneIndices[ w ] = a_streamSource.ReadU16();
+                    arrNodesUsedInSkin[ arrBoneIndices[ w ] ] = MITrue;
                     a_streamSource.Skip( 2 );
                     arrWeights[ w ] = a_streamSource.ReadFloat();
                 }
             }
+            MIUInt uBoneCount = 0;
+            mTArray< MIUInt > arrNewBoneIndices( uNodeCount, uNodeCount );
+            for ( MIUInt u = 0; u != uNodeCount; ++u )
+                if ( arrNodesUsedInSkin[ u ] )
+                    arrNewBoneIndices[ u ] = uBoneCount++;
+            for ( MIUInt u = uWeightCount; u--; arrBoneIndices[ u ] = arrNewBoneIndices[ arrBoneIndices[ u ] ] );
+            mTArray< mCUnique::ID > arrBoneIDs( mCUnique::ID(), uBoneCount );
+            for ( MIUInt u = 0; u != uNodeCount; ++u )
+                if ( arrNewBoneIndices[ u ] != uNodeCount )
+                    arrBoneIDs[ arrNewBoneIndices[ u ] ] = a_sceneDest.GetNodeAt( u )->GetID();
             mCSkin skinDest;
             skinDest.InitSwapping( uVertCount, arrBoneIDs, arrVertexIndices, arrBoneIndices, arrWeights );
             nodeDest.SwapSkin( skinDest );
