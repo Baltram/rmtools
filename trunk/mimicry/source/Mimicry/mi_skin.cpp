@@ -118,6 +118,12 @@ mEResult mCSkin::InitSwapping( MIUInt a_uVertCount,
     return mEResult_Ok;
 }
 
+void mCSkin::MigrateBoneIDs( mCScene const & a_sceneNew, mCScene const & a_sceneCurrent )
+{
+    for ( MIUInt u = 0, ue = m_arrBoneIDs.GetCount(); u != ue; ++u )
+        m_arrBoneIDs[ u ] = a_sceneNew.GetNodeAt( a_sceneCurrent.GetNodeIndexByID( m_arrBoneIDs[ u ] ) )->GetID();
+}
+
 void mCSkin::Swap( mCSkin & a_skinOther )
 {
     if ( this == &a_skinOther )

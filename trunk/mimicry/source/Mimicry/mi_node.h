@@ -16,6 +16,7 @@ public:
     mCMesh *          AccessMesh( void );
     mCString &        AccessName( void );
     mCVec3 &          AccessPosition( void );
+    mCSkin *          AccessSkin( void );
     mCMatrix4 &       AccessTransform( void );
     mCString const &  GetMaterialName( void ) const;
     mCMesh const *    GetMesh( void ) const;

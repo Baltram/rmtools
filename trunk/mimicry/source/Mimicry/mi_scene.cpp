@@ -7,6 +7,9 @@ mCScene::mCScene( mCScene const & a_sceneSource ) :
 {
     for ( MIUInt u = m_arrMaterials.GetCount(); u--; m_arrMaterials[ u ] = m_arrMaterials[ u ]->Clone() );
     for ( MIUInt u = m_arrNodes.GetCount(); u--; m_arrNodes[ u ] = new mCNode( *m_arrNodes[ u ] ) );
+    for ( MIUInt u = m_arrNodes.GetCount(); u--; )
+        if ( m_arrNodes[ u ]->HasSkin() )
+            m_arrNodes[ u ]->AccessSkin()->MigrateBoneIDs( *this, a_sceneSource );
 }
 
 mCScene::mCScene( void )

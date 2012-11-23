@@ -63,6 +63,11 @@ mCVec3 & mCNode::AccessPosition( void )
     return m_matTransform.AccessTranslation();
 }
 
+mCSkin * mCNode::AccessSkin( void )
+{
+    return m_pSkin;
+}
+
 mCMatrix4 & mCNode::AccessTransform( void )
 {
     return m_matTransform;
