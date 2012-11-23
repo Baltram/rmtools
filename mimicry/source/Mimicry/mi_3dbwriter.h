@@ -9,7 +9,7 @@ public:
     {
     };
 public:
-    static mEResult Write3dbFileData( mCScene const & a_sceneSource, mCIOStreamBinary & a_streamDest, SOptions a_Options = SOptions() );
+    static mEResult Write3dbFileData( mCScene a_sceneSource, mCIOStreamBinary & a_streamDest, SOptions a_Options = SOptions() );
 };
 
 #endif

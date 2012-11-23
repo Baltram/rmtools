@@ -43,7 +43,7 @@ namespace
     {
         EMaterialType_Standard = 1,
         EMaterialType_Multi    = 2,
-        EMaterialType_Sub      = 3,
+        EMaterialType_Sub      = 3
     };
 
     enum EMapType
@@ -189,10 +189,11 @@ namespace
         }
         MI_3DB_CHUNK_END( a_streamDest );
     }
-};
+}
 
-mEResult mC3dbWriter::Write3dbFileData( mCScene const & a_sceneSource, mCIOStreamBinary & a_streamDest, SOptions a_Options )
+mEResult mC3dbWriter::Write3dbFileData( mCScene a_sceneSource, mCIOStreamBinary & a_streamDest, SOptions a_Options )
 {
+    a_sceneSource.SortNodesByLinks();
     mTArray< MIBool > arrIsBone( MIFalse, a_sceneSource.GetNumNodes() );
     for ( MIUInt u = a_sceneSource.GetNumNodes(); u--; )
         if ( a_sceneSource.GetNodeAt( u )->HasSkin() )

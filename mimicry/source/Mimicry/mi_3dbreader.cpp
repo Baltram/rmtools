@@ -17,7 +17,7 @@ namespace
     {
         EMaterialType_Standard = 1,
         EMaterialType_Multi    = 2,
-        EMaterialType_Sub      = 3,
+        EMaterialType_Sub      = 3
     };
 
     enum EMapType
