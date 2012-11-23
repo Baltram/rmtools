@@ -1,6 +1,8 @@
 #ifndef MI_SKIN_H_INCLUDED
 #define MI_SKIN_H_INCLUDED
 
+class mCScene;
+
 class mCSkin
 {
 public:
@@ -23,6 +25,7 @@ public:
                            mTArray< MIUInt > & a_arrVertexIndices, 
                            mTArray< MIUInt > & a_arrBoneIndices, 
                            mTArray< MIFloat > & a_arrWeights );
+    void             MigrateBoneIDs( mCScene const & a_sceneNew, mCScene const & a_sceneCurrent );
     void             Swap( mCSkin & a_skinOther );
 private:
     mTArray< mCUnique::ID > m_arrBoneIDs;
