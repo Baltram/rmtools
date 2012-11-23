@@ -8,8 +8,12 @@ mCScene::mCScene( mCScene const & a_sceneSource ) :
     for ( MIUInt u = m_arrMaterials.GetCount(); u--; m_arrMaterials[ u ] = m_arrMaterials[ u ]->Clone() );
     for ( MIUInt u = m_arrNodes.GetCount(); u--; m_arrNodes[ u ] = new mCNode( *m_arrNodes[ u ] ) );
     for ( MIUInt u = m_arrNodes.GetCount(); u--; )
+    {
+        if ( m_arrNodes[ u ]->GetParentID() )
+            m_arrNodes[ u ]->AccessParentID() = GetNodeAt( a_sceneSource.GetNodeIndexByID( m_arrNodes[ u ]->GetParentID() ) )->GetID();
         if ( m_arrNodes[ u ]->HasSkin() )
             m_arrNodes[ u ]->AccessSkin()->MigrateBoneIDs( *this, a_sceneSource );
+    }
 }
 
 mCScene::mCScene( void )
@@ -156,7 +160,7 @@ void mCScene::GetNodesSortedByLinks( mTArray< mCNode const * > & a_arrDest ) con
     GetNodeReorderPattern( *this, arrPattern );
     a_arrDest.SetAt( 0, m_arrNodes.GetBuffer(), GetNumNodes() );
     g_reorder( a_arrDest.AccessBuffer(), arrPattern.GetBuffer(), GetNumNodes() );
-};
+}
 
 void mCScene::GetNodesSortedByLinks( mTArray< mCNode * > & a_arrDest )
 {
