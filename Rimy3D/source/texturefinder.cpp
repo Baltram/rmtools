@@ -19,12 +19,14 @@ void TextureFinder::addSearchPath( QString const & a_strPath )
 
 QString TextureFinder::findTextureFile( QString const & a_strFilePathGuess, QString const & a_strCurrentDir )
 {
+    char const * arrExts[] = { ".jpg", ".jpeg", ".png", ".gif", ".bmp" };
     if ( a_strFilePathGuess == "" )
         return "";
     QFileInfo File( a_strFilePathGuess );
     if ( File.exists() )
-        return File.canonicalFilePath();
-    char const * arrExts[] = { ".jpg", ".jpeg", ".png", ".gif", ".bmp" };
+		for ( int i = 0, ie = sizeof( arrExts ) / sizeof( arrExts[ 0 ] ); i != ie; ++i )
+            if ( "." + File.suffix().toLower() == arrExts[ i ] )
+                return File.canonicalFilePath();
     for ( int i = 0, ie = sizeof( arrExts ) / sizeof( arrExts[ 0 ] ); i != ie; ++i )
     {
         File.setFile( a_strCurrentDir + QDir::separator() + File.baseName() + arrExts[ i ] );
