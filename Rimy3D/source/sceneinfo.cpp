@@ -141,12 +141,12 @@ bool SceneInfo::openSceneFile( QString a_strFilePath )
 {
     QFileInfo FileInfo( a_strFilePath );
     QString strExt = FileInfo.suffix().toLower();
-    QString strTitle = tr( "%1 Import" ).arg( QString( strExt ).toUpper() );
     if ( !FileInfo.exists() )
     {
-        Rimy3D::showError( tr( "The file %1 doesn't exist." ).arg( a_strFilePath ), strTitle );
+        Rimy3D::showError( tr( "The file %1 doesn't exist." ).arg( a_strFilePath ), Rimy3D::applicationName() );
         return false;
     }
+    QString strTitle = tr( "%1 Import" ).arg( QString( strExt ).toUpper() );
     mCFileStream streamIn;
     if ( streamIn.Open( FileInfo.absoluteFilePath().toAscii().data(), mEFileOpenMode_Read ) == mEResult_False )
         return false;
@@ -174,6 +174,10 @@ bool SceneInfo::openSceneFile( QString a_strFilePath )
     else if ( strExt == "xact" )
     {
         enuResult = mCXactReader::ReadXactFileData( sceneNew, streamIn );
+    }
+    else
+    {
+        Rimy3D::showError( tr( "Unknown file type: .%1" ).arg( strExt ), Rimy3D::applicationName() );
     }
     streamIn.Close();
     if ( enuResult == mEResult_Ok )
