@@ -28,6 +28,50 @@ MainWindow::~MainWindow( void )
     delete m_pUi;
 }
 
+void MainWindow::open( QString a_strFilePath )
+{
+    if ( a_strFilePath == "" )
+        return;
+    a_strFilePath = QDir::toNativeSeparators( a_strFilePath );
+    m_RecentFiles.removeOne( a_strFilePath );
+    if ( m_SceneInfo.openSceneFile( a_strFilePath ) )
+    {
+        if ( m_pUi->actionClose->isEnabled() )
+            setWindowTitle( Rimy3D::applicationName() );
+        m_pUi->actionClose->setEnabled( true );
+        m_pUi->actionSave_As->setEnabled( true );
+        m_RecentFiles.enqueue( a_strFilePath );
+        QFileInfo File( a_strFilePath );
+        //Rimy3D::showMessage( File.fileName() );
+        setWindowTitle( Rimy3D::applicationName() + " - " + File.fileName() );
+    }
+    updateRecentFiles();
+}
+
+void MainWindow::save( QString a_strFilePath )
+{
+    if ( a_strFilePath == "" )
+        return;
+    a_strFilePath = QDir::toNativeSeparators( a_strFilePath );
+    QString strExt = QFileInfo( a_strFilePath ).suffix().toLower();
+    exportSettingsDialog * pDialog = 0;
+    if ( strExt == "3db" )
+        pDialog = &m_3dbDialog;
+    else if ( strExt == "asc" )
+        pDialog = &m_ascDialog;
+    else if ( strExt == "ase" )
+        pDialog = &m_aseDialog;
+    else if ( strExt == "obj" )
+        pDialog = &m_objDialog;
+    else if ( strExt == "xact" )
+        pDialog = &m_xactDialog;
+    else
+        Rimy3D::showError( tr( "Unknown file extension:" ).append( QString( " '.%1'" ).arg( strExt ) ) );
+    if ( !pDialog || ( ( strExt != "asc" ) && !pDialog->exec() ) )
+        return;
+    m_SceneInfo.saveSceneFile( a_strFilePath, *pDialog );
+}
+
 void MainWindow::loadSettings( QSettings & a_Settings )
 {
     a_Settings.beginGroup( "MainWindow" );
@@ -74,49 +118,6 @@ void MainWindow::dragEnterEvent( QDragEnterEvent * a_pEvent )
 void MainWindow::dropEvent( QDropEvent * a_pEvent )
 {
     open( a_pEvent->mimeData()->urls()[ 0 ].toLocalFile() );
-}
-
-void MainWindow::open( QString a_strFilePath )
-{
-    if ( a_strFilePath == "" )
-        return;
-    a_strFilePath = QDir::toNativeSeparators( a_strFilePath );
-    m_RecentFiles.removeOne( a_strFilePath );
-    if ( m_SceneInfo.openSceneFile( a_strFilePath ) )
-    {
-        if ( m_pUi->actionClose->isEnabled() )
-            setWindowTitle( Rimy3D::applicationName() );
-        m_pUi->actionClose->setEnabled( true );
-        m_pUi->actionSave_As->setEnabled( true );
-        m_RecentFiles.enqueue( a_strFilePath );
-        QFileInfo File( a_strFilePath );
-        setWindowTitle( windowTitle() + " - " + File.fileName() );
-    }
-    updateRecentFiles();
-}
-
-void MainWindow::save( QString a_strFilePath )
-{
-    if ( a_strFilePath == "" )
-        return;
-    a_strFilePath = QDir::toNativeSeparators( a_strFilePath );
-    QString strExt = QFileInfo( a_strFilePath ).suffix().toLower();
-    exportSettingsDialog * pDialog = 0;
-    if ( strExt == "3db" )
-        pDialog = &m_3dbDialog;
-    else if ( strExt == "asc" )
-        pDialog = &m_ascDialog;
-    else if ( strExt == "ase" )
-        pDialog = &m_aseDialog;
-    else if ( strExt == "obj" )
-        pDialog = &m_objDialog;
-    else if ( strExt == "xact" )
-        pDialog = &m_xactDialog;
-    else
-        Rimy3D::showError( tr( "Unknown file extension:" ).append( QString( " '.%1'" ).arg( strExt ) ) );
-    if ( !pDialog || ( ( strExt != "asc" ) && !pDialog->exec() ) )
-        return;
-    m_SceneInfo.saveSceneFile( a_strFilePath, *pDialog );
 }
 
 void MainWindow::updateLanguage( void )
@@ -185,13 +186,13 @@ void MainWindow::on_actionGerman_triggered( void )
 
 void MainWindow::on_actionOpen_triggered( void )
 {
-    QString strFilter = tr( "All known files" ).append( " (*.obj *.3db *.gmax *.ase *.asc *.xact);;"
-                                                        "Wavefront OBJ format (*.obj);;"
-                                                        "Baltram's 3D format (*.3db);;"
-                                                        "GMax Scene (*.gmax);;"
-                                                        "3ds Max ASCII Scene (*.ase);;"
-                                                        "Gothic ASCII Scene (*.asc);;"
-                                                        "Gothic 3 Motion Actor (*.xact);;" );
+    QString strFilter = tr( "All files" ).append( " (*.obj *.3db *.gmax *.ase *.asc *.xact);;"
+                                                  "Wavefront OBJ format (*.obj);;"
+                                                  "Baltram's 3D format (*.3db);;"
+                                                  "GMax Scene (*.gmax);;"
+                                                  "3ds Max ASCII Scene (*.ase);;"
+                                                  "Gothic ASCII Scene (*.asc);;"
+                                                  "Gothic 3 Motion Actor (*.xact);;" );
     open( QFileDialog::getOpenFileName( this, tr( "Open" ), m_SceneInfo.getCurrentDir(), strFilter ) );
 }
 
