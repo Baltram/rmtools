@@ -26,6 +26,8 @@ public slots:
 protected:
     void changeEvent( QEvent * a_pEvent );
     void closeEvent( QCloseEvent * a_pEvent );
+    void dragEnterEvent( QDragEnterEvent * a_pEvent );
+    void dropEvent( QDropEvent * a_pEvent );
 private:
     void open( QString a_strFilePath );
     void save( QString a_strFilePath );

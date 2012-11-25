@@ -13,6 +13,7 @@ MainWindow::MainWindow( QWidget * a_pParent ) :
     m_xactDialog( this, "xact", exportSettingsDialog::NormalsCalc | exportSettingsDialog::VertsOnly | exportSettingsDialog::BaseXact )
 {
     m_pUi->setupUi( this );
+    setAcceptDrops( true );
     updateLanguage();
     connect( &m_SceneInfo, SIGNAL( sceneChanged( void ) ), this, SLOT( onSceneChanged( void ) ) );
     connect( Rimy3D::getInstance(), SIGNAL( settingsSaving( QSettings & ) ), this, SLOT( saveSettings( QSettings & ) ) );
@@ -62,6 +63,19 @@ void MainWindow::closeEvent( QCloseEvent * a_pEvent )
     QMainWindow::closeEvent( a_pEvent );
 }
 
+void MainWindow::dragEnterEvent( QDragEnterEvent * a_pEvent )
+{
+    if ( ( a_pEvent->mimeData()->hasUrls() ) &&
+         ( a_pEvent->mimeData()->urls().count() == 1 ) &&
+         ( a_pEvent->mimeData()->urls()[ 0 ].toString().left( 5 ).toLower() == "file:" ) )
+        a_pEvent->acceptProposedAction();
+}
+
+void MainWindow::dropEvent( QDropEvent * a_pEvent )
+{
+    open( a_pEvent->mimeData()->urls()[ 0 ].toLocalFile() );
+}
+
 void MainWindow::open( QString a_strFilePath )
 {
     if ( a_strFilePath == "" )
@@ -71,7 +85,7 @@ void MainWindow::open( QString a_strFilePath )
     if ( m_SceneInfo.openSceneFile( a_strFilePath ) )
     {
         if ( m_pUi->actionClose->isEnabled() )
-            setWindowTitle( windowTitle().left( windowTitle().indexOf( " - " ) ) );
+            setWindowTitle( Rimy3D::applicationName() );
         m_pUi->actionClose->setEnabled( true );
         m_pUi->actionSave_As->setEnabled( true );
         m_RecentFiles.enqueue( a_strFilePath );
@@ -151,7 +165,7 @@ void MainWindow::on_actionClose_triggered( void )
     m_SceneInfo.clearScene();
     m_pUi->actionClose->setEnabled( false );
     m_pUi->actionSave_As->setEnabled( false );
-    setWindowTitle( windowTitle().left( windowTitle().indexOf( " - " ) ) );
+    setWindowTitle( Rimy3D::applicationName() );
 }
 
 void MainWindow::on_actionEnglish_triggered( void )
