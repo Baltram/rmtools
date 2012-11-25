@@ -35,10 +35,22 @@ void SearchPathsDialog::addSubDirectories( QStringList & a_arrDirs )
     }
 }
 
+void SearchPathsDialog::changeEvent( QEvent * a_pEvent )
+{
+    if ( a_pEvent->type() == QEvent::LanguageChange )
+        updateLanguage();
+    QDialog::changeEvent( a_pEvent );
+}
+
 void SearchPathsDialog::closeEvent( QCloseEvent * a_pEvent )
 {
     TextureFinder::getInstance().updateSearchPaths();
     QDialog::closeEvent( a_pEvent );
+}
+
+void SearchPathsDialog::updateLanguage( void )
+{
+    m_pUi->retranslateUi( this );
 }
 
 void SearchPathsDialog::on_listWidget_currentRowChanged( int a_iCurrentRow )
