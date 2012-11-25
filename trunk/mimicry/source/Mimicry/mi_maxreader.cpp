@@ -66,13 +66,16 @@ namespace
         MIInt iMaterial;
         mCVec3 vecPosition;
         mCMatrix4 matRotation;
+        MIBool bIsBone;
         a_arrChunk[ 3 ].SwapData( strName );
         a_arrChunk[ 4 ].SwapData( iParent );
         a_arrChunk[ 5 ].SwapData( iMaterial );
         a_arrChunk[ 6 ].SwapData( vecPosition );
         a_arrChunk[ 7 ].SwapData( matRotation );
+        a_arrChunk[ 8 ].SwapData( bIsBone );
         mCNode & nodeDest = a_sceneDest.AddNewNode();
         nodeDest.AccessName() = strName;
+        nodeDest.AccessIsBone() = bIsBone;
         nodeDest.AccessTransform() = matRotation;
         if ( iMaterial-- )
             nodeDest.AccessMaterialName() = a_sceneDest.GetMaterialAt( iMaterial )->GetName();
@@ -268,6 +271,7 @@ mEResult mCMaxReader::ReadInMaxFileData( mCScene & a_sceneDest, mCMaxFileStream 
             }
         }
         a_sceneDest.SetName( g_GetFileName( a_streamSource.GetFileName() ) );
+        a_sceneDest.IdentifyBones();
         mCVariant::CondenseMemory();
         return mEResult_Ok;
     }

@@ -31,6 +31,7 @@ public:
     void                   GetNodesSortedByLinks( mTArray< mCNode * > & a_arrDest );
     MIUInt                 GetNumMaterials( void ) const;
     MIUInt                 GetNumNodes( void ) const;
+    void                   IdentifyBones( void );
     void                   RemoveMaterial( mCMaterialBase * a_pMaterial );
     void                   RemoveNode( mCNode * a_pNode );
     void                   SetName( mCString const & a_strName );

@@ -1,12 +1,13 @@
 #include "mi_include_scene.h"
 
-mCNode::mCNode( mCString const & a_strName, mCMatrix4 const & a_matTransform, mCString const & a_strMaterialName, mCMesh const * a_pMesh, mCSkin const * a_pSkin ) :
+mCNode::mCNode( mCString const & a_strName, mCMatrix4 const & a_matTransform, mCString const & a_strMaterialName, mCMesh const * a_pMesh, mCSkin const * a_pSkin, MIBool a_bIsBone ) :
     m_strName( a_strName ),
     m_strMaterialName( a_strMaterialName ),
     m_matTransform( a_matTransform ),
     m_pMesh( a_pMesh ? new mCMesh( *a_pMesh ) : 0 ),
     m_pSkin( a_pSkin ? new mCSkin( *a_pSkin ) : 0 ),
-    m_idParent( 0 )
+    m_idParent( 0 ),
+    m_bIsBone( a_bIsBone )
 {
 }
 
@@ -16,14 +17,16 @@ mCNode::mCNode( mCNode const & a_nodeSource ) :
     m_matTransform( a_nodeSource.m_matTransform ),
     m_pMesh( a_nodeSource.m_pMesh ? new mCMesh( *a_nodeSource.m_pMesh ) : 0 ),
     m_pSkin( a_nodeSource.m_pSkin ? new mCSkin( *a_nodeSource.m_pSkin ) : 0 ),
-    m_idParent( a_nodeSource.m_idParent )
+    m_idParent( a_nodeSource.m_idParent ),
+    m_bIsBone( a_nodeSource.m_bIsBone )
 {
 }
 
 mCNode::mCNode( void ) :
     m_pMesh( 0 ),
     m_pSkin( 0 ),
-    m_idParent( 0 )
+    m_idParent( 0 ),
+    m_bIsBone( MIFalse )
 {
     m_matTransform.SetToIdentity();
 }
@@ -41,6 +44,11 @@ mCNode & mCNode::operator = ( mCNode const & a_nodeSource )
     mCNode nodeCopy( a_nodeSource );
     Swap( nodeCopy );
     return *this;
+}
+
+MIBool & mCNode::AccessIsBone( void )
+{
+    return m_bIsBone;
 }
 
 mCString & mCNode::AccessMaterialName( void )
@@ -71,6 +79,11 @@ mCSkin * mCNode::AccessSkin( void )
 mCMatrix4 & mCNode::AccessTransform( void )
 {
     return m_matTransform;
+}
+
+MIBool mCNode::GetIsBone( void ) const
+{
+    return m_bIsBone;
 }
 
 mCString const & mCNode::GetMaterialName( void ) const
@@ -139,6 +152,7 @@ void mCNode::Swap( mCNode & a_nodeOther )
     g_swap( m_pMesh, a_nodeOther.m_pMesh );
     g_swap( m_pSkin, a_nodeOther.m_pSkin );
     g_swap( m_idParent, a_nodeOther.m_idParent );
+    g_swap( m_bIsBone, a_nodeOther.m_bIsBone );
 }
 
 void mCNode::SwapMesh( mCMesh & a_meshOther )

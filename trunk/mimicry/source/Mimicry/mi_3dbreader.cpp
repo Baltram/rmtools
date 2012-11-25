@@ -13,6 +13,13 @@ namespace
         EChunkID_Skin       = 5
     };
 
+    enum ENodeType
+    {
+        ENodeType_Mesh  = 1,
+        ENodeType_Bone  = 2,
+        ENodeType_Other = 3
+    };
+
     enum EMaterialType
     {
         EMaterialType_Standard = 1,
@@ -77,7 +84,8 @@ namespace
     void ReadNodeChunk( mCScene & a_sceneDest, mCIOStreamBinary & a_streamSource )
     {
         mCNode & nodeDest = a_sceneDest.AddNewNode();
-        a_streamSource.Skip( 4 );
+        if ( a_streamSource.ReadU32() == ENodeType_Bone )
+            nodeDest.AccessIsBone() = MITrue;
         nodeDest.AccessName() << a_streamSource;
         MIUInt uParentIndex = FromIndex( a_streamSource.ReadU32() );
         MIUInt uMaterialIndex = FromIndex( a_streamSource.ReadU32() );
@@ -192,5 +200,6 @@ mEResult mC3dbReader::Read3dbFileData( mCScene & a_sceneDest, mCIOStreamBinary &
         for ( MIUInt u = a_sceneDest.GetNumNodes(); u--; )
             if ( a_sceneDest.GetNodeAt( u )->HasMesh() )
                 a_sceneDest.AccessNodeAt( u )->AccessMesh()->CalcVNormalsByAngle( f_Angle );
+    a_sceneDest.IdentifyBones();
     return mEResult_Ok;
 }

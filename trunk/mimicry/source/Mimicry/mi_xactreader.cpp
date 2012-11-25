@@ -80,6 +80,7 @@ mEResult mCXactReader::ReadXactFileData( mCScene & a_sceneDest, mCIOStreamBinary
             a_streamSource.Read( arrParentNames.AddNew(), a_streamSource.ReadU32() );
             mCNode & nodeDest = a_sceneDest.AddNewNode();
             nodeDest.AccessName() = strName;
+            nodeDest.AccessIsBone() = ( strName.ToLower().Left( 4 ) != "slot" ) && ( !strName.Contains( "dummy" ) ) && ( !strName.Contains( "particle" ) );
             nodeDest.AccessTransform().ModifyRotation( quatRotation.Inverse() );
             nodeDest.AccessPosition() = vecPos;
             mCMaxRisenCoordShifter::GetInstance().ShiftMatrixCoords( nodeDest.AccessTransform() );
@@ -146,6 +147,7 @@ mEResult mCXactReader::ReadXactFileData( mCScene & a_sceneDest, mCIOStreamBinary
             mCMaxRisenCoordShifter::GetInstance().ShiftMeshCoords( meshDest );
             a_sceneDest.AccessNodeAt( uNodeIndex )->SwapMesh( meshDest );
             a_sceneDest.AccessNodeAt( uNodeIndex )->AccessMaterialName() = strMultiMatName;
+            a_sceneDest.AccessNodeAt( uNodeIndex )->AccessIsBone() = MIFalse;
         }
         else if ( uSectionID == ESection_Skin )
         {
@@ -210,5 +212,6 @@ mEResult mCXactReader::ReadXactFileData( mCScene & a_sceneDest, mCIOStreamBinary
     mTArray< MIBool > arrIsNodeInitialized( MIFalse, a_sceneDest.GetNumNodes() );
         for ( MIUInt u = a_sceneDest.GetNumNodes(); u--; )
             InitNode( a_sceneDest, u, arrParentNames, arrIsNodeInitialized );
+    a_sceneDest.IdentifyBones();
     return mEResult_Ok;
 }
