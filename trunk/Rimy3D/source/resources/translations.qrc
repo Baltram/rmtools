@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/translations">
         <file>translations/Rimy3D_de.qm</file>
+        <file>translations/qt_de.qm</file>
     </qresource>
 </RCC>
