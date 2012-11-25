@@ -48,7 +48,7 @@ void Rimy3D::setLanguage( ELanguage a_enuLanguage )
     if ( !s_pGermanQtTranslator )
     {
         s_pGermanQtTranslator = new QTranslator;
-        s_pGermanQtTranslator->load( "qt_de" );
+        s_pGermanQtTranslator->load( ":/translations/translations/qt_de" );
         s_pGermanAppTranslator = new QTranslator;
         s_pGermanAppTranslator->load( ":/translations/translations/Rimy3D_de" );
     }
@@ -117,12 +117,12 @@ void Rimy3D::loadSettingsIntern( void )
             enuLanguage = ELanguage_English;
         }
     }
-    emit onLoadSettings( *s_pSettings );
+    emit settingsLoading( *s_pSettings );
     setLanguage( enuLanguage );
 }
 
 void Rimy3D::saveSettingsIntern( void )
 {
     s_pSettings->setValue( "language", static_cast< int >( s_enuCurrentLanguage ) );
-    emit onSaveSettings( *s_pSettings );
+    emit settingsSaving( *s_pSettings );
 }

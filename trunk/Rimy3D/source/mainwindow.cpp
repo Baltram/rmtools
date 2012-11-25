@@ -3,21 +3,26 @@
 #include "rimy3d.h"
 #include "texturefinder.h"
 
-MainWindow::MainWindow(QWidget * a_pParent) :
+MainWindow::MainWindow( QWidget * a_pParent ) :
     QMainWindow( a_pParent ),
-    m_pUi( new Ui::MainWindow )
+    m_pUi( new Ui::MainWindow ),
+    m_3dbDialog( this, "3db", exportSettingsDialog::NormalsRecalc | exportSettingsDialog::Colors ),
+    m_ascDialog( this, "asc", exportSettingsDialog::None ),
+    m_aseDialog( this, "ase", exportSettingsDialog::Normals ),
+    m_objDialog( this, "obj", exportSettingsDialog::Normals | exportSettingsDialog::CreateMtl ),
+    m_xactDialog( this, "xact", exportSettingsDialog::NormalsCalc | exportSettingsDialog::VertsOnly | exportSettingsDialog::BaseXact )
 {
     m_pUi->setupUi( this );
     updateLanguage();
     connect( &m_SceneInfo, SIGNAL( sceneChanged( void ) ), this, SLOT( onSceneChanged( void ) ) );
-    connect( Rimy3D::getInstance(), SIGNAL( onSaveSettings( QSettings & ) ), this, SLOT( saveSettings( QSettings & ) ) );
+    connect( Rimy3D::getInstance(), SIGNAL( settingsSaving( QSettings & ) ), this, SLOT( saveSettings( QSettings & ) ) );
+    connect( Rimy3D::getInstance(), SIGNAL( settingsLoading( QSettings & ) ), this, SLOT( loadSettings( QSettings & ) ) );
     TextureFinder::getInstance();
-    connect( Rimy3D::getInstance(), SIGNAL( onLoadSettings( QSettings & ) ), this, SLOT( loadSettings( QSettings & ) ) );
     Rimy3D::setMainWindow( this );
     Rimy3D::loadSettings();
 }
 
-MainWindow::~MainWindow()
+MainWindow::~MainWindow( void )
 {
     delete m_pUi;
 }
@@ -57,17 +62,43 @@ void MainWindow::closeEvent( QCloseEvent * a_pEvent )
     QMainWindow::closeEvent( a_pEvent );
 }
 
-void MainWindow::open( QString a_strFileName )
+void MainWindow::open( QString a_strFilePath )
 {
-    if ( a_strFileName == "" )
+    if ( a_strFilePath == "" )
         return;
-#ifdef Q_OS_WIN32
-    a_strFileName.replace( '/', '\\' );
-#endif
-    m_RecentFiles.removeOne( a_strFileName );
-    if ( m_SceneInfo.openSceneFile( a_strFileName ) )
-        m_RecentFiles.enqueue( a_strFileName );
+    a_strFilePath = QDir::toNativeSeparators( a_strFilePath );
+    m_RecentFiles.removeOne( a_strFilePath );
+    if ( m_SceneInfo.openSceneFile( a_strFilePath ) )
+    {
+        m_pUi->actionClose->setEnabled( true );
+        m_pUi->actionSave_As->setEnabled( true );
+        m_RecentFiles.enqueue( a_strFilePath );
+    }
     updateRecentFiles();
+}
+
+void MainWindow::save( QString a_strFilePath )
+{
+    if ( a_strFilePath == "" )
+        return;
+    a_strFilePath = QDir::toNativeSeparators( a_strFilePath );
+    QString strExt = QFileInfo( a_strFilePath ).suffix().toLower();
+    exportSettingsDialog * pDialog = 0;
+    if ( strExt == "3db" )
+        pDialog = &m_3dbDialog;
+    else if ( strExt == "asc" )
+        pDialog = &m_ascDialog;
+    else if ( strExt == "ase" )
+        pDialog = &m_aseDialog;
+    else if ( strExt == "obj" )
+        pDialog = &m_objDialog;
+    else if ( strExt == "xact" )
+        pDialog = &m_xactDialog;
+    else
+        Rimy3D::showError( tr( "Unknown file extension:" ).append( QString( " '.%1'" ).arg( strExt ) ) );
+    if ( !pDialog || ( ( strExt != "asc" ) && !pDialog->exec() ) )
+        return;
+    m_SceneInfo.saveSceneFile( a_strFilePath, *pDialog );
 }
 
 void MainWindow::updateLanguage( void )
@@ -114,6 +145,8 @@ void MainWindow::on_actionAbout_triggered( void )
 void MainWindow::on_actionClose_triggered( void )
 {
     m_SceneInfo.clearScene();
+    m_pUi->actionClose->setEnabled( false );
+    m_pUi->actionSave_As->setEnabled( false );
 }
 
 void MainWindow::on_actionEnglish_triggered( void )
@@ -133,7 +166,7 @@ void MainWindow::on_actionGerman_triggered( void )
 
 void MainWindow::on_actionOpen_triggered( void )
 {
-    QString strFilter = tr( "All known types" ).append( " (*.obj *.3db *.gmax *.ase *.asc *.xact);;"
+    QString strFilter = tr( "All known files" ).append( " (*.obj *.3db *.gmax *.ase *.asc *.xact);;"
                                                         "Wavefront OBJ format (*.obj);;"
                                                         "Baltram's 3D format (*.3db);;"
                                                         "GMax Scene (*.gmax);;"
@@ -174,7 +207,19 @@ void MainWindow::onSceneChanged( void )
     m_pUi->widget->setWorld( m_SceneInfo.buildGlcWorld() );
 }
 
-void MainWindow::on_actionConfigure_Bitmap_Paths_triggered()
+void MainWindow::on_actionConfigure_Bitmap_Paths_triggered( void )
 {
     TextureFinder::getInstance().showDialog();
+}
+
+void MainWindow::on_actionSave_As_triggered( void )
+{
+    QString strFilter = tr( "All files" ).append( " (*.*);;"
+                        "Wavefront OBJ format (*.obj);;"
+                        "Baltram's 3D format (*.3db);;"
+                        "3ds Max ASCII Scene (*.ase);;"
+                        "Gothic ASCII Scene (*.asc);;"
+                        "Gothic 3 Motion Actor (*.xact);;" );
+    QString strFilePath = m_SceneInfo.getCurrentSaveDir() + QDir::separator() + m_SceneInfo.getCurrentFile();
+    save( QFileDialog::getSaveFileName( this, tr( "Save As" ), strFilePath, strFilter ) );
 }

@@ -13,17 +13,20 @@ SOURCES += glwidget.cpp \
            rimy3d.cpp \
            sceneinfo.cpp \
            searchpathsdialog.cpp \
-           texturefinder.cpp
+           texturefinder.cpp \
+           exportsettingsdialog.cpp
 
 HEADERS += glwidget.h \
            mainwindow.h \
            rimy3d.h \
            sceneinfo.h \
            searchpathsdialog.h \
-           texturefinder.h
+           texturefinder.h \
+           exportsettingsdialog.h
 
 FORMS += mainwindow.ui \
-         searchpathsdialog.ui
+         searchpathsdialog.ui \
+         exportsettingsdialog.ui
 
 TRANSLATIONS = resources/translations/Rimy3D_de.ts
 
