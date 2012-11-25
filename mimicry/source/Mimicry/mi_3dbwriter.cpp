@@ -57,7 +57,6 @@ namespace
     MIUInt s_uCurrentMaterialIndex;
     MIUInt s_uCurrentSubMaterialIndex;
     MIUInt s_uCurrentNodeIndex;
-    mTArray< MIBool > s_arrIsBone;
 
     MIU32 AsIndex( MIUInt a_uNumber )
     {
@@ -121,7 +120,7 @@ namespace
     {
         MI_3DB_CHUNK_BEGIN( a_streamDest, Node );
         mCNode const & nodeSource = *a_sceneSource.GetNodeAt( s_uCurrentNodeIndex );
-        a_streamDest << ( MIU32 ) ( nodeSource.HasMesh() ? ENodeType_Mesh : ( s_arrIsBone[ s_uCurrentNodeIndex ] ? ENodeType_Bone : ENodeType_Other ) );
+        a_streamDest << ( MIU32 ) ( nodeSource.HasMesh() ? ENodeType_Mesh : ( nodeSource.GetIsBone() ? ENodeType_Bone : ENodeType_Other ) );
         WriteString( a_streamDest, nodeSource.GetName() );
         a_streamDest << AsIndex( a_sceneSource.GetNodeParentIndex( s_uCurrentNodeIndex ) );
         a_streamDest << AsIndex( a_sceneSource.GetMaterialIndexByName( nodeSource.GetMaterialName() ) );
@@ -194,12 +193,6 @@ namespace
 mEResult mC3dbWriter::Write3dbFileData( mCScene a_sceneSource, mCIOStreamBinary & a_streamDest, SOptions a_Options )
 {
     a_sceneSource.SortNodesByLinks();
-    mTArray< MIBool > arrIsBone( MIFalse, a_sceneSource.GetNumNodes() );
-    for ( MIUInt u = a_sceneSource.GetNumNodes(); u--; )
-        if ( a_sceneSource.GetNodeAt( u )->HasSkin() )
-            for ( MIUInt v = a_sceneSource.GetNodeAt( u )->GetSkin()->GetNumBones(); v--; )
-                arrIsBone[ a_sceneSource.GetNodeIndexByID( a_sceneSource.GetNodeAt( u )->GetSkin()->GetBoneIDByIndex( v ) ) ] = MITrue;
-    s_arrIsBone.Swap( arrIsBone );
     WriteString( a_streamDest, "3db" );
     MIFloat fAngle = -1.0f;
     if ( a_Options.m_bRecalculateVertexNormals && a_Options.m_bUseAnglesInsteadOfSGs )

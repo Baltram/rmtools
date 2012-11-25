@@ -287,6 +287,8 @@ namespace
     {
         mCNode & nodeDest = a_sceneDest.AddNewNode();
         ReadStringTokenLine( "NODE_NAME", nodeDest.AccessName() );
+        if ( nodeDest.GetName().Left( 5 ).ToLower() == "bip01" )
+            nodeDest.AccessIsBone() = MITrue;
         if ( AccessIntegrityState() )
         {
             ReadStringTokenLine( "NODE_PARENT", a_arrNodeParents[ nodeDest.GetName() ] );
@@ -445,5 +447,6 @@ mEResult mCAseReader::ReadAseFileData( mCScene & a_sceneDest, mCIOStreamBinary &
         if ( uParentIndex != MI_DW_INVALID )
             a_sceneDest.SetNodeParent( u, uParentIndex );
     }
+    a_sceneDest.IdentifyBones();
     return mEResult_Ok;
 }

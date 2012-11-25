@@ -180,6 +180,14 @@ MIUInt mCScene::GetNumNodes( void ) const
     return m_arrNodes.GetCount();
 }
 
+void mCScene::IdentifyBones( void )
+{
+    for ( MIUInt u = GetNumNodes(); u--; )
+        if ( GetNodeAt( u )->HasSkin() )
+            for ( MIUInt v = GetNodeAt( u )->GetSkin()->GetNumBones(); v--; )
+                AccessNodeAt( GetNodeIndexByID( GetNodeAt( u )->GetSkin()->GetBoneIDByIndex( v ) ) )->AccessIsBone() = MITrue;
+}
+
 void mCScene::RemoveMaterial( mCMaterialBase * a_pMaterial )
 {
     MIUInt const uIndex = m_arrMaterials.IndexOf( a_pMaterial );
