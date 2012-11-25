@@ -5,6 +5,7 @@
 #include <QSettings>
 
 class GLC_World;
+class exportSettingsDialog;
 
 class SceneInfo :
     public QObject
@@ -18,8 +19,10 @@ public:
     void            clearScene( void );
     QString const & getCurrentDir( void );
     QString const & getCurrentFile( void );
+    QString const & getCurrentSaveDir( void );
     mCScene const & getCurrentScene( void );
-    bool            openSceneFile( QString a_strFileName );
+    bool            openSceneFile( QString a_strFilePath );
+    bool            saveSceneFile( QString a_strFilePath, exportSettingsDialog & a_SettingsDialog );
 signals:
     void sceneChanged( void );
 public slots:
@@ -27,9 +30,11 @@ public slots:
     void saveSettings( QSettings & a_Settings );
 private:
     static void errorMessageTranslations( void );
+    static void showLastMimicryError( mCError const * a_pLastError, QString a_strTitle );
 private:
     QString m_strCurrentDir;
     QString m_strCurrentFile;
+    QString m_strCurrentSaveDir;
     mCScene m_sceneCurrentScene;
 };
 

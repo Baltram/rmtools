@@ -28,8 +28,8 @@ public:
     static void      showMessage( QString a_strText, QString a_strTitle = "Rimy3D" );
     static void      showWarning( QString a_strText, QString a_strTitle = "Rimy3D" );
 signals:
-    void onLoadSettings( QSettings & a_Settings );
-    void onSaveSettings( QSettings & a_Settings );
+    void settingsLoading( QSettings & a_Settings );
+    void settingsSaving( QSettings & a_Settings );
 protected:
     Rimy3D( int & argc, char * argv[] );
    ~Rimy3D( void );
