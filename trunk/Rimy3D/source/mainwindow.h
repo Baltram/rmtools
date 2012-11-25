@@ -20,6 +20,9 @@ class MainWindow :
 public:
     explicit MainWindow( QWidget * a_pParent = 0 );
             ~MainWindow( void );
+public:
+    void open( QString a_strFilePath );
+    void save( QString a_strFilePath );
 public slots:
     void loadSettings( QSettings & a_Settings );
     void saveSettings( QSettings & a_Settings );
@@ -29,8 +32,6 @@ protected:
     void dragEnterEvent( QDragEnterEvent * a_pEvent );
     void dropEvent( QDropEvent * a_pEvent );
 private:
-    void open( QString a_strFilePath );
-    void save( QString a_strFilePath );
     void updateLanguage( void );
     void updateRecentFiles( void );
 private slots:

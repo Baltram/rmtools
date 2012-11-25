@@ -10,9 +10,6 @@
     <height>372</height>
    </rect>
   </property>
-  <property name="windowTitle">
-   <string>Rimy3D</string>
-  </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QHBoxLayout" name="horizontalLayout_2">
     <item>
