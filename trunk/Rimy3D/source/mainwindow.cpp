@@ -70,9 +70,13 @@ void MainWindow::open( QString a_strFilePath )
     m_RecentFiles.removeOne( a_strFilePath );
     if ( m_SceneInfo.openSceneFile( a_strFilePath ) )
     {
+        if ( m_pUi->actionClose->isEnabled() )
+            setWindowTitle( windowTitle().left( windowTitle().indexOf( " - " ) ) );
         m_pUi->actionClose->setEnabled( true );
         m_pUi->actionSave_As->setEnabled( true );
         m_RecentFiles.enqueue( a_strFilePath );
+        QFileInfo File( a_strFilePath );
+        setWindowTitle( windowTitle() + " - " + File.fileName() );
     }
     updateRecentFiles();
 }
@@ -147,6 +151,7 @@ void MainWindow::on_actionClose_triggered( void )
     m_SceneInfo.clearScene();
     m_pUi->actionClose->setEnabled( false );
     m_pUi->actionSave_As->setEnabled( false );
+    setWindowTitle( windowTitle().left( windowTitle().indexOf( " - " ) ) );
 }
 
 void MainWindow::on_actionEnglish_triggered( void )
