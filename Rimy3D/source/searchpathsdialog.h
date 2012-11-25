@@ -19,7 +19,10 @@ public:
     void addItems( QStringList const & a_arrItems );
 protected:
     void addSubDirectories( QStringList & a_arrDirs );
+    void changeEvent( QEvent * a_pEvent );
     void closeEvent( QCloseEvent * a_pEvent );
+private:
+    void updateLanguage( void );
 private slots:
     void on_listWidget_currentRowChanged( int a_iCurrentRow );
     void on_pushButton_clicked( void );
