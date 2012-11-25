@@ -29,6 +29,7 @@ void GLWidget::setWorld( GLC_World const & a_Source )
 
 void GLWidget::initializeGL( void )
 {
+    glEnable( GL_CULL_FACE );
 	m_GlView.initGl();
 }
 
