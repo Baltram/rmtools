@@ -51,25 +51,14 @@ namespace
         return strResult;
     }
 
-    mTStringMap< mCString > * AccessNodeNameMap( mTStringMap< mCString > * a_mapSource = 0, MIBool a_bDisable = MIFalse )
+    mCString GetNodeName( mCNode const & a_Node )
     {
-        static mTStringMap< mCString > * s_pMap = 0;
-        if ( a_mapSource )
-            s_pMap = a_mapSource;
-        if ( a_bDisable )
-            s_pMap = 0;
-        return s_pMap;
-    }
-
-    mCString GetNodeName( mCString const & a_strPlainNodeName )
-    {
-        mTStringMap< mCString > * pMap = AccessNodeNameMap();
-        if ( !pMap )
-            return a_strPlainNodeName;
-        mCString strResult = ( *pMap )[ a_strPlainNodeName ];
-        if ( strResult == "" )
-            return a_strPlainNodeName;
-        return strResult;
+        mCString const & strName = a_Node.GetName();
+        if ( a_Node.HasMesh() && a_Node.GetName().Left( 3 ).CompareNoCase( "ZM_" ) )
+            return "ZM_" + strName;
+        if ( a_Node.GetIsBone() && a_Node.GetName().Left( 5 ).CompareNoCase( "Bip01" ) )
+            return "Bip01 " + strName;
+        return strName;
     }
 
     void WriteMap( mCTexMap const & a_mapSource, MIUInt uSubNo, mCIOStreamBinary & a_streamDest )
@@ -230,22 +219,21 @@ namespace
         }
     }
 
-    void WriteNode( mCScene const & a_sceneSource, MIUInt a_uNodeIndex, mCIOStreamBinary & a_streamDest, mCAseWriter::SOptions const & a_Options )
+    void WriteNode( mCScene const & a_sceneSource, mCNode const & a_Node, mCIOStreamBinary & a_streamDest, mCAseWriter::SOptions const & a_Options )
     {
-        mCNode const & nodeSource = *a_sceneSource.GetNodeAt( a_uNodeIndex );
-        MIUInt const uParentIndex = a_sceneSource.GetNodeParentIndex( a_uNodeIndex );
+        MIUInt const uParentIndex = ( a_Node.GetName() == "Bip01" ) ? MI_DW_INVALID : a_sceneSource.GetNodeParentIndex( a_sceneSource.GetNodeIndexByID( a_Node.GetID() ) );
         mCNode const * pParent = uParentIndex != MI_DW_INVALID ? a_sceneSource.GetNodeAt( uParentIndex ) : 0;
-        mCString strNodeName = GetNodeName( nodeSource.GetName() );
-        mCVec3 const & vecPos = nodeSource.GetPosition();
-        mCMatrix4 const & matTransform = nodeSource.GetTransform();
+        mCString strNodeName = GetNodeName( a_Node );
+        mCVec3 const & vecPos = a_Node.GetPosition();
+        mCMatrix4 const & matTransform = a_Node.GetTransform();
         mCString strRow0 = mCString().Format( "%.4f\t%.4f\t%.4f", matTransform.GetElement( 0, 0 ), matTransform.GetElement( 0, 1 ), matTransform.GetElement( 0, 2 ) );
         mCString strRow1 = mCString().Format( "%.4f\t%.4f\t%.4f", matTransform.GetElement( 1, 0 ), matTransform.GetElement( 1, 1 ), matTransform.GetElement( 1, 2 ) );
         mCString strRow2 = mCString().Format( "%.4f\t%.4f\t%.4f", matTransform.GetElement( 2, 0 ), matTransform.GetElement( 2, 1 ), matTransform.GetElement( 2, 2 ) );
         mCString strPos = mCString().Format( "%.4f\t%.4f\t%.4f", vecPos.GetX(), vecPos.GetY(), vecPos.GetZ() );
-        MIUInt uMaterialIndex = a_sceneSource.GetMaterialIndexByName( nodeSource.GetMaterialName() );
+        MIUInt uMaterialIndex = a_sceneSource.GetMaterialIndexByName( a_Node.GetMaterialName() );
         a_streamDest.Write( GetTokenLine( "NODE_NAME", "\"" + strNodeName + "\"" ) );
-        if ( pParent )
-            a_streamDest.Write( GetTokenLine( "NODE_PARENT", "\"" + GetNodeName( pParent->GetName() ) + "\"" ) );
+        if ( a_Node.GetName() != "Bip01" )
+            a_streamDest.Write( GetTokenLine( "NODE_PARENT", "\"" + ( pParent ? GetNodeName( *pParent ) : mCString( "Bip01" ) ) + "\"" ) );
         a_streamDest.Write( StartBlock( "NODE_TM" ) );
         a_streamDest.Write( GetTokenLine( "NODE_NAME", "\"" + strNodeName + "\"" ) );
         a_streamDest.Write( GetTokenLine( "INHERIT_POS", "0 0 0" ) );
@@ -262,10 +250,10 @@ namespace
         a_streamDest.Write( GetTokenLine( "TM_SCALEAXIS", "0.0000\t0.0000\t0.0000" ) );
         a_streamDest.Write( GetTokenLine( "TM_SCALEAXISANG", "0.0000" ) );
         a_streamDest.Write( EndBlock() );
-        if ( nodeSource.GetMesh() )
+        if ( a_Node.GetMesh() )
         {
             a_streamDest.Write( StartBlock( "MESH" ) );
-            WriteMesh( *nodeSource.GetMesh(), a_streamDest, a_Options );
+            WriteMesh( *a_Node.GetMesh(), a_streamDest, a_Options );
             a_streamDest.Write( EndBlock() );
         }
         if ( a_Options.m_bGothicAscFormat )
@@ -289,10 +277,10 @@ namespace
         }
         mTArray< mCString > arrBoneNames( mCString(), skinSource.GetNumBones() );
         for ( MIUInt u = skinSource.GetNumBones(); u--; )
-            arrBoneNames[ u ] = GetNodeName( a_sceneSource.GetNodeAt( a_sceneSource.GetNodeIndexByID( skinSource.GetBoneIDByIndex( u ) ) )->GetName() );
+            arrBoneNames[ u ] = GetNodeName( *a_sceneSource.GetNodeAt( a_sceneSource.GetNodeIndexByID( skinSource.GetBoneIDByIndex( u ) ) ) );
         a_streamDest.Write( StartBlock( "MESH_SOFTSKINVERTS" ) );
         GetIndent( -1 );
-        a_streamDest.Write( GetLine( GetNodeName( nodeSource.GetName() ) ) );
+        a_streamDest.Write( GetLine( GetNodeName( nodeSource ) ) );
         a_streamDest.Write( GetLine( mCString().Format( "%u", uVertCount ) ) );
         for ( MIUInt u = 0; u != uVertCount; ++u )
         {
@@ -324,9 +312,10 @@ mEResult mCAseWriter::WriteAseFileData( mCScene const & a_sceneSource, mCIOStrea
     mTStringMap< mCString > mapFullNodeNames;
     mTArray< mCNode const * > arrNodes;
     a_sceneSource.GetNodesSortedByLinks( arrNodes );
+    mCNode nodeBip01( "Bip01" );
+    arrNodes.InsertAt( 0, &nodeBip01 );
     mCScene sceneTemp;
     mCScene const & sceneMaterials = a_Options.m_bGothicAscFormat ? sceneTemp : a_sceneSource;
-    AccessNodeNameMap( 0, MITrue );
     if ( a_Options.m_bGothicAscFormat )
     {
         for ( MIUInt u = a_sceneSource.GetNumNodes(); u--; )
@@ -335,14 +324,7 @@ mEResult mCAseWriter::WriteAseFileData( mCScene const & a_sceneSource, mCIOStrea
             MIUInt uMaterialIndex = a_sceneSource.GetMaterialIndexByName( nodeNode.GetMaterialName() );
             if ( ( uMaterialIndex != MI_DW_INVALID ) && ( sceneTemp.GetNumMaterials() == 0 ) )
                 sceneTemp.AddMaterial( *a_sceneSource.GetMaterialAt( uMaterialIndex ) );
-            mCString strFullNodeName = ( nodeNode.HasMesh() ? "ZM_" : "Bip01 " ) + nodeNode.GetName();
-            if ( mCString( strFullNodeName ).ToLower().FirstOf( "zm_zm_" ) == 0 )
-                strFullNodeName.TrimLeft( ( MIUInt ) 3 );
-            if ( mCString( strFullNodeName ).ToLower().FirstOf( "bip01 bip01" ) == 0 )
-                strFullNodeName.TrimLeft( ( MIUInt ) 6 );
-            mapFullNodeNames[ nodeNode.GetName() ] = strFullNodeName;
         }
-        AccessNodeNameMap( &mapFullNodeNames );
     }
     MIUInt const uMaterialCount = sceneMaterials.GetNumMaterials();
     a_streamDest.Write( GetTokenLine( "MATERIAL_COUNT", mCString().Format( "%u", uMaterialCount ) ) );
@@ -353,10 +335,12 @@ mEResult mCAseWriter::WriteAseFileData( mCScene const & a_sceneSource, mCIOStrea
         a_streamDest.Write( EndBlock() );
     }
     a_streamDest.Write( EndBlock() );
-    for ( MIUInt u = 0, ue = a_sceneSource.GetNumNodes(); u != ue; ++u )
+    for ( MIUInt u = 0, ue = arrNodes.GetCount(); u != ue; ++u )
     {
-        a_streamDest.Write( StartBlock( "GEOMOBJECT" ) );
-        WriteNode( a_sceneSource, a_sceneSource.GetNodeIndexByID( arrNodes[ u ]->GetID() ), a_streamDest, a_Options );
+        if ( u && ( !arrNodes[ u ]->GetName().CompareNoCase( "Bip01" ) ) )
+            continue;
+        a_streamDest.Write( StartBlock( ( arrNodes[ u ]->HasMesh() || arrNodes[ u ]->GetIsBone() || !u ) ? "GEOMOBJECT" : "HELPEROBJECT" ) );
+        WriteNode( a_sceneSource, *arrNodes[ u ], a_streamDest, a_Options );
         a_streamDest.Write( EndBlock() );
     }
     if ( a_Options.m_bGothicAscFormat )
