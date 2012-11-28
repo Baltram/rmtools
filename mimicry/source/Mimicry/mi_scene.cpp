@@ -186,6 +186,10 @@ void mCScene::IdentifyBones( void )
         if ( GetNodeAt( u )->HasSkin() )
             for ( MIUInt v = GetNodeAt( u )->GetSkin()->GetNumBones(); v--; )
                 AccessNodeAt( GetNodeIndexByID( GetNodeAt( u )->GetSkin()->GetBoneIDByIndex( v ) ) )->AccessIsBone() = MITrue;
+    for ( MIUInt u = GetNumNodes(); u--; )
+        if ( GetNodeAt( u )->GetIsBone() )
+            for ( mCNode * pNode = AccessNodeAt( u ); pNode->AccessIsBone() = MITrue, pNode->GetParentID(); )
+                pNode = AccessNodeAt( GetNodeIndexByID( pNode->GetParentID() ) );
 }
 
 void mCScene::RemoveMaterial( mCMaterialBase * a_pMaterial )
