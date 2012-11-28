@@ -9,13 +9,13 @@ HEADERS += "$$PWD/Mimicry.h" \
            "$$PWD/Mimicry/mi_asereader.h" \
            "$$PWD/Mimicry/mi_asewriter.h" \
            "$$PWD/Mimicry/mi_box.h" \
-		   "$$PWD/Mimicry/mi_buffer.h" \
+           "$$PWD/Mimicry/mi_buffer.h" \
            "$$PWD/Mimicry/mi_color.h" \
            "$$PWD/Mimicry/mi_converters.h" \
            "$$PWD/Mimicry/mi_coordshifter.h" \
            "$$PWD/Mimicry/mi_error.h" \
            "$$PWD/Mimicry/mi_error.inl" \
-		   "$$PWD/Mimicry/mi_error_risen2.h" \
+           "$$PWD/Mimicry/mi_error_risen2.h" \
            "$$PWD/Mimicry/mi_errormacros.h" \
            "$$PWD/Mimicry/mi_face.h" \
            "$$PWD/Mimicry/mi_filestream.h" \
@@ -23,11 +23,11 @@ HEADERS += "$$PWD/Mimicry.h" \
            "$$PWD/Mimicry/mi_global.inl" \
            "$$PWD/Mimicry/mi_include_3d.h" \
            "$$PWD/Mimicry/mi_include_array.h" \
-		   "$$PWD/Mimicry/mi_include_buffer.h" \
+           "$$PWD/Mimicry/mi_include_buffer.h" \
            "$$PWD/Mimicry/mi_include_converters.h" \
            "$$PWD/Mimicry/mi_include_core.h" \
            "$$PWD/Mimicry/mi_include_map.h" \
-		   "$$PWD/Mimicry/mi_include_risen2.h" \
+           "$$PWD/Mimicry/mi_include_risen2.h" \
            "$$PWD/Mimicry/mi_include_scene.h" \
            "$$PWD/Mimicry/mi_include_standard.h" \
            "$$PWD/Mimicry/mi_include_standard_base.h" \
@@ -51,22 +51,22 @@ HEADERS += "$$PWD/Mimicry.h" \
            "$$PWD/Mimicry/mi_memorystreambase.h" \
            "$$PWD/Mimicry/mi_mesh.h" \
            "$$PWD/Mimicry/mi_multimaterial.h" \
-		   "$$PWD/Mimicry/mi_name.h" \
+           "$$PWD/Mimicry/mi_name.h" \
            "$$PWD/Mimicry/mi_node.h" \
            "$$PWD/Mimicry/mi_objreader.h" \
            "$$PWD/Mimicry/mi_objwriter.h" \
            "$$PWD/Mimicry/mi_ostream.h" \
            "$$PWD/Mimicry/mi_ostream.inl" \
            "$$PWD/Mimicry/mi_quaternion.h" \
-		   "$$PWD/Mimicry/mi_refstream.h" \
-		   "$$PWD/Mimicry/mi_risen2name.h" \
+           "$$PWD/Mimicry/mi_refstream.h" \
+           "$$PWD/Mimicry/mi_risen2name.h" \
            "$$PWD/Mimicry/mi_scene.h" \
            "$$PWD/Mimicry/mi_skin.h" \
            "$$PWD/Mimicry/mi_stream.h" \
            "$$PWD/Mimicry/mi_stream.inl" \
            "$$PWD/Mimicry/mi_string.h" \
            "$$PWD/Mimicry/mi_string.inl" \
-		   "$$PWD/Mimicry/mi_stringallocator.h" \
+           "$$PWD/Mimicry/mi_stringallocator.h" \
            "$$PWD/Mimicry/mi_stringstream.h" \
            "$$PWD/Mimicry/mi_tag.h" \
            "$$PWD/Mimicry/mi_texmap.h" \
@@ -84,7 +84,7 @@ SOURCES += "$$PWD/Mimicry/mi_3dbreader.cpp" \
            "$$PWD/Mimicry/mi_asereader.cpp" \
            "$$PWD/Mimicry/mi_asewriter.cpp" \
            "$$PWD/Mimicry/mi_box.cpp" \
-		   "$$PWD/Mimicry/mi_buffer.cpp" \
+           "$$PWD/Mimicry/mi_buffer.cpp" \
            "$$PWD/Mimicry/mi_color.cpp" \
            "$$PWD/Mimicry/mi_converters.cpp" \
            "$$PWD/Mimicry/mi_coordshifter.cpp" \
@@ -103,13 +103,13 @@ SOURCES += "$$PWD/Mimicry/mi_3dbreader.cpp" \
            "$$PWD/Mimicry/mi_memorystreambase.cpp" \
            "$$PWD/Mimicry/mi_mesh.cpp" \
            "$$PWD/Mimicry/mi_multimaterial.cpp" \
-		   "$$PWD/Mimicry/mi_name.cpp" \
+           "$$PWD/Mimicry/mi_name.cpp" \
            "$$PWD/Mimicry/mi_node.cpp" \
            "$$PWD/Mimicry/mi_objreader.cpp" \
            "$$PWD/Mimicry/mi_objwriter.cpp" \
            "$$PWD/Mimicry/mi_quaternion.cpp" \
-		   "$$PWD/Mimicry/mi_refstream.cpp" \
-		   "$$PWD/Mimicry/mi_risen2name.cpp" \
+           "$$PWD/Mimicry/mi_refstream.cpp" \
+           "$$PWD/Mimicry/mi_risen2name.cpp" \
            "$$PWD/Mimicry/mi_scene.cpp" \
            "$$PWD/Mimicry/mi_skin.cpp" \
            "$$PWD/Mimicry/mi_string.cpp" \

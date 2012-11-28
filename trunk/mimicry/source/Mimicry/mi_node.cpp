@@ -28,7 +28,6 @@ mCNode::mCNode( void ) :
     m_idParent( 0 ),
     m_bIsBone( MIFalse )
 {
-    m_matTransform.SetToIdentity();
 }
 
 mCNode::~mCNode( void )

@@ -15,7 +15,7 @@ mCMatrix4::mCMatrix4( mCMatrix4 const & a_matSource )
 
 mCMatrix4::mCMatrix4( void )
 {
-    SetToZero();
+    SetToIdentity();
 }
 
 mCMatrix4::~mCMatrix4( void )

@@ -5,7 +5,7 @@ class mCNode :
     public mCUnique
 {
 public:
-    mCNode( mCString const & a_strName, mCMatrix4 const & a_matTransform, mCString const & a_strMaterialName = mCString(), mCMesh const * a_pMesh = 0, mCSkin const * a_pSkin = 0, MIBool a_bIsBone = MIFalse );
+    mCNode( mCString const & a_strName, mCMatrix4 const & a_matTransform = mCMatrix4(), mCString const & a_strMaterialName = mCString(), mCMesh const * a_pMesh = 0, mCSkin const * a_pSkin = 0, MIBool a_bIsBone = MIFalse );
     mCNode( mCNode const & a_nodeSource );
     mCNode( void );
    ~mCNode( void );

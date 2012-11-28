@@ -311,7 +311,6 @@ mEResult mCMaxFileStream::ReadPersistentGlobalData( mCVariant & a_vDest )
             Skip( 4 );
             Decrypt( *arrComponents, 12 * sizeof( MIFloat ), u8Type );
             mCMatrix4 matMatrix;
-            matMatrix.SetToIdentity();
             for ( MIUInt u = 4; u--; )
                 g_memcpy( matMatrix.AccessRow( u ), arrComponents[ u ], 3 * sizeof( MIFloat ) );
             a_vDest.SetData< mCMatrix4 >( matMatrix );
