@@ -309,7 +309,6 @@ mEResult mCAseWriter::WriteAseFileData( mCScene const & a_sceneSource, mCIOStrea
     a_streamDest.Write( GetTokenLine( "SCENE_AMBIENT_STATIC", "0.0000\t0.0000\t0.0000" ) );
     a_streamDest.Write( EndBlock() );
     a_streamDest.Write( StartBlock( "MATERIAL_LIST" ) );
-    mTStringMap< mCString > mapFullNodeNames;
     mTArray< mCNode const * > arrNodes;
     a_sceneSource.GetNodesSortedByLinks( arrNodes );
     mCNode nodeBip01( "Bip01" );
