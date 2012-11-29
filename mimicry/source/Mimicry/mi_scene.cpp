@@ -206,6 +206,10 @@ void mCScene::RemoveNode( mCNode * a_pNode )
     MIUInt const uIndex = m_arrNodes.IndexOf( a_pNode );
     if ( uIndex == MI_DW_INVALID )
         return;
+    mCUnique::ID ID = a_pNode->GetID();
+    for ( MIUInt u = GetNumNodes(); u--; )
+        if ( m_arrNodes[ u ]->GetParentID() == ID )
+            SetNodeParent( u, MI_DW_INVALID );
     delete m_arrNodes[ uIndex ];
     m_arrNodes.RemoveAt( uIndex );
 }
@@ -217,7 +221,7 @@ void mCScene::SetName( mCString const & a_strName )
 
 void mCScene::SetNodeParent( MIUInt a_uNodeIndex, MIUInt a_uParentNodeIndex )
 {
-    AccessNodeAt( a_uNodeIndex )->AccessParentID() = GetNodeAt( a_uParentNodeIndex )->GetID();
+    AccessNodeAt( a_uNodeIndex )->AccessParentID() = ( a_uParentNodeIndex == MI_DW_INVALID ) ? 0 : GetNodeAt( a_uParentNodeIndex )->GetID();
 }
 
 void mCScene::SortNodesByLinks( void )
