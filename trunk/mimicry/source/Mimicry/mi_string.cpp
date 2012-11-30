@@ -180,13 +180,23 @@ MILPChar mCString::AccessText( void )
 
 mCString & mCString::Append( mCString const & a_strText )
 {
-    m_pcText = Alloc( 0, GetLength(), a_strText.GetText(), a_strText.GetLength(), m_pcText );
-    return *this;
+    return Append( a_strText.GetText(), a_strText.GetLength() );
 } 
 
-mCString & mCString::Append( MILPCChar a_pcText )
+mCString & mCString::Append( MILPCChar a_pcText, MIUInt a_uLength )
 {
-    m_pcText = Alloc( 0, GetLength(), a_pcText, 0, m_pcText );
+    if ( a_uLength == MI_DW_INVALID )
+        a_uLength = g_strlen( a_pcText );
+    MIUInt const uLength = GetLength();
+    if ( ( uLength < 0xFF ) && ( uLength + a_uLength >= 0xFF ) )
+    {
+        mCString strTemp( GetText(), uLength, a_pcText, a_uLength );
+        Swap( strTemp );
+    }
+    else
+    {
+        m_pcText = Alloc( 0, GetLength(), a_pcText, a_uLength, m_pcText );
+    }
     return *this;
 }
 
