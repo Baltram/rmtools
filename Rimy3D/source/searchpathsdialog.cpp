@@ -60,7 +60,7 @@ void SearchPathsDialog::on_listWidget_currentRowChanged( int a_iCurrentRow )
 
 void SearchPathsDialog::on_pushButton_clicked()
 {
-    QStringList arrDirs( QFileDialog::getExistingDirectory( this ) );
+    QStringList arrDirs( QFileDialog::getExistingDirectory( this, "Choose a folder", QDir::homePath() ) );
     if ( arrDirs.front() == "" )
         return;
     if ( m_pUi->checkBox->isChecked() )
