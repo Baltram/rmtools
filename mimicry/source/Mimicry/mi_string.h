@@ -50,7 +50,7 @@ public:
 public:
     MILPChar   AccessText( void );
     mCString & Append( mCString const & a_strText ); 
-    mCString & Append( MILPCChar a_pcText );
+    mCString & Append( MILPCChar a_pcText, MIUInt a_uLength = MI_DW_INVALID );
     void       Clear( void );
     MIInt      Compare( mCString const & a_strOther ) const;
     MIInt      Compare( MILPCChar a_pcOther ) const;
