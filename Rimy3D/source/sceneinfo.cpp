@@ -137,7 +137,7 @@ mCScene const & SceneInfo::getCurrentScene( void )
     return m_sceneCurrentScene;
 }
 
-bool SceneInfo::openSceneFile( QString a_strFilePath )
+bool SceneInfo::openSceneFile( QString a_strFilePath, bool a_bTrimAsc )
 {
     QFileInfo FileInfo( a_strFilePath );
     QString strExt = FileInfo.suffix().toLower();
@@ -170,6 +170,19 @@ bool SceneInfo::openSceneFile( QString a_strFilePath )
     else if ( ( strExt == "ase" ) || ( strExt == "asc" ) )
     {
         enuResult = mCAseReader::ReadAseFileData( sceneNew, streamIn );
+        if ( ( strExt == "asc" ) && Rimy3D::showQuestion( tr( "Remove 'ZM_' and 'Bip01' prefixes as well as the Bip01 bone?" ), tr( "ASC Import" ), a_bTrimAsc ) )
+        {
+            for ( MIUInt u = sceneNew.GetNumNodes(); u--; )
+            {
+                mCString & strName = sceneNew.AccessNodeAt( u )->AccessName();
+                if ( strName.CompareNoCase( "Bip01" ) == 0 )
+                    sceneNew.RemoveNode( sceneNew.AccessNodeAt( u ) );
+                else if ( strName.Left( 3 ).ToLower() == "zm_" )
+                    strName.TrimLeft( ( MIUInt ) 3 );
+                else if ( strName.Left( 5 ).ToLower() == "bip01" )
+                    strName.TrimLeft( ( MIUInt ) ( strName[ 6 ] == ' ' ? 6 : 5 ) );
+            }
+        }
     }
     else if ( strExt == "xact" )
     {
@@ -214,14 +227,6 @@ bool SceneInfo::saveSceneFile( QString a_strFilePath, exportSettingsDialog & a_S
     {
         mC3dbWriter::SOptions Options;
         static_cast< eSConverterOptions & >( Options ) = BaseOptions;
-        /*//$*/mCSkin const * pSkin = 0;
-        for ( MIUInt u = m_sceneCurrentScene.GetNumNodes(); u--; )
-            if ( m_sceneCurrentScene.GetNodeAt( u )->HasSkin() )
-                pSkin = m_sceneCurrentScene.GetNodeAt( u )->GetSkin();
-        for ( MIUInt u = pSkin->GetNumBones(); u--; )
-            if ( m_sceneCurrentScene.GetNodeIndexByID( pSkin->GetBoneIDByIndex( u ) ) == MI_DW_INVALID )
-                u = u;/*//$*/
-        pSkin = pSkin;
         enuResult = mC3dbWriter::Write3dbFileData( m_sceneCurrentScene, streamOut, Options );
     }
     else if ( strExt == "asc" )

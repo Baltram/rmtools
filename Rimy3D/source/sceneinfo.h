@@ -21,7 +21,7 @@ public:
     QString const & getCurrentFile( void );
     QString const & getCurrentSaveDir( void );
     mCScene const & getCurrentScene( void );
-    bool            openSceneFile( QString a_strFilePath );
+    bool            openSceneFile( QString a_strFilePath, bool a_bTrimAsc = false );
     bool            saveSceneFile( QString a_strFilePath, exportSettingsDialog & a_SettingsDialog );
 signals:
     void sceneChanged( void );
