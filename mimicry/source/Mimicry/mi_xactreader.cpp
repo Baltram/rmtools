@@ -131,12 +131,13 @@ mEResult mCXactReader::ReadXactFileData( mCScene & a_sceneDest, mCIOStreamBinary
                     mCMaxFace & faceDest = pFaces[ v ];
                     a_streamSource >> faceDest;
                     faceDest.AccessMatID() = uMatID;
-                    for ( MIUInt w = 3; w--; faceDest[ w ] += uTotalPassedVertCount );
-                    pVNFaces[ v ] = faceDest;
+                    mCFace & faceVNDest = pVNFaces[ v ] = faceDest;
+                    for ( MIUInt w = 3; w--; faceVNDest[ w ] += uTotalPassedVertCount );
                     if ( uChannelCount )
-                        pTVFaces[ v ] = faceDest;
+                        pTVFaces[ v ] = faceVNDest;
                     for ( MIUInt w = 3; w--; faceDest[ w ] = pVertIndices[ faceDest[ w ] ] );
                 }
+                pVertIndices += uPartUVertCount;
                 uTotalPassedVertCount += uPartUVertCount;
                 pVNormals += uPartUVertCount;
                 pTVerts += uPartUVertCount;
