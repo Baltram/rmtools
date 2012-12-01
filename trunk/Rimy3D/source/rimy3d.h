@@ -21,11 +21,14 @@ public:
     static ELanguage getLanguage( void );
     static void      init( int & argc, char * argv[] );
     static void      loadSettings( void );
+    static bool      quiet( void );
     static void      saveSettings( void );
     static void      setLanguage( ELanguage a_enuLanguage );
     static void      setMainWindow( QWidget * a_pMainWindow );
+    static void      setQuiet( bool a_bEnabled );
     static void      showError( QString a_strText, QString a_strTitle = "Rimy3D" );
     static void      showMessage( QString a_strText, QString a_strTitle = "Rimy3D" );
+    static bool      showQuestion( QString a_strText, QString a_strTitle = "Rimy3D", bool a_bDefault = false );
     static void      showWarning( QString a_strText, QString a_strTitle = "Rimy3D" );
 signals:
     void settingsLoading( QSettings & a_Settings );
@@ -37,6 +40,7 @@ private:
     void loadSettingsIntern( void );
     void saveSettingsIntern( void );
 private:
+    static bool          s_bQuiet;
     static ELanguage     s_enuCurrentLanguage;
     static Rimy3D *      s_pInstance;
     static QSettings *   s_pSettings;
