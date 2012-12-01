@@ -89,13 +89,13 @@ void Rimy3D::setQuiet( bool a_bEnabled )
 
 void Rimy3D::showError( QString a_strText, QString a_strTitle )
 {
-    if ( quiet() )
+    if ( !quiet() )
         QMessageBox::critical( s_pMainWindow, a_strTitle, a_strText );
 }
 
 void Rimy3D::showMessage( QString a_strText, QString a_strTitle )
 {
-    if ( quiet() )
+    if ( !quiet() )
         QMessageBox::about( s_pMainWindow, a_strTitle, a_strText );
 }
 
@@ -106,7 +106,7 @@ bool Rimy3D::showQuestion( QString a_strText, QString a_strTitle, bool a_bDefaul
 
 void Rimy3D::showWarning( QString a_strText, QString a_strTitle )
 {
-    if ( quiet() )
+    if ( !quiet() )
         QMessageBox::warning( s_pMainWindow, a_strTitle, a_strText );
 }
 
