@@ -513,8 +513,8 @@ void mCMesh::CalcVNormals( MIBool const a_bUseAnglesNotSGs, MIFloat const a_fMin
     MIUInt const           uIndexCount = uFaceCount * 3;
     mTArray< mCVec3 >      arrVertexNormals( uIndexCount );
     mTArray< MIUInt >      arrFirstIndexPerVert, arrNextIndexPerIndex;
-    mTArray< SFaceAngles > arrFaceAnglesPerFace( uFaceCount );
-    mTArray< mCVec3 >      arrFaceNormals( uFaceCount );
+    mTArray< SFaceAngles > arrFaceAnglesPerFace( SFaceAngles(), uFaceCount );
+    mTArray< mCVec3 >      arrFaceNormals( mCVec3(), uFaceCount );
 
     for ( MIUInt u = uFaceCount; u--; arrFaceNormals[ u ] = m_arrFaces[ u ].CalcNormal( m_arrVertices.GetBuffer(), m_arrVertices.GetCount(), arrFaceAnglesPerFace[ u ].m_arrFaceAngles ) );
     CalcIndicesPerVert( arrFirstIndexPerVert, arrNextIndexPerIndex );
@@ -526,7 +526,7 @@ void mCMesh::CalcVNormals( MIBool const a_bUseAnglesNotSGs, MIFloat const a_fMin
         {
             MIUInt const uFaceIndex = v / 3;
             MIUInt const uComposedNormalIndex = arrVertexNormals.GetCount();
-            mCVec3 & vecComposedNormal = arrVertexNormals.AddNew() = mCVec3( 0.0f, 0.0f, 0.0f );
+            mCVec3 & vecComposedNormal = arrVertexNormals.AddNew();
             for ( MIUInt w = v, * pLast = &arrNextIndexPerIndex[ v ]; w != uIndexCount; w = *pLast )
             {
                 MIUInt const uFaceIndex2 = w / 3;
