@@ -203,9 +203,10 @@ namespace
         }
         if ( !AccessIntegrityState() )
             return;
-        MIUInt uOffset = AccessStream()->Tell();
+        MIUInt uOffset;
         while ( AccessIntegrityState() )
         {
+            uOffset = AccessStream()->Tell();
             MIUInt uCount = 0;
             ReadTokenLine( "", "%*s %u", &uCount );
             mCString strBlockName;
@@ -258,10 +259,6 @@ namespace
                     }
                 }
             }
-            else
-            {
-                LeaveBlock();
-            }
         }
         AccessIntegrityState() = MITrue;
         AccessStream()->Seek( uOffset );
@@ -276,7 +273,7 @@ namespace
             {
                 ReadTokenLine( "MESH_FACENORMAL", "" );
                 for ( MIUInt v = 3; v--; ++pVNormal )
-                    ReadTokenLine( "MESH_VERTEXNORMAL", "%*u %f %f %f", pVNormal->AccessX(), pVNormal->AccessY(), pVNormal->AccessZ() );
+                    ReadTokenLine( "MESH_VERTEXNORMAL", "%*u %f %f %f", &pVNormal->AccessX(), &pVNormal->AccessY(), &pVNormal->AccessZ() );
             }
             LeaveBlock();
         }
