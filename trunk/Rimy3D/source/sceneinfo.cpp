@@ -207,7 +207,7 @@ bool SceneInfo::openSceneFile( QString a_strFilePath, bool a_bTrimAsc )
 
 bool SceneInfo::saveSceneFile( QString a_strFilePath, exportSettingsDialog & a_SettingsDialog )
 {
-    m_strCurrentSaveDir = QFileInfo( a_strFilePath ).canonicalPath();
+    m_strCurrentSaveDir = QFileInfo( a_strFilePath ).absolutePath();
     QString strExt = QFileInfo( a_strFilePath ).suffix().toLower();
     mCFileStream streamOut;
     if ( streamOut.Open( a_strFilePath.toAscii().data(), mEFileOpenMode_Write ) == mEResult_False )

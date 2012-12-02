@@ -1,6 +1,13 @@
 #include "rimy3d.h"
 #include <QMessageBox>
 
+#ifdef Q_WS_WIN
+#include "Windows.h"
+#include <QSysInfo>
+#include <QFileInfo>
+#pragma comment ( lib, "Shell32.lib" )
+#endif
+
 bool Rimy3D::s_bQuiet = false;
 Rimy3D::ELanguage Rimy3D::s_enuCurrentLanguage = ELanguage_English;
 Rimy3D * Rimy3D::s_pInstance = 0;
@@ -135,6 +142,30 @@ void Rimy3D::loadSettingsIntern( void )
             enuLanguage = ELanguage_English;
         }
     }
+#ifdef Q_WS_WIN
+    if ( ( ( QSysInfo::WindowsVersion == QSysInfo::WV_VISTA ) || ( QSysInfo::WindowsVersion == QSysInfo::WV_WINDOWS7 ) ) && ( !s_pSettings->contains( "GMaxChecked" ) ) )
+    {
+        QSettings settingsGmax1( "HKEY_CLASSES_ROOT\\3DStudio.GMAX\\shell\\open\\command", QSettings::NativeFormat );
+        QSettings settingsGmax2( "HKEY_CLASSES_ROOT\\Applications\\gmax.exe\\shell\\open\\command", QSettings::NativeFormat );
+        QStringList arrPossibleLocations;
+        arrPossibleLocations << settingsGmax1.value( "Default", "" ).toString().replace( "gmax.exe %1", "MAXComponents.dll" )
+                             << settingsGmax2.value( "Default", "" ).toString().replace( "\"", "" ).replace( "gmax.exe %1", "MAXComponents.dll" )
+                             << QString( getenv( "GMAXLOC" ) ).append( "MAXComponents.dll" );
+        for ( int i = arrPossibleLocations.count(); i--; )
+        {
+            if ( QFileInfo( arrPossibleLocations[ i ] ).exists() )
+            {
+                bool bResult = showQuestion( tr( "Rimy3D detected that you are using GMax under Windows " ) +
+                                             QString( QSysInfo::WindowsVersion == QSysInfo::WV_VISTA ? "Vista" : "7" ) +
+                                             tr( ". This combination often leads to errors related to the 'Skin' modifier. It is highly recommended to fix this by registering the file MAXComponents.dll. Continue?" ) );
+                if ( bResult )
+                    ShellExecuteA( 0, "runas", "regsvr32.exe", arrPossibleLocations[ i ].toAscii().data(), 0, SW_SHOWNORMAL );
+                s_pSettings->setValue( "GMaxChecked", bResult );
+                break;
+            }
+        }
+    }
+#endif
     emit settingsLoading( *s_pSettings );
     setLanguage( enuLanguage );
 }
