@@ -1,7 +1,7 @@
 fn installExtendedSaving =
 (
 	local cName = "Extended Saving"
-	local esVersion = 3
+	local esVersion = 4
 	
 	while ( menuMan.findMenu cName ) != undefined do
 	(
@@ -82,6 +82,6 @@ fn installExtendedSaving =
 	macros.run cName "startup"
 	mainMenuBar.addItem esSubMenuItem ( mainMenuBar.numItems() - 1 )
 	menuMan.updateMenuBar()
-	messagebox "Extended Saving has been installed successfully! You can turn it on and off using the new \"Extended Saving\" menu in the main menu bar." title:cName
+	messagebox "Extended Saving has been successfully installed! You can turn it on and off using the new \"Extended Saving\" menu in the main menu bar." title:cName
 	resetMaxFile #noPrompt
 )

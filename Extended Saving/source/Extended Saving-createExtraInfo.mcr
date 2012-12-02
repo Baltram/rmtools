@@ -71,7 +71,7 @@ macroScript createExtraInfo category:"Extended Saving" tooltip:"Ignore Me"
 	fn buildMaterialChunk mt =
 	(
 		local result = copy materialChunkPattern #noMap
-		local isMultiMaterial = ( ( classof mt ) == Multimaterial )
+		local isMultiMaterial = ( ( classOf mt ) == Multimaterial )
 		local i = 6
 		result[ 4 ] = mt.name
 		result[ 5 ] = isMultiMaterial
@@ -82,9 +82,9 @@ macroScript createExtraInfo category:"Extended Saving" tooltip:"Ignore Me"
 		)
 		else
 		(
-			try ( if mt.diffuseMap != undefined and ( classof mt.diffuseMap ) == Bitmaptexture then result[ i += 1 ] = #( "diffuse", mt.diffuseMap.filename ) ) catch ()
-			try ( if mt.specularMap != undefined and ( classof mt.specularMap ) == Bitmaptexture then result[ i += 1 ] = #( "specular", mt.specularMap.filename ) ) catch ()
-			try ( if mt.bumpMap != undefined and ( classof mt.bumpMap ) == Bitmaptexture then result[ i += 1 ] = #( "bump", mt.bumpMap.filename ) ) catch ()
+			try ( if mt.diffuseMap != undefined and ( classOf mt.diffuseMap ) == Bitmaptexture then result[ i += 1 ] = #( "diffuse", mt.diffuseMap.filename ) ) catch ()
+			try ( if mt.specularMap != undefined and ( classOf mt.specularMap ) == Bitmaptexture then result[ i += 1 ] = #( "specular", mt.specularMap.filename ) ) catch ()
+			try ( if mt.bumpMap != undefined and ( classOf mt.bumpMap ) == Bitmaptexture then result[ i += 1 ] = #( "bump", mt.bumpMap.filename ) ) catch ()
 			result.count = i
 		)
 		result[ 6 ] = i - 6
@@ -103,7 +103,7 @@ macroScript createExtraInfo category:"Extended Saving" tooltip:"Ignore Me"
 	)
 	fn buildMeshChunk nd =
 	(
-		local ndClass = classof nd
+		local ndClass = ( classOf nd )
 		if ( ndClass != Editable_mesh ) and ( ndClass != Editable_Poly ) and ( ndClass != Editable_Patch ) then throw ""
 		local result = copy meshChunkPattern #noMap
 		local m = snapshotAsMesh nd
@@ -120,9 +120,9 @@ macroScript createExtraInfo category:"Extended Saving" tooltip:"Ignore Me"
 		local numTVerts = m.numtverts
 		local numVColors = m.numcpvverts
 		memoryCheck ( point3Size * numTVerts )
-		if ( numTVerts != 0 ) then memoryCheck ( point3Size * numFaces )
+		if numTVerts != 0 then memoryCheck ( point3Size * numFaces )
 		memoryCheck ( colorSize * numVColors )
-		if ( numVColors != 0 ) then memoryCheck ( point3Size * numFaces )
+		if numVColors != 0 then memoryCheck ( point3Size * numFaces )
 		memoryCheck ( ( point3Size + intSize + intSize ) * numFaces )
 		if ( memoryCheck ( point3Size * numVerts ) ) == false then return 0
 		verts.count = numVerts;
@@ -136,14 +136,14 @@ macroScript createExtraInfo category:"Extended Saving" tooltip:"Ignore Me"
 			faceMatIds[ i ] = ( getFaceMatID m i )
 			faceSgs[ i ] = ( getFaceSmoothGroup m i )
 		)
-		if ( numTVerts != 0 ) then
+		if numTVerts != 0 then
 		(
 			tVerts.count = numTVerts
 			for i = 1 to numTVerts do tVerts[ i ] = ( getTVert m i )
 			tVFaces.count = numFaces
 			for i = 1 to numFaces do tVFaces[ i ] = ( getTVFace m i )
 		)
-		if ( numVColors != 0 ) then
+		if numVColors != 0 then
 		(
 			vColors.count = numVColors
 			for i = 1 to numVColors do vColors[ i ] = ( getVertColor m i )
@@ -165,11 +165,12 @@ macroScript createExtraInfo category:"Extended Saving" tooltip:"Ignore Me"
 	(
 		if nd.modifiers[ 1 ] != nd.skin then
 		(
+			subObjectLevel = 0
 			if panelTaskMode == #modify then
 				deselect nd
 			local tempNode = copy nd
 			deleteModifier tempNode tempNode.skin
-			for i = nd.modifiers.count to 1 by -1 do if classOf ( nd.modifiers[ i ] ) != Skin then deleteModifier nd i
+			for i = nd.modifiers.count to 1 by -1 do if ( classOf nd.modifiers[ i ] ) != Skin then deleteModifier nd i
 			referenceReplace nd tempNode
 			delete tempNode
 		)
