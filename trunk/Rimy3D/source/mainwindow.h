@@ -37,8 +37,10 @@ private:
 private slots:
     void on_actionAbout_triggered( void );
     void on_actionClose_triggered( void );
+    void on_actionConfigure_Bitmap_Paths_triggered( void );
     void on_actionEnglish_triggered( void );
     void on_actionExit_triggered( void );
+    void on_actionFix_GMax_Installation_triggered( void );
     void on_actionGerman_triggered( void );
     void on_actionOpen_triggered( void );
     void on_actionRecent1_triggered( void );
@@ -46,9 +48,8 @@ private slots:
     void on_actionRecent3_triggered( void );
     void on_actionRecent4_triggered( void );
     void on_actionRecent5_triggered( void );
-    void onSceneChanged( void );
-    void on_actionConfigure_Bitmap_Paths_triggered( void );
     void on_actionSave_As_triggered( void );
+    void onSceneChanged( void ); 
 private:
     Ui::MainWindow *     m_pUi;
     SceneInfo            m_SceneInfo;

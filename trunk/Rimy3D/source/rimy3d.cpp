@@ -2,6 +2,7 @@
 #include <QMessageBox>
 
 #ifdef Q_WS_WIN
+#include "mi_macros.h"
 #include "Windows.h"
 #include <QSysInfo>
 #include <QFileInfo>
@@ -17,6 +18,56 @@ QTranslator * Rimy3D::s_pCurrentQtTranslator = 0;
 QTranslator * Rimy3D::s_pCurrentAppTranslator = 0;
 QTranslator * Rimy3D::s_pGermanQtTranslator = 0;
 QTranslator * Rimy3D::s_pGermanAppTranslator = 0;
+
+bool Rimy3D::checkGmaxInstallation( void )
+{
+#ifdef Q_WS_WIN
+    QSettings settingsClasses( "HKEY_CLASSES_ROOT\\MAXComponents.SkinEngine", QSettings::NativeFormat );
+    if ( !settingsClasses.childGroups().count() )
+    {
+        settingsClasses.clear();
+        QSettings settingsGmax1( "HKEY_CLASSES_ROOT\\3DStudio.GMAX\\shell\\open\\command", QSettings::NativeFormat );
+        QSettings settingsGmax2( "HKEY_CLASSES_ROOT\\Applications\\gmax.exe\\shell\\open\\command", QSettings::NativeFormat );
+        MI_CRT_NO_WARNINGS( QString strGMaxLoc = getenv( "GMAXLOC" ); )
+        QStringList arrPossibleLocations;
+        arrPossibleLocations << settingsGmax1.value( "Default", "" ).toString().replace( "gmax.exe %1", "MAXComponents.dll" )
+                             << settingsGmax2.value( "Default", "" ).toString().replace( "\"", "" ).replace( "gmax.exe %1", "MAXComponents.dll" )
+                             << strGMaxLoc.append( "MAXComponents.dll" );
+        for ( int i = arrPossibleLocations.count(); i--; )
+        {
+            if ( QFileInfo( arrPossibleLocations[ i ] ).exists() )
+            {
+                bool bResult = showQuestion( tr( "Rimy3D detected that you are using GMax under Windows " ) +
+                                             QString( QSysInfo::WindowsVersion == QSysInfo::WV_VISTA ? "Vista" : "7" ) +
+                                             tr( " without having registered the file MAXComponents.dll in the windows registry.\n\n"
+                                                 "This may cause errors related to the 'Skin' modifier. "
+                                                 "It is highly recommended to let Rimy3D fix this. Continue?" ) );
+                if ( bResult )
+                {
+                    QByteArray arrTemp( arrPossibleLocations[ i ].toAscii() );
+                    SHELLEXECUTEINFOA Info = { 0 };
+                    Info.cbSize = sizeof( SHELLEXECUTEINFO );
+                    Info.fMask = SEE_MASK_NOCLOSEPROCESS;
+                    Info.hwnd = NULL;
+                    Info.lpVerb = "runas";
+                    Info.lpFile = "regsvr32.exe";
+                    Info.lpParameters = arrTemp.constData();
+                    Info.lpDirectory = NULL;
+                    Info.nShow = SW_SHOW;
+                    Info.hInstApp = NULL;
+                    ShellExecuteExA( &Info );
+                    WaitForSingleObject( Info.hProcess, INFINITE );
+                }
+                settingsClasses.sync();
+                bResult = settingsClasses.childGroups().count() != 0;
+                s_pSettings->setValue( "MAXComponents", bResult );
+                return bResult;
+            }
+        }
+    }
+#endif
+    return true;
+}
 
 Rimy3D * Rimy3D::getInstance( void )
 {
@@ -143,28 +194,9 @@ void Rimy3D::loadSettingsIntern( void )
         }
     }
 #ifdef Q_WS_WIN
-    if ( ( ( QSysInfo::WindowsVersion == QSysInfo::WV_VISTA ) || ( QSysInfo::WindowsVersion == QSysInfo::WV_WINDOWS7 ) ) && ( !s_pSettings->contains( "GMaxChecked" ) ) )
-    {
-        QSettings settingsGmax1( "HKEY_CLASSES_ROOT\\3DStudio.GMAX\\shell\\open\\command", QSettings::NativeFormat );
-        QSettings settingsGmax2( "HKEY_CLASSES_ROOT\\Applications\\gmax.exe\\shell\\open\\command", QSettings::NativeFormat );
-        QStringList arrPossibleLocations;
-        arrPossibleLocations << settingsGmax1.value( "Default", "" ).toString().replace( "gmax.exe %1", "MAXComponents.dll" )
-                             << settingsGmax2.value( "Default", "" ).toString().replace( "\"", "" ).replace( "gmax.exe %1", "MAXComponents.dll" )
-                             << QString( getenv( "GMAXLOC" ) ).append( "MAXComponents.dll" );
-        for ( int i = arrPossibleLocations.count(); i--; )
-        {
-            if ( QFileInfo( arrPossibleLocations[ i ] ).exists() )
-            {
-                bool bResult = showQuestion( tr( "Rimy3D detected that you are using GMax under Windows " ) +
-                                             QString( QSysInfo::WindowsVersion == QSysInfo::WV_VISTA ? "Vista" : "7" ) +
-                                             tr( ". This combination often leads to errors related to the 'Skin' modifier. It is highly recommended to fix this by registering the file MAXComponents.dll. Continue?" ) );
-                if ( bResult )
-                    ShellExecuteA( 0, "runas", "regsvr32.exe", arrPossibleLocations[ i ].toAscii().data(), 0, SW_SHOWNORMAL );
-                s_pSettings->setValue( "GMaxChecked", bResult );
-                break;
-            }
-        }
-    }
+    if ( ( ( QSysInfo::WindowsVersion == QSysInfo::WV_VISTA ) || ( QSysInfo::WindowsVersion == QSysInfo::WV_WINDOWS7 ) ) &&
+         ( !s_pSettings->contains( "MAXComponents" ) ) )
+        checkGmaxInstallation();
 #endif
     emit settingsLoading( *s_pSettings );
     setLanguage( enuLanguage );

@@ -17,6 +17,7 @@ public:
         ELanguage_Count
     };
 public:
+    static bool      checkGmaxInstallation( void );
     static Rimy3D *  getInstance( void );
     static ELanguage getLanguage( void );
     static void      init( int & argc, char * argv[] );
