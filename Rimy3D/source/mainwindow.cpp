@@ -74,6 +74,7 @@ void MainWindow::save( QString a_strFilePath )
 
 void MainWindow::loadSettings( QSettings & a_Settings )
 {
+    m_pUi->actionFix_GMax_Installation->setVisible( !a_Settings.value( "MAXComponents", true ).toBool() );
     a_Settings.beginGroup( "MainWindow" );
     restoreGeometry( a_Settings.value( "geometry", saveGeometry() ).toByteArray() );
     m_RecentFiles.clear();
@@ -169,6 +170,11 @@ void MainWindow::on_actionClose_triggered( void )
     setWindowTitle( Rimy3D::applicationName() );
 }
 
+void MainWindow::on_actionConfigure_Bitmap_Paths_triggered( void )
+{
+    TextureFinder::getInstance().showDialog();
+}
+
 void MainWindow::on_actionEnglish_triggered( void )
 {
     Rimy3D::setLanguage( Rimy3D::ELanguage_English );
@@ -177,6 +183,11 @@ void MainWindow::on_actionEnglish_triggered( void )
 void MainWindow::on_actionExit_triggered( void )
 {
     close();
+}
+
+void MainWindow::on_actionFix_GMax_Installation_triggered( void )
+{
+    m_pUi->actionFix_GMax_Installation->setVisible( !Rimy3D::checkGmaxInstallation() );
 }
 
 void MainWindow::on_actionGerman_triggered( void )
@@ -221,17 +232,6 @@ void MainWindow::on_actionRecent5_triggered( void )
     open( m_pUi->actionRecent5->text() );
 }
 
-void MainWindow::onSceneChanged( void )
-{
-    m_pUi->widget->resetCamera();
-    m_pUi->widget->setWorld( m_SceneInfo.buildGlcWorld() );
-}
-
-void MainWindow::on_actionConfigure_Bitmap_Paths_triggered( void )
-{
-    TextureFinder::getInstance().showDialog();
-}
-
 void MainWindow::on_actionSave_As_triggered( void )
 {
     QString strFilter = tr( "All files" ).append( " (*.*);;"
@@ -242,4 +242,10 @@ void MainWindow::on_actionSave_As_triggered( void )
                         "Gothic 3 Motion Actor (*.xact);;" );
     QString strFilePath = m_SceneInfo.getCurrentSaveDir() + QDir::separator() + m_SceneInfo.getCurrentFile();
     save( QFileDialog::getSaveFileName( this, tr( "Save As" ), strFilePath, strFilter ) );
+}
+
+void MainWindow::onSceneChanged( void )
+{
+    m_pUi->widget->resetCamera();
+    m_pUi->widget->setWorld( m_SceneInfo.buildGlcWorld() );
 }
