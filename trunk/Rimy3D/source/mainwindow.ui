@@ -71,8 +71,9 @@
     <property name="title">
      <string>Tools</string>
     </property>
-    <addaction name="actionConfigure_Bitmap_Paths"/>
     <addaction name="actionFix_GMax_Installation"/>
+    <addaction name="actionExtended_Saving_For_GMax"/>
+    <addaction name="actionConfigure_Bitmap_Paths"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuTools"/>
@@ -167,6 +168,11 @@
   <action name="actionFix_GMax_Installation">
    <property name="text">
     <string>Fix GMax Installation</string>
+   </property>
+  </action>
+  <action name="actionExtended_Saving_For_GMax">
+   <property name="text">
+    <string>Extended Saving For GMax...</string>
    </property>
   </action>
  </widget>

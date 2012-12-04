@@ -40,6 +40,7 @@ private slots:
     void on_actionConfigure_Bitmap_Paths_triggered( void );
     void on_actionEnglish_triggered( void );
     void on_actionExit_triggered( void );
+    void on_actionExtended_Saving_For_GMax_triggered( void );
     void on_actionFix_GMax_Installation_triggered( void );
     void on_actionGerman_triggered( void );
     void on_actionOpen_triggered( void );

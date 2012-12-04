@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include "rimy3d.h"
 #include "texturefinder.h"
+#include "extendedsavingdialog.h"
 
 MainWindow::MainWindow( QWidget * a_pParent ) :
     QMainWindow( a_pParent ),
@@ -183,6 +184,11 @@ void MainWindow::on_actionEnglish_triggered( void )
 void MainWindow::on_actionExit_triggered( void )
 {
     close();
+}
+
+void MainWindow::on_actionExtended_Saving_For_GMax_triggered( void )
+{
+    ExtendedSavingDialog( this ).exec();
 }
 
 void MainWindow::on_actionFix_GMax_Installation_triggered( void )

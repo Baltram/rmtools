@@ -14,7 +14,8 @@ SOURCES += glwidget.cpp \
            sceneinfo.cpp \
            searchpathsdialog.cpp \
            texturefinder.cpp \
-           exportsettingsdialog.cpp
+           exportsettingsdialog.cpp \
+           extendedsavingdialog.cpp
 
 HEADERS += glwidget.h \
            mainwindow.h \
@@ -22,15 +23,18 @@ HEADERS += glwidget.h \
            sceneinfo.h \
            searchpathsdialog.h \
            texturefinder.h \
-           exportsettingsdialog.h
+           exportsettingsdialog.h \
+           extendedsavingdialog.h
 
 FORMS += mainwindow.ui \
          searchpathsdialog.ui \
-         exportsettingsdialog.ui
+         exportsettingsdialog.ui \
+         extendedsavingdialog.ui
 
 TRANSLATIONS = resources/translations/Rimy3D_de.ts
 
 RESOURCES += resources/flags.qrc \
-             resources/translations.qrc
+             resources/translations.qrc \
+             resources/extended_saving.qrc
 
 RC_FILE = resources/icon.rc
