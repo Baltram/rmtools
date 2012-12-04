@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/extended_saving">
+        <file>installExtendedSaving.gmax</file>
+        <file>Extended Saving.txt</file>
+    </qresource>
+</RCC>

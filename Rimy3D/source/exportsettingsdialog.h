@@ -29,7 +29,7 @@ public:
     Q_DECLARE_FLAGS( Flags, Options )
 public:
     exportSettingsDialog( QWidget * a_pParent, QString a_strExt, Flags a_Flags );
-    ~exportSettingsDialog( void );
+   ~exportSettingsDialog( void );
 public:
     int     angle( void );
     bool    anglesNotSgs( void );
