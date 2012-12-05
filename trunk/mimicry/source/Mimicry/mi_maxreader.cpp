@@ -27,7 +27,7 @@ namespace
                 if ( pSubMat )
                     arrSubs[ u ] = *pSubMat;
                 else
-                    arrSubs[ u ].SetName( pSub->GetName() );
+                    arrSubs[ u ].AccessName() = pSub->GetName();
             }
             return &mtlDestMulti;
         }

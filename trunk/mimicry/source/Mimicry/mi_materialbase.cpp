@@ -28,14 +28,14 @@ mCMaterialBase & mCMaterialBase::operator = ( mCMaterialBase const & a_mtlSource
     return *this;
 }
 
-mCString const & mCMaterialBase::GetName( void ) const
+mCString & mCMaterialBase::AccessName( void )
 {
     return m_strName;
 }
 
-void mCMaterialBase::SetName( mCString const & a_strName )
+mCString const & mCMaterialBase::GetName( void ) const
 {
-    m_strName = a_strName;
+    return m_strName;
 }
 
 void mCMaterialBase::Swap( mCMaterialBase & a_mtlOther )

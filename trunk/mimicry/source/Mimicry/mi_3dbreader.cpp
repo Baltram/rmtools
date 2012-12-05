@@ -53,11 +53,11 @@ namespace
         mCString strName = a_streamSource.ReadString();
         EMaterialType enuMaterialType = static_cast< EMaterialType >( a_streamSource.ReadI32() );
         if ( enuMaterialType == EMaterialType_Standard )
-            a_sceneDest.AddNewMaterial().SetName( strName );
+            a_sceneDest.AddNewMaterial().AccessName() = strName;
         else if ( enuMaterialType == EMaterialType_Multi )
-            a_sceneDest.AddNewMultiMaterial().SetName( strName );
+            a_sceneDest.AddNewMultiMaterial().AccessName() = strName;
         else if ( enuMaterialType == EMaterialType_Sub )
-            dynamic_cast< mCMultiMaterial * >( a_sceneDest.AccessMaterialAt( FromIndex( a_streamSource.ReadU32() ) ) )->AccessSubMaterials().AddNew().SetName( strName );
+            dynamic_cast< mCMultiMaterial * >( a_sceneDest.AccessMaterialAt( FromIndex( a_streamSource.ReadU32() ) ) )->AccessSubMaterials().AddNew().AccessName() = strName;
     }
 
     void ReadTexMapChunk( mCScene & a_sceneDest, mCIOStreamBinary & a_streamSource )

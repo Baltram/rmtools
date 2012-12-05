@@ -11,10 +11,10 @@ public:
 public:
     mCTexMap & operator = ( mCTexMap const & a_tmapSource );
 public:
+    mCString &       AccessName( void );
+    mCString &       AccessTextureFilePath( void );
     mCString const & GetName( void ) const;
     mCString const & GetTextureFilePath( void ) const;
-    void             SetName( mCString const & a_strName );
-    void             SetTextureFilePath( mCString const & a_strTextureFilePath );
     void             Swap( mCTexMap & a_tmapOther );
 private:
     mCString m_strName;
