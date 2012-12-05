@@ -59,6 +59,7 @@ namespace
 mEResult mCObjReader::ReadObjFileData( mCScene & a_sceneDest, mCIOStreamBinary & a_streamSource, MILPCChar a_pcFolderPath )
 {
     a_sceneDest.Clear();
+    mCString strSceneName = dynamic_cast< mCFileStream * >( &a_streamSource ) ? g_GetFileName( dynamic_cast< mCFileStream * >( &a_streamSource )->GetFileName() : "";
     mCMultiMaterial & matMultiDest = a_sceneDest.AddNewMultiMaterial();
     matMultiDest.SetName( "mtl_default" );
 
@@ -203,10 +204,7 @@ mEResult mCObjReader::ReadObjFileData( mCScene & a_sceneDest, mCIOStreamBinary &
     if ( matMultiDest.GetSubMaterials().GetCount() == 0 )
         matMultiDest.AccessSubMaterials().AddNew().SetName( "mtl_sub_default" );
     for ( MIUInt u = a_sceneDest.GetNumNodes(); u--; a_sceneDest.AccessNodeAt( u )->AccessMaterialName() = matMultiDest.GetName() );
-    if ( dynamic_cast< mCFileStream * >( &a_streamSource ) )
-    {
-        a_sceneDest.SetName( g_GetFileName( dynamic_cast< mCFileStream * >( &a_streamSource )->GetFileName() ) );
-    }
+    a_sceneDest.SetName( strSceneName );
 
     return mEResult_Ok;
 }
