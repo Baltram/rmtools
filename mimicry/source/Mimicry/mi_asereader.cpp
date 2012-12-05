@@ -136,7 +136,7 @@ namespace
                 if ( dynamic_cast< mCMaterial * >( pSubMaterial ) )
                     dynamic_cast< mCMaterial * >( pSubMaterial )->Swap( matDest.AccessSubMaterials().AddNew() );
                 else
-                    matDest.AccessSubMaterials().AddNew().SetName( pSubMaterial->GetName() );
+                    matDest.AccessSubMaterials().AddNew().AccessName() = pSubMaterial->GetName();
                 a_sceneDest.RemoveMaterial( pSubMaterial );
                 LeaveBlock();
             }

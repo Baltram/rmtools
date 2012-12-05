@@ -13,7 +13,7 @@ namespace
         streamSource.Seek( 0 );
 
         mCMultiMaterial & matMultiDest = *dynamic_cast< mCMultiMaterial * >( a_sceneDest.AccessMaterialAt( 0 ) );
-        matMultiDest.SetName( g_GetFileNameNoExt( a_strFilePath ) );
+        matMultiDest.AccessName() = g_GetFileNameNoExt( a_strFilePath );
 
         MILPChar pcBuffer = mCString::AccessStaticBuffer();
         MIUInt uOffsetEnd = streamSource.GetSize();
@@ -32,7 +32,7 @@ namespace
             strToken.ToLower();
             if ( strToken == "newmtl" )
             {
-                matMultiDest.AccessSubMaterials().AddNew().SetName( strLine );
+                matMultiDest.AccessSubMaterials().AddNew().AccessName() = strLine;
             }
             if ( matMultiDest.GetSubMaterials().GetCount() == 0 )
                 continue;
@@ -61,7 +61,7 @@ mEResult mCObjReader::ReadObjFileData( mCScene & a_sceneDest, mCIOStreamBinary &
     a_sceneDest.Clear();
     mCString strSceneName = dynamic_cast< mCFileStream * >( &a_streamSource ) ? g_GetFileName( dynamic_cast< mCFileStream * >( &a_streamSource )->GetFileName() ) : "";
     mCMultiMaterial & matMultiDest = a_sceneDest.AddNewMultiMaterial();
-    matMultiDest.SetName( "mtl_default" );
+    matMultiDest.AccessName() = "mtl_default";
 
     mCStringStream streamSource;
     streamSource << a_streamSource;
@@ -147,7 +147,7 @@ mEResult mCObjReader::ReadObjFileData( mCScene & a_sceneDest, mCIOStreamBinary &
                 if ( matMultiDest.GetSubMaterials()[ uCurrentMatID ].GetName() == strLine )
                     break;
             if ( uCurrentMatID == matMultiDest.GetSubMaterials().GetCount() )
-                matMultiDest.AccessSubMaterials().AddNew().SetName( strLine );
+                matMultiDest.AccessSubMaterials().AddNew().AccessName() = strLine;
         }
         else if ( ( strToken == "mtllib" ) && ( matMultiDest.GetSubMaterials().GetCount() == 0 ) && g_strlen( a_pcFolderPath ) )
         {
@@ -202,7 +202,7 @@ mEResult mCObjReader::ReadObjFileData( mCScene & a_sceneDest, mCIOStreamBinary &
         }
     }
     if ( matMultiDest.GetSubMaterials().GetCount() == 0 )
-        matMultiDest.AccessSubMaterials().AddNew().SetName( "mtl_sub_default" );
+        matMultiDest.AccessSubMaterials().AddNew().AccessName() = "mtl_sub_default";
     for ( MIUInt u = a_sceneDest.GetNumNodes(); u--; a_sceneDest.AccessNodeAt( u )->AccessMaterialName() = matMultiDest.GetName() );
     a_sceneDest.SetName( strSceneName );
 

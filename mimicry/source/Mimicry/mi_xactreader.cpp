@@ -47,9 +47,7 @@ mEResult mCXactReader::ReadXactFileData( mCScene & a_sceneDest, mCIOStreamBinary
     a_sceneDest.Clear();
     mCString strSceneName = dynamic_cast< mCFileStream * >( &a_streamSource ) ? g_GetFileName( dynamic_cast< mCFileStream * >( &a_streamSource )->GetFileName() ) : "";
     mTArray< mCString > arrParentNames;
-    mCString const strMultiMatName = "MultiMat_" + strSceneName;
-    mCMultiMaterial matMultiDest;
-    matMultiDest.SetName( strMultiMatName );
+    mCMultiMaterial matMultiDest( "MultiMat_" + strSceneName );
     a_streamSource.Seek( 74 );
     MIUInt const uEndFxaOffset = a_streamSource.ReadU32() + 78;
     if ( a_streamSource.ReadU32() != 0x20415846 )
@@ -144,7 +142,7 @@ mEResult mCXactReader::ReadXactFileData( mCScene & a_sceneDest, mCIOStreamBinary
             }
             mCMaxRisenCoordShifter::GetInstance().ShiftMeshCoords( meshDest );
             a_sceneDest.AccessNodeAt( uNodeIndex )->SwapMesh( meshDest );
-            a_sceneDest.AccessNodeAt( uNodeIndex )->AccessMaterialName() = strMultiMatName;
+            a_sceneDest.AccessNodeAt( uNodeIndex )->AccessMaterialName() = matMultiDest.GetName();
             a_sceneDest.AccessNodeAt( uNodeIndex )->AccessIsBone() = MIFalse;
         }
         else if ( uSectionID == ESection_Skin )
@@ -188,7 +186,7 @@ mEResult mCXactReader::ReadXactFileData( mCScene & a_sceneDest, mCIOStreamBinary
             a_streamSource.Skip( 68 );
             a_streamSource.Read( strName, a_streamSource.ReadU32() );
             mCMaterial & matDest = matMultiDest.AccessSubMaterials().AddNew();
-            matDest.SetName( strName );
+            matDest.AccessName() = strName;
         }
         else if ( uSectionID == ESection_TexMap )
         {
