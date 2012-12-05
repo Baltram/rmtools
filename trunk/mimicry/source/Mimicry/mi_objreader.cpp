@@ -203,6 +203,10 @@ mEResult mCObjReader::ReadObjFileData( mCScene & a_sceneDest, mCIOStreamBinary &
     if ( matMultiDest.GetSubMaterials().GetCount() == 0 )
         matMultiDest.AccessSubMaterials().AddNew().SetName( "mtl_sub_default" );
     for ( MIUInt u = a_sceneDest.GetNumNodes(); u--; a_sceneDest.AccessNodeAt( u )->AccessMaterialName() = matMultiDest.GetName() );
+    if ( dynamic_cast< mCFileStream * >( &a_streamSource ) )
+    {
+        a_sceneDest.SetName( g_GetFileName( dynamic_cast< mCFileStream * >( &a_streamSource )->GetFileName() ) );
+    }
 
     return mEResult_Ok;
 }

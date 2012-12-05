@@ -377,8 +377,8 @@ namespace
 
 mEResult mCAseReader::ReadAseFileData( mCScene & a_sceneDest, mCIOStreamBinary & a_streamSource )
 {
-    AccessIntegrityState() = MITrue;
     a_sceneDest.Clear();
+    AccessIntegrityState() = MITrue;
     mTStringMap< mCString > arrNodeParents;
     mCStringStream streamSource;
     streamSource << a_streamSource;

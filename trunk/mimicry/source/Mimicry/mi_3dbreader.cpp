@@ -164,6 +164,7 @@ namespace
 
 mEResult mC3dbReader::Read3dbFileData( mCScene & a_sceneDest, mCIOStreamBinary & a_streamSource )
 {
+    a_sceneDest.Clear();
     if ( a_streamSource.ReadString() != "3db" )
     {
         MI_ERROR( mCConverterError, EBadFormat, "Invalid .3db file." );
@@ -201,5 +202,9 @@ mEResult mC3dbReader::Read3dbFileData( mCScene & a_sceneDest, mCIOStreamBinary &
             if ( a_sceneDest.GetNodeAt( u )->HasMesh() )
                 a_sceneDest.AccessNodeAt( u )->AccessMesh()->CalcVNormalsByAngle( f_Angle );
     a_sceneDest.IdentifyBones();
+    if ( dynamic_cast< mCFileStream * >( &a_streamSource ) )
+    {
+        a_sceneDest.SetName( g_GetFileName( dynamic_cast< mCFileStream * >( &a_streamSource )->GetFileName() ) );
+    }
     return mEResult_Ok;
 }

@@ -42,6 +42,7 @@ public:
     MIDouble ReadDouble( void );
     MIChar   ReadChar( void );
     mCString ReadString( void );
+    mCString ReadString( MIUInt a_uSize );
 private:
     virtual mEResult ReadFormatted( MILPVoid a_pDest, MILPCChar a_pcFormat ) = 0;
 };

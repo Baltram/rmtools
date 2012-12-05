@@ -238,6 +238,14 @@ mCString mTIStream< M >::ReadString( void )
     return strResult;
 }
 
+template< mEStreamType M >
+mCString mTIStream< M >::ReadString( MIUInt a_uSize )
+{
+    mCString strResult;
+    Read( strResult, a_uSize );
+    return strResult;
+}
+
 template<> inline
 mCIStreamFormatted::~mCIStreamFormatted( void )
 {
