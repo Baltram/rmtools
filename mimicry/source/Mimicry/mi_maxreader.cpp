@@ -270,8 +270,8 @@ mEResult mCMaxReader::ReadInMaxFileData( mCScene & a_sceneDest, mCMaxFileStream 
                 break;
             }
         }
-        a_sceneDest.SetName( g_GetFileName( a_streamSource.GetFileName() ) );
         a_sceneDest.IdentifyBones();
+        a_sceneDest.SetName( g_GetFileName( a_streamSource.GetFileName() ) );
         mCVariant::CondenseMemory();
         return mEResult_Ok;
     }

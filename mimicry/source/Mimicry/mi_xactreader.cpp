@@ -45,7 +45,7 @@ namespace
 mEResult mCXactReader::ReadXactFileData( mCScene & a_sceneDest, mCIOStreamBinary & a_streamSource, SOptions a_Options )
 {
     a_sceneDest.Clear();
-    mCString strSceneName = dynamic_cast< mCFileStream * >( &a_streamSource ) ? g_GetFileName( dynamic_cast< mCFileStream * >( &a_streamSource )->GetFileName() : "";
+    mCString strSceneName = dynamic_cast< mCFileStream * >( &a_streamSource ) ? g_GetFileName( dynamic_cast< mCFileStream * >( &a_streamSource )->GetFileName() ) : "";
     mTArray< mCString > arrParentNames;
     mCString const strMultiMatName = "MultiMat_" + strSceneName;
     mCMultiMaterial matMultiDest;
