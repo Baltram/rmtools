@@ -397,7 +397,6 @@ mEResult mCAseReader::ReadAseFileData( mCScene & a_sceneDest, mCIOStreamBinary &
     mCString strSceneName;
     ReadStringTokenLine( "SCENE_FILENAME", strSceneName );
     LeaveBlock();
-    a_sceneDest.SetName( strSceneName );
 
     for ( mCString strBlockName; EnterBlock( &strBlockName ); LeaveBlock() )
     {
@@ -445,5 +444,6 @@ mEResult mCAseReader::ReadAseFileData( mCScene & a_sceneDest, mCIOStreamBinary &
             a_sceneDest.SetNodeParent( u, uParentIndex );
     }
     a_sceneDest.IdentifyBones();
+    a_sceneDest.SetName( strSceneName );
     return mEResult_Ok;
 }
