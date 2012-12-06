@@ -45,9 +45,9 @@ namespace
 mEResult mCXactReader::ReadXactFileData( mCScene & a_sceneDest, mCIOStreamBinary & a_streamSource, SOptions a_Options )
 {
     a_sceneDest.Clear();
-    mCString strSceneName = dynamic_cast< mCFileStream * >( &a_streamSource ) ? g_GetFileName( dynamic_cast< mCFileStream * >( &a_streamSource )->GetFileName() ) : "";
+    mCString strSceneName = dynamic_cast< mCFileStream * >( &a_streamSource ) ? g_GetFileNameNoExt( dynamic_cast< mCFileStream * >( &a_streamSource )->GetFileName() ) : "";
     mTArray< mCString > arrParentNames;
-    mCMultiMaterial matMultiDest( "MultiMat_" + strSceneName );
+    mCMultiMaterial matMultiDest( strSceneName.GetLength() ? strSceneName : "MultiMat_xmac" );
     a_streamSource.Seek( 74 );
     MIUInt const uEndFxaOffset = a_streamSource.ReadU32() + 78;
     if ( a_streamSource.ReadU32() != 0x20415846 )
