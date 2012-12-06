@@ -8,6 +8,8 @@ mCAseWriter::SOptions::SOptions( void ) :
 
 namespace
 {
+    MIBool s_bAscFormat;
+
     mCString const & GetIndent( MIInt a_iDifference = 0 )
     {
         static mCString s_strIndent;
@@ -54,10 +56,13 @@ namespace
     mCString GetNodeName( mCNode const & a_Node )
     {
         mCString const & strName = a_Node.GetName();
-        if ( a_Node.HasMesh() && a_Node.GetName().Left( 3 ).CompareNoCase( "ZM_" ) )
-            return "ZM_" + strName;
-        if ( a_Node.GetIsBone() && a_Node.GetName().Left( 5 ).CompareNoCase( "Bip01" ) )
-            return "Bip01 " + strName;
+        if ( s_bAscFormat )
+        {
+            if ( a_Node.HasMesh() && a_Node.GetName().Left( 3 ).CompareNoCase( "ZM_" ) )
+                return "ZM_" + strName;
+            if ( a_Node.GetIsBone() && a_Node.GetName().Left( 5 ).CompareNoCase( "Bip01" ) )
+                return "Bip01 " + strName;
+        }
         return strName;
     }
 
@@ -221,7 +226,7 @@ namespace
 
     void WriteNode( mCScene const & a_sceneSource, mCNode const & a_Node, mCIOStreamBinary & a_streamDest, mCAseWriter::SOptions const & a_Options )
     {
-        MIUInt const uParentIndex = ( a_Node.GetName() == "Bip01" ) ? MI_DW_INVALID : a_sceneSource.GetNodeParentIndex( a_sceneSource.GetNodeIndexByID( a_Node.GetID() ) );
+        MIUInt const uParentIndex = ( s_bAscFormat && ( a_Node.GetName() == "Bip01" ) ) ? MI_DW_INVALID : a_sceneSource.GetNodeParentIndex( a_sceneSource.GetNodeIndexByID( a_Node.GetID() ) );
         mCNode const * pParent = uParentIndex != MI_DW_INVALID ? a_sceneSource.GetNodeAt( uParentIndex ) : 0;
         mCString strNodeName = GetNodeName( a_Node );
         mCVec3 const & vecPos = a_Node.GetPosition();
@@ -232,8 +237,8 @@ namespace
         mCString strPos = mCString().Format( "%.4f\t%.4f\t%.4f", vecPos.GetX(), vecPos.GetY(), vecPos.GetZ() );
         MIUInt uMaterialIndex = a_sceneSource.GetMaterialIndexByName( a_Node.GetMaterialName() );
         a_streamDest.Write( GetTokenLine( "NODE_NAME", "\"" + strNodeName + "\"" ) );
-        if ( a_Node.GetName() != "Bip01" )
-            a_streamDest.Write( GetTokenLine( "NODE_PARENT", "\"" + ( pParent ? GetNodeName( *pParent ) : mCString( "Bip01" ) ) + "\"" ) );
+        if ( ( !s_bAscFormat && pParent ) || ( a_Node.GetName() != "Bip01" ) )
+            a_streamDest.Write( GetTokenLine( "NODE_PARENT", "\"" + ( pParent ? GetNodeName( *pParent ) : mCString( s_bAscFormat ? "Bip01" : "" ) ) + "\"" ) );
         a_streamDest.Write( StartBlock( "NODE_TM" ) );
         a_streamDest.Write( GetTokenLine( "NODE_NAME", "\"" + strNodeName + "\"" ) );
         a_streamDest.Write( GetTokenLine( "INHERIT_POS", "0 0 0" ) );
@@ -297,6 +302,7 @@ namespace
 
 mEResult mCAseWriter::WriteAseFileData( mCScene const & a_sceneSource, mCIOStreamBinary & a_streamDest, SOptions const a_Options )
 {
+    s_bAscFormat = a_Options.m_bGothicAscFormat;
     a_streamDest.Write( GetTokenLine( "3DSMAX_ASCIIEXPORT", ( a_Options.m_bGothicAscFormat ? "110" : "200" ) ) );
     a_streamDest.Write( GetTokenLine( "COMMENT", "\"Created using Baltram's ASC and ASE file writer\"" ) );
     a_streamDest.Write( StartBlock( "SCENE" ) );
@@ -311,12 +317,12 @@ mEResult mCAseWriter::WriteAseFileData( mCScene const & a_sceneSource, mCIOStrea
     a_streamDest.Write( StartBlock( "MATERIAL_LIST" ) );
     mTArray< mCNode const * > arrNodes;
     a_sceneSource.GetNodesSortedByLinks( arrNodes );
-    mCNode nodeBip01( "Bip01" );
-    arrNodes.InsertAt( 0, &nodeBip01 );
     mCScene sceneTemp;
-    mCScene const & sceneMaterials = a_Options.m_bGothicAscFormat ? sceneTemp : a_sceneSource;
-    if ( a_Options.m_bGothicAscFormat )
+    mCScene const & sceneMaterials = s_bAscFormat ? sceneTemp : a_sceneSource;
+    if ( s_bAscFormat )
     {
+        mCNode nodeBip01( "Bip01" );
+        arrNodes.InsertAt( 0, &nodeBip01 );
         for ( MIUInt u = a_sceneSource.GetNumNodes(); u--; )
         {
             mCNode const & nodeNode = *a_sceneSource.GetNodeAt( u );
