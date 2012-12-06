@@ -59,7 +59,7 @@ namespace
 mEResult mCObjReader::ReadObjFileData( mCScene & a_sceneDest, mCIOStreamBinary & a_streamSource, MILPCChar a_pcFolderPath )
 {
     a_sceneDest.Clear();
-    mCString strSceneName = dynamic_cast< mCFileStream * >( &a_streamSource ) ? g_GetFileName( dynamic_cast< mCFileStream * >( &a_streamSource )->GetFileName() ) : "";
+    mCString strSceneName = dynamic_cast< mCFileStream * >( &a_streamSource ) ? g_GetFileNameNoExt( dynamic_cast< mCFileStream * >( &a_streamSource )->GetFileName() ) : "";
     mCMultiMaterial & matMultiDest = a_sceneDest.AddNewMultiMaterial();
     matMultiDest.AccessName() = "mtl_default";
 
