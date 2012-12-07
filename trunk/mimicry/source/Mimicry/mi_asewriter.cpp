@@ -319,9 +319,9 @@ mEResult mCAseWriter::WriteAseFileData( mCScene const & a_sceneSource, mCIOStrea
     a_sceneSource.GetNodesSortedByLinks( arrNodes );
     mCScene sceneTemp;
     mCScene const & sceneMaterials = s_bAscFormat ? sceneTemp : a_sceneSource;
+    mCNode nodeBip01( "Bip01" );
     if ( s_bAscFormat )
     {
-        mCNode nodeBip01( "Bip01" );
         arrNodes.InsertAt( 0, &nodeBip01 );
         for ( MIUInt u = a_sceneSource.GetNumNodes(); u--; )
         {
@@ -342,6 +342,7 @@ mEResult mCAseWriter::WriteAseFileData( mCScene const & a_sceneSource, mCIOStrea
     a_streamDest.Write( EndBlock() );
     for ( MIUInt u = 0, ue = arrNodes.GetCount(); u != ue; ++u )
     {
+        char const * texxt = arrNodes[ u ]->GetName().GetText();//$
         if ( u && ( !arrNodes[ u ]->GetName().CompareNoCase( "Bip01" ) ) )
             continue;
         a_streamDest.Write( StartBlock( ( arrNodes[ u ]->HasMesh() || arrNodes[ u ]->GetIsBone() || !u ) ? "GEOMOBJECT" : "HELPEROBJECT" ) );
