@@ -107,7 +107,7 @@ macroScript Startup category:"Extended Saving" tooltip:"Ignore Me"
 		)
 		if _requestVersion == true then
 		(
-			_requestVersion = 4
+			_requestVersion = 5
 		)
 	)
 	on isVisible do
