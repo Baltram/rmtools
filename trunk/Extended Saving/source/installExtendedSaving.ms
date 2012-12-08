@@ -61,7 +61,7 @@ fn installExtendedSaving =
 	startupItem.setUseCustomTitle true
 	
 	invokeOnceItem.setTitle "Invoke Once"
-	import3dbIten.setTitle "Import 3db file..."
+	import3dbIten.setTitle "Import 3db File..."
 	uninstallItem.setTitle "Uninstall"
 	showAboutItem.setTitle "About"
 	startupItem.setTitle ""
