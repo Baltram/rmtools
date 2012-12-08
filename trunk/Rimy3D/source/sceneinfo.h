@@ -2,6 +2,7 @@
 #define SCENEINFO_H_INCLUDED
 
 #include "Mimicry.h"
+#include "preferencesdialog.h"
 #include <QSettings>
 
 class GLC_World;
@@ -21,8 +22,8 @@ public:
     QString const & getCurrentFile( void );
     QString const & getCurrentSaveDir( void );
     mCScene const & getCurrentScene( void );
-    bool            openSceneFile( QString a_strFilePath, bool a_bTrimAsc = false );
-    bool            saveSceneFile( QString a_strFilePath, exportSettingsDialog & a_SettingsDialog );
+    bool            openSceneFile( QString a_strFilePath, PreferencesDialog const & a_PreferencesDialog );
+    bool            saveSceneFile( QString a_strFilePath, exportSettingsDialog const & a_SettingsDialog );
 signals:
     void sceneChanged( void );
 public slots:

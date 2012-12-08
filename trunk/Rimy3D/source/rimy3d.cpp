@@ -79,6 +79,11 @@ Rimy3D::ELanguage Rimy3D::getLanguage( void )
     return s_enuCurrentLanguage;
 }
 
+QSettings * Rimy3D::getSettings( void )
+{
+    return s_pSettings;
+}
+
 void Rimy3D::init( int & argc, char * argv[] )
 {
     if ( s_pInstance )

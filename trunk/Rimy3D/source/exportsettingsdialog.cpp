@@ -27,42 +27,42 @@ exportSettingsDialog::~exportSettingsDialog( void )
     delete m_pUi;
 }
 
-int exportSettingsDialog::angle( void )
+int exportSettingsDialog::angle( void ) const
 {
     return m_pUi->sbAngle->value();
 }
 
-bool exportSettingsDialog::anglesNotSgs( void )
+bool exportSettingsDialog::anglesNotSgs( void ) const
 {
     return m_pUi->rbNRecalcA->isChecked();
 }
 
-QString exportSettingsDialog::baseXact( void )
+QString exportSettingsDialog::baseXact( void ) const
 {
     return m_pUi->leBaseXact->text();
 }
 
-bool exportSettingsDialog::colors( void )
+bool exportSettingsDialog::colors( void ) const
 {
     return m_pUi->cbVColors->isChecked();
 }
 
-bool exportSettingsDialog::createMtl( void )
+bool exportSettingsDialog::createMtl( void ) const
 {
     return m_pUi->cbMtl->isChecked();
 }
 
-bool exportSettingsDialog::normals( void )
+bool exportSettingsDialog::normals( void ) const
 {
     return m_pUi->cbNormals->isChecked();
 }
 
-bool exportSettingsDialog::recalcNormals( void )
+bool exportSettingsDialog::recalcNormals( void ) const
 {
     return !m_pUi->rbNKeep->isChecked();
 }
 
-bool exportSettingsDialog::vertsOnly( void )
+bool exportSettingsDialog::vertsOnly( void ) const
 {
     return m_pUi->cbVertsOnly->isChecked();
 }

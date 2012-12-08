@@ -11,7 +11,8 @@ MainWindow::MainWindow( QWidget * a_pParent ) :
     m_ascDialog( this, "asc", exportSettingsDialog::None ),
     m_aseDialog( this, "ase", exportSettingsDialog::Normals ),
     m_objDialog( this, "obj", exportSettingsDialog::Normals | exportSettingsDialog::CreateMtl ),
-    m_xactDialog( this, "xact", exportSettingsDialog::NormalsCalc | exportSettingsDialog::VertsOnly | exportSettingsDialog::BaseXact )
+    m_xactDialog( this, "xact", exportSettingsDialog::NormalsCalc | exportSettingsDialog::VertsOnly | exportSettingsDialog::BaseXact ),
+    m_prefsDialog( this )
 {
     m_pUi->setupUi( this );
     setAcceptDrops( true );
@@ -35,7 +36,7 @@ void MainWindow::open( QString a_strFilePath )
         return;
     a_strFilePath = QDir::toNativeSeparators( a_strFilePath );
     m_RecentFiles.removeOne( a_strFilePath );
-    if ( m_SceneInfo.openSceneFile( a_strFilePath ) )
+    if ( m_SceneInfo.openSceneFile( a_strFilePath, m_prefsDialog ) )
     {
         if ( m_pUi->actionClose->isEnabled() )
             setWindowTitle( Rimy3D::applicationName() );
@@ -203,14 +204,20 @@ void MainWindow::on_actionGerman_triggered( void )
 
 void MainWindow::on_actionOpen_triggered( void )
 {
-    QString strFilter = tr( "All files" ).append( " (*.obj *.3db *.gmax *.ase *.asc *.xact);;"
+    QString strFilter = tr( "All files" ).append( " (*.obj *.3db *.gmax *.ase *.asc *.xact *._xmac);;"
                                                   "Wavefront OBJ format (*.obj);;"
                                                   "Baltram's 3D format (*.3db);;"
                                                   "GMax Scene (*.gmax);;"
                                                   "3ds Max ASCII Scene (*.ase);;"
                                                   "Gothic ASCII Scene (*.asc);;"
-                                                  "Gothic 3 Motion Actor (*.xact);;" );
+                                                  "Gothic 3 Motion Actor (*.xact);;"
+                                                  "Risen Motion Actor (*._xmac);;" );
     open( QFileDialog::getOpenFileName( this, tr( "Open" ), m_SceneInfo.getCurrentDir(), strFilter ) );
+}
+
+void MainWindow::on_actionPreferences_triggered( void )
+{
+    m_prefsDialog.exec();
 }
 
 void MainWindow::on_actionRecent1_triggered( void )
@@ -246,7 +253,7 @@ void MainWindow::on_actionSave_As_triggered( void )
                         "3ds Max ASCII Scene (*.ase);;"
                         "Gothic ASCII Scene (*.asc);;"
                         "Gothic 3 Motion Actor (*.xact);;" );
-    QString strFilePath = m_SceneInfo.getCurrentSaveDir() + QDir::separator() + m_SceneInfo.getCurrentFile();
+    QString strFilePath = m_SceneInfo.getCurrentSaveDir() + QDir::separator() + QFileInfo( m_SceneInfo.getCurrentFile() ).baseName();
     save( QFileDialog::getSaveFileName( this, tr( "Save As" ), strFilePath, strFilter ) );
 }
 
