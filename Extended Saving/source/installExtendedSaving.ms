@@ -1,7 +1,7 @@
 fn installExtendedSaving =
 (
 	local cName = "Extended Saving"
-	local esVersion = 4
+	local esVersion = 5
 	
 	while ( menuMan.findMenu cName ) != undefined do
 	(
