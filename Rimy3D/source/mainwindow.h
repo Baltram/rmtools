@@ -3,6 +3,7 @@
 
 #include "sceneinfo.h"
 #include "exportsettingsdialog.h"
+#include "preferencesdialog.h"
 #include <QMainWindow>
 #include <QQueue>
 
@@ -44,6 +45,7 @@ private slots:
     void on_actionFix_GMax_Installation_triggered( void );
     void on_actionGerman_triggered( void );
     void on_actionOpen_triggered( void );
+    void on_actionPreferences_triggered( void );
     void on_actionRecent1_triggered( void );
     void on_actionRecent2_triggered( void );
     void on_actionRecent3_triggered( void );
@@ -60,6 +62,7 @@ private:
     exportSettingsDialog m_aseDialog;
     exportSettingsDialog m_objDialog;
     exportSettingsDialog m_xactDialog;
+    PreferencesDialog    m_prefsDialog;
 };
 
 #endif  // MAINWINDOW_H_INCLUDED

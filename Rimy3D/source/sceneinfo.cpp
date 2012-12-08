@@ -137,7 +137,7 @@ mCScene const & SceneInfo::getCurrentScene( void )
     return m_sceneCurrentScene;
 }
 
-bool SceneInfo::openSceneFile( QString a_strFilePath, bool a_bTrimAsc )
+bool SceneInfo::openSceneFile( QString a_strFilePath, PreferencesDialog const & a_PreferencesDialog )
 {
     QFileInfo FileInfo( a_strFilePath );
     QString strExt = FileInfo.suffix().toLower();
@@ -170,7 +170,7 @@ bool SceneInfo::openSceneFile( QString a_strFilePath, bool a_bTrimAsc )
     else if ( ( strExt == "ase" ) || ( strExt == "asc" ) )
     {
         enuResult = mCAseReader::ReadAseFileData( sceneNew, streamIn );
-        if ( ( strExt == "asc" ) && Rimy3D::showQuestion( tr( "Remove 'ZM_' and 'Bip01' prefixes as well as the Bip01 bone?" ), tr( "ASC Import" ), a_bTrimAsc ) )
+        if ( ( strExt == "asc" ) && a_PreferencesDialog.removeAscPrefixes() )
         {
             for ( MIUInt u = sceneNew.GetNumNodes(); u--; )
             {
@@ -187,6 +187,14 @@ bool SceneInfo::openSceneFile( QString a_strFilePath, bool a_bTrimAsc )
     else if ( strExt == "xact" )
     {
         enuResult = mCXactReader::ReadXactFileData( sceneNew, streamIn );
+    }
+    else if ( strExt == "_xmac" )
+    {
+        enuResult = mCXmacReader::ReadXmacFileData( sceneNew, streamIn );
+        if ( a_PreferencesDialog.removeXmacCollisionMesh() )
+            for ( MIUInt u = sceneNew.GetNumNodes(); u--; )
+                if ( 0 == sceneNew.GetNodeAt( u )->GetName().CompareNoCase( "CollisionMesh" ) )
+                    sceneNew.RemoveNode( sceneNew.AccessNodeAt( u ) );
     }
     else
     {
@@ -205,7 +213,7 @@ bool SceneInfo::openSceneFile( QString a_strFilePath, bool a_bTrimAsc )
     return false;
 }
 
-bool SceneInfo::saveSceneFile( QString a_strFilePath, exportSettingsDialog & a_SettingsDialog )
+bool SceneInfo::saveSceneFile( QString a_strFilePath, exportSettingsDialog const & a_SettingsDialog )
 {
     m_strCurrentSaveDir = QFileInfo( a_strFilePath ).absolutePath();
     QString strExt = QFileInfo( a_strFilePath ).suffix().toLower();
@@ -294,6 +302,7 @@ void SceneInfo::errorMessageTranslations( void )
     tr( "Unknown .ase file version." );
     tr( "Invalid .ase file." );
     tr( "Invalid .xact file." );
+    tr( "Invalid ._xmac file." );
     tr( "Invalid .3db file." );
     tr( "Invalid source .xact file." );
     tr( "Cannot find same-named mesh in source .xact file." );
@@ -301,6 +310,7 @@ void SceneInfo::errorMessageTranslations( void )
     tr( "New mesh has no material." );
     tr( "Skinning includes bone not present in .xact file." );
     tr( "Skinning does not cover all vertices." );
+    tr( "Unknown ._xmac file version." );
 }
 
 void SceneInfo::showLastMimicryError( mCError const * a_pLastError, QString a_strTitle )

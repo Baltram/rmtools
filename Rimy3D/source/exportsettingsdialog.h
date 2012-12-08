@@ -31,14 +31,14 @@ public:
     exportSettingsDialog( QWidget * a_pParent, QString a_strExt, Flags a_Flags );
    ~exportSettingsDialog( void );
 public:
-    int     angle( void );
-    bool    anglesNotSgs( void );
-    QString baseXact( void );
-    bool    colors( void );
-    bool    createMtl( void );
-    bool    normals( void );
-    bool    recalcNormals( void );
-    bool    vertsOnly( void );
+    int     angle( void ) const;
+    bool    anglesNotSgs( void ) const;
+    QString baseXact( void ) const;
+    bool    colors( void ) const;
+    bool    createMtl( void ) const;
+    bool    normals( void ) const;
+    bool    recalcNormals( void ) const;
+    bool    vertsOnly( void ) const;
 protected:
     void changeEvent( QEvent * a_pEvent );
 private:
