@@ -269,6 +269,7 @@ bool SceneInfo::saveSceneFile( QString a_strFilePath, exportSettingsDialog const
         mCXactWriter::SOptions Options;
         static_cast< eSConverterOptions & >( Options ) = BaseOptions;
         Options.m_pBaseXactStream = &streamBaseXact;
+        Options.m_bIndirectVertexMatching = a_SettingsDialog.indirectMatching();
         Options.m_bReplaceOnlyVertices = a_SettingsDialog.vertsOnly();
         enuResult = mCXactWriter::WriteXactFileData( m_sceneCurrentScene, streamOut, Options );
     }
@@ -276,6 +277,14 @@ bool SceneInfo::saveSceneFile( QString a_strFilePath, exportSettingsDialog const
     if ( enuResult == mEResult_Ok )
         return true;
     showLastMimicryError( pLastError, a_SettingsDialog.windowTitle() );
+    return false;
+}
+
+bool SceneInfo::sceneContainsUnskinnedMeshes( void )
+{
+    for ( MIUInt u = m_sceneCurrentScene.GetNumNodes(); u--; )
+        if ( m_sceneCurrentScene.GetNodeAt( u )->HasMesh() && !m_sceneCurrentScene.GetNodeAt( u )->HasSkin() )
+            return true;
     return false;
 }
 

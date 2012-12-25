@@ -11,7 +11,7 @@ MainWindow::MainWindow( QWidget * a_pParent ) :
     m_ascDialog( this, "asc", exportSettingsDialog::None ),
     m_aseDialog( this, "ase", exportSettingsDialog::Normals ),
     m_objDialog( this, "obj", exportSettingsDialog::Normals | exportSettingsDialog::CreateMtl ),
-    m_xactDialog( this, "xact", exportSettingsDialog::NormalsCalc | exportSettingsDialog::VertsOnly | exportSettingsDialog::BaseXact ),
+    m_xactDialog( this, "xact", exportSettingsDialog::NormalsCalc | exportSettingsDialog::VertsOnly | exportSettingsDialog::BaseXact | exportSettingsDialog::AutoSkin ),
     m_prefsDialog( this )
 {
     m_pUi->setupUi( this );
@@ -44,7 +44,6 @@ void MainWindow::open( QString a_strFilePath )
         m_pUi->actionSave_As->setEnabled( true );
         m_RecentFiles.enqueue( a_strFilePath );
         QFileInfo File( a_strFilePath );
-        //Rimy3D::showMessage( File.fileName() );
         setWindowTitle( Rimy3D::applicationName() + " - " + File.fileName() );
     }
     updateRecentFiles();
@@ -66,7 +65,7 @@ void MainWindow::save( QString a_strFilePath )
     else if ( strExt == "obj" )
         pDialog = &m_objDialog;
     else if ( strExt == "xact" )
-        pDialog = &m_xactDialog;
+        ( pDialog = &m_xactDialog )->setAutoSkinEnabled( m_SceneInfo.sceneContainsUnskinnedMeshes() );
     else
         Rimy3D::showError( tr( "Unknown file extension:" ).append( QString( " '.%1'" ).arg( strExt ) ) );
     if ( !pDialog || ( ( strExt != "asc" ) && !pDialog->exec() ) )
@@ -247,6 +246,7 @@ void MainWindow::on_actionRecent5_triggered( void )
 
 void MainWindow::on_actionSave_As_triggered( void )
 {
+    QString strSelectedFilter = "Baltram's 3D format (*.3db)";
     QString strFilter = tr( "All files" ).append( " (*.*);;"
                         "Wavefront OBJ format (*.obj);;"
                         "Baltram's 3D format (*.3db);;"
@@ -254,7 +254,7 @@ void MainWindow::on_actionSave_As_triggered( void )
                         "Gothic ASCII Scene (*.asc);;"
                         "Gothic 3 Motion Actor (*.xact);;" );
     QString strFilePath = m_SceneInfo.getCurrentSaveDir() + QDir::separator() + QFileInfo( m_SceneInfo.getCurrentFile() ).baseName();
-    save( QFileDialog::getSaveFileName( this, tr( "Save As" ), strFilePath, strFilter ) );
+    save( QFileDialog::getSaveFileName( this, tr( "Save As" ), strFilePath, strFilter, &strSelectedFilter ) );
 }
 
 void MainWindow::onSceneChanged( void )

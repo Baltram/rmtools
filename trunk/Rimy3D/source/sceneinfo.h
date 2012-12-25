@@ -24,6 +24,7 @@ public:
     mCScene const & getCurrentScene( void );
     bool            openSceneFile( QString a_strFilePath, PreferencesDialog const & a_PreferencesDialog );
     bool            saveSceneFile( QString a_strFilePath, exportSettingsDialog const & a_SettingsDialog );
+    bool            sceneContainsUnskinnedMeshes( void );
 signals:
     void sceneChanged( void );
 public slots:

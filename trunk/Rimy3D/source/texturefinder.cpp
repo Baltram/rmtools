@@ -24,7 +24,7 @@ QString TextureFinder::findTextureFile( QString const & a_strFilePathGuess, QStr
         return "";
     QFileInfo File( a_strFilePathGuess );
     if ( File.exists() )
-		for ( int i = 0, ie = sizeof( arrExts ) / sizeof( arrExts[ 0 ] ); i != ie; ++i )
+        for ( int i = 0, ie = sizeof( arrExts ) / sizeof( arrExts[ 0 ] ); i != ie; ++i )
             if ( "." + File.suffix().toLower() == arrExts[ i ] )
                 return File.canonicalFilePath();
     for ( int i = 0, ie = sizeof( arrExts ) / sizeof( arrExts[ 0 ] ); i != ie; ++i )

@@ -24,7 +24,8 @@ public:
         NormalsRecalc = 1 << 3,
         VertsOnly     = 1 << 4,
         BaseXact      = 1 << 5,
-        CreateMtl     = 1 << 6
+        CreateMtl     = 1 << 6,
+        AutoSkin      = 1 << 7
     };
     Q_DECLARE_FLAGS( Flags, Options )
 public:
@@ -36,8 +37,10 @@ public:
     QString baseXact( void ) const;
     bool    colors( void ) const;
     bool    createMtl( void ) const;
+    bool    indirectMatching( void ) const;
     bool    normals( void ) const;
     bool    recalcNormals( void ) const;
+    void    setAutoSkinEnabled( bool a_bEnabled );
     bool    vertsOnly( void ) const;
 protected:
     void changeEvent( QEvent * a_pEvent );
