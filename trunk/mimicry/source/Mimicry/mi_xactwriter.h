@@ -12,6 +12,7 @@ public:
     public:
         mTArray< mCString > * m_pReplacedMeshesArray;
         MIBool                m_bReplaceOnlyVertices;
+        MIBool                m_bIndirectVertexMatching;
         mCIOStreamBinary *    m_pBaseXactStream;
     };
 public:

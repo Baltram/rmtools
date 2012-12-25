@@ -342,7 +342,6 @@ mEResult mCAseWriter::WriteAseFileData( mCScene const & a_sceneSource, mCIOStrea
     a_streamDest.Write( EndBlock() );
     for ( MIUInt u = 0, ue = arrNodes.GetCount(); u != ue; ++u )
     {
-        char const * texxt = arrNodes[ u ]->GetName().GetText();//$
         if ( u && ( !arrNodes[ u ]->GetName().CompareNoCase( "Bip01" ) ) )
             continue;
         a_streamDest.Write( StartBlock( ( arrNodes[ u ]->HasMesh() || arrNodes[ u ]->GetIsBone() || !u ) ? "GEOMOBJECT" : "HELPEROBJECT" ) );

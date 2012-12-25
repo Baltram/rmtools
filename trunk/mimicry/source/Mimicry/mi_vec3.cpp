@@ -175,6 +175,11 @@ MIFloat mCVec3::CalcMagnitude( void ) const
     return sqrt( m_fX * m_fX + m_fY * m_fY + m_fZ * m_fZ );
 }
 
+MIFloat mCVec3::CalcMagnitudeSqr( void ) const
+{
+    return m_fX * m_fX + m_fY * m_fY + m_fZ * m_fZ;
+}
+
 mCVec3 mCVec3::CalcNormalized( void ) const
 {
     return *this / CalcMagnitude();
