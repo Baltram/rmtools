@@ -4,68 +4,93 @@
 class mCVertexMatcher
 {
 public:
-    static void MatchVerts( mCVec3 const * a_pVertsToMatch, mCVec3 const * a_pTargetVerts, MIUInt a_uVertsToMatchCount, MIUInt a_uTargetVertCount, mTArray< MIUInt > & a_arrCorrelationIndicesDest );
+    mCVertexMatcher( mCVec3 const * a_pVertsToMatch, mCVec3 const * a_pTargetVerts, MIUInt a_uNumVertsToMatch, MIUInt a_uNumTargetVerts, MIBool a_bIndirectMatch = MIFalse );
+public:
+    MIUInt operator [] ( MIUInt a_uIndex ) const;
+public:
+    mTArray< MIUInt >       & AccessResult( void );
+    mTArray< MIUInt > const & GetResult( void ) const;
 private:
-    struct SLookUpPoint
+    class CPoint
     {
-        MIU64          m_u64RawPosition;
-        MIUInt         m_uCubeIndex;
-        MIU8           m_arrCoordinatesWithinCube[ 3 ];
-        MIU8           m_u8SearchedLevelsCount;
+    public:
+        CPoint( void );
+    public:
+        MIBool         And( MIU64 a_u64Mask ) const;
+        void           AssureMinSearchLevel( MIUInt a_uMinSearchLevel );
+        MIBool         ExpandGroup( mCVertexMatcher * a_pMatcher );
+        MIUInt         GetChunkIndex( void ) const;
+        MIUInt         GetExp( void ) const;
+        MIUInt         GetGroupID( void ) const;
+        MIUInt         GetMinSearchLevel( void ) const;
+        CPoint const * GetNearestPoint( void ) const;
+        CPoint       * GetNextC( void ) const;
+        CPoint       * GetNextE( void );
+        CPoint const * GetNextG( void ) const;
+        mCVec3 const & GetPosition( void ) const;
+        void           Init( mCVertexMatcher const * a_pMatcher, mCVec3 const * a_pPosition );
+        void           RegisterC( mCVertexMatcher * a_pMatcher );
+        void           RegisterE( mCVertexMatcher * a_pMatcher, MIUInt a_uGroupID );
+        void           SetNearestPoint( CPoint * a_pPoint, MIFloat a_fDistance );
+    private:
+        void UnRegisterE( mCVertexMatcher * a_pMatcher );
+    private:
         mCVec3 const * m_pPosition;
-        SLookUpPoint * m_pNext;
-    };
-    struct SLookUpCube
-    {
-        MIU64           m_u64PointSpread;
-        MIUInt          m_uPointCount;
-        SLookUpPoint ** m_pPoints;
-    };
-    struct SFoundPoint
-    {
+        CPoint       * m_pNearest;
+        CPoint       * m_pNextC;
+        CPoint       * m_pNextE;
+        CPoint       * m_pNextG;
         MIFloat        m_fDistance;
-        MIInt          m_iOffsetToNext;
-        SLookUpPoint * m_pPoint;
+        MIUInt         m_uGroupID;
+        MIUInt         m_uExp;
+        MIUInt         m_uChunkIndex;
+        MIUInt         m_uMinSearchLevel;
+    };
+    class CChunk
+    {
+    public:
+        CChunk( void );
+    public:
+        MIBool   And( MIU64 a_u64Mask ) const;
+        CPoint * GetFirstPoint( void ) const;
+    private:
+        MIU64    m_u64Spread;
+        CPoint * m_pFirstPoint;
+    private:
+        friend class CPoint;
+    };
+    class CPointFinder
+    {
+    public:
+        explicit CPointFinder( MIUInt a_uMaxDistanceSqr );
+    public:
+        MIBool FindNearestPoint( mCVertexMatcher const * a_pMatcher, CPoint * a_pPoint );
+    private:
+        MIU64 GetShiftMask( MIUInt a_uAxis, MIUInt a_uDistance );
+        void  Init( mCVertexMatcher const * a_pMatcher, MIUInt a_uExp );
+        void  Shift( MIUInt a_uAxis, MIInt a_uDistance );
+        void  ShiftBack( MIUInt a_uAxis, MIInt a_uDistance );
+    private:
+        MIU64                   m_arrMasks[ 3 * 3 * 3 ];
+        MIInt                   m_arrChunkOffsets[ 3 * 3 * 3 ];
+        MIInt                   m_arrMaskOffsets[ 3 * 3 * 3 ];
+        MIUInt                  m_uChunkCount;
+        MIFloat                 m_fRadius;
+        mCVertexMatcher const * m_pMatcher;
+        MIUInt                  m_uExp;
     };
 private:
-    static MIBool ComparePoints( SFoundPoint const & a_Point1, SFoundPoint const & a_Point2 );
-    static void   Init( void );
-    static void   Init3dLoop( MIUInt a_uXCount, MIUInt a_uYCount, MIUInt a_uZCount );
-    static void   InitShift( MIUInt * a_pSystem, MIUInt a_uDirection, MIUInt a_uCount );
-    static void   NextBlock( void );
-    static void   NextCube( void );
-    static void   SearchPoints( SLookUpPoint * a_pPoint );
-    static void   Shift( void );
+    void FindNearestPoint( CPoint * a_pPoint, MIBool a_bForceSuccess ) const;
 private:
-    static MIUInt   s_uX;
-    static MIUInt   s_uY;
-    static MIUInt   s_uZ;
-    static MIUInt   s_uXMax;
-    static MIUInt   s_uYMax;
-    static MIUInt   s_uZMax;
-    static MIU64    s_u64Temp;
-    static MIU64    s_u64Save;
-    static MIU64    s_u64Keep;
-    static MIUInt   s_uRotate;
-    static MIUInt   s_uBackrotate;
-    static MIUInt   s_uNext;
-    static MIU64    s_arrFirst[ 9 ];
-    static MIUInt   s_arrSystem3[ 3 ];
-    static MIUInt   s_arrSystem4[ 3 ];
-    static MIUInt   s_arrSystem5[ 3 ];
-    static MIUInt   s_arrSystemCur[ 3 ];
-    static MIUInt   s_arrExtentsCur[ 3 ];
-    static MIU64 *  s_pBuffer;
-    static MIU64 *  s_pBuffer2;
-    static MIU64 *  s_arrSearchLevels[ 4 ];
-    static MIU64 *  s_pCurBlock;
-    static MIU64 *  s_pCurLevel;
-    static MIUInt * s_pFoundAt;
-    static SLookUpPoint *         s_pPoints;
-    static SLookUpPoint *         s_pEndPoints;
-    static SLookUpCube *          s_pCubes;
-    static SLookUpCube *          s_pCurCube;
-    static mTArray< SFoundPoint > s_arrFoundPoints;
+    mTArray< CPoint > m_arrPointsToMatch;
+    mTArray< CPoint > m_arrTargetPoints;
+    mTArray< CChunk > m_arrChunks;
+    mTArray< MIUInt > m_arrResult;
+    CPoint *          m_arrPointsE[ 64 ];
+    MIUInt            m_arrExtents[ 3 ];
+    MIUInt            m_uUnmatchedPointCount;
+    mCVec3            m_vecOrigin;
+    MIFloat           m_fEdgeLength;
 };
 
 #endif

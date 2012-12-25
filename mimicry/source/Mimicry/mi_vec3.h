@@ -36,6 +36,7 @@ public:
     mCVec3         CalcCrossProduct( mCVec3 const & a_vecSecond ) const;
     MIFloat        CalcDotProduct( mCVec3 const & a_vecSecond ) const;
     MIFloat        CalcMagnitude( void ) const;
+    MIFloat        CalcMagnitudeSqr( void ) const;
     mCVec3         CalcNormalized( void ) const;
     void           Clear( void );
     MIFloat        GetX( void ) const;

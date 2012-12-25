@@ -1,594 +1,404 @@
 #include "mi_include_3d.h"
 #include "mi_include_standard.h"
 
-namespace
+mCVertexMatcher::mCVertexMatcher( mCVec3 const * a_pVertsToMatch, mCVec3 const * a_pTargetVerts, MIUInt a_uNumVertsToMatch, MIUInt a_uNumTargetVerts, MIBool a_bIndirectMatch ) :
+    m_uUnmatchedPointCount( 0 )
 {
-    MIFloat const fSafetyPuffer0 = 0.000001f;
-    MIFloat const fSafetyPuffer1 = 1.000001f;
-}
-
-MIUInt   mCVertexMatcher::s_uX;
-MIUInt   mCVertexMatcher::s_uY;
-MIUInt   mCVertexMatcher::s_uZ;
-MIUInt   mCVertexMatcher::s_uXMax;
-MIUInt   mCVertexMatcher::s_uYMax;
-MIUInt   mCVertexMatcher::s_uZMax;
-MIU64    mCVertexMatcher::s_u64Temp;
-MIU64    mCVertexMatcher::s_u64Save;
-MIU64    mCVertexMatcher::s_u64Keep;
-MIUInt   mCVertexMatcher::s_uRotate;
-MIUInt   mCVertexMatcher::s_uBackrotate;
-MIUInt   mCVertexMatcher::s_uNext;
-MIU64    mCVertexMatcher::s_arrFirst[ 9 ] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-MIUInt   mCVertexMatcher::s_arrSystem3[ 3 ] = { 9, 3, 1 };
-MIUInt   mCVertexMatcher::s_arrSystem4[ 3 ] = { 16, 4, 1 };
-MIUInt   mCVertexMatcher::s_arrSystem5[ 3 ] = { 25, 5, 1 };
-MIUInt   mCVertexMatcher::s_arrSystemCur[ 3 ];
-MIUInt   mCVertexMatcher::s_arrExtentsCur[ 3 ];
-MIU64 *  mCVertexMatcher::s_pBuffer = 0;
-MIU64 *  mCVertexMatcher::s_pBuffer2 = 0;
-MIU64 *  mCVertexMatcher::s_arrSearchLevels[ 4 ] = {  0, 0, 0, 0  };
-MIU64 *  mCVertexMatcher::s_pCurBlock;
-MIU64 *  mCVertexMatcher::s_pCurLevel;
-MIUInt * mCVertexMatcher::s_pFoundAt;
-mCVertexMatcher::SLookUpPoint *         mCVertexMatcher::s_pPoints;
-mCVertexMatcher::SLookUpPoint *         mCVertexMatcher::s_pEndPoints;
-mCVertexMatcher::SLookUpCube *          mCVertexMatcher::s_pCubes;
-mCVertexMatcher::SLookUpCube *          mCVertexMatcher::s_pCurCube;
-mTArray< mCVertexMatcher::SFoundPoint > mCVertexMatcher::s_arrFoundPoints;
-
-void mCVertexMatcher::MatchVerts( mCVec3 const * a_pVertsToMatch, mCVec3 const * a_pTargetVerts, MIUInt a_uVertsToMatchCount, MIUInt a_uTargetVertCount, mTArray< MIUInt > & a_arrCorrelationIndicesDest )
-{
-    if ( ( a_uTargetVertCount == 0 ) || ( a_uVertsToMatchCount == 0 ) )
+    if ( !a_pVertsToMatch || !a_pTargetVerts || !a_uNumVertsToMatch || !a_uNumTargetVerts )
         return;
-
-    Init();
-    MIUInt uPointCount = ( a_uVertsToMatchCount + a_uTargetVertCount );
-    mCVec3 vecMin = *a_pTargetVerts;
-    mCVec3 vecMax = *a_pTargetVerts;
-
-    const mCVec3 * pVert = a_pVertsToMatch;
-    const mCVec3 * pEndVerts = pVert + a_uVertsToMatchCount;
-    for ( ; pVert != pEndVerts; ++pVert )
-    {
-        if ( pVert->GetX() < vecMin.GetX() )
-            vecMin.AccessX() = pVert->GetX();
-        else if ( pVert->GetX() > vecMax.GetX() )
-            vecMax.AccessX() = pVert->GetX();
-        if ( pVert->GetY() < vecMin.GetY() )
-            vecMin.AccessY() = pVert->GetY();
-        else if ( pVert->GetY() > vecMax.GetY() )
-            vecMax.AccessY() = pVert->GetY();
-        if ( pVert->GetZ() < vecMin.GetZ() )
-            vecMin.AccessZ() = pVert->GetZ();
-        else if ( pVert->GetZ() > vecMax.GetZ() )
-            vecMax.AccessZ() = pVert->GetZ();
-    }
-
-    pVert = a_pTargetVerts;
-    pEndVerts = pVert + a_uTargetVertCount;
-    for ( ; pVert != pEndVerts; ++pVert )
-    {
-        if ( pVert->GetX() < vecMin.GetX() )
-            vecMin.AccessX() = pVert->GetX();
-        else if ( pVert->GetX() > vecMax.GetX() )
-            vecMax.AccessX() = pVert->GetX();
-        if ( pVert->GetY() < vecMin.GetY() )
-            vecMin.AccessY() = pVert->GetY();
-        else if ( pVert->GetY() > vecMax.GetY() )
-            vecMax.AccessY() = pVert->GetY();
-        if ( pVert->GetZ() < vecMin.GetZ() )
-            vecMin.AccessZ() = pVert->GetZ();
-        else if ( pVert->GetZ() > vecMax.GetZ() )
-            vecMax.AccessZ() = pVert->GetZ();
-    }
-
+    g_memset( m_arrPointsE, 0, sizeof( m_arrPointsE ) );
+    mCVec3 vecMin( *a_pVertsToMatch ), vecMax( *a_pVertsToMatch );
+    for ( MIUInt u = a_uNumVertsToMatch; u--; )
+        for ( MIUInt v = 3; v--; )
+            vecMin[ v ] = g_min( vecMin[ v ], a_pVertsToMatch[ u ][ v ] ), vecMax[ v ] = g_max( vecMax[ v ], a_pVertsToMatch[ u ][ v ] );
+    for ( MIUInt u = a_uNumTargetVerts; u--; )
+        for ( MIUInt v = 3; v--; )
+            vecMin[ v ] = g_min( vecMin[ v ], a_pTargetVerts[ u ][ v ] ), vecMax[ v ] = g_max( vecMax[ v ], a_pTargetVerts[ u ][ v ] );
     mCVec3 vecExtents = vecMax - vecMin;
-    vecExtents *= fSafetyPuffer1;
-    vecMin = vecMax - vecExtents;
-    vecExtents *= fSafetyPuffer1;
-    vecMax = vecMin + vecExtents;
-
-    MIFloat * pHighest, * pMiddle, * pLowest, * pHigherYZ, * pLowerXZ, * pHigherXY;
-    pHigherYZ = ( vecExtents.GetY() > vecExtents.GetZ() ) ? &vecExtents.AccessY() : &vecExtents.AccessZ();
-    pLowerXZ = ( vecExtents.GetZ() < vecExtents.GetX() ) ? &vecExtents.AccessZ() : &vecExtents.AccessX();
-    pHigherXY = ( vecExtents.GetX() > vecExtents.GetY() ) ? &vecExtents.AccessX() : &vecExtents.AccessY();
-    pHighest = ( vecExtents.GetX() > *pHigherYZ ) ? &vecExtents.AccessX() : pHigherYZ;
-    pMiddle = ( *pHigherYZ < *pHigherXY ) ? pHigherYZ : pHigherXY;
-    pLowest = ( vecExtents.GetY() < *pLowerXZ ) ? &vecExtents.AccessY() : pLowerXZ;
-
-    *pHighest = ( *pHighest == 0.0f ) ? 1.0f : *pHighest;
-    *pMiddle = g_max( *pMiddle, ( ( *pHighest ) / uPointCount ) );
-    *pLowest = g_max( *pLowest, ( ( *pHighest ) / uPointCount ) );
-    *pLowest = g_max( *pLowest, static_cast< MIFloat >( pow( static_cast< MIDouble >( ( *pHighest ) * ( *pMiddle ) / uPointCount ), 0.5 ) ) );
-
-    MIFloat fVolumePerVert = ( vecExtents.GetX() * vecExtents.GetY() * vecExtents.GetZ() / static_cast< MIFloat >( ( a_uTargetVertCount + a_uVertsToMatchCount ) / 2 ) ); 
-    MIFloat fEdgeLength = pow( fVolumePerVert, static_cast< MIFloat >( 1.0 / 3.0 ) );
-    MIFloat fEdgeLength_4 = ( ( fEdgeLength / 4 ) * fSafetyPuffer1 );
-    MIFloat fSearchLevelRadiusDelta = ( ( fEdgeLength / 2 ) / fSafetyPuffer1 );
-
-    s_arrExtentsCur[ 0 ] = static_cast< MIUInt >( ( vecExtents.GetX() / fEdgeLength ) + 1.0f ) + 4;
-    s_arrExtentsCur[ 1 ] = static_cast< MIUInt >( ( vecExtents.GetY() / fEdgeLength ) + 1.0f ) + 4;
-    s_arrExtentsCur[ 2 ] = static_cast< MIUInt >( ( vecExtents.GetZ() / fEdgeLength ) + 1.0f ) + 4;
-    s_arrSystemCur[ 2 ] = 1;
-    s_arrSystemCur[ 1 ] = s_arrExtentsCur[ 2 ];
-    s_arrSystemCur[ 0 ] = s_arrExtentsCur[ 2 ] * s_arrExtentsCur[ 1 ];
-
-    s_pPoints = new SLookUpPoint [ uPointCount ];
-    s_pFoundAt = new MIUInt [ uPointCount ];
-    SLookUpPoint ** pPointPointers = new SLookUpPoint * [ uPointCount ];
-    SLookUpPoint * pPointsToProcess = ( s_pPoints + a_uTargetVertCount );
-    s_pEndPoints = s_pPoints + uPointCount;
-    g_memset( s_pPoints, 0, ( sizeof( SLookUpPoint ) * uPointCount ) );
-    
-    for ( SLookUpPoint * pPoint = s_pPoints; pPoint != pPointsToProcess; ++pPoint )
-        pPoint->m_pNext = pPoint;
-
-    s_pCubes = new SLookUpCube [ s_arrExtentsCur[ 0 ] * s_arrExtentsCur[ 1 ] * s_arrExtentsCur[ 2 ] ];
-    SLookUpCube * pEndCubes = s_pCubes + ( s_arrExtentsCur[ 0 ] * s_arrExtentsCur[ 1 ] * s_arrExtentsCur[ 2 ] );
-    g_memset( s_pCubes, 0, ( sizeof( SLookUpCube ) * ( pEndCubes - s_pCubes ) ) );
-
-    mCVec3 vecOffset = mCVec3( 2 * fEdgeLength, 2 * fEdgeLength, 2 * fEdgeLength ) - vecMin;
-    pVert = a_pTargetVerts;
-    for ( SLookUpPoint * pPoint = s_pPoints; pPoint != s_pEndPoints; ++pPoint )
+    MIFloat const fAverageVertCountPerChunk = 25.0f;
+    MIFloat const uRawChunkCount = ( a_uNumVertsToMatch + a_uNumTargetVerts ) / fAverageVertCountPerChunk;
+    MIFloat const fMinExtent = vecExtents.CalcMagnitude() / sqrt( uRawChunkCount );
+    for ( MIUInt u = 3; u--; vecExtents[ u ] = g_max( vecExtents[ u ], fMinExtent ) );
+    MIFloat const fRawVolumePerChunk = vecExtents[ 0 ] * vecExtents[ 1 ] * vecExtents[ 2 ] / uRawChunkCount;
+    MIFloat const fRawEdgeLength = pow( fRawVolumePerChunk, 1.0f / 3.0f );
+    for ( MIUInt u = 3; u--; m_arrExtents[ u ] = static_cast< MIUInt >( ceil( vecExtents[ u ] / fRawEdgeLength ) ) );
+    m_fEdgeLength = 0;
+    for ( MIUInt u = 3; u--; m_fEdgeLength = g_max( m_fEdgeLength, vecExtents[ u ] / m_arrExtents[ u ] ) );
+    m_fEdgeLength = ( m_fEdgeLength + FLT_EPSILON ) * ( 1.0f + FLT_EPSILON );
+    m_vecOrigin = vecMin;
+    m_arrChunks.Resize( m_arrExtents[ 0 ] * m_arrExtents[ 1 ] * m_arrExtents[ 2 ] );
+    m_arrPointsToMatch.Resize( a_uNumVertsToMatch );
+    m_arrTargetPoints.Resize( a_uNumTargetVerts );
+    for ( MIUInt u = a_uNumVertsToMatch; u--; m_arrPointsToMatch[ u ].Init( this, a_pVertsToMatch + u ) );
+    for ( MIUInt u = a_uNumTargetVerts; u--; m_arrTargetPoints[ u ].Init( this, a_pTargetVerts + u ) );
+    if ( a_bIndirectMatch )
+        for ( MIUInt u = a_uNumVertsToMatch; u--; m_arrPointsToMatch[ u ].RegisterC( this ) );
+    for ( MIUInt u = a_uNumTargetVerts; u--; m_arrTargetPoints[ u ].RegisterC( this ) );
+    for ( MIUInt u = a_uNumVertsToMatch; u--; m_arrPointsToMatch[ u ].RegisterE( this, u ) );
+    MIBool bForceSuccess = MIFalse;
+    while ( m_uUnmatchedPointCount )
     {
-        if ( pPoint == pPointsToProcess )
-            pVert = a_pVertsToMatch;
-        mCVec3 vecRelative = *pVert + vecOffset;
-
-        pPoint->m_pPosition = pVert;
-        pPoint->m_uCubeIndex += static_cast< MIUInt >( vecRelative.GetX() / fEdgeLength ) * s_arrSystemCur[ 0 ];
-        pPoint->m_uCubeIndex += static_cast< MIUInt >( vecRelative.GetY() / fEdgeLength ) * s_arrSystemCur[ 1 ];
-        pPoint->m_uCubeIndex += static_cast< MIUInt >( vecRelative.GetZ() / fEdgeLength ) * s_arrSystemCur[ 2 ];
-        ++s_pCubes[ pPoint->m_uCubeIndex ].m_uPointCount;
-
-        pPoint->m_arrCoordinatesWithinCube[ 0 ] = static_cast< MIU8 >( fmod( vecRelative.GetX(), fEdgeLength ) / fEdgeLength_4 );
-        pPoint->m_arrCoordinatesWithinCube[ 1 ] = static_cast< MIU8 >( fmod( vecRelative.GetY(), fEdgeLength ) / fEdgeLength_4 );
-        pPoint->m_arrCoordinatesWithinCube[ 2 ] = static_cast< MIU8 >( fmod( vecRelative.GetZ(), fEdgeLength ) / fEdgeLength_4 );
-        
-        s_u64Temp = 1;
-        s_u64Temp <<= pPoint->m_arrCoordinatesWithinCube[ 0 ] * s_arrSystem4[ 0 ];
-        s_u64Temp <<= pPoint->m_arrCoordinatesWithinCube[ 1 ] * s_arrSystem4[ 1 ];
-        s_u64Temp <<= pPoint->m_arrCoordinatesWithinCube[ 2 ] * s_arrSystem4[ 2 ];
-        pPoint->m_u64RawPosition = s_u64Temp;
-        s_pCubes[ pPoint->m_uCubeIndex ].m_u64PointSpread |= s_u64Temp;
-        
-        ++pVert;
+        for ( MIUInt u = 0; u != 64; ++u )
+            for ( CPoint * pPoint = m_arrPointsE[ u ]; pPoint; pPoint = pPoint->GetNextE() )
+                FindNearestPoint( pPoint, bForceSuccess );
+        MIBool bSuccess = MIFalse;
+        for ( MIUInt u = a_uNumVertsToMatch; u--; )
+            if ( m_arrPointsToMatch[ u ].GetGroupID() == u )
+                bSuccess |= m_arrPointsToMatch[ u ].ExpandGroup( this );
+        if ( !bSuccess )
+            bForceSuccess = MITrue;
     }
-
-    SLookUpPoint ** pPointsIt = pPointPointers;
-    for ( SLookUpCube * pCube = s_pCubes; pCube != pEndCubes; ++pCube )
-    {
-        pCube->m_pPoints = pPointsIt;
-        pPointsIt += pCube->m_uPointCount;
-    }
-
-    for ( SLookUpPoint * pPoint = s_pPoints; pPoint != s_pEndPoints; ++pPoint )
-        *( s_pCubes[ pPoint->m_uCubeIndex ].m_pPoints++ ) = pPoint;
-    for ( SLookUpCube * pCube = s_pCubes; pCube != pEndCubes; ++pCube )
-        pCube->m_pPoints -= pCube->m_uPointCount;
-
-    s_arrFoundPoints.Resize( 2 );
-    s_arrFoundPoints[ 0 ].m_fDistance = -1.0f;
-    s_arrFoundPoints[ 0 ].m_iOffsetToNext = 1;
-    s_arrFoundPoints[ 1 ].m_fDistance = g_fPosInfinity;
-    s_arrFoundPoints[ 1 ].m_iOffsetToNext = 0;
-
-    SLookUpPoint * pPointIt;
-    SLookUpPoint DummyPoint;
-    DummyPoint.m_u8SearchedLevelsCount = 10;
-    SLookUpPoint * pFirstGroupPoint;
-    MIU8 u8SearchedLevelCount;
-    for ( SLookUpPoint * pPoint = pPointsToProcess; pPoint != s_pEndPoints; ++pPoint )
-    {
-        if ( pPoint->m_pNext == 0 )
-        {
-            g_memset( s_pFoundAt, 255, ( sizeof( MIUInt ) * uPointCount ) );
-            s_arrFoundPoints[ 0 ].m_iOffsetToNext = 1;
-            s_arrFoundPoints.Resize( 2 );
-            pFirstGroupPoint = pPoint;
-            pPoint->m_pNext = &DummyPoint;
-            s_pFoundAt[ pPoint - s_pPoints ] = 0;
-            u8SearchedLevelCount = 0;
-
-            for ( ; ; )
-            {
-                SFoundPoint & FoundPoint = s_arrFoundPoints[ s_arrFoundPoints[ 0 ].m_iOffsetToNext ];
-                if ( ( FoundPoint.m_fDistance > u8SearchedLevelCount * fSearchLevelRadiusDelta ) && ( u8SearchedLevelCount < 5 ) )
-                {
-                    pPointIt = pFirstGroupPoint;
-                    u8SearchedLevelCount = pFirstGroupPoint->m_u8SearchedLevelsCount + 1;
-                    while ( pPointIt->m_u8SearchedLevelsCount < u8SearchedLevelCount )
-                    {
-                        SearchPoints( pPointIt );
-                        pPointIt = pPointIt->m_pNext;
-                    }
-                }
-                else
-                {
-                    pPointIt = FoundPoint.m_pPoint;
-                    if ( pPointIt->m_pNext == 0 )
-                    {
-                        s_pFoundAt[ pPointIt - s_pPoints ] = 0;
-                        s_arrFoundPoints[ 0 ].m_iOffsetToNext += FoundPoint.m_iOffsetToNext;
-                        pPointIt->m_pNext = pFirstGroupPoint;
-                        pFirstGroupPoint = pPointIt;
-                        u8SearchedLevelCount = 0;
-                    }
-                    else
-                    {
-                        SLookUpPoint * pPointCache;
-                        while ( pFirstGroupPoint != &DummyPoint )
-                        {
-                            pPointCache = pFirstGroupPoint;
-                            pFirstGroupPoint = pFirstGroupPoint->m_pNext;
-                            pPointCache->m_pNext = pPointIt->m_pNext;
-                        }
-                        break;
-                    }
-                }
-            }
-        }
-    }
-
-    a_arrCorrelationIndicesDest.Resize( a_uVertsToMatchCount );
-    MIUInt u = 0;
-    for ( SLookUpPoint * pPoint = pPointsToProcess; pPoint != s_pEndPoints; ++pPoint )
-        a_arrCorrelationIndicesDest[ u++ ] = static_cast< MIUInt >( pPoint->m_pNext - s_pPoints );
-
-    delete [] s_pCubes;
-    delete [] s_pPoints;
-    delete [] pPointPointers;
-    delete [] s_pFoundAt;
+    m_arrResult.Resize( a_uNumVertsToMatch );
+    CPoint const * const pBeginPointsToMatch = m_arrPointsToMatch.GetBuffer();
+    for ( MIUInt u = a_uNumTargetVerts; u--; )
+        for ( CPoint const * pTargetPoint = &m_arrTargetPoints[ u ], * pPoint = pTargetPoint->GetNextG(); pPoint != pTargetPoint; pPoint = pPoint->GetNextG() )
+            m_arrResult[ pPoint - pBeginPointsToMatch ] = u;
 }
 
-MIBool mCVertexMatcher::ComparePoints( mCVertexMatcher::SFoundPoint const & a_Point1, mCVertexMatcher::SFoundPoint const & a_Point2 )
+MIUInt mCVertexMatcher::operator [] ( MIUInt a_uIndex ) const
 {
-    return ( a_Point1.m_fDistance < a_Point2.m_fDistance );
+    return m_arrResult[ a_uIndex ];
 }
 
-void mCVertexMatcher::Init( void )
+mTArray< MIUInt > & mCVertexMatcher::AccessResult( void )
 {
-    if ( s_pBuffer )
-        return;
+    return m_arrResult;
+}
 
-    s_u64Temp = 1;
-    for ( MIUInt u = 15; u--; )
-        s_u64Temp = ( ( s_u64Temp << 1 ) | 1 );
-    // 1111111111111111000000000000000000000000000000000000000000000000
-    s_arrFirst[ 0 ] = s_u64Temp;
-    s_arrFirst[ 1 ] = ( ( s_arrFirst[ 0 ] << 16 ) | s_u64Temp );
-    s_arrFirst[ 2 ] = ( ( s_arrFirst[ 1 ] << 16 ) | s_u64Temp );
+mTArray< MIUInt > const & mCVertexMatcher::GetResult( void ) const
+{
+    return m_arrResult;
+}
 
-    s_u64Temp >>= 12;
-    for ( MIUInt u = 3; u--; )
-        s_u64Temp = ( ( s_u64Temp << 16 ) | s_u64Temp );
-    // 1111000000000000111100000000000011110000000000001111000000000000
-    s_arrFirst[ 3 ] = s_u64Temp;
-    s_arrFirst[ 4 ] = ( ( s_arrFirst[ 3 ] << 4 ) | s_u64Temp );
-    s_arrFirst[ 5 ] = ( ( s_arrFirst[ 4 ] << 4 ) | s_u64Temp );
-
-    s_u64Temp = 1;
-    for ( MIUInt u = 15; u--; )
-        s_u64Temp = ( ( s_u64Temp << 4 ) | 1 );
-    // 1000100010001000100010001000100010001000100010001000100010001000
-    s_arrFirst[ 6 ] = s_u64Temp;
-    s_arrFirst[ 7 ] = ( ( s_arrFirst[ 6 ] << 1 ) | s_u64Temp );
-    s_arrFirst[ 8 ] = ( ( s_arrFirst[ 7 ] << 1 ) | s_u64Temp );
-
-    MIFloat fMin = -fSafetyPuffer0;
-    MIFloat fMax = fMin + 2.0f;
-
-    s_pBuffer = new MIU64 [ 304 ];
-    memset( s_pBuffer, 0, 304 * sizeof( MIU64 ) );
-    s_pBuffer2 = new MIU64 [ 125 ];
-    memset( s_pBuffer2, 0, 125 * sizeof( MIU64 ) );
-    MIU64 s_pCurLevel[ 125 ];
-
-    MIU64 * pInBuffer = s_pBuffer;
-    MIU64 ** pInSearchLevel = s_arrSearchLevels; 
-
-    s_arrSystemCur[ 0 ] = 25;
-    s_arrSystemCur[ 1 ] = 5;
-    s_arrSystemCur[ 2 ] = 1;
-    s_arrExtentsCur[ 0 ] = 5;
-    s_arrExtentsCur[ 1 ] = 5;
-    s_arrExtentsCur[ 2 ] = 5;
-
-    for ( MIUInt u = 0; u != 4; ++u )
+void mCVertexMatcher::FindNearestPoint( CPoint * a_pPoint, MIBool a_bForceSuccess ) const
+{
+    static CPointFinder PointFinder1( 0 );
+    static CPointFinder PointFinder2( 3 );
+    static CPointFinder PointFinder3( 8 );
+    static CPointFinder PointFinder4( 14 );
+    static CPointFinder * arrPointFinders[ 4 ] = { &PointFinder1, &PointFinder2, &PointFinder3, &PointFinder4 };
+    if ( a_pPoint->GetMinSearchLevel() == 0 )
     {
-        memset( s_pCurLevel, 0, 125 * sizeof( MIU64 ) );
-        s_pCurBlock = s_pCurLevel;
-        Init3dLoop( 2, 2, 2 );
-
-        while ( s_pCurBlock != 0 )
+        CChunk const & Chunk = m_arrChunks[ a_pPoint->GetChunkIndex() ];
+        for ( CPoint * pPoint = Chunk.GetFirstPoint(); pPoint; pPoint = pPoint->GetNextC() )
         {
-            s_u64Temp = 1;
-            for ( MIUInt xx = 0; xx != 4; ++xx )
+            if ( ( pPoint->GetExp() == a_pPoint->GetExp() ) &&
+                 ( pPoint->GetGroupID() != a_pPoint->GetGroupID() ) &&
+                 ( ( pPoint->GetPosition() - a_pPoint->GetPosition() ).CalcMagnitudeSqr() < 1e-6f ) )
             {
-                for ( MIUInt yy = 0; yy != 4; ++yy ) {
-                    for ( MIUInt zz = 0; zz != 4; ++zz )
-                    {
-                        MIFloat fLenght = mCVec3( static_cast< MIFloat >( 7 - ( 4 * s_uX + xx ) ), static_cast< MIFloat >( 7 - ( 4 * s_uY + yy ) ), static_cast< MIFloat >( 7 - ( 4 * s_uZ + zz ) ) ).CalcMagnitude();
-                        if ( ( fLenght >= fMin ) && ( fLenght < fMax ) )
-                        {
-                            *s_pCurBlock |= s_u64Temp;
-                        }
-                        s_u64Temp <<= 1;
-                    }
-                }
-            }
-            NextBlock();
-        }
-
-        MIUInt arrCounts[ 3 ] = { 2, 2, 2 };
-        MIUInt * arrPos[ 3 ];
-        arrPos[ 0 ] = &s_uX;
-        arrPos[ 1 ] = &s_uY;
-        arrPos[ 2 ] = &s_uZ;
-
-        for ( MIUInt v = 0; v != 3; ++v )
-        {
-            MIUInt uOffset = s_arrSystem4[ v ];
-            MIU64 u64Filter = s_arrFirst[ 3 * v ];
-
-            s_pCurBlock = s_pCurLevel;
-            Init3dLoop( arrCounts[ 0 ], arrCounts[ 1 ], arrCounts[ 2 ] );
-
-            while ( s_pCurBlock )
-            {
-                MIU64 & u64Block = *s_pCurBlock;
-                s_u64Temp = 0;
-
-                s_u64Temp |= ( ( u64Block & u64Filter ) << ( 3 * uOffset ) );
-                u64Filter <<= uOffset;
-                s_u64Temp |= ( ( u64Block & u64Filter ) << ( 1 * uOffset ) );
-                u64Filter <<= uOffset;
-                s_u64Temp |= ( ( u64Block & u64Filter ) >> ( 1 * uOffset ) );
-                u64Filter <<= uOffset;
-                s_u64Temp |= ( ( u64Block & u64Filter ) >> ( 3 * uOffset ) );
-                u64Filter >>= ( 3 * uOffset );
-
-                if ( *arrPos[ v ] == 0 )
-                    s_pCurBlock[ s_arrSystem5[ v ] * 3 ] = s_u64Temp;
-                else
-                    s_pCurBlock[ s_arrSystem5[ v ] ] = s_u64Temp;
-
-                NextBlock();
-            }
-            
-            arrCounts[ v ] = 4;
-        }
-
-        MIU64 u64Temp2;
-        arrCounts[ 0 ] = arrCounts[ 1 ] = arrCounts[ 2 ] = 5;
-        for ( MIUInt v = 0; v != 3; ++v )
-        {
-            MIU64 & u64Filter = s_arrFirst[ 3 * v ];
-            arrCounts[ v ] = 3;
-            InitShift( s_arrSystem5, v, 1 );
-            s_pCurBlock = ( s_pCurLevel + 124 );
-            for ( MIUInt x2 = arrCounts[ 0 ]; x2--; )
-            {
-                for ( MIUInt y2 = arrCounts[ 1 ]; y2--; )
-                {
-                    for ( MIUInt z2 = arrCounts[ 2 ]; z2--; )
-                    {
-                        u64Temp2 = ( *s_pCurBlock & u64Filter );
-                        Shift();
-                        *s_pCurBlock |= u64Temp2;
-                        --s_pCurBlock;
-                    }
-                    if ( v == 2 )
-                        s_pCurBlock -= 2;
-                }
-                if ( v == 1 )
-                    s_pCurBlock -= 10;
-            }
-            arrCounts[ v ] = 5;
-        }
-
-        fMin += 2.0f;
-        fMax += 2.0f;
-
-        *( pInSearchLevel++ ) = pInBuffer;
-        if ( u < 2 )
-        {
-            s_pCurBlock = s_pCurLevel + 25 + 5 + 1;
-            Init3dLoop( 3, 3, 3 );
-            while ( s_pCurBlock )
-            {
-                *( pInBuffer++ ) = *s_pCurBlock;
-                NextBlock();
+                a_pPoint->SetNearestPoint( pPoint, 0.0f );
+                return;
             }
         }
+    }
+    a_pPoint->AssureMinSearchLevel( 1 );
+    for ( MIUInt u = a_pPoint->GetMinSearchLevel() - 1; u != 4; ++u )
+    {
+        if ( arrPointFinders[ u ]->FindNearestPoint( this, a_pPoint ) )
+            break;
         else
-        {
-            memcpy( pInBuffer, s_pCurLevel, 125 * sizeof( MIU64 ) );
-            pInBuffer += 125;
-        }
+            a_pPoint->AssureMinSearchLevel( u + 2 );
     }
-}
-
-void mCVertexMatcher::Init3dLoop( MIUInt a_uXCount, MIUInt a_uYCount, MIUInt a_uZCount )
-{
-    s_uX = s_uY = s_uZ = 0;
-    s_uXMax = a_uXCount;
-    s_uYMax = a_uYCount;
-    s_uZMax = a_uZCount;
-}
-
-void mCVertexMatcher::InitShift( MIUInt * a_pSystem, MIUInt a_uDirection, MIUInt a_uCount )
-{
-    s_uNext = a_pSystem[ a_uDirection ];
-    s_u64Save = ~s_arrFirst[ 3 * a_uDirection + 3 - a_uCount ];
-    s_u64Keep = ~s_arrFirst[ 3 * a_uDirection + a_uCount - 1 ];
-    s_uRotate = a_uCount * s_arrSystem4[ a_uDirection ];
-    s_uBackrotate = 4 * s_arrSystem4[ a_uDirection ] - s_uRotate;
-}
-
-void mCVertexMatcher::NextBlock( void )
-{
-    ++s_uZ;
-    ++s_pCurBlock;
-    if ( s_uZ == s_uZMax )
+    if ( !a_bForceSuccess || ( a_pPoint->GetNearestPoint() && ( a_pPoint->GetNearestPoint()->GetGroupID() != a_pPoint->GetGroupID() ) ) )
+        return;
+    CPoint * pNearest = 0;
+    MIFloat fDistanceMin = g_fPosInfinity;
+    for ( MIUInt u = m_arrChunks.GetCount(); u--; )
     {
-        s_uZ = 0;
-        s_pCurBlock += ( s_arrExtentsCur[ 2 ] - s_uZMax );
-        ++s_uY;
-        if ( s_uY == s_uYMax )
+        for ( CPoint * pPoint = m_arrChunks[ u ].GetFirstPoint(); pPoint; pPoint = pPoint->GetNextC() )
         {
-            s_uY = 0;
-            s_pCurBlock += ( ( s_arrExtentsCur[ 1 ] - s_uYMax ) * s_arrSystemCur[ 1 ] );
-            ++s_uX;
-            if ( s_uX == s_uXMax )
-                s_pCurBlock = 0;
-        }
-    }
-}
-
-void mCVertexMatcher::NextCube( void )
-{
-    ++s_uZ;
-    ++s_pCurCube;
-    if ( s_uZ == s_uZMax )
-    {
-        s_uZ = 0;
-        s_pCurCube += ( s_arrExtentsCur[ 2 ] - s_uZMax );
-        ++s_uY;
-        if ( s_uY == s_uYMax )
-        {
-            s_uY = 0;
-            s_pCurCube += ( ( s_arrExtentsCur[ 1 ] - s_uYMax ) * s_arrSystemCur[ 1 ] );
-            ++s_uX;
-            if ( s_uX == s_uXMax )
-                s_pCurCube = 0;
-        }
-    }
-}
-
-void mCVertexMatcher::SearchPoints( SLookUpPoint * a_pPoint )
-{
-    MIUInt uFoundPointCount = 0;
-    SFoundPoint FoundPoint;
-
-    if ( a_pPoint->m_u8SearchedLevelsCount < 4 )
-    {
-        MIUInt * pSystem = ( a_pPoint->m_u8SearchedLevelsCount < 2 ) ? s_arrSystem3 : s_arrSystem5;
-        MIUInt edgeLenght = pSystem[ 1 ];
-        MIUInt uSize = ( edgeLenght * edgeLenght * edgeLenght );
-        MIUInt uOffset = ( s_arrSystemCur[ 0 ] + s_arrSystemCur[ 1 ] + s_arrSystemCur[ 2 ] ) * ( ( edgeLenght == 5 ) ? 2 : 1 );
-        s_pCurBlock = s_pBuffer2;
-
-        g_memcpy( s_pBuffer2, s_arrSearchLevels[ a_pPoint->m_u8SearchedLevelsCount ], uSize * sizeof( MIU64 ) );
-        for ( MIUInt u = 0; u != 3; ++u )
-        {
-            if ( a_pPoint->m_arrCoordinatesWithinCube[ u ] )
+            MIFloat fDistance = ( pPoint->GetPosition() - a_pPoint->GetPosition() ).CalcMagnitudeSqr();
+            if ( ( fDistance < fDistanceMin ) && ( pPoint->GetGroupID() != a_pPoint->GetGroupID() ) )
             {
-                InitShift( pSystem, u, a_pPoint->m_arrCoordinatesWithinCube[ u ] );
-                for ( s_pCurBlock = s_pBuffer2 + uSize; s_pCurBlock-- != s_pBuffer2; Shift() );
+                fDistanceMin = fDistance;
+                pNearest = pPoint;
             }
-        }
-
-        s_pCurCube = ( s_pCubes + a_pPoint->m_uCubeIndex - uOffset );
-        Init3dLoop( edgeLenght, edgeLenght, edgeLenght );
-        while ( s_pCurCube != 0 )
-        {
-            if ( s_pCurCube->m_u64PointSpread & *s_pCurBlock ) {
-                for ( SLookUpPoint ** pCurrentPoint = s_pCurCube->m_pPoints + s_pCurCube->m_uPointCount; pCurrentPoint-- != s_pCurCube->m_pPoints; )
-                {
-                    if ( ( **pCurrentPoint ).m_u64RawPosition & *s_pCurBlock )
-                    {
-                        if ( *pCurrentPoint != a_pPoint )
-                        {
-                            FoundPoint.m_pPoint = *pCurrentPoint;
-                            FoundPoint.m_fDistance = ( *( ( **pCurrentPoint ).m_pPosition ) - *( a_pPoint->m_pPosition ) ).CalcMagnitude();
-                            MIUInt uFoundAt = s_pFoundAt[ FoundPoint.m_pPoint - s_pPoints ];
-                            if ( uFoundAt != ( -1 ) )
-                            {
-                                SFoundPoint * pFoundPoint2 = &s_arrFoundPoints[ uFoundAt ];
-                                if ( pFoundPoint2->m_fDistance > FoundPoint.m_fDistance )
-                                {
-                                    if ( pFoundPoint2[ pFoundPoint2->m_iOffsetToNext ].m_iOffsetToNext ) {
-                                        s_pFoundAt[ pFoundPoint2[ pFoundPoint2->m_iOffsetToNext ].m_pPoint - s_pPoints ] = static_cast< MIUInt >( pFoundPoint2 - &s_arrFoundPoints[ 0 ] );
-                                        pFoundPoint2[ pFoundPoint2->m_iOffsetToNext ].m_iOffsetToNext += pFoundPoint2->m_iOffsetToNext;
-                                    }
-                                    *pFoundPoint2 = pFoundPoint2[ pFoundPoint2->m_iOffsetToNext ];
-                                    s_arrFoundPoints.Add( FoundPoint );
-                                    ++uFoundPointCount;
-                                }
-                            }
-                            else
-                            {
-                                s_arrFoundPoints.Add( FoundPoint );
-                                ++uFoundPointCount;
-                            }
-                        }
-                    }
-                }
-            }
-            ++s_pCurBlock;
-            NextCube();
         }
     }
+    a_pPoint->SetNearestPoint( pNearest, fDistanceMin );
+}
+
+mCVertexMatcher::CPoint::CPoint( void ) :
+    m_pPosition( 0 ),
+    m_pNearest( 0 ),
+    m_pNextC( 0 ),
+    m_pNextE( 0 ),
+    m_uGroupID( MI_DW_INVALID ),
+    m_uMinSearchLevel( 0 )
+{
+    m_pNextG = this;
+}
+
+MIBool mCVertexMatcher::CPoint::And( MIU64 a_u64Mask ) const
+{
+    return ( ( ( MIU64 ) 1 << m_uExp ) & a_u64Mask ) != 0;
+}
+
+void mCVertexMatcher::CPoint::AssureMinSearchLevel( MIUInt a_uMinSearchLevel )
+{
+    m_uMinSearchLevel = g_max( m_uMinSearchLevel, a_uMinSearchLevel );
+}
+
+MIBool mCVertexMatcher::CPoint::ExpandGroup( mCVertexMatcher * a_pMatcher )
+{
+    MIFloat fMinDistance = m_pNearest ? m_fDistance : g_fPosInfinity;
+    CPoint * pNearest = m_pNearest;
+    for ( CPoint * pPoint = m_pNextG; pPoint != this; pPoint = pPoint->m_pNextG )
+        if ( ( pPoint->m_fDistance < fMinDistance ) && pPoint->m_pNearest && ( pNearest = pPoint->m_pNearest ) )
+            fMinDistance = pPoint->m_fDistance;
+    if ( !pNearest )
+        return MIFalse;
+    if ( pNearest->m_uGroupID == MI_DW_INVALID )
+        for ( CPoint * pPoint = this; pPoint->m_uGroupID != MI_DW_INVALID; pPoint = pPoint->m_pNextG )
+            pPoint->UnRegisterE( a_pMatcher );
     else
+        for ( CPoint * pPoint = pNearest; pPoint->m_uGroupID != m_uGroupID; pPoint = pPoint->m_pNextG )
+            pPoint->m_uGroupID = m_uGroupID;
+    g_swap( m_pNextG, pNearest->m_pNextG );
+    return MITrue;
+}
+
+MIUInt mCVertexMatcher::CPoint::GetChunkIndex( void ) const
+{
+    return m_uChunkIndex;
+}
+
+MIUInt mCVertexMatcher::CPoint::GetExp( void ) const
+{
+    return m_uExp;
+}
+
+MIUInt mCVertexMatcher::CPoint::GetGroupID( void ) const
+{
+    return m_uGroupID;
+}
+
+MIUInt mCVertexMatcher::CPoint::GetMinSearchLevel( void ) const
+{
+    return m_uMinSearchLevel;
+}
+
+mCVertexMatcher::CPoint const * mCVertexMatcher::CPoint::GetNearestPoint( void ) const
+{
+    return m_pNearest;
+}
+
+mCVertexMatcher::CPoint * mCVertexMatcher::CPoint::GetNextC( void ) const
+{
+    return m_pNextC;
+}
+
+mCVertexMatcher::CPoint * mCVertexMatcher::CPoint::GetNextE( void )
+{
+    if ( m_pNextE && ( m_pNextE->m_uGroupID == MI_DW_INVALID ) )
+        m_pNextE = m_pNextE->GetNextE();
+    return m_pNextE;
+}
+
+mCVertexMatcher::CPoint const * mCVertexMatcher::CPoint::GetNextG( void ) const
+{
+    return m_pNextG;
+}
+
+mCVec3 const & mCVertexMatcher::CPoint::GetPosition( void ) const
+{
+    return *m_pPosition;
+}
+
+void mCVertexMatcher::CPoint::Init( mCVertexMatcher const * a_pMatcher, mCVec3 const * a_pPosition )
+{
+    m_pPosition = a_pPosition;
+    mCVec3 vecOffset = ( *m_pPosition - a_pMatcher->m_vecOrigin ) / a_pMatcher->m_fEdgeLength;
+    mCVec3 vecOffsetInChunk = vecOffset;
+    for ( MIUInt u = 3; u--; vecOffsetInChunk[ u ] -= static_cast< MIUInt >( vecOffset[ u ] ) );
+    vecOffsetInChunk *= 4.0f;
+    m_uExp = 4 * 4 * static_cast< MIUInt >( vecOffsetInChunk[ 0 ] ) +
+                 4 * static_cast< MIUInt >( vecOffsetInChunk[ 1 ] ) +
+                     static_cast< MIUInt >( vecOffsetInChunk[ 2 ] );
+    MIUInt const * const pExtents = a_pMatcher->m_arrExtents;
+    m_uChunkIndex = pExtents[ 2 ] * pExtents[ 1 ] * static_cast< MIUInt >( vecOffset[ 0 ] ) +
+                                    pExtents[ 2 ] * static_cast< MIUInt >( vecOffset[ 1 ] ) +
+                                                    static_cast< MIUInt >( vecOffset[ 2 ] );
+}
+
+void mCVertexMatcher::CPoint::RegisterC( mCVertexMatcher * a_pMatcher )
+{
+    CChunk & Chunk = a_pMatcher->m_arrChunks[ m_uChunkIndex ];
+    m_pNextC = Chunk.m_pFirstPoint;
+    Chunk.m_pFirstPoint = this;
+    Chunk.m_u64Spread |= ( MIU64 ) 1 << m_uExp;
+}
+
+void mCVertexMatcher::CPoint::RegisterE( mCVertexMatcher * a_pMatcher, MIUInt a_uGroupID )
+{
+    m_uGroupID = a_uGroupID;
+    m_pNextE = a_pMatcher->m_arrPointsE[ m_uExp ];
+    a_pMatcher->m_arrPointsE[ m_uExp ] = this;
+    ++a_pMatcher->m_uUnmatchedPointCount;
+}
+
+void mCVertexMatcher::CPoint::SetNearestPoint( CPoint * a_pPoint, MIFloat a_fDistance )
+{
+    m_pNearest = a_pPoint;
+    m_fDistance = a_fDistance;
+}
+
+void mCVertexMatcher::CPoint::UnRegisterE( mCVertexMatcher * a_pMatcher )
+{
+    m_uGroupID = MI_DW_INVALID;
+    if ( a_pMatcher->m_arrPointsE[ m_uExp ] == this )
+        a_pMatcher->m_arrPointsE[ m_uExp ] = GetNextE();
+    --a_pMatcher->m_uUnmatchedPointCount;
+}
+
+mCVertexMatcher::CChunk::CChunk( void ) :
+    m_u64Spread( 0 ),
+    m_pFirstPoint( 0 )
+{
+}
+
+MIBool mCVertexMatcher::CChunk::And( MIU64 a_u64Mask ) const
+{
+    return ( m_u64Spread & a_u64Mask ) != 0;
+}
+
+mCVertexMatcher::CPoint * mCVertexMatcher::CChunk::GetFirstPoint( void ) const
+{
+    return m_pFirstPoint;
+}
+
+mCVertexMatcher::CPointFinder::CPointFinder( MIUInt a_uMaxDistanceSqr ) :
+    m_pMatcher( 0 ),
+    m_uExp( 0 ),
+    m_fRadius( g_fPosInfinity )
+{
+    g_memset( m_arrMasks, 0, sizeof( m_arrMasks ) );
+    for ( MIUInt u = 0; u != 3 * 3 * 3; ++u )
     {
-        for ( SLookUpPoint * pPoint2 = s_pPoints; pPoint2 != s_pEndPoints; ++pPoint2 ) {
-            if ( pPoint2 != a_pPoint )
+        for ( MIUInt v = 0; v != 4 * 4 * 4; ++v )
+        {
+            MIInt arrCoords[ 3 ];
+            arrCoords[ 0 ] = u / ( 3 * 3 )     * 4 + v / ( 4 * 4 );
+            arrCoords[ 1 ] = u / ( 3 )     % 3 * 4 + v / ( 4 ) % 4;
+            arrCoords[ 2 ] = u             % 3 * 4 + v         % 4;
+            MIUInt uDistanceSqr = 0;
+            for ( MIUInt w = 3; w--; uDistanceSqr += arrCoords[ w ] * arrCoords[ w ] )
+                arrCoords[ w ] -= arrCoords[ w ] == 4 ? 4 : ( arrCoords[ w ] < 4 ? 3 : 5 );
+            if ( uDistanceSqr > a_uMaxDistanceSqr )
+                m_fRadius = g_min( m_fRadius, sqrt( static_cast< MIFloat >( uDistanceSqr ) ) );
+            else
+                m_arrMasks[ u ] |= ( MIU64 ) 1 << v;
+        }
+    }
+}
+
+MIBool mCVertexMatcher::CPointFinder::FindNearestPoint( mCVertexMatcher const * a_pMatcher, CPoint * a_pPoint )
+{
+    if ( a_pPoint->GetNearestPoint() && ( a_pPoint->GetNearestPoint()->GetGroupID() != a_pPoint->GetGroupID() ) )
+        return MITrue;
+    Init( a_pMatcher, a_pPoint->GetExp() );
+    CChunk const * const pChunks = a_pMatcher->m_arrChunks.GetBuffer();
+    CChunk const * const pEndChunks = pChunks + a_pMatcher->m_arrChunks.GetCount();
+    CChunk const * const pChunkCenter = pChunks + a_pPoint->GetChunkIndex();
+    CPoint * pResult = 0;
+    MIFloat fMinDistance = m_fRadius * m_fRadius;
+    for ( MIUInt u = 0; u != m_uChunkCount; ++u )
+    {
+        CChunk const * const pChunk = pChunkCenter + m_arrChunkOffsets[ u ];
+        MIU64 const & Mask = m_arrMasks[ m_arrMaskOffsets[ u ] ];
+        if ( ( pChunk < pChunks ) || ( pChunk >= pEndChunks ) || !pChunk->And( Mask ) )
+            continue;
+        for ( CPoint * pPoint = pChunk->GetFirstPoint(); pPoint; pPoint = pPoint->GetNextC() )
+        {
+            if ( ( pPoint->GetGroupID() == a_pPoint->GetGroupID() ) || !pPoint->And( Mask ) )
+                continue;
+            MIFloat fDistance = ( pPoint->GetPosition() - a_pPoint->GetPosition() ).CalcMagnitudeSqr();
+            if ( fDistance < fMinDistance )
             {
-                FoundPoint.m_pPoint = pPoint2;
-                FoundPoint.m_fDistance = ( *( pPoint2->m_pPosition ) - *( a_pPoint->m_pPosition ) ).CalcMagnitude();
-                MIUInt uFoundAt = s_pFoundAt[ FoundPoint.m_pPoint - s_pPoints ];
-                if ( uFoundAt != ( -1 ) )
-                {
-                    SFoundPoint * pFoundPoint2 = &s_arrFoundPoints[ uFoundAt ];
-                    if ( pFoundPoint2->m_fDistance > FoundPoint.m_fDistance )
-                    {
-                        if ( pFoundPoint2[ pFoundPoint2->m_iOffsetToNext ].m_iOffsetToNext ) {
-                            s_pFoundAt[ pFoundPoint2[ pFoundPoint2->m_iOffsetToNext ].m_pPoint - s_pPoints ] = static_cast< MIUInt >( pFoundPoint2 - s_arrFoundPoints.AccessBuffer() );
-                            pFoundPoint2[ pFoundPoint2->m_iOffsetToNext ].m_iOffsetToNext += pFoundPoint2->m_iOffsetToNext;
-                        }
-                        *pFoundPoint2 = pFoundPoint2[ pFoundPoint2->m_iOffsetToNext ];
-                        s_arrFoundPoints.Add( FoundPoint );
-                        ++uFoundPointCount;
-                    }
-                }
-                else
-                {
-                    s_arrFoundPoints.Add( FoundPoint );
-                    ++uFoundPointCount;
-                }
+                fMinDistance = fDistance;
+                pResult = pPoint;
             }
         }
     }
-
-    if ( uFoundPointCount )
-    {
-        MIInt iOffset;
-        SFoundPoint * pOldPoint = &s_arrFoundPoints[ 0 ];
-        SFoundPoint * pNewPoint = &s_arrFoundPoints[ s_arrFoundPoints.GetCount() - uFoundPointCount ];
-        SFoundPoint * pEndPoints = pNewPoint + uFoundPointCount;
-        std::sort( ( &s_arrFoundPoints.Back() + 1 - uFoundPointCount ), ( &s_arrFoundPoints.Back() + 1 ), &ComparePoints );
-        for ( MIUInt u = static_cast< MIUInt >( pNewPoint - pOldPoint ); pNewPoint != pEndPoints; ++pNewPoint )
-        {
-            s_pFoundAt[ pNewPoint->m_pPoint - s_pPoints ] = u++;
-            while ( pNewPoint->m_fDistance > pOldPoint[ pOldPoint->m_iOffsetToNext ].m_fDistance )
-                pOldPoint += pOldPoint->m_iOffsetToNext;
-            iOffset = static_cast< MIInt >( pNewPoint - pOldPoint );
-            pNewPoint->m_iOffsetToNext = pOldPoint->m_iOffsetToNext - iOffset;
-            pOldPoint->m_iOffsetToNext = iOffset;
-            pOldPoint = pNewPoint;
-        }
-    }
-
-    ++( a_pPoint->m_u8SearchedLevelsCount );
+    a_pPoint->SetNearestPoint( pResult, fMinDistance );
+    return pResult != 0;
 }
 
-void mCVertexMatcher::Shift( void )
+MIU64 mCVertexMatcher::CPointFinder::GetShiftMask( MIUInt a_uAxis, MIUInt a_uDistance )
 {
-    s_u64Temp = *s_pCurBlock & s_u64Save;
-    s_u64Temp >>= s_uBackrotate;
-    *s_pCurBlock = ( *s_pCurBlock << s_uRotate ) & s_u64Keep;
-    if ( s_u64Temp )
-        s_pCurBlock[ s_uNext ] |= s_u64Temp;
+    static MIU64 s_arrMasks[ 3 ][ 3 ];
+    static MIBool s_bInit = MIFalse;
+    if ( !s_bInit )
+    {
+        s_arrMasks[ 0 ][ 0 ] = 0xFFFF;
+        s_arrMasks[ 0 ][ 1 ] = s_arrMasks[ 0 ][ 0 ] | s_arrMasks[ 0 ][ 0 ] << 16;
+        s_arrMasks[ 0 ][ 2 ] = s_arrMasks[ 0 ][ 0 ] | s_arrMasks[ 0 ][ 1 ] << 16;
+        s_arrMasks[ 1 ][ 0 ] = ( ( ( MIU64 ) 1 << 4 ) - 1 ) | ( ( ( MIU64 ) 1 << 4 ) - 1 ) << 16 | ( ( ( MIU64 ) 1 << 4 ) - 1 ) << 32 | ( ( ( MIU64 ) 1 << 4 ) - 1 ) << 48;
+        s_arrMasks[ 1 ][ 1 ] = s_arrMasks[ 1 ][ 0 ] | s_arrMasks[ 1 ][ 0 ] << 4;
+        s_arrMasks[ 1 ][ 2 ] = s_arrMasks[ 1 ][ 0 ] | s_arrMasks[ 1 ][ 1 ] << 4;
+        s_arrMasks[ 2 ][ 0 ] = 1 | 1 << 4 | 1 << 8 | 1 << 12;
+        s_arrMasks[ 2 ][ 0 ] = s_arrMasks[ 2 ][ 0 ] | s_arrMasks[ 2 ][ 0 ] << 16 | s_arrMasks[ 2 ][ 0 ] << 32 | s_arrMasks[ 2 ][ 0 ] << 48;
+        s_arrMasks[ 2 ][ 1 ] = s_arrMasks[ 2 ][ 0 ] | s_arrMasks[ 2 ][ 0 ] << 1;
+        s_arrMasks[ 2 ][ 2 ] = s_arrMasks[ 2 ][ 0 ] | s_arrMasks[ 2 ][ 1 ] << 1;
+        s_bInit = MITrue;
+    }
+    return s_arrMasks[ a_uAxis ][ 3 - a_uDistance ];
+}
+
+void mCVertexMatcher::CPointFinder::Init( mCVertexMatcher const * a_pMatcher, MIUInt a_uExp )
+{
+    if ( ( m_pMatcher == a_pMatcher ) && ( m_uExp == a_uExp ) )
+        return;
+    Shift( 0, static_cast< MIInt >( a_uExp / ( 4 * 4 ) - m_uExp / ( 4 * 4 ) ) );
+    Shift( 1, static_cast< MIInt >( a_uExp / ( 4 ) % 4 - m_uExp / ( 4 ) % 4 ) );
+    Shift( 2, static_cast< MIInt >( a_uExp / ( 1 ) % 4 - m_uExp / ( 1 ) % 4 ) );
+    m_uChunkCount = 0;
+    MIUInt const * pExtents = a_pMatcher->m_arrExtents;
+    MIInt iChunkOffset = 0 - pExtents[ 2 ] * pExtents[ 1 ] - pExtents[ 2 ] - 1, iMaskOffset = 0;
+    for ( MIUInt u = 3; u--; iChunkOffset += pExtents[ 2 ] * pExtents[ 1 ] - 3 * pExtents[ 2 ] )
+        for ( MIUInt v = 3; v--; iChunkOffset += pExtents[ 2 ] - 3 )
+            for ( MIUInt w = 3; w--; ++iChunkOffset, ++iMaskOffset )
+                if ( m_arrMasks[ iMaskOffset ] )
+                    m_arrChunkOffsets[ m_uChunkCount ] = iChunkOffset, m_arrMaskOffsets[ m_uChunkCount++ ] = iMaskOffset;
+    m_pMatcher = a_pMatcher;
+    m_uExp = a_uExp;
+}
+
+void mCVertexMatcher::CPointFinder::Shift( MIUInt a_uAxis, MIInt a_iDistance )
+{
+    if ( a_iDistance == 0 )
+        return;
+    if ( a_iDistance < 0 )
+    {
+        ShiftBack( a_uAxis, 0 - a_iDistance );
+        return;
+    }
+    MIUInt const uOffsetC = ( a_uAxis < 2 ? 3 : 1 ) * ( a_uAxis < 1 ? 3 : 1 );
+    MIUInt const uOffsetE = ( a_uAxis < 2 ? 4 : 1 ) * ( a_uAxis < 1 ? 4 : 1 );
+    MIInt iIndex = 0;
+    MIU64 u64Remainder = 0;
+    for ( MIUInt u = 27; u--; iIndex += uOffsetC )
+    {
+        if ( iIndex >= 27 )
+            iIndex -= 26;
+        MIU64 u64NewMask = ( ( m_arrMasks[ iIndex ] & GetShiftMask( a_uAxis, a_iDistance ) ) << uOffsetE * a_iDistance ) | u64Remainder;
+        u64Remainder = ( m_arrMasks[ iIndex ] & ~GetShiftMask( a_uAxis, a_iDistance ) ) >> uOffsetE * ( 4 - a_iDistance );
+        m_arrMasks[ iIndex ] = u64NewMask;
+    }
+}
+
+void mCVertexMatcher::CPointFinder::ShiftBack( MIUInt a_uAxis, MIInt a_iDistance )
+{
+    MIUInt const uOffsetC = ( a_uAxis < 2 ? 3 : 1 ) * ( a_uAxis < 1 ? 3 : 1 );
+    MIUInt const uOffsetE = ( a_uAxis < 2 ? 4 : 1 ) * ( a_uAxis < 1 ? 4 : 1 );
+    MIInt iIndex = 26;
+    MIU64 u64Remainder = 0;
+    for ( MIUInt u = 27; u--; iIndex -= uOffsetC )
+    {
+        if ( iIndex < 0 )
+            iIndex += 26;
+        MIU64 u64NewMask = ( ( m_arrMasks[ iIndex ] & ~GetShiftMask( a_uAxis, 4 - a_iDistance ) ) >> uOffsetE * a_iDistance ) | u64Remainder;
+        u64Remainder = ( m_arrMasks[ iIndex ] & GetShiftMask( a_uAxis, 4 - a_iDistance ) ) << uOffsetE * ( 4 - a_iDistance );
+        m_arrMasks[ iIndex ] = u64NewMask;
+    }
 }
