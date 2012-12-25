@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>226</width>
-    <height>256</height>
+    <width>208</width>
+    <height>321</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -139,6 +139,38 @@
        <widget class="QCheckBox" name="cbVertsOnly">
         <property name="text">
          <string>Replace Only Vertices</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="gbAutoSkin">
+     <property name="title">
+      <string>Automatic Skinning</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_6">
+      <property name="spacing">
+       <number>2</number>
+      </property>
+      <property name="margin">
+       <number>4</number>
+      </property>
+      <item>
+       <widget class="QRadioButton" name="rbIndirectMatching">
+        <property name="text">
+         <string>Indirect Vertex Matching</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="rbDirectMatching">
+        <property name="text">
+         <string>Direct Vertex Matching</string>
         </property>
        </widget>
       </item>

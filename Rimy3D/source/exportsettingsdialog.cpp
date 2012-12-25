@@ -16,6 +16,7 @@ exportSettingsDialog::exportSettingsDialog( QWidget * a_pParent, QString a_strEx
     m_pUi->w4->setVisible( a_Flags & BaseXact );
     m_pUi->w5->setVisible( a_Flags & CreateMtl );
     m_pUi->cbNormals->setEnabled( a_Flags & Normals );
+    m_pUi->gbAutoSkin->setVisible( a_Flags & AutoSkin );
     updateLanguage();
     setFixedSize( 0, 0 );
     connect( Rimy3D::getInstance(), SIGNAL( settingsSaving( QSettings & ) ), this, SLOT( saveSettings( QSettings & ) ) );
@@ -52,6 +53,11 @@ bool exportSettingsDialog::createMtl( void ) const
     return m_pUi->cbMtl->isChecked();
 }
 
+bool exportSettingsDialog::indirectMatching( void ) const
+{
+    return m_pUi->rbIndirectMatching->isChecked();
+}
+
 bool exportSettingsDialog::normals( void ) const
 {
     return m_pUi->cbNormals->isChecked();
@@ -60,6 +66,11 @@ bool exportSettingsDialog::normals( void ) const
 bool exportSettingsDialog::recalcNormals( void ) const
 {
     return !m_pUi->rbNKeep->isChecked();
+}
+
+void exportSettingsDialog::setAutoSkinEnabled( bool a_bEnabled )
+{
+    m_pUi->gbAutoSkin->setEnabled( a_bEnabled );
 }
 
 bool exportSettingsDialog::vertsOnly( void ) const
@@ -90,6 +101,8 @@ void exportSettingsDialog::loadSettings( QSettings & a_Settings )
     m_pUi->rbNRecalcA->setChecked( a_Settings.value( "rbNRecalcA", true ).toBool() );
     m_pUi->sbAngle->setValue( a_Settings.value( "sbAngle", 70 ).toInt() );
     m_pUi->cbVertsOnly->setChecked( a_Settings.value( "cbVertsOnly", false ).toBool() );
+    m_pUi->rbIndirectMatching->setChecked( a_Settings.value( "rbIndirectMatching", true ).toBool() );
+    m_pUi->rbDirectMatching->setChecked( a_Settings.value( "rbDirectMatching", false ).toBool() );
     m_pUi->leBaseXact->setText( a_Settings.value( "leBaseXact" ).toString() );
     m_pUi->cbMtl->setChecked( a_Settings.value( "cbMtl", true ).toBool() );
     a_Settings.endGroup();
@@ -117,6 +130,8 @@ void exportSettingsDialog::saveSettings( QSettings & a_Settings )
     a_Settings.setValue( "rbNRecalcA", m_pUi->rbNRecalcA->isChecked() );
     a_Settings.setValue( "sbAngle", m_pUi->sbAngle->value() );
     a_Settings.setValue( "cbVertsOnly", m_pUi->cbVertsOnly->isChecked() );
+    a_Settings.setValue( "rbIndirectMatching", m_pUi->rbIndirectMatching->isChecked() );
+    a_Settings.setValue( "rbDirectMatching", m_pUi->rbDirectMatching->isChecked() );
     a_Settings.setValue( "leBaseXact", m_pUi->leBaseXact->text() );
     a_Settings.setValue( "cbMtl", m_pUi->cbMtl->isChecked() );
     a_Settings.endGroup();

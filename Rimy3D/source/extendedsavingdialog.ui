@@ -35,7 +35,7 @@
    <item>
     <widget class="QLabel" name="label">
      <property name="text">
-      <string>Extended Saving v0.6 ReadMe:</string>
+      <string>ReadMe:</string>
      </property>
     </widget>
    </item>
