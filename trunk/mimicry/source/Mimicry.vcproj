@@ -653,6 +653,14 @@
 				RelativePath=".\Mimicry\mi_xmacreader.h"
 				>
 			</File>
+			<File
+				RelativePath=".\Mimicry\mi_xmacwriter.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Mimicry\mi_xmacwriter.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="buffer"

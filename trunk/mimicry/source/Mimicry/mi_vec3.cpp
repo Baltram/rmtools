@@ -209,6 +209,8 @@ MIFloat mCVec3::GetZ( void ) const
 
 MIBool mCVec3::IsSimilar( mCVec3 const & a_vecOther, MIFloat a_fCoordTolerance, MIBool a_bIgnoreZ ) const
 {
+    if ( ( m_fX == a_vecOther.m_fX ) && ( m_fY == a_vecOther.m_fY ) && ( m_fZ == a_vecOther.m_fZ ) )
+        return MITrue;
     return ( ( fabs( m_fX - a_vecOther.m_fX ) <= a_fCoordTolerance ) &&
              ( fabs( m_fY - a_vecOther.m_fY ) <= a_fCoordTolerance ) &&
              ( a_bIgnoreZ || ( fabs( m_fZ - a_vecOther.m_fZ ) <= a_fCoordTolerance ) ) );

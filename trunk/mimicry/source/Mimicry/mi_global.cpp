@@ -2,7 +2,7 @@
 #include "mi_include_standard.h"
 
 MIFloat const g_fPi = 3.14159265f;
-MIFloat const g_fNegInfinity = FLT_MIN;
+MIFloat const g_fNegInfinity = -FLT_MAX;
 MIFloat const g_fPosInfinity = FLT_MAX;
 
 void      ( MI_CDECL * const g_funcFree )( MILPVoid )                        = &free;
@@ -21,3 +21,9 @@ MISize    ( MI_CDECL * const g_funcStrlen )( MILPCChar )                     = &
 MIInt     ( MI_CDECL * const g_funcStrncmp )( MILPCChar, MILPCChar, MISize ) = &strncmp;
 
 MI_CRT_NO_WARNINGS( MILPChar  ( MI_CDECL * const g_funcStrcpy )( MILPChar, MILPCChar ) = &strcpy; )
+
+MIU64 g_time( void )
+{
+    time_t CurrentTime = time( 0 );
+    return ( ( MIU64 ) 10000000 ) * CurrentTime + 116444736000000000;
+}

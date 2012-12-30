@@ -7,10 +7,11 @@ public:
     struct SUniVert
     {
         mCVec3 const *  m_pVert;
+        mCColor const * m_pVColor;
         mCVec3 const *  m_pTVert;
         mCVec3 const *  m_pVNormal;
         mCVec3 const *  m_pVTangent;
-        mCColor const * m_pVColor;
+        MIFloat         m_fVTHandiness;
         MIUInt          m_uMatID;
         MIUInt          m_uBaseVertIndex;
     };
@@ -29,11 +30,12 @@ public:
     mCFace *          AccessVNFaces( void );
     mCVec3 *          AccessVNormals( void );
     mCVec3 *          AccessVTangents( void );
+    MIFloat *         AccessVTHandiness( void );
     mCFace *          AccessVTFaces( void );
     mCBox             CalcExtents( void ) const;
     void              CalcFakeTexturing( void );
-    mEResult          CalcFTangents( mTArray< mCVec3 > & a_arrDest );
-    void              CalcUniVertMesh( mTArray< SUniVert > & a_arrUniVertsDest, mTArray< mCFace > & a_arrUVFacesDest ) const;
+    mEResult          CalcFTangents( mTArray< mCVec3 > & a_arrDest, mTArray< MIFloat > & a_arrHandiness );
+    void              CalcUniVertMesh( mTArray< SUniVert > & a_arrUniVertsDest, mTArray< mCFace > & a_arrUVFacesDest, MIBool a_bIgnoreVTangents = MIFalse ) const;
     void              CalcVNormalsBySGs( void );
     void              CalcVNormalsByAngle( MIFloat a_fMaxAngleDeg );
     mEResult          CalcVTangents( void );
@@ -54,6 +56,7 @@ public:
     mCFace const *    GetVNFaces( void ) const;
     mCVec3 const *    GetVNormals( void ) const;
     mCVec3 const *    GetVTangents( void ) const;
+    MIFloat const *   GetVTHandiness( void ) const;
     mCFace const *    GetVTFaces( void ) const;
     MIBool            HasTVFaces( void ) const;
     MIBool            HasVertexColors( void ) const;
@@ -75,6 +78,7 @@ private:
     mTArray< mCVec3 >    m_arrTextureVertices;
     mTArray< mCVec3 >    m_arrVertexNormals;
     mTArray< mCVec3 >    m_arrVertexTangents;
+    mTArray< MIFloat >   m_arrVTHandiness;
     mTArray< mCMaxFace > m_arrFaces;
     mTArray< mCFace >    m_arrTextureVertexFaces;
     mTArray< mCFace >    m_arrVertexNormalFaces;

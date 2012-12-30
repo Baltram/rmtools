@@ -110,6 +110,7 @@ MIBool   operator <= ( MILPCChar a_pcText1, mCString const & a_strText2 );
 MIBool   operator >  ( MILPCChar a_pcText1, mCString const & a_strText2 );
 MIBool   operator >= ( MILPCChar a_pcText1, mCString const & a_strText2 );
 
+mCString g_GetFileExt( mCString const & a_strFilePath );
 mCString g_GetFileName( mCString const & a_strFilePath );
 mCString g_GetFileNameNoExt( mCString const & a_strFilePath );
 mCString g_GetDirectoryPath( mCString const & a_strFilePath );

@@ -16,5 +16,6 @@
 #include "mi_xactreader.h"
 #include "mi_xactwriter.h"
 #include "mi_xmacreader.h"
+#include "mi_xmacwriter.h"
 
 #endif

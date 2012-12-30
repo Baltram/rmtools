@@ -633,6 +633,12 @@ MIBool operator >= ( MILPCChar a_pcText1, mCString const & a_strText2 )
     return ( a_strText2 < a_pcText1 );
 }
 
+mCString g_GetFileExt( mCString const & a_strFilePath )
+{
+    MIUInt const uLastPoint = a_strFilePath.LastOf( '.' );
+    return ( uLastPoint == MI_DW_INVALID ) ? "" : a_strFilePath.Right( a_strFilePath.GetLength() - uLastPoint - 1 );
+}
+
 mCString g_GetFileName( mCString const & a_strFilePath )
 {
     MIUInt const uLastSlash = a_strFilePath.LastOf( '/' );
