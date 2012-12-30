@@ -43,6 +43,7 @@ public:
     T &            InsertNewAt( MIUInt a_uIndex );
     void           Remove( T const & a_Element );
     void           RemoveAt( MIUInt a_uIndex );
+    void           RemoveDuplicates( void );
     void           Reserve( MIUInt a_uCount );
     void           Resize( MIUInt a_uCount );
     void           SetAt( MIUInt a_uIndex, T const * a_pSource, MIUInt a_uCount );

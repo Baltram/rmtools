@@ -20,6 +20,7 @@ template< typename T > void      g_swap( T & a_1, T & a_2 );
 
 MIBool g_getbit( MILPVoid a_pBase, MIUInt uOffset );
 void   g_setbit( MILPVoid a_pBase, MIUInt uOffset );
+MIU64  g_time( void );
 void   g_unsetbit( MILPVoid a_pBase, MIUInt uOffset );
 
 void      g_free( MILPVoid a_pDest );

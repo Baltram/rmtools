@@ -249,6 +249,15 @@ void mTArray< T >::RemoveAt( MIUInt a_uIndex )
 }
 
 template< typename T >
+void mTArray< T >::RemoveDuplicates( void )
+{
+    for ( MIUInt u = GetCount(); u--; )
+        for ( MIUInt v = u; v--; )
+            if ( m_pElements[ u ] == m_pElements[ v ] )
+                RemoveAt( u ), v = 0;
+}
+
+template< typename T >
 void mTArray< T >::Reserve( MIUInt a_uCount )
 {
     if ( a_uCount > m_uCapacity )

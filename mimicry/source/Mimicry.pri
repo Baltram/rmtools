@@ -78,7 +78,8 @@ HEADERS += "$$PWD/Mimicry.h" \
            "$$PWD/Mimicry/mi_vertexmatcher.h" \
            "$$PWD/Mimicry/mi_xactreader.h" \
            "$$PWD/Mimicry/mi_xactwriter.h" \
-           "$$PWD/Mimicry/mi_xmacreader.h"
+           "$$PWD/Mimicry/mi_xmacreader.h" \
+           "$$PWD/Mimicry/mi_xmacwriter.h"
 
 SOURCES += "$$PWD/Mimicry/mi_3dbreader.cpp" \
            "$$PWD/Mimicry/mi_3dbwriter.cpp" \
@@ -123,4 +124,5 @@ SOURCES += "$$PWD/Mimicry/mi_3dbreader.cpp" \
            "$$PWD/Mimicry/mi_vertexmatcher.cpp" \
            "$$PWD/Mimicry/mi_xactreader.cpp" \
            "$$PWD/Mimicry/mi_xactwriter.cpp" \
-           "$$PWD/Mimicry/mi_xmacreader.cpp"
+           "$$PWD/Mimicry/mi_xmacreader.cpp" \
+           "$$PWD/Mimicry/mi_xmacwriter.cpp"

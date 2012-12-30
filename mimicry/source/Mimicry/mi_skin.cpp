@@ -48,6 +48,11 @@ MIUInt mCSkin::GetBoneIndex( MIUInt a_uVertexIndex, MIUInt a_uInfluencingBoneInd
     return m_arrBoneIndices[ m_arrFirstWeightIndexPerVertex[ a_uVertexIndex ] + a_uInfluencingBoneIndex ];
 }
 
+MIUInt mCSkin::GetBoneIndex( MIUInt a_uWeightIndex ) const
+{
+    return m_arrBoneIndices[ a_uWeightIndex ];
+}
+
 MIUInt mCSkin::GetNumBones( void ) const
 {
     return m_arrBoneIDs.GetCount();
@@ -72,6 +77,11 @@ MIUInt mCSkin::GetNumWeights( void ) const
 MIFloat mCSkin::GetWeight( MIUInt a_uVertexIndex, MIUInt a_uInfluencingBoneIndex ) const
 {
     return m_arrWeights[ m_arrFirstWeightIndexPerVertex[ a_uVertexIndex ] + a_uInfluencingBoneIndex ];
+}
+
+MIFloat mCSkin::GetWeight( MIUInt a_uWeightIndex ) const
+{
+    return m_arrWeights[ a_uWeightIndex ];
 }
 
 mEResult mCSkin::InitSwapping( MIUInt a_uVertCount, 
@@ -104,7 +114,15 @@ mEResult mCSkin::InitSwapping( MIUInt a_uVertCount,
         }
         uLastVertexIndex = a_arrVertexIndices[ u ];
     }
-    m_arrBoneIDs.Swap( a_arrBoneIDs );
+    MIUInt uNewBoneCount = 0;
+    mTArray< MIUInt > arrNewBoneIndices( MI_DW_INVALID, a_arrBoneIndices.GetCount() );
+    for ( MIUInt u = 0, uBoneIndex; u != uWeightCount; ++u )
+        if ( ( a_arrBoneIndices[ u ] = arrNewBoneIndices[ uBoneIndex = a_arrBoneIndices[ u ] ] ) == MI_DW_INVALID )
+            a_arrBoneIndices[ u ] = arrNewBoneIndices[ uBoneIndex ] = uNewBoneCount++;
+    m_arrBoneIDs.Resize( uNewBoneCount );
+    for ( MIUInt u = uBoneCount; u--; )
+        if ( arrNewBoneIndices[ u ] != MI_DW_INVALID )
+            m_arrBoneIDs[ arrNewBoneIndices[ u ] ] = a_arrBoneIDs[ u ];
     m_arrVertexIndices.Swap( a_arrVertexIndices );
     m_arrBoneIndices.Swap( a_arrBoneIndices );
     m_arrWeights.Swap( a_arrWeights );

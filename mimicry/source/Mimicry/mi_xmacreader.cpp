@@ -33,17 +33,11 @@ mEResult mCXmacReader::ReadXmacFileData( mCScene & a_sceneDest, mCIOStreamBinary
     a_sceneDest.Clear();
     mCString strSceneName = dynamic_cast< mCFileStream * >( &a_streamSource ) ? g_GetFileNameNoExt( dynamic_cast< mCFileStream * >( &a_streamSource )->GetFileName() ) : "";
     if ( a_streamSource.GetSize() < 150 )
-    {
-        MI_ERROR( mCStreamError, EBadFormat, "Invalid ._xmac file." );
-        return mEResult_False;
-    }
+        return MI_ERROR( mCStreamError, EBadFormat, "Invalid ._xmac file." ), mEResult_False;
     a_streamSource.Seek( 136 );
     MIUInt const uEndXacOffset = a_streamSource.ReadU32() + 140;
     if ( a_streamSource.ReadString( 3 ) != "XAC" )
-    {
-        MI_ERROR( mCStreamError, EBadFormat, "Invalid ._xmac file." );
-        return mEResult_False;
-    }
+        return MI_ERROR( mCStreamError, EBadFormat, "Invalid ._xmac file." ), mEResult_False;
     mCMultiMaterial matMultiDest( strSceneName.GetLength() ? strSceneName : "MultiMat_xmac" );
     a_streamSource.Seek( 146 );
     if ( a_streamSource.ReadBool() )
@@ -149,8 +143,7 @@ mEResult mCXmacReader::ReadXmacFileData( mCScene & a_sceneDest, mCIOStreamBinary
                 }
                 else
                 {
-                    MI_ERROR( mCStreamError, EBadFormat, "Unknown ._xmac file version." );
-                    return mEResult_False;
+                    return MI_ERROR( mCStreamError, EBadFormat, "Unknown ._xmac file version." ), mEResult_False;
                 }
             }
             meshDest.SetNumFaces( uFaceCount );

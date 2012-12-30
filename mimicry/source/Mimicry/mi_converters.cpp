@@ -5,6 +5,6 @@ eSConverterOptions::eSConverterOptions( void ) :
     m_bDropVertexNormals( MIFalse ),
     m_bRecalculateVertexNormals( MIFalse ),
     m_bUseAnglesInsteadOfSGs( MIFalse ),
-    m_fMaxAngleInDegrees( 50.0f )
+    m_fMaxAngleInDegrees( 70.0f )
 {
 }

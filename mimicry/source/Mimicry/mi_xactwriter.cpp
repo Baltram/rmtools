@@ -39,18 +39,14 @@ namespace
         a_streamSource.Seek( uSourceOffsetOld );
     }
 
-    void WriteMeshSection( mCScene const & a_sceneSource, MIUInt a_uMeshIndex, MIUInt a_uFxaMeshIndex, MIUInt a_uMeshMaterialCount, MIU32 a_u32DW1, MIU32 a_u32DW2, mCIOStreamBinary & a_streamDest, mCIOStreamBinary & a_streamMeshExtraDataDest, mCXactWriter::SOptions const & a_Options )
+    void WriteMeshSection( mCScene const & a_sceneSource, MIUInt a_uMeshIndex, MIUInt a_uFxaMeshIndex, MIUInt a_uMeshMaterialCount, MIU32 a_u32DW1, MIU32 a_u32DW2, mCIOStreamBinary & a_streamDest, mCIOStreamBinary & a_streamMeshExtraDataDest )
     {
         mCString const strMaterialName = a_sceneSource.GetNodeAt( a_uMeshIndex )->GetMaterialName();
         mCMesh meshSource( *a_sceneSource.GetNodeAt( a_uMeshIndex )->GetMesh() );
+        mCMaxFace * pFacesTemp = meshSource.AccessFaces();
+        for ( MIUInt u = meshSource.GetNumFaces(); u--; pFacesTemp[ u ].AccessMatID() %= a_uMeshMaterialCount );
         meshSource.SortFacesByMatID();
-        if ( !meshSource.HasVNFaces() || a_Options.m_bRecalculateVertexNormals )
-        {
-            if ( a_Options.m_bUseAnglesInsteadOfSGs )
-                meshSource.CalcVNormalsByAngle( a_Options.m_fMaxAngleInDegrees );
-            else
-                meshSource.CalcVNormalsBySGs();
-        }
+        meshSource.CalcVNormalsByAngle( 180.0f );
         if ( !meshSource.HasTVFaces() )
             meshSource.CalcFakeTexturing();
         meshSource.CalcVTangents();
@@ -58,8 +54,7 @@ namespace
 
         mTArray< mCMesh::SUniVert > arrUVerts;
         mTArray< mCFace > arrUVFaces;
-        meshSource.CalcUniVertMesh( arrUVerts, arrUVFaces );
-        for ( MIUInt u = arrUVerts.GetCount(); u--; arrUVerts[ u ].m_uMatID %= a_uMeshMaterialCount );
+        meshSource.CalcUniVertMesh( arrUVerts, arrUVFaces, MITrue );
 
         MIUInt const uVertCount = meshSource.GetNumVerts();
         MIUInt const uUVertCount = arrUVerts.GetCount();
@@ -242,10 +237,7 @@ mEResult mCXactWriter::WriteXactFileData( mCScene const & a_sceneSource, mCIOStr
     streamBaseXact.Seek( 74 );
     MIUInt uEndFxaOffset = streamBaseXact.ReadU32() + 78;
     if ( streamBaseXact.ReadU32() != 0x20415846 )
-    {
-        MI_ERROR( mCConverterError, EBadFormat, "Invalid source .xact file." );
-        return mEResult_False;
-    }
+        return MI_ERROR( mCConverterError, EBadFormat, "Invalid base .xact file." ), mEResult_False;
     MIUInt uNextSection = streamBaseXact.Tell() + 2;
     while ( uNextSection < uEndFxaOffset )
     {
@@ -315,10 +307,7 @@ mEResult mCXactWriter::WriteXactFileData( mCScene const & a_sceneSource, mCIOStr
                 uMeshIndex = u;
     }
     if ( uMeshIndex == 666 )
-    {
-        MI_ERROR( mCConverterError, EMiscellaneous, "Cannot find same-named mesh in source .xact file." );
-        return mEResult_False;
-    }
+        return MI_ERROR( mCConverterError, EMiscellaneous, "No common mesh in base .xact file found." ), mEResult_False;
     if ( a_Options.m_bReplaceOnlyVertices )
     {
         mCMesh const & meshSource = *a_sceneSource.GetNodeAt( uMeshIndex )->GetMesh();
@@ -328,10 +317,7 @@ mEResult mCXactWriter::WriteXactFileData( mCScene const & a_sceneSource, mCIOStr
         streamBaseXact.Skip( 8 );
         MIUInt uChannelCount = streamBaseXact.ReadU32();
         if ( meshSource.GetNumVerts() != uVertCount )
-        {
-            MI_ERROR( mCConverterError, EMiscellaneous, "New mesh has wrong vertex count." );
-            return mEResult_False;
-        }
+            return MI_ERROR( mCConverterError, EMiscellaneous, "New mesh and base mesh vertex counts differ." ), mEResult_False;
         a_streamDest << streamBaseXact;
         mCMaxRisenCoordShifter const & CoordShifter = mCMaxRisenCoordShifter::GetInstance();
         mCVec3 const * pVerts = meshSource.GetVerts();
@@ -357,10 +343,7 @@ mEResult mCXactWriter::WriteXactFileData( mCScene const & a_sceneSource, mCIOStr
     }
     mCMaterialBase const * pMaterial = a_sceneSource.GetMaterialAt( a_sceneSource.GetMaterialIndexByName( a_sceneSource.GetNodeAt( uMeshIndex )->GetMaterialName() ) );
     if ( !pMaterial )
-    {
-        MI_ERROR( mCConverterError, EMiscellaneous, "New mesh has no material." );
-        return mEResult_False;
-    }
+        return MI_ERROR( mCConverterError, EMiscellaneous, "New mesh has no material." ), mEResult_False;
     if ( dynamic_cast< mCMaterial const * >( pMaterial ) )
     {
         pFirstMeshMaterial = dynamic_cast< mCMaterial const * >( pMaterial );
@@ -375,12 +358,9 @@ mEResult mCXactWriter::WriteXactFileData( mCScene const & a_sceneSource, mCIOStr
         for ( MIUInt u = 0; u != uMeshMaterialCount; ++u )
             WriteMaterialSection( pFirstMeshMaterial[ u ], u, streamMaterialSections );
     }
-    WriteMeshSection( a_sceneSource, uMeshIndex, uFxaMeshIndex, uMeshMaterialCount, u32DW1, u32DW2, streamMeshSection, streamMeshExtraData, a_Options );
+    WriteMeshSection( a_sceneSource, uMeshIndex, uFxaMeshIndex, uMeshMaterialCount, u32DW1, u32DW2, streamMeshSection, streamMeshExtraData );
     if ( !WriteSkinSection( a_sceneSource, uMeshIndex, uFxaMeshIndex, arrFxaNodeNames, arrOriginalVerts, arrOriginalSkinSection, streamSkinSection, a_Options ) )
-    {
-        MI_ERROR( mCConverterError, EMiscellaneous, "Skinning includes bone not present in .xact file." );
-        return mEResult_False;
-    }
+        return MI_ERROR( mCConverterError, EMiscellaneous, "Skinning includes bone not present in base .xact file." ), mEResult_False;
 
     MIUInt const uEndMeshSectionOffset = uMeshSectionOffset + uMeshSectionSize;
     MIUInt const uEndSkinSectionOffset = uSkinSectionOffset + uSkinSectionSize;
@@ -398,8 +378,8 @@ mEResult mCXactWriter::WriteXactFileData( mCScene const & a_sceneSource, mCIOStr
     a_streamDest << ( MIU32 ) 0xDEADBEEF << ( MIU8 ) 0;
     a_streamDest.Seek( 10 );
     a_streamDest << g_32( a_streamDest.GetSize() - 5 );
-    a_streamDest.Seek( 32 );
-    a_streamDest << g_32( uFxaSize );
+    a_streamDest.Seek( 24 );
+    a_streamDest << g_time() << g_32( uFxaSize );
     a_streamDest.Seek( 74 );
     a_streamDest << g_32( uFxaSize );
 

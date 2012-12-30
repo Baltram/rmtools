@@ -15,11 +15,13 @@ public:
     void             Clear( void );
     mCUnique::ID     GetBoneIDByIndex( MIUInt uBoneIndex ) const;
     MIUInt           GetBoneIndex( MIUInt a_uVertexIndex, MIUInt a_uInfluencingBoneIndex ) const;
+    MIUInt           GetBoneIndex( MIUInt a_uWeightIndex ) const;
     MIUInt           GetNumBones( void ) const;
     MIUInt           GetNumInfluencingBones( MIUInt a_uVertexIndex ) const;
     MIUInt           GetNumVerts( void ) const;
     MIUInt           GetNumWeights( void ) const;
     MIFloat          GetWeight( MIUInt a_uVertexIndex, MIUInt a_uInfluencingBoneIndex ) const;
+    MIFloat          GetWeight( MIUInt a_uWeightIndex ) const;
     mEResult         InitSwapping( MIUInt a_uVertCount, 
                            mTArray< mCUnique::ID > & a_arrBoneIDs, 
                            mTArray< MIUInt > & a_arrVertexIndices, 

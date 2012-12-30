@@ -127,7 +127,7 @@ mCBox & mCBox::operator &= ( mCBox const & a_boxBox )
 
 mCBox & mCBox::operator |= ( mCBox const & a_boxBox )
 {
-    if ( IsValid() && a_boxBox.IsValid() )
+    if ( a_boxBox.IsValid() )
     {
         m_vecMin[ 0 ] = g_min( m_vecMin[ 0 ], a_boxBox.m_vecMin[ 0 ] );
         m_vecMin[ 1 ] = g_min( m_vecMin[ 1 ], a_boxBox.m_vecMin[ 1 ] );
@@ -141,15 +141,12 @@ mCBox & mCBox::operator |= ( mCBox const & a_boxBox )
 
 mCBox & mCBox::operator |= ( mCVec3 const & a_vecVector )
 {
-    if ( IsValid() )
-    {
-        m_vecMin[ 0 ] = g_min( m_vecMin[ 0 ], a_vecVector[ 0 ] );
-        m_vecMin[ 1 ] = g_min( m_vecMin[ 1 ], a_vecVector[ 1 ] );
-        m_vecMin[ 2 ] = g_min( m_vecMin[ 2 ], a_vecVector[ 2 ] );
-        m_vecMax[ 0 ] = g_max( m_vecMax[ 0 ], a_vecVector[ 0 ] );
-        m_vecMax[ 1 ] = g_max( m_vecMax[ 1 ], a_vecVector[ 1 ] );
-        m_vecMax[ 2 ] = g_max( m_vecMax[ 2 ], a_vecVector[ 2 ] );
-    }
+    m_vecMin[ 0 ] = g_min( m_vecMin[ 0 ], a_vecVector[ 0 ] );
+    m_vecMin[ 1 ] = g_min( m_vecMin[ 1 ], a_vecVector[ 1 ] );
+    m_vecMin[ 2 ] = g_min( m_vecMin[ 2 ], a_vecVector[ 2 ] );
+    m_vecMax[ 0 ] = g_max( m_vecMax[ 0 ], a_vecVector[ 0 ] );
+    m_vecMax[ 1 ] = g_max( m_vecMax[ 1 ], a_vecVector[ 1 ] );
+    m_vecMax[ 2 ] = g_max( m_vecMax[ 2 ], a_vecVector[ 2 ] );
     return *this;
 }
 
