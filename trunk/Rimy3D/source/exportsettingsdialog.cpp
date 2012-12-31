@@ -15,6 +15,7 @@ exportSettingsDialog::exportSettingsDialog( QWidget * a_pParent, QString a_strEx
     m_pUi->w3->setVisible( a_Flags & VertsOnly );
     m_pUi->w4->setVisible( a_Flags & BaseXact );
     m_pUi->w5->setVisible( a_Flags & CreateMtl );
+    m_pUi->w6->setVisible( a_Flags & BaseXmac );
     m_pUi->cbNormals->setEnabled( a_Flags & Normals );
     m_pUi->gbAutoSkin->setVisible( a_Flags & AutoSkin );
     updateLanguage();
@@ -41,6 +42,11 @@ bool exportSettingsDialog::anglesNotSgs( void ) const
 QString exportSettingsDialog::baseXact( void ) const
 {
     return m_pUi->leBaseXact->text();
+}
+
+QString exportSettingsDialog::baseXmac( void ) const
+{
+    return m_pUi->leBaseXmac->text();
 }
 
 bool exportSettingsDialog::colors( void ) const
@@ -104,6 +110,7 @@ void exportSettingsDialog::loadSettings( QSettings & a_Settings )
     m_pUi->rbIndirectMatching->setChecked( a_Settings.value( "rbIndirectMatching", true ).toBool() );
     m_pUi->rbDirectMatching->setChecked( a_Settings.value( "rbDirectMatching", false ).toBool() );
     m_pUi->leBaseXact->setText( a_Settings.value( "leBaseXact" ).toString() );
+    m_pUi->leBaseXmac->setText( a_Settings.value( "leBaseXmac" ).toString() );
     m_pUi->cbMtl->setChecked( a_Settings.value( "cbMtl", true ).toBool() );
     a_Settings.endGroup();
 }
@@ -117,7 +124,14 @@ void exportSettingsDialog::on_pbBaseXact_clicked( void )
 {
     QString strFile = QFileDialog::getOpenFileName( this, tr( "Open" ), m_pUi->leBaseXact->text(), "Gothic 3 Motion Actor (*.xact);;" );
     if ( strFile != "" )
-        m_pUi->leBaseXact->setText( strFile );
+        m_pUi->leBaseXact->setText( QDir::toNativeSeparators( strFile ) );
+}
+
+void exportSettingsDialog::on_pbBaseXmac_clicked( void )
+{
+    QString strFile = QFileDialog::getOpenFileName( this, tr( "Open" ), m_pUi->leBaseXmac->text(), "Risen Motion Actor (*._xmac);;" );
+    if ( strFile != "" )
+        m_pUi->leBaseXmac->setText( QDir::toNativeSeparators( strFile ) );
 }
 
 void exportSettingsDialog::saveSettings( QSettings & a_Settings )
@@ -133,6 +147,7 @@ void exportSettingsDialog::saveSettings( QSettings & a_Settings )
     a_Settings.setValue( "rbIndirectMatching", m_pUi->rbIndirectMatching->isChecked() );
     a_Settings.setValue( "rbDirectMatching", m_pUi->rbDirectMatching->isChecked() );
     a_Settings.setValue( "leBaseXact", m_pUi->leBaseXact->text() );
+    a_Settings.setValue( "leBaseXmac", m_pUi->leBaseXmac->text() );
     a_Settings.setValue( "cbMtl", m_pUi->cbMtl->isChecked() );
     a_Settings.endGroup();
 }

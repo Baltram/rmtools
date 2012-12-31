@@ -17,8 +17,9 @@ public:
     explicit PreferencesDialog( QWidget * a_pParent = 0 );
             ~PreferencesDialog( void );
 public:
-    bool removeAscPrefixes( void ) const;
-    bool removeXmacCollisionMesh( void ) const;
+    QString defaultImageFileExt( void ) const;
+    bool    removeAscPrefixes( void ) const;
+    bool    removeXmacCollisionMesh( void ) const;
 public slots:
     void loadSettings( QSettings & a_Settings );
     void saveSettings( QSettings & a_Settings );

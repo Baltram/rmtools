@@ -186,11 +186,15 @@ bool SceneInfo::openSceneFile( QString a_strFilePath, PreferencesDialog const & 
     }
     else if ( strExt == "xact" )
     {
-        enuResult = mCXactReader::ReadXactFileData( sceneNew, streamIn );
+        mCXactReader::SOptions Options;
+        Options.m_strTextureFileExtension = a_PreferencesDialog.defaultImageFileExt().toAscii().data();
+        enuResult = mCXactReader::ReadXactFileData( sceneNew, streamIn, Options );
     }
     else if ( strExt == "_xmac" )
     {
-        enuResult = mCXmacReader::ReadXmacFileData( sceneNew, streamIn );
+        mCXmacReader::SOptions Options;
+        Options.m_strTextureFileExtension = a_PreferencesDialog.defaultImageFileExt().toAscii().data();
+        enuResult = mCXmacReader::ReadXmacFileData( sceneNew, streamIn, Options );
         if ( a_PreferencesDialog.removeXmacCollisionMesh() )
             for ( MIUInt u = sceneNew.GetNumNodes(); u--; )
                 if ( 0 == sceneNew.GetNodeAt( u )->GetName().CompareNoCase( "CollisionMesh" ) )
@@ -273,9 +277,25 @@ bool SceneInfo::saveSceneFile( QString a_strFilePath, exportSettingsDialog const
         Options.m_bReplaceOnlyVertices = a_SettingsDialog.vertsOnly();
         enuResult = mCXactWriter::WriteXactFileData( m_sceneCurrentScene, streamOut, Options );
     }
+    else if ( strExt == "_xmac" )
+    {
+        mCFileStream streamBaseXmac;
+        if ( streamBaseXmac.Open( a_SettingsDialog.baseXmac().toAscii().data(), mEFileOpenMode_Read ) == mEResult_False )
+        {
+            Rimy3D::showError( tr( "Cannot open the file %1." ).arg( a_SettingsDialog.baseXmac() ), a_SettingsDialog.windowTitle() );
+            return false;
+        }
+        mCXmacWriter::SOptions Options;
+        static_cast< eSConverterOptions & >( Options ) = BaseOptions;
+        Options.m_pBaseXmacStream = &streamBaseXmac;
+        Options.m_bIndirectVertexMatching = a_SettingsDialog.indirectMatching();
+        Options.m_bReplaceOnlyVertices = a_SettingsDialog.vertsOnly();
+        enuResult = mCXmacWriter::WriteXmacFileData( m_sceneCurrentScene, streamOut, Options );
+    }
     streamOut.Close();
     if ( enuResult == mEResult_Ok )
         return true;
+    QFile::remove( a_strFilePath );
     showLastMimicryError( pLastError, a_SettingsDialog.windowTitle() );
     return false;
 }
@@ -306,20 +326,21 @@ void SceneInfo::saveSettings( QSettings & a_Settings )
 
 void SceneInfo::errorMessageTranslations( void )
 {
-    tr( "Invalid .gmax file. The file might have been saved without Extended Saving enabled." );
     tr( "Unknown Extended Saving version." );
     tr( "Unknown .ase file version." );
     tr( "Invalid .ase file." );
+    tr( "Invalid .3db file." );
     tr( "Invalid .xact file." );
     tr( "Invalid ._xmac file." );
-    tr( "Invalid .3db file." );
-    tr( "Invalid source .xact file." );
-    tr( "Cannot find same-named mesh in source .xact file." );
-    tr( "New mesh has wrong vertex count." );
-    tr( "New mesh has no material." );
-    tr( "Skinning includes bone not present in .xact file." );
-    tr( "Skinning does not cover all vertices." );
     tr( "Unknown ._xmac file version." );
+    tr( "Invalid base .xact file." );
+    tr( "No common mesh in base .xact file found." );
+    tr( "No common mesh in base ._xmac file found." );
+    tr( "New mesh and base mesh vertex counts differ." );
+    tr( "New mesh has no material." );
+    tr( "Skinning includes bone not present in base .xact file." );
+    tr( "Skinning includes bone not present in base ._xmac file." );
+    tr( "Skinning does not cover all vertices." );
 }
 
 void SceneInfo::showLastMimicryError( mCError const * a_pLastError, QString a_strTitle )
@@ -327,6 +348,8 @@ void SceneInfo::showLastMimicryError( mCError const * a_pLastError, QString a_st
     mCString strError;
     for ( mCError const * pError = 0; ( pError = mCError::GetLastError< mCError >() ) != a_pLastError; mCError::ClearError( pError ) )
         strError = pError->GetText();
+    if ( strError == "Invalid .gmax file. The file might have been saved without Extended Saving enabled." )
+        strError = tr( "Invalid .gmax file. The file might have been saved without Extended Saving enabled. You can install Extended Saving via the tools menu." ).toAscii().data();
     if ( strError != "" )
         Rimy3D::showError( tr( strError.GetText() ), a_strTitle );
 }

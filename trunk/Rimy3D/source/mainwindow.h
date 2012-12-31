@@ -62,6 +62,7 @@ private:
     exportSettingsDialog m_aseDialog;
     exportSettingsDialog m_objDialog;
     exportSettingsDialog m_xactDialog;
+    exportSettingsDialog m_xmacDialog;
     PreferencesDialog    m_prefsDialog;
 };
 

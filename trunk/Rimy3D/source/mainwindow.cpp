@@ -3,6 +3,7 @@
 #include "rimy3d.h"
 #include "texturefinder.h"
 #include "extendedsavingdialog.h"
+#include <QClipboard>
 
 MainWindow::MainWindow( QWidget * a_pParent ) :
     QMainWindow( a_pParent ),
@@ -11,10 +12,12 @@ MainWindow::MainWindow( QWidget * a_pParent ) :
     m_ascDialog( this, "asc", exportSettingsDialog::None ),
     m_aseDialog( this, "ase", exportSettingsDialog::Normals ),
     m_objDialog( this, "obj", exportSettingsDialog::Normals | exportSettingsDialog::CreateMtl ),
-    m_xactDialog( this, "xact", exportSettingsDialog::NormalsCalc | exportSettingsDialog::VertsOnly | exportSettingsDialog::BaseXact | exportSettingsDialog::AutoSkin ),
+    m_xactDialog( this, "xact", exportSettingsDialog::VertsOnly | exportSettingsDialog::BaseXact | exportSettingsDialog::AutoSkin ),
+    m_xmacDialog( this, "_xmac", exportSettingsDialog::VertsOnly | exportSettingsDialog::BaseXmac | exportSettingsDialog::AutoSkin ),
     m_prefsDialog( this )
 {
     m_pUi->setupUi( this );
+    setWindowTitle( Rimy3D::applicationName() );
     setAcceptDrops( true );
     updateLanguage();
     connect( &m_SceneInfo, SIGNAL( sceneChanged( void ) ), this, SLOT( onSceneChanged( void ) ) );
@@ -66,6 +69,8 @@ void MainWindow::save( QString a_strFilePath )
         pDialog = &m_objDialog;
     else if ( strExt == "xact" )
         ( pDialog = &m_xactDialog )->setAutoSkinEnabled( m_SceneInfo.sceneContainsUnskinnedMeshes() );
+    else if ( strExt == "_xmac" )
+        ( pDialog = &m_xmacDialog )->setAutoSkinEnabled( m_SceneInfo.sceneContainsUnskinnedMeshes() );
     else
         Rimy3D::showError( tr( "Unknown file extension:" ).append( QString( " '.%1'" ).arg( strExt ) ) );
     if ( !pDialog || ( ( strExt != "asc" ) && !pDialog->exec() ) )
@@ -106,6 +111,8 @@ void MainWindow::changeEvent( QEvent * a_pEvent )
 void MainWindow::closeEvent( QCloseEvent * a_pEvent )
 {
     Rimy3D::saveSettings();
+    if ( QApplication::clipboard()->ownsClipboard() )
+        QApplication::clipboard()->clear();
     QMainWindow::closeEvent( a_pEvent );
 }
 
@@ -252,7 +259,8 @@ void MainWindow::on_actionSave_As_triggered( void )
                         "Baltram's 3D format (*.3db);;"
                         "3ds Max ASCII Scene (*.ase);;"
                         "Gothic ASCII Scene (*.asc);;"
-                        "Gothic 3 Motion Actor (*.xact);;" );
+                        "Gothic 3 Motion Actor (*.xact);;"
+                        "Risen Motion Actor (*._xmac);;" );
     QString strFilePath = m_SceneInfo.getCurrentSaveDir() + QDir::separator() + QFileInfo( m_SceneInfo.getCurrentFile() ).baseName();
     save( QFileDialog::getSaveFileName( this, tr( "Save As" ), strFilePath, strFilter, &strSelectedFilter ) );
 }
