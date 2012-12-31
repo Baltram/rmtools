@@ -24,8 +24,9 @@ public:
         NormalsRecalc = 1 << 3,
         VertsOnly     = 1 << 4,
         BaseXact      = 1 << 5,
-        CreateMtl     = 1 << 6,
-        AutoSkin      = 1 << 7
+        BaseXmac      = 1 << 6,
+        CreateMtl     = 1 << 7,
+        AutoSkin      = 1 << 8
     };
     Q_DECLARE_FLAGS( Flags, Options )
 public:
@@ -35,6 +36,7 @@ public:
     int     angle( void ) const;
     bool    anglesNotSgs( void ) const;
     QString baseXact( void ) const;
+    QString baseXmac( void ) const;
     bool    colors( void ) const;
     bool    createMtl( void ) const;
     bool    indirectMatching( void ) const;
@@ -50,6 +52,7 @@ private slots:
     void loadSettings( QSettings & a_Settings );
     void on_cbNormals_toggled( bool a_bIsChecked );
     void on_pbBaseXact_clicked( void );
+    void on_pbBaseXmac_clicked( void );
     void saveSettings( QSettings & a_Settings );
 private:
     QString                    m_strExt;

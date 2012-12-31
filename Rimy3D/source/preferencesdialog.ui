@@ -6,14 +6,41 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>260</width>
-    <height>155</height>
+    <width>264</width>
+    <height>183</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Preferences</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
+   <item>
+    <layout class="QHBoxLayout" name="hl2">
+     <item>
+      <widget class="QLabel" name="lbImgExt">
+       <property name="text">
+        <string>Default Image Filetype:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="cobImgExt"/>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
    <item>
     <widget class="QGroupBox" name="gbAscImport">
      <property name="title">

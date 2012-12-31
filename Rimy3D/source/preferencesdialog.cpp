@@ -7,6 +7,7 @@ PreferencesDialog::PreferencesDialog( QWidget * a_pParent ) :
     m_pUi( new Ui::PreferencesDialog )
 {
     m_pUi->setupUi( this );
+    m_pUi->cobImgExt->addItems( QStringList() << "JPG" << "PNG" << "GIF" << "BMP" );
     setFixedSize( size() );
     connect( Rimy3D::getInstance(), SIGNAL( settingsSaving( QSettings & ) ), this, SLOT( saveSettings( QSettings & ) ) );
     connect( Rimy3D::getInstance(), SIGNAL( settingsLoading( QSettings & ) ), this, SLOT( loadSettings( QSettings & ) ) );
@@ -15,6 +16,11 @@ PreferencesDialog::PreferencesDialog( QWidget * a_pParent ) :
 PreferencesDialog::~PreferencesDialog( void )
 {
     delete m_pUi;
+}
+
+QString PreferencesDialog::defaultImageFileExt( void ) const
+{
+    return m_pUi->cobImgExt->currentText().toLower();
 }
 
 bool PreferencesDialog::removeAscPrefixes( void ) const
@@ -30,6 +36,7 @@ bool PreferencesDialog::removeXmacCollisionMesh( void ) const
 void PreferencesDialog::loadSettings( QSettings & a_Settings )
 {
     a_Settings.beginGroup( "Preferences" );
+    m_pUi->cobImgExt->setCurrentIndex( a_Settings.value( "cobImgExt", 0 ).toInt() );
     m_pUi->cbAscPrefixes->setChecked( a_Settings.value( "cbAscPrefixes", true ).toBool() );
     m_pUi->cbXmacCollisionMesh->setChecked( a_Settings.value( "cbXmacCollisionMesh", true ).toBool() );
     a_Settings.endGroup();
@@ -38,6 +45,7 @@ void PreferencesDialog::loadSettings( QSettings & a_Settings )
 void PreferencesDialog::saveSettings( QSettings & a_Settings )
 {
     a_Settings.beginGroup( "Preferences" );
+    a_Settings.setValue( "cobImgExt", m_pUi->cobImgExt->currentIndex() );
     a_Settings.setValue( "cbAscPrefixes", m_pUi->cbAscPrefixes->isChecked() );
     a_Settings.setValue( "cbXmacCollisionMesh", m_pUi->cbXmacCollisionMesh->isChecked() );
     a_Settings.endGroup();
