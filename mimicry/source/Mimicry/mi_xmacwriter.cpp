@@ -16,6 +16,7 @@ namespace
         ESection_Material  = 3,
         ESection_SceneInfo = 7,
         ESection_Nodes     = 11,
+        ESection_Morph     = 12,
         ESection_Materials = 13
     };
 
@@ -34,6 +35,16 @@ namespace
                                                  mCMaterial::EMapType_Specular,
                                                  mCMaterial::EMapType_Count,
                                                  mCMaterial::EMapType_Normal };
+
+    void Sync( mCIOStreamBinary & a_streamDest, mCIOStreamBinary & a_streamSource, MIUInt & a_uSycOffset, MIUInt a_uSize )
+    {
+        static mCByteArray arrBuffer;
+        arrBuffer.Resize( a_uSize );
+        a_streamSource.Seek( a_uSycOffset );
+        a_streamSource.Read( arrBuffer.AccessBuffer(), a_uSize );
+        a_streamDest.Write( arrBuffer.GetBuffer(), a_uSize );
+        a_uSycOffset += a_uSize;
+    }
 }
 
 mEResult mCXmacWriter::WriteXmacFileData( mCScene a_sceneSource, mCIOStreamBinary & a_streamDest, SOptions a_Options )
@@ -42,6 +53,7 @@ mEResult mCXmacWriter::WriteXmacFileData( mCScene a_sceneSource, mCIOStreamBinar
     mCScene sceneBase;
     if ( mCXmacReader::ReadXmacFileData( sceneBase, streamBaseXmac ) == mEResult_False )
         return mEResult_False;
+    streamBaseXmac.SetInvertEndianness( MIFalse );
 
     // Collect all materials that will be used in the final ._xmac file. Indiecs of materials from sceneBase are preserved.
     mTArray< mCMaterial const * > arrMaterials;
@@ -159,11 +171,10 @@ mEResult mCXmacWriter::WriteXmacFileData( mCScene a_sceneSource, mCIOStreamBinar
         a_streamDest.SetInvertEndianness( MITrue );
         streamBaseXmac.SetInvertEndianness( MITrue );
     }
-    mCByteArray arrBuffer;
     MIUInt uNewEndXacOffset;
     mCBox boxExtents;
     MIUInt uNextSection = 148;
-    for ( MIUInt uSyncOffset = 0; uNextSection < uEndXacOffset; uSyncOffset = uNextSection )
+    for ( MIUInt uSyncOffset = 0; uNextSection < uEndXacOffset; )
     {
         streamBaseXmac.Seek( uNextSection );
         MIUInt const uSectionID = streamBaseXmac.ReadU32();
@@ -321,15 +332,11 @@ mEResult mCXmacWriter::WriteXmacFileData( mCScene a_sceneSource, mCIOStreamBinar
                     else
                         streamBaseXmac.Skip( uUVertCount * uBlockSize );
                 }
-                MIUInt const uSyncSize = streamBaseXmac.Tell() - uSyncOffset;
-                streamBaseXmac.Seek( uSyncOffset );
-                arrBuffer.Resize( uSyncSize );
-                streamBaseXmac.Read( arrBuffer.AccessBuffer(), arrBuffer.GetCount() );
-                a_streamDest.Write( arrBuffer.GetBuffer(), arrBuffer.GetCount() );
+                Sync( a_streamDest, streamBaseXmac, uSyncOffset, streamBaseXmac.Tell() - uSyncOffset );
                 mCVec3 const * pVerts = meshSource.GetVerts();
                 for ( MIUInt u = 0; u != uUVertCount; ++u )
                     a_streamDest << pVerts[ arrVertIndices[ u ] ];
-                uSyncOffset += uSyncSize + 12 * uUVertCount;
+                uSyncOffset += 12 * uUVertCount;
             }
         }
         else if ( ( uSectionID == ESection_Skin ) && !a_Options.m_bReplaceOnlyVertices )
@@ -361,12 +368,59 @@ mEResult mCXmacWriter::WriteXmacFileData( mCScene a_sceneSource, mCIOStreamBinar
                 uSyncOffset = uNextSection;
             }
         }
+        else if ( ( uSectionID == ESection_Morph ) && !a_Options.m_bReplaceOnlyVertices )
+        {
+            MIUInt const uMorphCount = streamBaseXmac.ReadU32();
+            mCNode & nodeBase = *sceneBase.AccessNodeAt( streamBaseXmac.ReadU32() );
+            mCNode & nodeSource = *a_sceneSource.AccessNodeAt( a_sceneSource.GetNodeIndexByName( nodeBase.GetName() ) );
+            if ( nodeBase.HasMesh() && nodeSource.HasMesh() )
+            {
+                mTArray< mCMesh::SUniVert > arrUVerts;
+                mTArray< mCFace > arrUVFaces;
+                nodeSource.GetMesh()->CalcUniVertMesh( arrUVerts, arrUVFaces, MITrue );
+                mCMesh & meshBase = *nodeBase.AccessMesh();
+                MIUInt const uBaseUVertCount = meshBase.GetNumVNormals();
+                mCFace const * pBaseVNFaces = meshBase.GetVNFaces();
+                mCMaxFace const * pBaseFaces = meshBase.GetFaces();
+                mTArray< MIUInt > arrBaseVertIndices( 0, uBaseUVertCount );
+                for ( MIUInt u = 0, ue = meshBase.GetNumFaces(); u != ue; ++u )
+                    for ( MIUInt v = 0; v != 3; ++v )
+                        arrBaseVertIndices[ pBaseVNFaces[ u ][ v ] ] = pBaseFaces[ u ][ v ];
+                mCMaxRisenCoordShifter::GetInstance().ShiftMeshCoords( meshBase );
+                mCVertexMatcher Matcher( nodeSource.GetMesh()->GetVerts(), meshBase.GetVerts(), nodeSource.GetMesh()->GetNumVerts(), meshBase.GetNumVerts(), MIFalse );
+                mTArray< MIUInt > arrBaseMorphVertIndices( 0, meshBase.GetNumVerts() );
+                for ( MIUInt u = 0; u != uMorphCount; ++u )
+                {
+                    g_memset( arrBaseMorphVertIndices.AccessBuffer(), 0xFF, sizeof( MIUInt ) * arrBaseMorphVertIndices.GetCount() );
+                    streamBaseXmac.Skip( 24 );
+                    streamBaseXmac.Skip( streamBaseXmac.ReadU32() + 12 );
+                    Sync( a_streamDest, streamBaseXmac, uSyncOffset, streamBaseXmac.Tell() - uSyncOffset );
+                    MIUInt const uBaseMorphVertCount = streamBaseXmac.ReadU32();
+                    mCByteArray arrBaseMorphData( 0, uBaseMorphVertCount * 12 );
+                    MIByte const * pBaseMorphData1 = arrBaseMorphData.GetBuffer(), * pBaseMorphData2 = pBaseMorphData1 + 6 * uBaseMorphVertCount, * pBaseMorphData3 = pBaseMorphData2 + 3 * uBaseMorphVertCount;
+                    streamBaseXmac.Read( arrBaseMorphData.AccessBuffer(), arrBaseMorphData.GetCount() );
+                    for ( MIUInt v = 0; v != uBaseMorphVertCount; ++v )
+                        arrBaseMorphVertIndices[ arrBaseVertIndices[ streamBaseXmac.ReadU32() ] ] = v;
+                    mTArray< MIUInt > arrUsedUVerts;
+                    for ( MIUInt v = 0, ve = arrUVerts.GetCount(); v != ve; ++v )
+                        if ( arrBaseMorphVertIndices[ Matcher[ arrUVerts[ v ].m_uBaseVertIndex ] ] < uBaseMorphVertCount )
+                            arrUsedUVerts.Add( v );
+                    a_streamDest << g_32( arrUsedUVerts.GetCount() );
+                    for ( MIUInt v = 0, ve = arrUsedUVerts.GetCount(); v != ve; ++v )
+                        a_streamDest.Write( pBaseMorphData1 + arrBaseMorphVertIndices[ Matcher[ arrUVerts[ arrUsedUVerts[ v ] ].m_uBaseVertIndex ] ] * 6, 6 );
+                    for ( MIUInt v = 0, ve = arrUsedUVerts.GetCount(); v != ve; ++v )
+                        a_streamDest.Write( pBaseMorphData2 + arrBaseMorphVertIndices[ Matcher[ arrUVerts[ arrUsedUVerts[ v ] ].m_uBaseVertIndex ] ] * 3, 3 );
+                    for ( MIUInt v = 0, ve = arrUsedUVerts.GetCount(); v != ve; ++v )
+                        a_streamDest.Write( pBaseMorphData3 + arrBaseMorphVertIndices[ Matcher[ arrUVerts[ arrUsedUVerts[ v ] ].m_uBaseVertIndex ] ] * 3, 3 );
+                    for ( MIUInt v = 0, ve = arrUsedUVerts.GetCount(); v != ve; ++v )
+                        a_streamDest << g_32( arrUsedUVerts[ v ] );
+                    uSyncOffset += uBaseMorphVertCount * ( 12 + sizeof( MIU32 ) ) + sizeof( MIU32 );
+                }
+            }
+        }
         if ( uNextSection >= uEndXacOffset )
             uNextSection = streamBaseXmac.GetSize(), uNewEndXacOffset = uEndXacOffset + ( a_streamDest.Tell() - uSyncOffset );
-        streamBaseXmac.Seek( uSyncOffset );
-        arrBuffer.Resize( uNextSection - uSyncOffset );
-        streamBaseXmac.Read( arrBuffer.AccessBuffer(), arrBuffer.GetCount() );
-        a_streamDest.Write( arrBuffer.GetBuffer(), arrBuffer.GetCount() );
+        Sync( a_streamDest, streamBaseXmac, uSyncOffset, uNextSection - uSyncOffset );
     }
     a_streamDest.SetInvertEndianness( MIFalse );
     a_streamDest.Seek( 20 );
