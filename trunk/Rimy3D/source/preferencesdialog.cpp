@@ -2,20 +2,10 @@
 #include "ui_preferencesdialog.h"
 #include "rimy3d.h"
 
-PreferencesDialog::PreferencesDialog( QWidget * a_pParent ) :
-    QDialog( a_pParent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint ),
-    m_pUi( new Ui::PreferencesDialog )
+PreferencesDialog & PreferencesDialog::getInstance( void )
 {
-    m_pUi->setupUi( this );
-    m_pUi->cobImgExt->addItems( QStringList() << "JPG" << "PNG" << "GIF" << "BMP" );
-    setFixedSize( size() );
-    connect( Rimy3D::getInstance(), SIGNAL( settingsSaving( QSettings & ) ), this, SLOT( saveSettings( QSettings & ) ) );
-    connect( Rimy3D::getInstance(), SIGNAL( settingsLoading( QSettings & ) ), this, SLOT( loadSettings( QSettings & ) ) );
-}
-
-PreferencesDialog::~PreferencesDialog( void )
-{
-    delete m_pUi;
+    static PreferencesDialog * s_pInstance = new PreferencesDialog;
+    return *s_pInstance;
 }
 
 QString PreferencesDialog::defaultImageFileExt( void ) const
@@ -33,22 +23,9 @@ bool PreferencesDialog::removeXmacCollisionMesh( void ) const
     return m_pUi->cbXmacCollisionMesh->isChecked();
 }
 
-void PreferencesDialog::loadSettings( QSettings & a_Settings )
+bool PreferencesDialog::showTransformGizmos( void ) const
 {
-    a_Settings.beginGroup( "Preferences" );
-    m_pUi->cobImgExt->setCurrentIndex( a_Settings.value( "cobImgExt", 0 ).toInt() );
-    m_pUi->cbAscPrefixes->setChecked( a_Settings.value( "cbAscPrefixes", true ).toBool() );
-    m_pUi->cbXmacCollisionMesh->setChecked( a_Settings.value( "cbXmacCollisionMesh", true ).toBool() );
-    a_Settings.endGroup();
-}
-
-void PreferencesDialog::saveSettings( QSettings & a_Settings )
-{
-    a_Settings.beginGroup( "Preferences" );
-    a_Settings.setValue( "cobImgExt", m_pUi->cobImgExt->currentIndex() );
-    a_Settings.setValue( "cbAscPrefixes", m_pUi->cbAscPrefixes->isChecked() );
-    a_Settings.setValue( "cbXmacCollisionMesh", m_pUi->cbXmacCollisionMesh->isChecked() );
-    a_Settings.endGroup();
+    return m_pUi->cbGizmos->isChecked();
 }
 
 void PreferencesDialog::changeEvent( QEvent * a_pEvent )
@@ -58,9 +35,35 @@ void PreferencesDialog::changeEvent( QEvent * a_pEvent )
     QDialog::changeEvent( a_pEvent );
 }
 
+PreferencesDialog::PreferencesDialog( void ) :
+    QDialog( 0, Qt::WindowSystemMenuHint | Qt::WindowTitleHint ),
+    m_pUi( new Ui::PreferencesDialog )
+{
+    m_pUi->setupUi( this );
+    m_pUi->cobImgExt->addItems( QStringList() << "JPG" << "PNG" << "GIF" << "BMP" );
+    setFixedSize( size() );
+    connect( Rimy3D::getInstance(), SIGNAL( settingsSaving( QSettings & ) ), this, SLOT( saveSettings( QSettings & ) ) );
+    connect( Rimy3D::getInstance(), SIGNAL( settingsLoading( QSettings & ) ), this, SLOT( loadSettings( QSettings & ) ) );
+}
+
+PreferencesDialog::~PreferencesDialog( void )
+{
+    delete m_pUi;
+}
+
 void PreferencesDialog::updateLanguage( void )
 {
     m_pUi->retranslateUi( this );
+}
+
+void PreferencesDialog::loadSettings( QSettings & a_Settings )
+{
+    a_Settings.beginGroup( "Preferences" );
+    m_pUi->cobImgExt->setCurrentIndex( a_Settings.value( "cobImgExt", 0 ).toInt() );
+    m_pUi->cbAscPrefixes->setChecked( a_Settings.value( "cbAscPrefixes", true ).toBool() );
+    m_pUi->cbGizmos->setChecked( a_Settings.value( "cbGizmos", true ).toBool() );
+    m_pUi->cbXmacCollisionMesh->setChecked( a_Settings.value( "cbXmacCollisionMesh", true ).toBool() );
+    a_Settings.endGroup();
 }
 
 void PreferencesDialog::on_pbOk_clicked( void )
@@ -75,4 +78,14 @@ void PreferencesDialog::on_pbRestoreDefaults_clicked( void )
     pSettings->remove( "" );
     pSettings->endGroup();
     loadSettings( *pSettings );
+}
+
+void PreferencesDialog::saveSettings( QSettings & a_Settings )
+{
+    a_Settings.beginGroup( "Preferences" );
+    a_Settings.setValue( "cobImgExt", m_pUi->cobImgExt->currentIndex() );
+    a_Settings.setValue( "cbAscPrefixes", m_pUi->cbAscPrefixes->isChecked() );
+    a_Settings.setValue( "cbGizmos", m_pUi->cbGizmos->isChecked() );
+    a_Settings.setValue( "cbXmacCollisionMesh", m_pUi->cbXmacCollisionMesh->isChecked() );
+    a_Settings.endGroup();
 }

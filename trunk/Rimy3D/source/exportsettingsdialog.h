@@ -42,7 +42,7 @@ public:
     bool    indirectMatching( void ) const;
     bool    normals( void ) const;
     bool    recalcNormals( void ) const;
-    void    setAutoSkinEnabled( bool a_bEnabled );
+    void    setAutoSkinVisible( bool a_bVisible );
     bool    vertsOnly( void ) const;
 protected:
     void changeEvent( QEvent * a_pEvent );
@@ -51,6 +51,7 @@ private:
 private slots:
     void loadSettings( QSettings & a_Settings );
     void on_cbNormals_toggled( bool a_bIsChecked );
+    void on_cbVertsOnly_toggled( bool a_bChecked );
     void on_pbBaseXact_clicked( void );
     void on_pbBaseXmac_clicked( void );
     void saveSettings( QSettings & a_Settings );

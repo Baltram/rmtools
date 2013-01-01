@@ -137,13 +137,14 @@ mCScene const & SceneInfo::getCurrentScene( void )
     return m_sceneCurrentScene;
 }
 
-bool SceneInfo::openSceneFile( QString a_strFilePath, PreferencesDialog const & a_PreferencesDialog )
+bool SceneInfo::openSceneFile( QString a_strFilePath )
 {
+    PreferencesDialog const & Prefs = PreferencesDialog::getInstance();
     QFileInfo FileInfo( a_strFilePath );
     QString strExt = FileInfo.suffix().toLower();
     if ( !FileInfo.exists() )
     {
-        Rimy3D::showError( tr( "The file %1 doesn't exist." ).arg( a_strFilePath ), Rimy3D::applicationName() );
+        Rimy3D::showError( tr( "The file \"%1\" doesn't exist." ).arg( a_strFilePath ), Rimy3D::applicationName() );
         return false;
     }
     QString strTitle = tr( "%1 Import" ).arg( QString( strExt ).toUpper() );
@@ -170,7 +171,7 @@ bool SceneInfo::openSceneFile( QString a_strFilePath, PreferencesDialog const & 
     else if ( ( strExt == "ase" ) || ( strExt == "asc" ) )
     {
         enuResult = mCAseReader::ReadAseFileData( sceneNew, streamIn );
-        if ( ( strExt == "asc" ) && a_PreferencesDialog.removeAscPrefixes() )
+        if ( ( strExt == "asc" ) && Prefs.removeAscPrefixes() )
         {
             for ( MIUInt u = sceneNew.GetNumNodes(); u--; )
             {
@@ -187,22 +188,22 @@ bool SceneInfo::openSceneFile( QString a_strFilePath, PreferencesDialog const & 
     else if ( strExt == "xact" )
     {
         mCXactReader::SOptions Options;
-        Options.m_strTextureFileExtension = a_PreferencesDialog.defaultImageFileExt().toAscii().data();
+        Options.m_strTextureFileExtension = Prefs.defaultImageFileExt().toAscii().data();
         enuResult = mCXactReader::ReadXactFileData( sceneNew, streamIn, Options );
     }
     else if ( strExt == "_xmac" )
     {
         mCXmacReader::SOptions Options;
-        Options.m_strTextureFileExtension = a_PreferencesDialog.defaultImageFileExt().toAscii().data();
+        Options.m_strTextureFileExtension = Prefs.defaultImageFileExt().toAscii().data();
         enuResult = mCXmacReader::ReadXmacFileData( sceneNew, streamIn, Options );
-        if ( a_PreferencesDialog.removeXmacCollisionMesh() )
+        if ( Prefs.removeXmacCollisionMesh() )
             for ( MIUInt u = sceneNew.GetNumNodes(); u--; )
                 if ( 0 == sceneNew.GetNodeAt( u )->GetName().CompareNoCase( "CollisionMesh" ) )
                     sceneNew.RemoveNode( sceneNew.AccessNodeAt( u ) );
     }
     else
     {
-        Rimy3D::showError( tr( "Unknown file type: .%1" ).arg( strExt ), Rimy3D::applicationName() );
+        Rimy3D::showError( tr( "Unknown file type: \".%1\"" ).arg( strExt ), Rimy3D::applicationName() );
     }
     streamIn.Close();
     if ( enuResult == mEResult_Ok )
@@ -224,7 +225,7 @@ bool SceneInfo::saveSceneFile( QString a_strFilePath, exportSettingsDialog const
     mCFileStream streamOut;
     if ( streamOut.Open( a_strFilePath.toAscii().data(), mEFileOpenMode_Write ) == mEResult_False )
     {
-        Rimy3D::showError( tr( "Cannot create/open the file %1." ).arg( a_strFilePath ), a_SettingsDialog.windowTitle() );
+        Rimy3D::showError( tr( "Cannot create/open the file \"%1\"." ).arg( a_strFilePath ), a_SettingsDialog.windowTitle() );
         return false;
     }
     eSConverterOptions BaseOptions;
@@ -267,7 +268,7 @@ bool SceneInfo::saveSceneFile( QString a_strFilePath, exportSettingsDialog const
         mCFileStream streamBaseXact;
         if ( streamBaseXact.Open( a_SettingsDialog.baseXact().toAscii().data(), mEFileOpenMode_Read ) == mEResult_False )
         {
-            Rimy3D::showError( tr( "Cannot open the file %1." ).arg( a_SettingsDialog.baseXact() ), a_SettingsDialog.windowTitle() );
+            Rimy3D::showError( tr( "Cannot open the base .xact file \"%1\"." ).arg( a_SettingsDialog.baseXact() ), a_SettingsDialog.windowTitle() );
             return false;
         }
         mCXactWriter::SOptions Options;
@@ -282,7 +283,7 @@ bool SceneInfo::saveSceneFile( QString a_strFilePath, exportSettingsDialog const
         mCFileStream streamBaseXmac;
         if ( streamBaseXmac.Open( a_SettingsDialog.baseXmac().toAscii().data(), mEFileOpenMode_Read ) == mEResult_False )
         {
-            Rimy3D::showError( tr( "Cannot open the file %1." ).arg( a_SettingsDialog.baseXmac() ), a_SettingsDialog.windowTitle() );
+            Rimy3D::showError( tr( "Cannot open the base ._xmac file \"%1\"." ).arg( a_SettingsDialog.baseXmac() ), a_SettingsDialog.windowTitle() );
             return false;
         }
         mCXmacWriter::SOptions Options;

@@ -63,7 +63,6 @@ private:
     exportSettingsDialog m_objDialog;
     exportSettingsDialog m_xactDialog;
     exportSettingsDialog m_xmacDialog;
-    PreferencesDialog    m_prefsDialog;
 };
 
 #endif  // MAINWINDOW_H_INCLUDED

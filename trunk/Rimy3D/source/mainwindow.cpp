@@ -13,8 +13,7 @@ MainWindow::MainWindow( QWidget * a_pParent ) :
     m_aseDialog( this, "ase", exportSettingsDialog::Normals ),
     m_objDialog( this, "obj", exportSettingsDialog::Normals | exportSettingsDialog::CreateMtl ),
     m_xactDialog( this, "xact", exportSettingsDialog::VertsOnly | exportSettingsDialog::BaseXact | exportSettingsDialog::AutoSkin ),
-    m_xmacDialog( this, "_xmac", exportSettingsDialog::VertsOnly | exportSettingsDialog::BaseXmac | exportSettingsDialog::AutoSkin ),
-    m_prefsDialog( this )
+    m_xmacDialog( this, "_xmac", exportSettingsDialog::VertsOnly | exportSettingsDialog::BaseXmac | exportSettingsDialog::AutoSkin )
 {
     m_pUi->setupUi( this );
     setWindowTitle( Rimy3D::applicationName() );
@@ -24,6 +23,7 @@ MainWindow::MainWindow( QWidget * a_pParent ) :
     connect( Rimy3D::getInstance(), SIGNAL( settingsSaving( QSettings & ) ), this, SLOT( saveSettings( QSettings & ) ) );
     connect( Rimy3D::getInstance(), SIGNAL( settingsLoading( QSettings & ) ), this, SLOT( loadSettings( QSettings & ) ) );
     TextureFinder::getInstance();
+    PreferencesDialog::getInstance();
     Rimy3D::setMainWindow( this );
     Rimy3D::loadSettings();
 }
@@ -39,7 +39,7 @@ void MainWindow::open( QString a_strFilePath )
         return;
     a_strFilePath = QDir::toNativeSeparators( a_strFilePath );
     m_RecentFiles.removeOne( a_strFilePath );
-    if ( m_SceneInfo.openSceneFile( a_strFilePath, m_prefsDialog ) )
+    if ( m_SceneInfo.openSceneFile( a_strFilePath ) )
     {
         if ( m_pUi->actionClose->isEnabled() )
             setWindowTitle( Rimy3D::applicationName() );
@@ -68,9 +68,9 @@ void MainWindow::save( QString a_strFilePath )
     else if ( strExt == "obj" )
         pDialog = &m_objDialog;
     else if ( strExt == "xact" )
-        ( pDialog = &m_xactDialog )->setAutoSkinEnabled( m_SceneInfo.sceneContainsUnskinnedMeshes() );
+        ( pDialog = &m_xactDialog )->setAutoSkinVisible( m_SceneInfo.sceneContainsUnskinnedMeshes() );
     else if ( strExt == "_xmac" )
-        ( pDialog = &m_xmacDialog )->setAutoSkinEnabled( m_SceneInfo.sceneContainsUnskinnedMeshes() );
+        ( pDialog = &m_xmacDialog )->setAutoSkinVisible( m_SceneInfo.sceneContainsUnskinnedMeshes() );
     else
         Rimy3D::showError( tr( "Unknown file extension:" ).append( QString( " '.%1'" ).arg( strExt ) ) );
     if ( !pDialog || ( ( strExt != "asc" ) && !pDialog->exec() ) )
@@ -223,7 +223,9 @@ void MainWindow::on_actionOpen_triggered( void )
 
 void MainWindow::on_actionPreferences_triggered( void )
 {
-    m_prefsDialog.exec();
+    PreferencesDialog & PrefsDialog = PreferencesDialog::getInstance();
+    PrefsDialog.move( this->geometry().center() - PrefsDialog.rect().center() );
+    PrefsDialog.exec();
 }
 
 void MainWindow::on_actionRecent1_triggered( void )

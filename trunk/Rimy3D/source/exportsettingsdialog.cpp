@@ -74,9 +74,9 @@ bool exportSettingsDialog::recalcNormals( void ) const
     return !m_pUi->rbNKeep->isChecked();
 }
 
-void exportSettingsDialog::setAutoSkinEnabled( bool a_bEnabled )
+void exportSettingsDialog::setAutoSkinVisible( bool a_bVisible )
 {
-    m_pUi->gbAutoSkin->setEnabled( a_bEnabled );
+    m_pUi->gbAutoSkin->setVisible( a_bVisible );
 }
 
 bool exportSettingsDialog::vertsOnly( void ) const
@@ -118,6 +118,11 @@ void exportSettingsDialog::loadSettings( QSettings & a_Settings )
 void exportSettingsDialog::on_cbNormals_toggled( bool a_bIsChecked )
 {
     m_pUi->gbVNRecalc->setEnabled( a_bIsChecked );
+}
+
+void exportSettingsDialog::on_cbVertsOnly_toggled( bool a_bChecked )
+{
+    m_pUi->gbAutoSkin->setEnabled( !a_bChecked );
 }
 
 void exportSettingsDialog::on_pbBaseXact_clicked( void )

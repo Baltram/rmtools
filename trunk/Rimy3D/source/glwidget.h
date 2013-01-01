@@ -25,6 +25,7 @@ private:
     void paintGL( void );
     void resizeGL( int a_iWidth, int a_iHeight );
 private:
+    unsigned int        m_uMoverSpeed;
     GLC_Light           m_Light;
     GLC_World           m_World;
     GLC_Viewport        m_GlView;
