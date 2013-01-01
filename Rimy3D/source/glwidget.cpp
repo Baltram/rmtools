@@ -1,4 +1,5 @@
 #include "glwidget.h"
+#include "preferencesdialog.h"
 
 GLWidget::GLWidget( QWidget * a_pParent ) :
     QGLWidget( a_pParent ),
@@ -37,18 +38,24 @@ void GLWidget::mousePressEvent( QMouseEvent * a_pEvent )
 {
     if ( m_MoverController.hasActiveMover() )
         return;
+    m_uMoverSpeed = ( a_pEvent->modifiers() & Qt::ControlModifier ) ? 3 : 1;
+    bool bShift = a_pEvent->modifiers() & Qt::ShiftModifier;
     switch ( a_pEvent->button() )
     {
-    case ( Qt::RightButton ):
-        m_MoverController.setActiveMover( GLC_MoverController::TrackBall, GLC_UserInput( a_pEvent->x(), a_pEvent->y() ) );
+    case ( Qt::LeftButton ):
+        m_MoverController.setActiveMover( bShift ? GLC_MoverController::Zoom : GLC_MoverController::Pan, GLC_UserInput( a_pEvent->x() * m_uMoverSpeed, a_pEvent->y() * m_uMoverSpeed ) );
         updateGL();
         break;
-    case ( Qt::LeftButton ):
-        m_MoverController.setActiveMover( GLC_MoverController::Pan, GLC_UserInput( a_pEvent->x(), a_pEvent->y() ) );
+    case ( Qt::RightButton ):
+        if ( bShift )
+            m_uMoverSpeed = 1;
+        m_MoverController.setActiveMover( bShift ? GLC_MoverController::TrackBall : GLC_MoverController::TurnTable, GLC_UserInput( a_pEvent->x() * m_uMoverSpeed, a_pEvent->y() * m_uMoverSpeed ) );
         updateGL();
         break;
     case ( Qt::MidButton ):
-        m_MoverController.setActiveMover( GLC_MoverController::Zoom, GLC_UserInput( a_pEvent->x(), a_pEvent->y() ) );
+        if ( bShift )
+            m_uMoverSpeed = 1;
+        m_MoverController.setActiveMover( bShift ? GLC_MoverController::Target : GLC_MoverController::Zoom, GLC_UserInput( a_pEvent->x() * m_uMoverSpeed, a_pEvent->y() * m_uMoverSpeed ) );
         updateGL();
     }
 }
@@ -57,7 +64,7 @@ void GLWidget::mouseMoveEvent( QMouseEvent * a_pEvent )
 {
     if ( !m_MoverController.hasActiveMover() )
         return;
-    m_MoverController.move( GLC_UserInput( a_pEvent->x(), a_pEvent->y() ) );
+    m_MoverController.move( GLC_UserInput( a_pEvent->x() * m_uMoverSpeed, a_pEvent->y() * m_uMoverSpeed ) );
     updateGL();
 }
 
@@ -79,7 +86,8 @@ void GLWidget::paintGL( void )
     m_GlView.glExecuteCam();
     if ( !m_World.isEmpty() )
         m_World.render( 0, glc::ShadingFlag );
-    m_MoverController.drawActiveMoverRep();
+    if ( PreferencesDialog::getInstance().showTransformGizmos() )
+        m_MoverController.drawActiveMoverRep();
 }
 
 void GLWidget::resizeGL( int a_iWidth, int a_iHeight )
