@@ -42,6 +42,7 @@ private:
     mCString                    m_strName;
     mTArray< mCMaterialBase * > m_arrMaterials;
     mTArray< mCNode * >         m_arrNodes;
+    mTIDMap< MIUInt >           m_mapNodeIndices;
 };
 
 #endif
