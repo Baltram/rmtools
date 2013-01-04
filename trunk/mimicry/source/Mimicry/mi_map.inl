@@ -31,12 +31,6 @@ T & mTMap< K, T, C >::operator [] ( K const & a_Key )
 }
 
 template< typename K, typename T, class C >
-T const & mTMap< K, T, C >::operator [] ( K const & a_Key ) const
-{
-    return Add( 0, a_Key );
-}
-
-template< typename K, typename T, class C >
 mTMap< K, T, C > & mTMap< K, T, C >::operator = ( mTMap< K, T, C > const & a_mapSource )
 {
     if ( this == &a_mapSource )
@@ -86,6 +80,18 @@ typename mTMap< K, T, C >::CIterator mTMap< K, T, C >::End( void )
 {
     MIUInt const uCount = m_arrBuckets.GetCount();
     return CIterator( &m_arrBuckets, ( uCount ? uCount - 1 : 0 ) );
+}
+
+template< typename K, typename T, class C >
+MIBool mTMap< K, T, C >::GetAt( K const & a_Key, T & a_Dest ) const
+{
+    MIU32 u32Hash = 0;
+    SBucket const * pBaseBucket = 0;
+    SBucket const * pBucket = 0;
+    if ( !Locate( a_Key, u32Hash, pBaseBucket, pBucket ) )
+        return MIFalse;
+    a_Dest = pBucket->m_Data;
+    return MITrue;
 }
 
 template< typename K, typename T, class C >
@@ -584,6 +590,12 @@ MIU32 mTHashKeyManager32< K >::Hash( K const & a_Val )
     return *reinterpret_cast< MIU32 const * >( &a_Val );
 }
 
+template<> inline
+MIU32 mTHashKeyManager32< mCUnique::ID >::Hash( mCUnique::ID const & a_Val )
+{
+    return static_cast< MIU32 >( a_Val );
+}
+
 template< typename K >
 MIBool mTHashKeyManager32< K >::Compare( K const & a_ValLeft, K const & a_ValRight )
 {
@@ -610,6 +622,18 @@ mTNameMap< T >::mTNameMap( MIUInt a_uMinCapacity ) :
 
 template< typename T >
 mTNameMap< T >::mTNameMap( mTNameMap< T > const & a_mapSource ) :
+    mTMap( a_mapSource )
+{
+}
+
+template< typename T >
+mTIDMap< T >::mTIDMap( MIUInt a_uMinCapacity ) :
+    mTMap( a_uMinCapacity )
+{
+}
+
+template< typename T >
+mTIDMap< T >::mTIDMap( mTIDMap< T > const & a_mapSource ) :
     mTMap( a_mapSource )
 {
 }

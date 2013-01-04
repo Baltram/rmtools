@@ -19,7 +19,6 @@ public:
              mTMap( mTMap< K, T, C > const & a_mapSource );
 public:
     T &                operator [] ( K const & a_Key );
-    T const &          operator [] ( K const & a_Key ) const;
     mTMap< K, T, C > & operator =  ( mTMap< K, T, C > const & a_mapSource );
 public:
     CConstIterator Begin( void ) const;
@@ -28,6 +27,7 @@ public:
     MIBool         Contains( K const & a_Key ) const;
     CConstIterator End( void ) const;
     CIterator      End( void );
+    MIBool         GetAt( K const & a_Key, T & a_Dest ) const;
     MIUInt         GetCapacity( void ) const;
     MIUInt         GetCount( void ) const;
     MIUInt         GetRemainingCapacity( void ) const;
@@ -163,6 +163,15 @@ class mTNameMap :
 public:
     explicit mTNameMap( MIUInt a_uMinCapacity = 28 );
              mTNameMap( mTNameMap< T > const & a_mapSource );
+};
+
+template< typename T >
+class mTIDMap :
+    public mTMap< mCUnique::ID, T, mTHashKeyManager32< mCUnique::ID > >
+{
+public:
+    explicit mTIDMap( MIUInt a_uMinCapacity = 28 );
+             mTIDMap( mTIDMap< T > const & a_mapSource );
 };
 
 #include "mi_map.inl"

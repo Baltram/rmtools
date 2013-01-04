@@ -5,8 +5,10 @@ mCScene::mCScene( mCScene const & a_sceneSource ) :
     m_arrMaterials( a_sceneSource.m_arrMaterials ),
     m_arrNodes( a_sceneSource.m_arrNodes )
 {
+    m_mapNodeIndices.Reserve( m_arrNodes.GetCount() );
     for ( MIUInt u = m_arrMaterials.GetCount(); u--; m_arrMaterials[ u ] = m_arrMaterials[ u ]->Clone() );
-    for ( MIUInt u = m_arrNodes.GetCount(); u--; m_arrNodes[ u ] = new mCNode( *m_arrNodes[ u ] ) );
+    for ( MIUInt u = m_arrNodes.GetCount(); u--; m_mapNodeIndices[ m_arrNodes[ u ]->GetID() ] = u )
+        m_arrNodes[ u ] = new mCNode( *m_arrNodes[ u ] );
     for ( MIUInt u = m_arrNodes.GetCount(); u--; )
     {
         if ( m_arrNodes[ u ]->GetParentID() )
@@ -61,12 +63,15 @@ mCMultiMaterial & mCScene::AddNewMultiMaterial( void )
 
 mCNode & mCScene::AddNewNode( void )
 {
-    return *( m_arrNodes.AddNew() = new mCNode );
+    mCNode & nodeNew = *( m_arrNodes.AddNew() = new mCNode );
+    m_mapNodeIndices[ nodeNew.GetID() ] = m_arrNodes.GetCount() - 1;
+    return nodeNew;
 }
 
 void mCScene::AddNode( mCNode const & a_nodeSource )
 {
     m_arrNodes.Add( new mCNode( a_nodeSource ) );
+    m_mapNodeIndices[ m_arrNodes.Back()->GetID() ] = m_arrNodes.GetCount() - 1;
 }
 
 void mCScene::Clear( void )
@@ -75,6 +80,7 @@ void mCScene::Clear( void )
     for ( MIUInt u = m_arrNodes.GetCount(); u--; delete m_arrNodes[ u ] );
     m_arrMaterials.Clear();
     m_arrNodes.Clear();
+    m_mapNodeIndices.Clear();
     m_strName.Clear();
 }
 
@@ -112,10 +118,9 @@ mCNode const * mCScene::GetNodeAt( MIUInt a_uIndex ) const
 
 MIUInt mCScene::GetNodeIndexByID( mCUnique::ID a_ID ) const
 {
-    for ( MIUInt u = m_arrNodes.GetCount(); u--; )
-        if ( m_arrNodes[ u ]->GetID() == a_ID )
-            return u;
-    return MI_DW_INVALID;
+    MIUInt uResult = MI_DW_INVALID;
+    m_mapNodeIndices.GetAt( a_ID, uResult );
+    return uResult;
 }
 
 MIUInt mCScene::GetNodeIndexByName( mCString const & a_strNodeName ) const
@@ -210,8 +215,14 @@ void mCScene::RemoveNode( mCNode * a_pNode )
     for ( MIUInt u = GetNumNodes(); u--; )
         if ( m_arrNodes[ u ]->GetParentID() == ID )
             SetNodeParent( u, MI_DW_INVALID );
-    delete m_arrNodes[ uIndex ];
-    m_arrNodes.RemoveAt( uIndex );
+    if ( m_arrNodes.Back() != a_pNode )
+    {
+        g_swap( m_arrNodes[ uIndex ], m_arrNodes.Back() );
+        m_mapNodeIndices[ m_arrNodes[ uIndex ]->GetID() ] = uIndex;
+    }
+    m_mapNodeIndices.RemoveAt( ID );
+    m_arrNodes.RemoveAt( m_arrNodes.GetCount() - 1 );
+    delete a_pNode;
 }
 
 void mCScene::SetName( mCString const & a_strName )
@@ -227,6 +238,7 @@ void mCScene::SetNodeParent( MIUInt a_uNodeIndex, MIUInt a_uParentNodeIndex )
 void mCScene::SortNodesByLinks( void )
 {
     GetNodesSortedByLinks( m_arrNodes );
+    for ( MIUInt u = GetNumNodes(); u--; m_mapNodeIndices[ m_arrNodes[ u ]->GetID() ] = u );
 }
 
 void mCScene::Swap( mCScene & a_sceneOther )
@@ -236,4 +248,5 @@ void mCScene::Swap( mCScene & a_sceneOther )
     m_strName.Swap( a_sceneOther.m_strName );
     m_arrMaterials.Swap( a_sceneOther.m_arrMaterials );
     m_arrNodes.Swap( a_sceneOther.m_arrNodes );
+    m_mapNodeIndices.Swap( a_sceneOther.m_mapNodeIndices );
 }

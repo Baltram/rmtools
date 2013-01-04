@@ -2,6 +2,7 @@
 #define MI_INCLUDE_SCENE_H_INCLUDED
 
 #include "mi_include_3d.h"
+#include "mi_include_map.h"
 #include "mi_string.h"
 
 #include "mi_skin.h"
