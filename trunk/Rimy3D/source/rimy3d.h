@@ -10,6 +10,8 @@ class Rimy3D :
 {
     Q_OBJECT
 public:
+    enum { EVersionMajor = 0 };
+    enum { EVersionMinor = 2 };
     enum ELanguage
     {
         ELanguage_English,
@@ -17,16 +19,21 @@ public:
         ELanguage_Count
     };
 public:
+    Rimy3D( int & argc, char * argv[] );
+   ~Rimy3D( void );
+public:
+    static void        checkForUpdates( bool a_bReportNetworkErrors, bool a_bReportUpToDate = false );
     static bool        checkGmaxInstallation( void );
     static Rimy3D *    getInstance( void );
     static ELanguage   getLanguage( void );
     static QSettings * getSettings( void );
+    static int         getVersion( void );
+    static QString     getVersionString( void );
     static void        init( int & argc, char * argv[] );
     static void        loadSettings( void );
     static bool        quiet( void );
     static void        saveSettings( void );
     static void        setLanguage( ELanguage a_enuLanguage );
-    static void        setMainWindow( QWidget * a_pMainWindow );
     static void        setQuiet( bool a_bEnabled );
     static void        showError( QString a_strText, QString a_strTitle = "Rimy3D" );
     static void        showMessage( QString a_strText, QString a_strTitle = "Rimy3D" );
@@ -35,18 +42,13 @@ public:
 signals:
     void settingsLoading( QSettings & a_Settings );
     void settingsSaving( QSettings & a_Settings );
-protected:
-    Rimy3D( int & argc, char * argv[] );
-   ~Rimy3D( void );
 private:
     void loadSettingsIntern( void );
     void saveSettingsIntern( void );
 private:
     static bool          s_bQuiet;
     static ELanguage     s_enuCurrentLanguage;
-    static Rimy3D *      s_pInstance;
     static QSettings *   s_pSettings;
-    static QWidget *     s_pMainWindow;
     static QTranslator * s_pCurrentQtTranslator;
     static QTranslator * s_pCurrentAppTranslator;
     static QTranslator * s_pGermanQtTranslator;

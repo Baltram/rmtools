@@ -1,5 +1,6 @@
 QT += core \
-      gui
+      gui \
+      network
 
 TARGET = Rimy3D
 TEMPLATE = app
@@ -16,7 +17,8 @@ SOURCES += glwidget.cpp \
            texturefinder.cpp \
            exportsettingsdialog.cpp \
            extendedsavingdialog.cpp \
-           preferencesdialog.cpp
+           preferencesdialog.cpp \
+           networkmanager.cpp
 
 HEADERS += glwidget.h \
            mainwindow.h \
@@ -26,7 +28,8 @@ HEADERS += glwidget.h \
            texturefinder.h \
            exportsettingsdialog.h \
            extendedsavingdialog.h \
-           preferencesdialog.h
+           preferencesdialog.h \
+           networkmanager.h
 
 FORMS += mainwindow.ui \
          searchpathsdialog.ui \

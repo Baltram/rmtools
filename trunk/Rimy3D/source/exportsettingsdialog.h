@@ -54,7 +54,8 @@ private slots:
     void on_cbVertsOnly_toggled( bool a_bChecked );
     void on_pbBaseXact_clicked( void );
     void on_pbBaseXmac_clicked( void );
-    void saveSettings( QSettings & a_Settings );
+    void on_pbDefault_clicked( void );
+    void saveSettings( QSettings & a_Settings ); 
 private:
     QString                    m_strExt;
     Ui::exportSettingsDialog * m_pUi;

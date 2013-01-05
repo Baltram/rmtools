@@ -1,5 +1,10 @@
 #include "rimy3d.h"
+#include "mainwindow.h"
+#include "networkmanager.h"
 #include <QMessageBox>
+#include <QHash>
+#include <QDir>
+#include <QSystemLocale>
 
 #ifdef Q_WS_WIN
 #include "mi_macros.h"
@@ -11,13 +16,85 @@
 
 bool Rimy3D::s_bQuiet = false;
 Rimy3D::ELanguage Rimy3D::s_enuCurrentLanguage = ELanguage_English;
-Rimy3D * Rimy3D::s_pInstance = 0;
 QSettings * Rimy3D::s_pSettings = 0;
-QWidget * Rimy3D::s_pMainWindow = 0;
 QTranslator * Rimy3D::s_pCurrentQtTranslator = 0;
 QTranslator * Rimy3D::s_pCurrentAppTranslator = 0;
 QTranslator * Rimy3D::s_pGermanQtTranslator = 0;
 QTranslator * Rimy3D::s_pGermanAppTranslator = 0;
+
+Rimy3D::Rimy3D( int & argc, char * argv[] ) :
+    QApplication( argc, argv )
+{
+    QCoreApplication::setOrganizationName( "Baltram" );
+    QCoreApplication::setApplicationName( "Rimy3D" );
+    s_pSettings = new QSettings;
+}
+
+Rimy3D::~Rimy3D( void )
+{
+}
+
+void Rimy3D::checkForUpdates( bool a_bReportNetworkErrors, bool a_bReportUpToDate )
+{
+    struct SUpdateChecker
+    {
+        SUpdateChecker( void ) : m_iState( 0 ), m_bError( false ) {}
+        static SUpdateChecker & getInstance( void )
+        {
+            static SUpdateChecker * s_pInstance = new SUpdateChecker;
+            return *s_pInstance;
+        }
+        void report( void )
+        {
+            if ( m_iState < 3 )
+                return;
+            if ( m_bError && m_bReportErrors )
+                showMessage( tr( "Could not connect to http://www.baltr.de." ), tr( "Rimy3D Update" ) );
+            else if ( !m_bError )
+            {
+                if ( m_iVersionNumber > Rimy3D::getVersion() )
+                    showMessage( m_strText, tr( "Rimy3D Update" ) );
+                else if ( m_bReportUpToDate )
+                    showMessage( tr( "Rimy3D is up to date." ), tr( "Rimy3D Update" ) );
+            }
+            m_bError = false;
+            m_iState = 0;
+        }
+        static void versionNumber( QByteArray a_arrData, QNetworkReply::NetworkError a_Error )
+        {
+            if ( !( getInstance().m_bError |= ( a_Error != QNetworkReply::NoError ) ) )
+                getInstance().m_iVersionNumber = QString( a_arrData ).toInt();
+            ++getInstance().m_iState, getInstance().report();
+        }
+        static void versionText( QByteArray a_arrData, QNetworkReply::NetworkError a_Error )
+        {
+            if ( !( getInstance().m_bError |= ( a_Error != QNetworkReply::NoError ) ) )
+                getInstance().m_strText = a_arrData;
+            ++getInstance().m_iState, getInstance().report();
+        }
+        bool isReady( void )
+        {
+            return ( m_iState == 0 );
+        }
+        int     m_iState;
+        bool    m_bError;
+        bool    m_bReportErrors;
+        bool    m_bReportUpToDate;
+        int     m_iVersionNumber;
+        QString m_strText;
+    };
+    if ( !SUpdateChecker::getInstance().isReady() )
+    {
+        SUpdateChecker::getInstance().m_bReportErrors |= a_bReportNetworkErrors;
+        SUpdateChecker::getInstance().m_bReportUpToDate |= a_bReportUpToDate;
+        return;
+    }
+    ++SUpdateChecker::getInstance().m_iState;
+    SUpdateChecker::getInstance().m_bReportErrors = a_bReportNetworkErrors;
+    SUpdateChecker::getInstance().m_bReportUpToDate = a_bReportUpToDate;
+    NetworkManager::startRequest( "http://www.baltr.de/rimy3d/version.txt", SUpdateChecker::versionNumber );
+    NetworkManager::startRequest( "http://www.baltr.de/rimy3d/newversion_" + tr( "en" ) + ".htm", SUpdateChecker::versionText );
+}
 
 bool Rimy3D::checkGmaxInstallation( void )
 {
@@ -71,7 +148,7 @@ bool Rimy3D::checkGmaxInstallation( void )
 
 Rimy3D * Rimy3D::getInstance( void )
 {
-    return s_pInstance;
+    return dynamic_cast< Rimy3D * >( qApp );
 }
 
 Rimy3D::ELanguage Rimy3D::getLanguage( void )
@@ -84,14 +161,14 @@ QSettings * Rimy3D::getSettings( void )
     return s_pSettings;
 }
 
-void Rimy3D::init( int & argc, char * argv[] )
+int Rimy3D::getVersion( void )
 {
-    if ( s_pInstance )
-        return;
-    QCoreApplication::setOrganizationName( "Baltram" );
-    QCoreApplication::setApplicationName( "Rimy3D" );
-    s_pInstance = new Rimy3D( argc, argv );
-    s_pSettings = new QSettings;
+    return ( EVersionMajor << 16 ) + ( EVersionMinor << 8 );
+}
+
+QString Rimy3D::getVersionString( void )
+{
+    return QString::number( EVersionMajor ) + "." + QString::number( EVersionMinor );
 }
 
 void Rimy3D::loadSettings( void )
@@ -140,11 +217,6 @@ void Rimy3D::setLanguage( ELanguage a_enuLanguage )
     s_enuCurrentLanguage = a_enuLanguage;
 }
 
-void Rimy3D::setMainWindow( QWidget * a_pMainWindow )
-{
-    s_pMainWindow = a_pMainWindow;
-}
-
 void Rimy3D::setQuiet( bool a_bEnabled )
 {
     s_bQuiet = a_bEnabled;
@@ -153,33 +225,24 @@ void Rimy3D::setQuiet( bool a_bEnabled )
 void Rimy3D::showError( QString a_strText, QString a_strTitle )
 {
     if ( !quiet() )
-        QMessageBox::critical( s_pMainWindow, a_strTitle, a_strText );
+        QMessageBox::critical( QApplication::activeWindow(), a_strTitle, a_strText );
 }
 
 void Rimy3D::showMessage( QString a_strText, QString a_strTitle )
 {
     if ( !quiet() )
-        QMessageBox::about( s_pMainWindow, a_strTitle, a_strText );
+        QMessageBox::about( QApplication::activeWindow(), a_strTitle, a_strText );
 }
 
 bool Rimy3D::showQuestion( QString a_strText, QString a_strTitle, bool a_bDefault )
 {
-    return quiet() ? a_bDefault : ( QMessageBox::Yes == QMessageBox::question( s_pMainWindow, a_strTitle, a_strText, QMessageBox::Yes | QMessageBox::No ) );
+    return quiet() ? a_bDefault : ( QMessageBox::Yes == QMessageBox::question( QApplication::activeWindow(), a_strTitle, a_strText, QMessageBox::Yes | QMessageBox::No ) );
 }
 
 void Rimy3D::showWarning( QString a_strText, QString a_strTitle )
 {
     if ( !quiet() )
-        QMessageBox::warning( s_pMainWindow, a_strTitle, a_strText );
-}
-
-Rimy3D::Rimy3D( int & argc, char * argv[] ) :
-    QApplication( argc, argv )
-{
-}
-
-Rimy3D::~Rimy3D( void )
-{
+        QMessageBox::warning( QApplication::activeWindow(), a_strTitle, a_strText );
 }
 
 void Rimy3D::loadSettingsIntern( void )
@@ -189,13 +252,13 @@ void Rimy3D::loadSettingsIntern( void )
     ELanguage enuLanguage = static_cast< ELanguage >( s_pSettings->value( "language", varDefault ).toInt() );
     if ( enuLanguage == ELanguage_Count )
     {
-        switch ( GeneralSettings.value( "NSISLanguage" ).toInt() )
+        enuLanguage = ELanguage_English;
+        switch ( QSystemLocale().query( QSystemLocale::LanguageId, QVariant() ).toInt() )
         {
-        case 1031:
+        case QLocale::German:
+        case QLocale::SwissGerman:
+        case QLocale::LowGerman:
             enuLanguage = ELanguage_German;
-            break;
-        default:
-            enuLanguage = ELanguage_English;
         }
     }
 #ifdef Q_WS_WIN
@@ -203,12 +266,13 @@ void Rimy3D::loadSettingsIntern( void )
          ( !s_pSettings->contains( "MAXComponents" ) ) )
         checkGmaxInstallation();
 #endif
-    emit settingsLoading( *s_pSettings );
     setLanguage( enuLanguage );
+    emit settingsLoading( *s_pSettings );
 }
 
 void Rimy3D::saveSettingsIntern( void )
 {
     s_pSettings->setValue( "language", static_cast< int >( s_enuCurrentLanguage ) );
+    s_pSettings->setValue( "exePath", QDir::toNativeSeparators( QCoreApplication::applicationFilePath() ) );
     emit settingsSaving( *s_pSettings );
 }

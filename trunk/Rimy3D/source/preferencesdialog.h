@@ -16,6 +16,7 @@ class PreferencesDialog : public QDialog
 public:
     static PreferencesDialog & getInstance( void );
 public:
+    bool    autoUpdate( void ) const;
     QString defaultImageFileExt( void ) const;
     bool    removeAscPrefixes( void ) const;
     bool    removeXmacCollisionMesh( void ) const;
@@ -31,6 +32,7 @@ private slots:
     void loadSettings( QSettings & a_Settings );
     void on_pbOk_clicked( void );
     void on_pbRestoreDefaults_clicked( void );
+    void on_pbUpdate_clicked( void );
     void saveSettings( QSettings & a_Settings );
 private:
     Ui::PreferencesDialog * m_pUi;

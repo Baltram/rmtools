@@ -8,6 +8,11 @@ PreferencesDialog & PreferencesDialog::getInstance( void )
     return *s_pInstance;
 }
 
+bool PreferencesDialog::autoUpdate( void ) const
+{
+    return m_pUi->cbAutoUpdate->isChecked();
+}
+
 QString PreferencesDialog::defaultImageFileExt( void ) const
 {
     return m_pUi->cobImgExt->currentText().toLower();
@@ -61,6 +66,12 @@ void PreferencesDialog::loadSettings( QSettings & a_Settings )
     a_Settings.beginGroup( "Preferences" );
     m_pUi->cobImgExt->setCurrentIndex( a_Settings.value( "cobImgExt", 0 ).toInt() );
     m_pUi->cbAscPrefixes->setChecked( a_Settings.value( "cbAscPrefixes", true ).toBool() );
+    int iAutoUpdate = a_Settings.value( "cbAutoUpdate", 3 ).toInt();
+    if ( iAutoUpdate == 3 )
+        iAutoUpdate = Rimy3D::showQuestion( tr( "Do you want Rimy3D to check for updates automatically?" ) ) ? 3 : 0;
+    if ( iAutoUpdate > 1 )
+        Rimy3D::checkForUpdates( iAutoUpdate == 3 );
+    m_pUi->cbAutoUpdate->setChecked( iAutoUpdate != 0 );
     m_pUi->cbGizmos->setChecked( a_Settings.value( "cbGizmos", true ).toBool() );
     m_pUi->cbXmacCollisionMesh->setChecked( a_Settings.value( "cbXmacCollisionMesh", true ).toBool() );
     a_Settings.endGroup();
@@ -76,8 +87,14 @@ void PreferencesDialog::on_pbRestoreDefaults_clicked( void )
     QSettings * pSettings = Rimy3D::getSettings();
     pSettings->beginGroup( "Preferences" );
     pSettings->remove( "" );
+    pSettings->setValue( "cbAutoUpdate", 1 );
     pSettings->endGroup();
     loadSettings( *pSettings );
+}
+
+void PreferencesDialog::on_pbUpdate_clicked( void )
+{
+    Rimy3D::checkForUpdates( true, true );
 }
 
 void PreferencesDialog::saveSettings( QSettings & a_Settings )
@@ -85,6 +102,7 @@ void PreferencesDialog::saveSettings( QSettings & a_Settings )
     a_Settings.beginGroup( "Preferences" );
     a_Settings.setValue( "cobImgExt", m_pUi->cobImgExt->currentIndex() );
     a_Settings.setValue( "cbAscPrefixes", m_pUi->cbAscPrefixes->isChecked() );
+    a_Settings.setValue( "cbAutoUpdate", m_pUi->cbAutoUpdate->isChecked() ? 2 : 0 );
     a_Settings.setValue( "cbGizmos", m_pUi->cbGizmos->isChecked() );
     a_Settings.setValue( "cbXmacCollisionMesh", m_pUi->cbXmacCollisionMesh->isChecked() );
     a_Settings.endGroup();
