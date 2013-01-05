@@ -52,7 +52,7 @@ mCVertexMatcher::mCVertexMatcher( mCVec3 const * a_pVertsToMatch, mCVec3 const *
     CPoint const * const pBeginPointsToMatch = m_arrPointsToMatch.GetBuffer();
     for ( MIUInt u = a_uNumTargetVerts; u--; )
         for ( CPoint const * pTargetPoint = &m_arrTargetPoints[ u ], * pPoint = pTargetPoint->GetNextG(); pPoint != pTargetPoint; pPoint = pPoint->GetNextG() )
-            m_arrResult[ pPoint - pBeginPointsToMatch ] = u;
+            m_arrResult[ static_cast< MIUInt >( pPoint - pBeginPointsToMatch ) ] = u;
 }
 
 MIUInt mCVertexMatcher::operator [] ( MIUInt a_uIndex ) const

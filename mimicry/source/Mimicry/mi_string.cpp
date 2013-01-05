@@ -186,7 +186,7 @@ mCString & mCString::Append( mCString const & a_strText )
 mCString & mCString::Append( MILPCChar a_pcText, MIUInt a_uLength )
 {
     if ( a_uLength == MI_DW_INVALID )
-        a_uLength = g_strlen( a_pcText );
+        a_uLength = static_cast< MIUInt >( g_strlen( a_pcText ) );
     MIUInt const uLength = GetLength();
     if ( ( uLength < 0xFF ) && ( uLength + a_uLength >= 0xFF ) )
     {
