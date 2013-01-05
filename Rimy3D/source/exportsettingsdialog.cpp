@@ -139,6 +139,15 @@ void exportSettingsDialog::on_pbBaseXmac_clicked( void )
         m_pUi->leBaseXmac->setText( QDir::toNativeSeparators( strFile ) );
 }
 
+void exportSettingsDialog::on_pbDefault_clicked( void )
+{
+    QSettings * pSettings = Rimy3D::getSettings();
+    pSettings->beginGroup( "exportSettingsDialog_" + m_strExt );
+    pSettings->remove( "" );
+    pSettings->endGroup();
+    loadSettings( *pSettings );
+}
+
 void exportSettingsDialog::saveSettings( QSettings & a_Settings )
 {
     a_Settings.beginGroup( "exportSettingsDialog_" + m_strExt );

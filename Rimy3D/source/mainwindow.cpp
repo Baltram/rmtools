@@ -24,7 +24,6 @@ MainWindow::MainWindow( QWidget * a_pParent ) :
     connect( Rimy3D::getInstance(), SIGNAL( settingsLoading( QSettings & ) ), this, SLOT( loadSettings( QSettings & ) ) );
     TextureFinder::getInstance();
     PreferencesDialog::getInstance();
-    Rimy3D::setMainWindow( this );
     Rimy3D::loadSettings();
 }
 
@@ -162,11 +161,11 @@ void MainWindow::updateRecentFiles( void )
 
 void MainWindow::on_actionAbout_triggered( void )
 {
-    Rimy3D::showMessage( "<p></p><b>Rimy3D v0.1</b> (April 13th 2012)"
+    Rimy3D::showMessage( "<p></p><b>Rimy3D v" + Rimy3D::getVersionString() + tr( "</b> (January 5th 2012)"
                          "<div style='text-indent:16px;'>by <a href='mailto:baltram-lielb@web.de'>Baltram</a> @<a href='http://forum.worldofplayers.de/forum/members/33859'>WoP</a></div>"
                          "<p>Support: <a href='http://www.baltr.de/Rimy3D.htm'>www.baltr.de/Rimy3D.htm</a></p>"
                          "<p>This program uses the <a href='http://www.glc-lib.net'>GLC_lib</a> library by Laurent Ribon.</p>"
-                         "<p></p>",
+                         "<p></p>" ),
                          tr( "About Rimy3D" ) );
 }
 
