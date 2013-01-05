@@ -206,7 +206,7 @@ mEResult mCXmacWriter::WriteXmacFileData( mCScene a_sceneSource, mCIOStreamBinar
                                                ( Material.GetTextureMapAt( mCMaterial::EMapType_Normal ) ? 1 : 0 ) +
                                                ( Material.GetTextureMapAt( mCMaterial::EMapType_Specular ) ? 1 : 0 ) );
                     a_streamDest << g_32( Material.GetName().GetLength() ) << Material.GetName();
-                    for ( MIUInt v = 0; v != mCMaterial::EMapType_Count; ++v )
+                    for ( MIInt v = 0; v != mCMaterial::EMapType_Count; ++v )
                     {
                         mCTexMap const * pMap = Material.GetTextureMapAt( static_cast< mCMaterial::EMapType >( v ) );
                         if ( !pMap )
@@ -352,7 +352,7 @@ mEResult mCXmacWriter::WriteXmacFileData( mCScene a_sceneSource, mCIOStreamBinar
                 mCSkin const & skinSource = *nodeSource.GetSkin();
                 mTArray< MIU16 > arrBaseBoneIndices( 0, skinSource.GetNumBones() );
                 for ( MIUInt u = skinSource.GetNumBones(); u--; )
-                    if ( ( arrBaseBoneIndices[ u ] = arrBaseNodeIndices[ a_sceneSource.GetNodeIndexByID( skinSource.GetBoneIDByIndex( u ) ) ] ) == MI_DW_INVALID )
+                    if ( ( arrBaseBoneIndices[ u ] = static_cast< MIU16 >( arrBaseNodeIndices[ a_sceneSource.GetNodeIndexByID( skinSource.GetBoneIDByIndex( u ) ) ] ) ) == MI_DW_INVALID )
                         return MI_ERROR( mCConverterError, EMiscellaneous, "Skinning includes bone not present in base ._xmac file." ), mEResult_False;
                 streamBaseXmac.Skip( 6 );
                 MIU16 u16Unknown = streamBaseXmac.ReadU16();
