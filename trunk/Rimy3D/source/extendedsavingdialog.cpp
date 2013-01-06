@@ -24,6 +24,7 @@ void ExtendedSavingDialog::on_pushButton_clicked( void )
 {
     QString const strFileName = "installExtendedSaving.gmax";
     QString const strTempFilePath = QDir::temp().absolutePath() + '/' + strFileName;
+    QFile::setPermissions( strTempFilePath, QFile::permissions( strTempFilePath ) | QFile::WriteUser );
     QFile::remove( strTempFilePath );
     QFile::copy( ":/extended_saving/" + strFileName, strTempFilePath );
     QDesktopServices::openUrl( QUrl::fromLocalFile( strTempFilePath ) );
