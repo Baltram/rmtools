@@ -17,5 +17,7 @@
 #include "mi_xactwriter.h"
 #include "mi_xmacreader.h"
 #include "mi_xmacwriter.h"
+#include "mi_xcmshreader.h"
+#include "mi_genomefile.h"
 
 #endif

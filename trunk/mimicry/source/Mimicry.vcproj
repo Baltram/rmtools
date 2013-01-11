@@ -606,6 +606,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Mimicry\mi_genomefile.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Mimicry\mi_genomefile.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Mimicry\mi_maxreader.cpp"
 				>
 			</File>
@@ -643,6 +651,14 @@
 			</File>
 			<File
 				RelativePath=".\Mimicry\mi_xactwriter.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Mimicry\mi_xcmshreader.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Mimicry\mi_xcmshreader.h"
 				>
 			</File>
 			<File
