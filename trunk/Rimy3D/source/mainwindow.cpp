@@ -216,6 +216,7 @@ void MainWindow::on_actionOpen_triggered( void )
                                                   "3ds Max ASCII Scene (*.ase);;"
                                                   "Gothic ASCII Scene (*.asc);;"
                                                   "Gothic 3 Motion Actor (*.xact);;"
+                                                  "Gothic 3 Mesh (*.xcmsh);;"
                                                   "Risen Motion Actor (*._xmac);;" );
     open( QFileDialog::getOpenFileName( this, tr( "Open" ), m_SceneInfo.getCurrentDir(), strFilter ) );
 }

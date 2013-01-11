@@ -191,6 +191,11 @@ bool SceneInfo::openSceneFile( QString a_strFilePath )
         Options.m_strTextureFileExtension = Prefs.defaultImageFileExt().toAscii().data();
         enuResult = mCXactReader::ReadXactFileData( sceneNew, streamIn, Options );
     }
+    else if ( strExt == "xcmsh" )
+    {
+        mCXcmshReader::SOptions Options;
+        enuResult = mCXcmshReader::ReadXcmshFileData( sceneNew, streamIn, Options );
+    }
     else if ( strExt == "_xmac" )
     {
         mCXmacReader::SOptions Options;
@@ -267,31 +272,31 @@ bool SceneInfo::saveSceneFile( QString a_strFilePath, exportSettingsDialog const
     {
         mCFileStream streamBaseXact;
         if ( streamBaseXact.Open( a_SettingsDialog.baseXact().toAscii().data(), mEFileOpenMode_Read ) == mEResult_False )
-        {
             Rimy3D::showError( tr( "Cannot open the base .xact file \"%1\"." ).arg( a_SettingsDialog.baseXact() ), a_SettingsDialog.windowTitle() );
-            return false;
+        else
+        {
+            mCXactWriter::SOptions Options;
+            static_cast< eSConverterOptions & >( Options ) = BaseOptions;
+            Options.m_pBaseXactStream = &streamBaseXact;
+            Options.m_bIndirectVertexMatching = a_SettingsDialog.indirectMatching();
+            Options.m_bReplaceOnlyVertices = a_SettingsDialog.vertsOnly();
+            enuResult = mCXactWriter::WriteXactFileData( m_sceneCurrentScene, streamOut, Options );
         }
-        mCXactWriter::SOptions Options;
-        static_cast< eSConverterOptions & >( Options ) = BaseOptions;
-        Options.m_pBaseXactStream = &streamBaseXact;
-        Options.m_bIndirectVertexMatching = a_SettingsDialog.indirectMatching();
-        Options.m_bReplaceOnlyVertices = a_SettingsDialog.vertsOnly();
-        enuResult = mCXactWriter::WriteXactFileData( m_sceneCurrentScene, streamOut, Options );
     }
     else if ( strExt == "_xmac" )
     {
         mCFileStream streamBaseXmac;
         if ( streamBaseXmac.Open( a_SettingsDialog.baseXmac().toAscii().data(), mEFileOpenMode_Read ) == mEResult_False )
-        {
             Rimy3D::showError( tr( "Cannot open the base ._xmac file \"%1\"." ).arg( a_SettingsDialog.baseXmac() ), a_SettingsDialog.windowTitle() );
-            return false;
+        else
+        {
+            mCXmacWriter::SOptions Options;
+            static_cast< eSConverterOptions & >( Options ) = BaseOptions;
+            Options.m_pBaseXmacStream = &streamBaseXmac;
+            Options.m_bIndirectVertexMatching = a_SettingsDialog.indirectMatching();
+            Options.m_bReplaceOnlyVertices = a_SettingsDialog.vertsOnly();
+            enuResult = mCXmacWriter::WriteXmacFileData( m_sceneCurrentScene, streamOut, Options );
         }
-        mCXmacWriter::SOptions Options;
-        static_cast< eSConverterOptions & >( Options ) = BaseOptions;
-        Options.m_pBaseXmacStream = &streamBaseXmac;
-        Options.m_bIndirectVertexMatching = a_SettingsDialog.indirectMatching();
-        Options.m_bReplaceOnlyVertices = a_SettingsDialog.vertsOnly();
-        enuResult = mCXmacWriter::WriteXmacFileData( m_sceneCurrentScene, streamOut, Options );
     }
     streamOut.Close();
     if ( enuResult == mEResult_Ok )
@@ -332,6 +337,7 @@ void SceneInfo::errorMessageTranslations( void )
     tr( "Invalid .ase file." );
     tr( "Invalid .3db file." );
     tr( "Invalid .xact file." );
+    tr( "Invalid .xcmsh file." );
     tr( "Invalid ._xmac file." );
     tr( "Unknown ._xmac file version." );
     tr( "Invalid base .xact file." );
@@ -342,6 +348,7 @@ void SceneInfo::errorMessageTranslations( void )
     tr( "Skinning includes bone not present in base .xact file." );
     tr( "Skinning includes bone not present in base ._xmac file." );
     tr( "Skinning does not cover all vertices." );
+    tr( "Unknown vertex stream array type." );
 }
 
 void SceneInfo::showLastMimicryError( mCError const * a_pLastError, QString a_strTitle )
