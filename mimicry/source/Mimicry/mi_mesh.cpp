@@ -518,6 +518,27 @@ void mCMesh::Swap( mCMesh & a_meshOther )
     m_arrVertexColors.Swap( a_meshOther.m_arrVertexColors );
 }
 
+void mCMesh::WeldVertices( void )
+{
+    mTArray< MIUInt > arrNewVertexIndices;
+    mTMap< mCVec3, MIUInt > mapVertexIndices;
+    arrNewVertexIndices.Resize( GetNumVerts() );
+    mapVertexIndices.Reserve( GetNumVerts() );
+    for ( MIUInt u = 0, ue = GetNumVerts(), v, * pNewIndex; u != ue; ++u )
+    {
+        if ( v = mapVertexIndices.GetCount(), pNewIndex = &mapVertexIndices[ m_arrVertices[ u ] ], v != mapVertexIndices.GetCount() )
+            arrNewVertexIndices[ u ] = *pNewIndex = v;
+        else
+            arrNewVertexIndices[ u ] = *pNewIndex;
+    }
+    mTArray< mCVec3 > arrVertices( mCVec3(), mapVertexIndices.GetCount() );
+    for ( MIUInt u = 0, ue = GetNumVerts(); u != ue; ++u )
+        arrVertices[ arrNewVertexIndices[ u ] ] = m_arrVertices[ u ];
+    for ( MIUInt u = GetNumFaces(); u--; )
+        for ( MIUInt v = 3; v--; m_arrFaces[ u ][ v ] = arrNewVertexIndices[ m_arrFaces[ u ][ v ] ] );
+    m_arrVertices.Swap( arrVertices );
+}
+
 void mCMesh::CalcIndicesPerVert( mTArray< MIUInt > & a_arrFirstIndexPerVert, mTArray< MIUInt > & a_arrNextIndexPerIndex ) const
 {
     MIUInt const uVertexCount = GetNumVerts();

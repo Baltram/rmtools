@@ -70,6 +70,7 @@ public:
     void              SetNumVTangents( MIUInt a_uCount );
     void              SortFacesByMatID( void );
     void              Swap( mCMesh & a_meshOther );
+    void              WeldVertices( void );
 private:
     void CalcIndicesPerVert( mTArray< MIUInt > & a_arrFirstIndexPerVert, mTArray< MIUInt > & a_arrNextIndexPerIndex ) const;
     void CalcVNormals( MIBool a_bUseAnglesNotSGs, MIFloat a_fMinCosine = 0.0f );
