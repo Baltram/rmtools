@@ -41,7 +41,7 @@ mEResult mCXcmshReader::ReadXcmshFileData( mCScene & a_sceneDest, mCIOStreamBina
          ( File.ReadString() != "eCResourceMeshComplex_PS" ) ||
          ( File().ReadU8() != 1 ) ||
          ( File().ReadU16() != 0 ) )
-        return MI_ERROR( mCStreamError, EBadFormat, "Invalid ._xcmsh file." ), mEResult_False;
+        return MI_ERROR( mCStreamError, EBadFormat, "Invalid .xcmsh file." ), mEResult_False;
     MIUInt uVersion = File().ReadU16();
     File().Skip( 6 );
     if ( uVersion < 81 )
