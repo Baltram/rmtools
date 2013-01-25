@@ -136,6 +136,50 @@ mEResult mCSkin::InitSwapping( MIUInt a_uVertCount,
     return mEResult_Ok;
 }
 
+namespace
+{
+    MIFloat * s_pWeights;
+
+    MIInt CompareVretWeightIndices( MILPCVoid a_pFirst, MILPCVoid a_pSecond )
+    {
+        if ( s_pWeights[ *static_cast< MIUInt const * >( a_pFirst ) ] == s_pWeights[ *static_cast< MIUInt const * >( a_pSecond ) ] )
+            return 0;
+        return s_pWeights[ *static_cast< MIUInt const * >( a_pFirst ) ] > s_pWeights[ *static_cast< MIUInt const * >( a_pSecond ) ] ? -1 : 1;
+    }
+}
+
+void mCSkin::LimitNumInfluencingBonesPerVert( MIUInt const a_uMax )
+{
+    mTArray< MIUInt >  arrVertexIndices( m_arrVertexIndices.GetCount() );
+    mTArray< MIUInt >  arrBoneIndices( m_arrBoneIndices.GetCount() );
+    mTArray< MIFloat > arrWeights( m_arrWeights.GetCount() );
+    mTArray< MIUInt >  arrVertWeightIndices( 0, 100 );
+    MIUInt * pVertWeightIndices = arrVertWeightIndices.AccessBuffer();
+    for ( MIUInt u = 0, ue = GetNumVerts(); u != ue; ++u )
+    {
+        MIUInt uWeightCount = GetNumInfluencingBones( u );
+        MIFloat fWeightSum = 0.0f;
+        s_pWeights = &m_arrWeights[ m_arrFirstWeightIndexPerVertex[ u ] ];
+        for ( MIUInt v = uWeightCount; v--; pVertWeightIndices[ v ] = v );
+        qsort( pVertWeightIndices, uWeightCount, sizeof( *pVertWeightIndices ), &CompareVretWeightIndices );
+        uWeightCount = g_min( uWeightCount, a_uMax );
+        for ( MIUInt v = 0; v != uWeightCount; ++v )
+        {
+            arrVertexIndices.Add( u );
+            arrBoneIndices.Add( GetBoneIndex( u, pVertWeightIndices[ v ] ) );
+            arrWeights.Add( s_pWeights[ pVertWeightIndices[ v ] ] );
+            fWeightSum += s_pWeights[ pVertWeightIndices[ v ] ];
+        }
+        for ( MIFloat * pWeights = &arrWeights.Back(), * pEnd = pWeights - uWeightCount; pWeights != pEnd; *pWeights-- /= fWeightSum );
+    }
+    arrVertexIndices.UnReserve();
+    arrBoneIndices.UnReserve();
+    arrWeights.UnReserve();
+    mCSkin skinResult;
+    skinResult.InitSwapping( GetNumVerts(), m_arrBoneIDs, arrVertexIndices, arrBoneIndices, arrWeights );
+    Swap( skinResult );
+}
+
 void mCSkin::MigrateBoneIDs( mCScene const & a_sceneNew, mCScene const & a_sceneCurrent )
 {
     for ( MIUInt u = 0, ue = m_arrBoneIDs.GetCount(); u != ue; ++u )

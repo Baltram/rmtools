@@ -349,10 +349,11 @@ mEResult mCXmacWriter::WriteXmacFileData( mCScene a_sceneSource, mCIOStreamBinar
                 MIUInt const uSectionBegin = a_streamDest.Tell();
                 streamBaseXmac.Skip( 8 );
                 MIUInt const uSkinIndex = streamBaseXmac.ReadU32();
-                mCSkin const & skinSource = *nodeSource.GetSkin();
+                mCSkin & skinSource = *nodeSource.AccessSkin();
+                skinSource.LimitNumInfluencingBonesPerVert( 4 );
                 mTArray< MIU16 > arrBaseBoneIndices( 0, skinSource.GetNumBones() );
                 for ( MIUInt u = skinSource.GetNumBones(); u--; )
-                    if ( ( arrBaseBoneIndices[ u ] = static_cast< MIU16 >( arrBaseNodeIndices[ a_sceneSource.GetNodeIndexByID( skinSource.GetBoneIDByIndex( u ) ) ] ) ) == MI_DW_INVALID )
+                    if ( ( arrBaseBoneIndices[ u ] = static_cast< MIU16 >( arrBaseNodeIndices[ a_sceneSource.GetNodeIndexByID( skinSource.GetBoneIDByIndex( u ) ) ] ) ) == ( MI_DW_INVALID & 0xFFFF ) )
                         return MI_ERROR( mCConverterError, EMiscellaneous, "Skinning includes bone not present in base ._xmac file." ), mEResult_False;
                 streamBaseXmac.Skip( 6 );
                 MIU16 u16Unknown = streamBaseXmac.ReadU16();
