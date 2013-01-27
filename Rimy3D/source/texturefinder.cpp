@@ -19,7 +19,7 @@ void TextureFinder::addSearchPath( QString const & a_strPath )
 
 QString TextureFinder::findTextureFile( QString const & a_strFilePathGuess, QString const & a_strCurrentDir )
 {
-    char const * arrExts[] = { ".jpg", ".jpeg", ".png", ".gif", ".bmp" };
+    char const * arrExts[] = { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".dds", ".ximg", "._ximg", ".tga" };
     if ( a_strFilePathGuess == "" )
         return "";
     QFileInfo File( a_strFilePathGuess );

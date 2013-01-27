@@ -5,6 +5,12 @@ QT += core \
 TARGET = Rimy3D
 TEMPLATE = app
 
+CONFIG += STATIC
+
+LIBS += ../../QImageIOPlugin/build/tgaplugin.lib
+LIBS += ../../QImageIOPlugin/build/ddsplugin.lib
+LIBS += ../../QImageIOPlugin/build/ximgplugin.lib
+
 include("../../mimicry/source/Mimicry.pri")
 include("GLC_lib.pri")
 
