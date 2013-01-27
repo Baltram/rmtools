@@ -209,7 +209,7 @@ void MainWindow::on_actionGerman_triggered( void )
 
 void MainWindow::on_actionOpen_triggered( void )
 {
-    QString strFilter = tr( "All files" ).append( " (*.obj *.3db *.gmax *.ase *.asc *.xact *._xmac);;"
+    QString strFilter = tr( "All files" ).append( " (*.obj *.3db *.gmax *.ase *.asc *.xcmsh *.xact *._xmac);;"
                                                   "Wavefront OBJ format (*.obj);;"
                                                   "Baltram's 3D format (*.3db);;"
                                                   "GMax Scene (*.gmax);;"

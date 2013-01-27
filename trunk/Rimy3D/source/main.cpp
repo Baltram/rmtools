@@ -1,5 +1,10 @@
 #include "rimy3d.h"
 #include "mainwindow.h"
+#include <QtPlugin>
+
+Q_IMPORT_PLUGIN( TgaPlugin )
+Q_IMPORT_PLUGIN( DdsPlugin )
+Q_IMPORT_PLUGIN( XimgPlugin )
 
 int main( int argc, char *argv[] )
 {
