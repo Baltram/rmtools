@@ -181,7 +181,7 @@ bool SceneInfo::openSceneFile( QString a_strFilePath )
                 else if ( strName.Left( 3 ).ToLower() == "zm_" )
                     strName.TrimLeft( ( MIUInt ) 3 );
                 else if ( strName.Left( 5 ).ToLower() == "bip01" )
-                    strName.TrimLeft( ( MIUInt ) ( strName[ 6 ] == ' ' ? 6 : 5 ) );
+                    strName.TrimLeft( ( MIUInt ) ( strName[ 5 ] == ' ' ? 6 : 5 ) );
             }
         }
     }
@@ -227,6 +227,12 @@ bool SceneInfo::saveSceneFile( QString a_strFilePath, exportSettingsDialog const
 {
     m_strCurrentSaveDir = QFileInfo( a_strFilePath ).absolutePath();
     QString strExt = QFileInfo( a_strFilePath ).suffix().toLower();
+    mEResult enuResult = mEResult_False;
+    mCMemoryStream streamBase;
+    if ( strExt == "xact" )
+        enuResult = streamBase.FromFile( a_SettingsDialog.baseXact().toAscii().data() );
+    else if ( strExt == "_xmac" )
+        enuResult = streamBase.FromFile( a_SettingsDialog.baseXmac().toAscii().data() );
     mCFileStream streamOut;
     if ( streamOut.Open( a_strFilePath.toAscii().data(), mEFileOpenMode_Write ) == mEResult_False )
     {
@@ -240,7 +246,6 @@ bool SceneInfo::saveSceneFile( QString a_strFilePath, exportSettingsDialog const
     BaseOptions.m_bUseAnglesInsteadOfSGs = a_SettingsDialog.anglesNotSgs();
     BaseOptions.m_fMaxAngleInDegrees = static_cast< MIFloat >( a_SettingsDialog.angle() );
     mCError const * pLastError = mCError::GetLastError< mCError >();
-    mEResult enuResult = mEResult_False;
     if ( strExt == "3db" )
     {
         mC3dbWriter::SOptions Options;
@@ -270,14 +275,13 @@ bool SceneInfo::saveSceneFile( QString a_strFilePath, exportSettingsDialog const
     }
     else if ( strExt == "xact" )
     {
-        mCFileStream streamBaseXact;
-        if ( streamBaseXact.Open( a_SettingsDialog.baseXact().toAscii().data(), mEFileOpenMode_Read ) == mEResult_False )
+        if ( enuResult == mEResult_False )
             Rimy3D::showError( tr( "Cannot open the base .xact file \"%1\"." ).arg( a_SettingsDialog.baseXact() ), a_SettingsDialog.windowTitle() );
         else
         {
             mCXactWriter::SOptions Options;
             static_cast< eSConverterOptions & >( Options ) = BaseOptions;
-            Options.m_pBaseXactStream = &streamBaseXact;
+            Options.m_pBaseXactStream = &streamBase;
             Options.m_bIndirectVertexMatching = a_SettingsDialog.indirectMatching();
             Options.m_bReplaceOnlyVertices = a_SettingsDialog.vertsOnly();
             enuResult = mCXactWriter::WriteXactFileData( m_sceneCurrentScene, streamOut, Options );
@@ -285,18 +289,21 @@ bool SceneInfo::saveSceneFile( QString a_strFilePath, exportSettingsDialog const
     }
     else if ( strExt == "_xmac" )
     {
-        mCFileStream streamBaseXmac;
-        if ( streamBaseXmac.Open( a_SettingsDialog.baseXmac().toAscii().data(), mEFileOpenMode_Read ) == mEResult_False )
+        if ( enuResult == mEResult_False )
             Rimy3D::showError( tr( "Cannot open the base ._xmac file \"%1\"." ).arg( a_SettingsDialog.baseXmac() ), a_SettingsDialog.windowTitle() );
         else
         {
             mCXmacWriter::SOptions Options;
             static_cast< eSConverterOptions & >( Options ) = BaseOptions;
-            Options.m_pBaseXmacStream = &streamBaseXmac;
+            Options.m_pBaseXmacStream = &streamBase;
             Options.m_bIndirectVertexMatching = a_SettingsDialog.indirectMatching();
             Options.m_bReplaceOnlyVertices = a_SettingsDialog.vertsOnly();
             enuResult = mCXmacWriter::WriteXmacFileData( m_sceneCurrentScene, streamOut, Options );
         }
+    }
+    else
+    {
+        enuResult = Rimy3D::showError( tr( "Unknown file type: \".%1\"" ).arg( strExt ), Rimy3D::applicationName() ), mEResult_False;
     }
     streamOut.Close();
     if ( enuResult == mEResult_Ok )
