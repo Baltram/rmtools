@@ -16,7 +16,10 @@ public:
     explicit SearchPathsDialog( QWidget * a_pParent = 0 );
             ~SearchPathsDialog( void );
 public:
-    void addItems( QStringList const & a_arrItems );
+    void        addArchives( QStringList const & a_arrArchives );
+    void        addPaths( QStringList const & a_arrPaths );
+    QStringList getArchives( void );
+    QStringList getPaths( void );
 protected:
     void addSubDirectories( QStringList & a_arrDirs );
     void changeEvent( QEvent * a_pEvent );
@@ -24,10 +27,15 @@ protected:
 private:
     void updateLanguage( void );
 private slots:
-    void on_listWidget_currentRowChanged( int a_iCurrentRow );
-    void on_pushButton_clicked( void );
-    void on_pushButton_2_clicked( void );
-    void on_pushButton_3_clicked( void );
+    void on_lwArchives_currentRowChanged( int a_iCurrentRow );
+    void on_lwPaths_currentRowChanged( int a_iCurrentRow );
+    void on_pbAddArchive_clicked( void );
+    void on_pbAddPath_clicked( void );
+    void on_pbDown_clicked();
+    void on_pbOk_clicked( void );
+    void on_pbRemoveArchive_clicked( void );
+    void on_pbRemovePath_clicked( void );
+    void on_pbUp_clicked( void );
 private:
     Ui::SearchPathsDialog * m_pUi;
 };

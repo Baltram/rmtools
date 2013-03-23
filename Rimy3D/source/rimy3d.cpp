@@ -1,6 +1,8 @@
 #include "rimy3d.h"
 #include "mainwindow.h"
 #include "networkmanager.h"
+#include "zlib.h"
+#include "Mimicry.h"
 #include <QMessageBox>
 #include <QHash>
 #include <QDir>
@@ -28,6 +30,7 @@ Rimy3D::Rimy3D( int & argc, char * argv[] ) :
     QCoreApplication::setOrganizationName( "Baltram" );
     QCoreApplication::setApplicationName( "Rimy3D" );
     s_pSettings = new QSettings;
+    mCGenomeVolume::RegisterZlibUncompressFunction( &uncompress );
 }
 
 Rimy3D::~Rimy3D( void )

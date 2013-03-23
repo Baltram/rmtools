@@ -2,7 +2,9 @@
 #define TEXTUREFINDER_H_INCLUDED
 
 #include "searchpathsdialog.h"
-#include <QObject>
+#include <QHash>
+
+class mCGenomeVolume;
 
 class QSettings;
 
@@ -13,12 +15,10 @@ class TextureFinder :
 public:
     static TextureFinder & getInstance( void );
 public:
-    void    addSearchPath( QString const & a_strPath );
-    QString findTextureFile( QString const & a_strFilePathGuess, QString const & a_strCurrentDir );
-    int     getNumSearchPaths( void );
-    void    removeSearchPathAt( int a_iPosition );
-    void    showDialog( void );
-    void    updateSearchPaths( void );
+    bool findTexture( QString const & a_strFilePathGuess, QString const & a_strCurrentDir, QImage & a_imgDest );
+    void showDialog( void );
+    void updateArchives( void );
+    void updateSearchPaths( void );
 public slots:
     void loadSettings( QSettings & a_Settings );
     void saveSettings( QSettings & a_Settings );
@@ -28,8 +28,8 @@ protected:
 private:
     static TextureFinder * s_pInstance;
 private:
-    SearchPathsDialog m_Dialog;
-    QStringList       m_arrPaths;
+    SearchPathsDialog                  m_Dialog;
+    QHash< QString, mCGenomeVolume * > m_mapArchives;
 };
 
 #endif // TEXTUREFINDER_H_INCLUDED

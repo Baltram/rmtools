@@ -8,6 +8,8 @@ SearchPathsDialog::SearchPathsDialog( QWidget * a_pParent ) :
     m_pUi( new Ui::SearchPathsDialog )
 {
     m_pUi->setupUi( this );
+    m_pUi->pbUp->setIcon( qApp->style()->standardIcon( QStyle::SP_ArrowUp ) );
+    m_pUi->pbDown->setIcon( qApp->style()->standardIcon( QStyle::SP_ArrowDown ) );
 }
 
 SearchPathsDialog::~SearchPathsDialog( void )
@@ -15,13 +17,35 @@ SearchPathsDialog::~SearchPathsDialog( void )
     delete m_pUi;
 }
 
-void SearchPathsDialog::addItems( QStringList const & a_arrItems )
+void SearchPathsDialog::addArchives( QStringList const & a_arrArchives )
 {
-    for ( int i = 0, ie = a_arrItems.count(); i != ie; ++i )
-    {
-        m_pUi->listWidget->addItem( a_arrItems[ i ] );
-        TextureFinder::getInstance().addSearchPath( a_arrItems[ i ] );
-    }
+    for ( int i = 0, ie = a_arrArchives.count(); i != ie; ++i )
+        if ( m_pUi->lwArchives->findItems( a_arrArchives[ i ], Qt::MatchFixedString ).count() == 0 )
+            m_pUi->lwArchives->addItem( a_arrArchives[ i ] );
+}
+
+
+void SearchPathsDialog::addPaths( QStringList const & a_arrPaths )
+{
+    for ( int i = 0, ie = a_arrPaths.count(); i != ie; ++i )
+        if ( m_pUi->lwPaths->findItems( a_arrPaths[ i ], Qt::MatchFixedString ).count() == 0 )
+            m_pUi->lwPaths->addItem( a_arrPaths[ i ] );
+}
+
+QStringList SearchPathsDialog::getArchives( void )
+{
+    QStringList arrResult;
+    for ( int i = 0, ie = m_pUi->lwArchives->count(); i != ie; ++i )
+        arrResult.append( m_pUi->lwArchives->item( i )->text() );
+    return arrResult;
+}
+
+QStringList SearchPathsDialog::getPaths( void )
+{
+    QStringList arrResult;
+    for ( int i = 0, ie = m_pUi->lwPaths->count(); i != ie; ++i )
+        arrResult.append( m_pUi->lwPaths->item( i )->text() );
+    return arrResult;
 }
 
 void SearchPathsDialog::addSubDirectories( QStringList & a_arrDirs )
@@ -44,6 +68,7 @@ void SearchPathsDialog::changeEvent( QEvent * a_pEvent )
 
 void SearchPathsDialog::closeEvent( QCloseEvent * a_pEvent )
 {
+    TextureFinder::getInstance().updateArchives();
     TextureFinder::getInstance().updateSearchPaths();
     QDialog::closeEvent( a_pEvent );
 }
@@ -53,29 +78,67 @@ void SearchPathsDialog::updateLanguage( void )
     m_pUi->retranslateUi( this );
 }
 
-void SearchPathsDialog::on_listWidget_currentRowChanged( int a_iCurrentRow )
+void SearchPathsDialog::on_lwArchives_currentRowChanged( int a_iCurrentRow )
 {
-    m_pUi->pushButton_2->setEnabled( a_iCurrentRow != -1 );
+    m_pUi->pbRemoveArchive->setEnabled( a_iCurrentRow != -1 );
+    m_pUi->pbUp->setEnabled( a_iCurrentRow != -1 );
+    m_pUi->pbDown->setEnabled( a_iCurrentRow != -1 );
 }
 
-void SearchPathsDialog::on_pushButton_clicked()
+void SearchPathsDialog::on_lwPaths_currentRowChanged( int a_iCurrentRow )
+{
+    m_pUi->pbRemovePath->setEnabled( a_iCurrentRow != -1 );
+}
+
+void SearchPathsDialog::on_pbAddArchive_clicked( void )
+{
+    QStringList arrArchives( QFileDialog::getOpenFileName( this, tr( "Choose an archive" ), QDir::homePath(), "Genome Volumes and Patches (*.pak *.p00 *.00 *.p0? *.0?)" ) );
+    if ( arrArchives.front() == "" )
+        return;
+    addArchives( arrArchives );
+}
+
+void SearchPathsDialog::on_pbAddPath_clicked( void )
 {
     QStringList arrDirs( QFileDialog::getExistingDirectory( this, "Choose a folder", QDir::homePath() ) );
     if ( arrDirs.front() == "" )
         return;
-    if ( m_pUi->checkBox->isChecked() )
+    if ( m_pUi->cbAddSubpaths->isChecked() )
         addSubDirectories( arrDirs );
-    arrDirs.sort();
-    addItems( arrDirs );
+    addPaths( arrDirs );
 }
 
-void SearchPathsDialog::on_pushButton_2_clicked( void )
+void SearchPathsDialog::on_pbDown_clicked()
 {
-    TextureFinder::getInstance().removeSearchPathAt( m_pUi->listWidget->currentRow() );
-    delete m_pUi->listWidget->currentItem();
+    int iCurrentRow = m_pUi->lwArchives->currentRow();
+    if ( iCurrentRow < 0 || iCurrentRow + 1 == m_pUi->lwArchives->count() )
+        return;
+    QListWidgetItem * pItem = m_pUi->lwArchives->takeItem( iCurrentRow );
+    m_pUi->lwArchives->insertItem( iCurrentRow + 1, pItem );
+    m_pUi->lwArchives->setCurrentItem( pItem );
 }
 
-void SearchPathsDialog::on_pushButton_3_clicked( void )
+void SearchPathsDialog::on_pbOk_clicked( void )
 {
     close();
+}
+
+void SearchPathsDialog::on_pbRemoveArchive_clicked( void )
+{
+    delete m_pUi->lwArchives->currentItem();
+}
+
+void SearchPathsDialog::on_pbRemovePath_clicked( void )
+{
+    delete m_pUi->lwPaths->currentItem();
+}
+
+void SearchPathsDialog::on_pbUp_clicked( void )
+{
+    int iCurrentRow = m_pUi->lwArchives->currentRow();
+    if ( iCurrentRow < 1 )
+        return;
+    QListWidgetItem * pItem = m_pUi->lwArchives->takeItem( iCurrentRow );
+    m_pUi->lwArchives->insertItem( iCurrentRow - 1, pItem );
+    m_pUi->lwArchives->setCurrentItem( pItem );
 }

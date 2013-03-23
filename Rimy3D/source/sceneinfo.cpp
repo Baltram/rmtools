@@ -38,7 +38,9 @@ GLC_World SceneInfo::buildGlcWorld( void )
         {
             mCMaterial const & mtlSub = pMultiMat->GetSubMaterials()[ j ];
             mCTexMap const * pDiffuseMap = mtlSub.GetTextureMapAt( mCMaterial::EMapType_Diffuse );
-            QImage Texture( pDiffuseMap ? TextureFinder::getInstance().findTextureFile( pDiffuseMap->GetTextureFilePath().GetText(), getCurrentDir() ) : "" );
+            QImage Texture;
+            if ( pDiffuseMap )
+                TextureFinder::getInstance().findTexture( pDiffuseMap->GetTextureFilePath().GetText(), getCurrentDir(), Texture );
             GLC_Texture * pTexture = Texture.isNull() ? new GLC_Texture : new GLC_Texture( Texture );
             pTexture->setMaxTextureSize( QSize( 2048, 2048 ) );
             arrMaterialArrays[ i ].append( new GLC_Material( pTexture, mtlSub.GetName().GetText() ) );
@@ -303,7 +305,8 @@ bool SceneInfo::saveSceneFile( QString a_strFilePath, exportSettingsDialog const
     }
     else
     {
-        enuResult = Rimy3D::showError( tr( "Unknown file type: \".%1\"" ).arg( strExt ), Rimy3D::applicationName() ), mEResult_False;
+        Rimy3D::showError( tr( "Unknown file type: \".%1\"" ).arg( strExt ), Rimy3D::applicationName() );
+        enuResult = mEResult_False;
     }
     streamOut.Close();
     if ( enuResult == mEResult_Ok )
