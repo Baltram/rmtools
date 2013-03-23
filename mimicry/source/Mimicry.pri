@@ -20,6 +20,7 @@ HEADERS += "$$PWD/Mimicry.h" \
            "$$PWD/Mimicry/mi_face.h" \
            "$$PWD/Mimicry/mi_filestream.h" \
            "$$PWD/Mimicry/mi_genomefile.h" \
+           "$$PWD/Mimicry/mi_genomevolume.h" \
            "$$PWD/Mimicry/mi_global.h" \
            "$$PWD/Mimicry/mi_global.inl" \
            "$$PWD/Mimicry/mi_include_3d.h" \
@@ -96,6 +97,7 @@ SOURCES += "$$PWD/Mimicry/mi_3dbreader.cpp" \
            "$$PWD/Mimicry/mi_face.cpp" \
            "$$PWD/Mimicry/mi_filestream.cpp" \
            "$$PWD/Mimicry/mi_genomefile.cpp" \
+           "$$PWD/Mimicry/mi_genomevolume.cpp" \
            "$$PWD/Mimicry/mi_global.cpp" \
            "$$PWD/Mimicry/mi_map.cpp" \
            "$$PWD/Mimicry/mi_material.cpp" \
