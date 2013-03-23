@@ -19,5 +19,6 @@
 #include "mi_xmacwriter.h"
 #include "mi_xcmshreader.h"
 #include "mi_genomefile.h"
+#include "mi_genomevolume.h"
 
 #endif
