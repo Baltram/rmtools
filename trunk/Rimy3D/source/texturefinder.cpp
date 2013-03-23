@@ -1,6 +1,8 @@
 #include "texturefinder.h"
 #include "sceneinfo.h"
 #include "rimy3d.h"
+#include "Mimicry.h"
+#include <QBuffer>
 #include <QDir>
 
 TextureFinder * TextureFinder::s_pInstance = 0;
@@ -12,44 +14,49 @@ TextureFinder & TextureFinder::getInstance( void )
     return *s_pInstance;
 }
 
-void TextureFinder::addSearchPath( QString const & a_strPath )
+bool TextureFinder::findTexture( QString const & a_strFilePathGuess, QString const & a_strCurrentDir, QImage & a_imgDest )
 {
-    m_arrPaths.append( a_strPath );
-}
-
-QString TextureFinder::findTextureFile( QString const & a_strFilePathGuess, QString const & a_strCurrentDir )
-{
-    char const * arrExts[] = { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".dds", ".ximg", "._ximg", ".tga" };
+    char const * arrExts[] = { "jpg", "jpeg", "png", "gif", "bmp", "dds", "ximg", "_ximg", "tga" };
     if ( a_strFilePathGuess == "" )
-        return "";
+        return false;
     QFileInfo File( a_strFilePathGuess );
     if ( File.exists() )
         for ( int i = 0, ie = sizeof( arrExts ) / sizeof( arrExts[ 0 ] ); i != ie; ++i )
-            if ( "." + File.suffix().toLower() == arrExts[ i ] )
-                return File.canonicalFilePath();
+            if ( File.suffix().toLower() == arrExts[ i ] )
+                if ( a_imgDest.load( File.canonicalFilePath(), File.suffix().toAscii().data() ) )
+                    return true;
     for ( int i = 0, ie = sizeof( arrExts ) / sizeof( arrExts[ 0 ] ); i != ie; ++i )
     {
-        File.setFile( a_strCurrentDir + QDir::separator() + File.baseName() + arrExts[ i ] );
+        File.setFile( a_strCurrentDir + QDir::separator() + File.baseName() + "." + arrExts[ i ] );
         if ( File.exists() )
-            return File.canonicalFilePath();
+            if ( a_imgDest.load( File.canonicalFilePath(), File.suffix().toAscii().data() ) )
+                return true;
+    }
+    QStringList arrArchives = m_Dialog.getArchives();
+    for ( int i = 0, ie = arrArchives.count(); i != ie; ++i )
+    {
+        mCGenomeVolume * pArchive = m_mapArchives.contains( arrArchives[ i ] ) ? m_mapArchives[ arrArchives[ i ] ] : 0;
+        if ( !pArchive || !pArchive->IsOpen() )
+            continue;
+        mCString strRelativeFilePath;
+        mCMemoryStream streamData;
+        if ( pArchive->FindFile( File.baseName().toAscii().data(), strRelativeFilePath, streamData ) )
+        {
+            File.setFile( strRelativeFilePath.GetText() );
+            QBuffer ImageData;
+            ImageData.setData( static_cast< char const * >( streamData.GetBuffer() ), streamData.GetSize() );
+            if ( a_imgDest.load( &ImageData, File.suffix().toAscii().data() ) )
+                return true;
+        }
     }
     for ( int i = 0, ie = sizeof( arrExts ) / sizeof( arrExts[ 0 ] ); i != ie; ++i )
     {
-        File.setFile( "bitmap:" + File.baseName() + arrExts[ i ] );
+        File.setFile( "bitmap:" + File.baseName() + "." + arrExts[ i ] );
         if ( File.exists() )
-            return File.canonicalFilePath();
+            if ( a_imgDest.load( File.canonicalFilePath(), File.suffix().toAscii().data() ) )
+                return true;
     }
-    return "";
-}
-
-int TextureFinder::getNumSearchPaths( void )
-{
-    return m_arrPaths.count();
-}
-
-void TextureFinder::removeSearchPathAt( int a_iPosition )
-{
-    m_arrPaths.removeAt( a_iPosition );
+    return false;
 }
 
 void TextureFinder::showDialog( void )
@@ -57,20 +64,40 @@ void TextureFinder::showDialog( void )
     m_Dialog.exec();
 }
 
+void TextureFinder::updateArchives( void )
+{
+    QStringList arrArchives = m_Dialog.getArchives();
+    QStringList arrObsoleteArchives;
+    for ( QHash< QString, mCGenomeVolume * >::iterator i = m_mapArchives.begin(), ie = m_mapArchives.end(); i != ie; ++i )
+        if ( !arrArchives.contains( i.key() ) )
+            arrObsoleteArchives.append( i.key() );
+    for ( int i = 0, ie = arrObsoleteArchives.count(); i != ie; ++i )
+        m_mapArchives.remove( ( delete m_mapArchives[ arrObsoleteArchives[ i ] ], arrObsoleteArchives[ i ] ) );
+    for ( int i = 0, ie = arrArchives.count(); i != ie; ++i )
+        if ( !m_mapArchives.contains( arrArchives[ i ] ) )
+            m_mapArchives[ arrArchives[ i ] ] = new mCGenomeVolume( arrArchives[ i ].toAscii().data() );
+}
+
 void TextureFinder::updateSearchPaths( void )
 {
-    QDir::setSearchPaths( "bitmap", m_arrPaths );
+    QStringList arrPaths = m_Dialog.getPaths();
+    QDir::setSearchPaths( "bitmap", arrPaths );
 }
 
 void TextureFinder::loadSettings( QSettings & a_Settings )
 {
-    m_Dialog.addItems( a_Settings.value( "searchpaths" ).toStringList() );
+    m_Dialog.addArchives( a_Settings.value( "archives" ).toStringList() );
+    m_Dialog.addPaths( a_Settings.value( "searchpaths" ).toStringList() );
+    updateArchives();
     updateSearchPaths();
 }
 
 void TextureFinder::saveSettings( QSettings & a_Settings )
 {
-    a_Settings.setValue( "searchpaths", m_arrPaths );
+    QStringList arrArchives = m_Dialog.getArchives();
+    QStringList arrPaths = m_Dialog.getPaths();
+    a_Settings.setValue( "archives", arrArchives );
+    a_Settings.setValue( "searchpaths", arrPaths );
 }
 
 TextureFinder::TextureFinder( void )

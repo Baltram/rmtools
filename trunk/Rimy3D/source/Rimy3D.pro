@@ -11,6 +11,9 @@ LIBS += ../../QImageIOPlugin/build/tgaplugin.lib
 LIBS += ../../QImageIOPlugin/build/ddsplugin.lib
 LIBS += ../../QImageIOPlugin/build/ximgplugin.lib
 
+INCLUDEPATH += "$$[QT_INSTALL_PREFIX]/src/3rdparty/zlib" \
+               "$$[QT_INSTALL_PREFIX]/../$$[QT_VERSION]/src/3rdparty/zlib"
+
 include("../../mimicry/source/Mimicry.pri")
 include("GLC_lib.pri")
 
