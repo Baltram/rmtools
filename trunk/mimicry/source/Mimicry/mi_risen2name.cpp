@@ -18,7 +18,7 @@ mCRisen2Name::mCRisen2Name( mCName const & a_nameSource ) :
         Initialize();
 }
 
-mCIOStreamBinary & mCRisen2Name::operator << ( mCIOStreamBinary & a_streamSource )
+mCIStreamBinary & mCRisen2Name::operator << ( mCIStreamBinary & a_streamSource )
 {
     MIU32 u32ID = a_streamSource.ReadU32();
     mCName const & nameSource = s_mapRisen2Names[ u32ID ];
@@ -28,7 +28,7 @@ mCIOStreamBinary & mCRisen2Name::operator << ( mCIOStreamBinary & a_streamSource
     return a_streamSource;
 }
 
-mCIOStreamBinary & mCRisen2Name::operator >> ( mCIOStreamBinary & a_streamDest ) const
+mCOStreamBinary & mCRisen2Name::operator >> ( mCOStreamBinary & a_streamDest ) const
 {
     a_streamDest << GetRisen2ID();
     return a_streamDest;
@@ -57,12 +57,12 @@ void mCRisen2Name::RegisterRisen2NameStrings( MILPCChar const * a_pStrings, MIUI
     }
 }
 
-mCIOStreamBinary & operator >> ( mCIOStreamBinary & a_streamSource, mCRisen2Name & a_nameDest )
+mCIStreamBinary & operator >> ( mCIStreamBinary & a_streamSource, mCRisen2Name & a_nameDest )
 {
     return ( a_nameDest << a_streamSource );
 }
 
-mCIOStreamBinary & operator << ( mCIOStreamBinary & a_streamDest, mCRisen2Name const & a_nameSource )
+mCOStreamBinary & operator << ( mCOStreamBinary & a_streamDest, mCRisen2Name const & a_nameSource )
 {
     return ( a_nameSource >> a_streamDest );
 }

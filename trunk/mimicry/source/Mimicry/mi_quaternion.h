@@ -42,9 +42,9 @@ private:
 
 MI_UNNAMED_STRUCTS_NO_WARNINGS_END
 
-mCIOStreamBinary & operator >> ( mCIOStreamBinary & a_streamSource, mCQuaternion & a_quatDest );
-mCIOStreamBinary & operator << ( mCQuaternion & a_quatDest, mCIOStreamBinary & a_streamSource );
-mCIOStreamBinary & operator << ( mCIOStreamBinary & a_streamDest, mCQuaternion const & a_quatSource );
-mCIOStreamBinary & operator >> ( mCQuaternion const & a_quatSource, mCIOStreamBinary & a_streamDest );
+mCIStreamBinary & operator >> ( mCIStreamBinary & a_streamSource, mCQuaternion & a_quatDest );
+mCIStreamBinary & operator << ( mCQuaternion & a_quatDest, mCIStreamBinary & a_streamSource );
+mCOStreamBinary & operator << ( mCOStreamBinary & a_streamDest, mCQuaternion const & a_quatSource );
+mCOStreamBinary & operator >> ( mCQuaternion const & a_quatSource, mCOStreamBinary & a_streamDest );
 
 #endif

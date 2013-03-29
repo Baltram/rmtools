@@ -236,7 +236,7 @@ void mCVec3::Swap( mCVec3 & a_vecOther )
     g_swap( m_fZ, a_vecOther.m_fZ );
 }
 
-mCIOStreamBinary & operator >> ( mCIOStreamBinary & a_streamSource, mCVec3 & a_vecDest )
+mCIStreamBinary & operator >> ( mCIStreamBinary & a_streamSource, mCVec3 & a_vecDest )
 {
     a_streamSource >> a_vecDest.AccessX();
     a_streamSource >> a_vecDest.AccessY();
@@ -244,12 +244,12 @@ mCIOStreamBinary & operator >> ( mCIOStreamBinary & a_streamSource, mCVec3 & a_v
     return a_streamSource;
 }
 
-mCIOStreamBinary & operator << ( mCVec3 & a_vecDest, mCIOStreamBinary & a_streamSource )
+mCIStreamBinary & operator << ( mCVec3 & a_vecDest, mCIStreamBinary & a_streamSource )
 {
     return ( a_streamSource >> a_vecDest );
 }
 
-mCIOStreamBinary & operator << ( mCIOStreamBinary & a_streamDest, mCVec3 const & a_vecSource )
+mCOStreamBinary & operator << ( mCOStreamBinary & a_streamDest, mCVec3 const & a_vecSource )
 {
     a_streamDest << a_vecSource.GetX();
     a_streamDest << a_vecSource.GetY();
@@ -257,7 +257,7 @@ mCIOStreamBinary & operator << ( mCIOStreamBinary & a_streamDest, mCVec3 const &
     return a_streamDest;
 }
 
-mCIOStreamBinary & operator >> ( mCVec3 const & a_vecSource, mCIOStreamBinary & a_streamDest )
+mCOStreamBinary & operator >> ( mCVec3 const & a_vecSource, mCOStreamBinary & a_streamDest )
 {
     return ( a_streamDest << a_vecSource );
 }

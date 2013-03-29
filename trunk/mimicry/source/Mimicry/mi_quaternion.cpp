@@ -144,7 +144,7 @@ void mCQuaternion::Swap( mCQuaternion & a_quatOther )
     g_memswap( *this, a_quatOther );
 }
 
-mCIOStreamBinary & operator >> ( mCIOStreamBinary & a_streamSource, mCQuaternion & a_quatDest )
+mCIStreamBinary & operator >> ( mCIStreamBinary & a_streamSource, mCQuaternion & a_quatDest )
 {
     a_streamSource >> a_quatDest.AccessX();
     a_streamSource >> a_quatDest.AccessY();
@@ -153,12 +153,12 @@ mCIOStreamBinary & operator >> ( mCIOStreamBinary & a_streamSource, mCQuaternion
     return a_streamSource;
 }
 
-mCIOStreamBinary & operator << ( mCQuaternion & a_quatDest, mCIOStreamBinary & a_streamSource )
+mCIStreamBinary & operator << ( mCQuaternion & a_quatDest, mCIStreamBinary & a_streamSource )
 {
     return ( a_streamSource >> a_quatDest );
 }
 
-mCIOStreamBinary & operator << ( mCIOStreamBinary & a_streamDest, mCQuaternion const & a_quatSource )
+mCOStreamBinary & operator << ( mCOStreamBinary & a_streamDest, mCQuaternion const & a_quatSource )
 {
     a_streamDest << a_quatSource.GetX();
     a_streamDest << a_quatSource.GetY();
@@ -167,7 +167,7 @@ mCIOStreamBinary & operator << ( mCIOStreamBinary & a_streamDest, mCQuaternion c
     return a_streamDest;
 }
 
-mCIOStreamBinary & operator >> ( mCQuaternion const & a_quatSource, mCIOStreamBinary & a_streamDest )
+mCOStreamBinary & operator >> ( mCQuaternion const & a_quatSource, mCOStreamBinary & a_streamDest )
 {
     return ( a_streamDest << a_quatSource );
 }

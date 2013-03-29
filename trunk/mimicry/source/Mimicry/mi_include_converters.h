@@ -3,6 +3,7 @@
 
 #include "mi_include_scene.h"
 #include "mi_include_streams.h"
+#include "mi_include_variant.h"
 
 #include "mi_converters.h"
 #include "mi_coordshifter.h"
@@ -20,5 +21,6 @@
 #include "mi_xcmshreader.h"
 #include "mi_genomefile.h"
 #include "mi_genomevolume.h"
+#include "mi_genomematerial.h"
 
 #endif

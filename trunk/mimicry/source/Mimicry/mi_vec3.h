@@ -61,9 +61,9 @@ private:
 
 MI_UNNAMED_STRUCTS_NO_WARNINGS_END
 
-mCIOStreamBinary & operator >> ( mCIOStreamBinary & a_streamSource, mCVec3 & a_vecDest );
-mCIOStreamBinary & operator << ( mCVec3 & a_vecDest, mCIOStreamBinary & a_streamSource );
-mCIOStreamBinary & operator << ( mCIOStreamBinary & a_streamDest, mCVec3 const & a_vecSource );
-mCIOStreamBinary & operator >> ( mCVec3 const & a_vecSource, mCIOStreamBinary & a_streamDest );
+mCIStreamBinary & operator >> ( mCIStreamBinary & a_streamSource, mCVec3 & a_vecDest );
+mCIStreamBinary & operator << ( mCVec3 & a_vecDest, mCIStreamBinary & a_streamSource );
+mCOStreamBinary & operator << ( mCOStreamBinary & a_streamDest, mCVec3 const & a_vecSource );
+mCOStreamBinary & operator >> ( mCVec3 const & a_vecSource, mCOStreamBinary & a_streamDest );
 
 #endif

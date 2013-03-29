@@ -215,6 +215,8 @@ mEResult mCXmacReader::ReadXmacFileData( mCScene & a_sceneDest, mCIOStreamBinary
     }
     a_sceneDest.AddNewMultiMaterial().Swap( matMultiDest );
     a_sceneDest.IdentifyBones();
+    if ( mCGenomeMaterial::AccessMaterialLookupHint() )
+        mCGenomeMaterial::LoadRisenMaterials( a_sceneDest );
     a_sceneDest.SetName( strSceneName );
     return mEResult_Ok;
 }

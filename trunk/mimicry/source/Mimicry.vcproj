@@ -614,6 +614,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Mimicry\mi_genomematerial.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Mimicry\mi_genomematerial.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Mimicry\mi_genomevolume.cpp"
 				>
 			</File>

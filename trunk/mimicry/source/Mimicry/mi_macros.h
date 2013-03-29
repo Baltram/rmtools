@@ -46,4 +46,6 @@
 #define MI_PASTE_TOKENS_( A, B ) MI_PASTE_TOKENS__( A, B )
 #define MI_PASTE_TOKENS__( A, B ) A##B
 
+#define MI_C_ARRAYSIZE( A ) ( sizeof( A ) / sizeof ( *( A ) ) )
+
 #endif

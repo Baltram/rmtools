@@ -22,7 +22,7 @@ mCGenomeFile & mCGenomeFile::operator >> ( mCString & a_strDest )
     return *this;
 }
 
-mCGenomeFile & mCGenomeFile::operator << ( mCString & a_strSource )
+mCGenomeFile & mCGenomeFile::operator << ( mCString const & a_strSource )
 {
     Write( a_strSource );
     return *this;
@@ -40,6 +40,11 @@ void mCGenomeFile::EndWrite( void )
     for ( MIUInt u = 0, ue = m_arrStrings.GetCount(); u != ue; ++u )
         *m_pStream << static_cast< MIU16 >( m_arrStrings[ u ].GetLength() ) << m_arrStrings[ u ];
     m_bIsOpen = MIFalse;
+}
+
+MIBool mCGenomeFile::IsArchiveFile( void )
+{
+    return m_bIsArchiveFile;
 }
 
 void mCGenomeFile::Read( mCString & a_strSource )

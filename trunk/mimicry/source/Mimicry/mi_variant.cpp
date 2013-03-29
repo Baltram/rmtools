@@ -37,16 +37,6 @@ mCVariant & mCVariant::operator = ( mCVariant const & a_vSource )
     return *this;
 }
 
-MIBool mCVariant::operator == ( mCVariant const & a_vOther ) const
-{
-    return SPool::Compare( m_idElem, a_vOther.m_idElem );
-}
-
-MIBool mCVariant::operator != ( mCVariant const & a_vOther ) const
-{
-    return !( *this == a_vOther );
-}
-
 void mCVariant::CondenseMemory( void )
 {
     SPool::CondenseMemory();
@@ -56,6 +46,13 @@ void mCVariant::Clear( void )
 {
     if ( m_idElem.IsValid() )
         SPool::Free( m_idElem );
+}
+
+MIBool mCVariant::IsOfType( mCVariant const & a_vOther ) const
+{
+    if ( IsEmpty() || a_vOther.IsEmpty() )
+        return MIFalse;
+    return SPool::CompareType( m_idElem, a_vOther.m_idElem );
 }
 
 void mCVariant::Swap( mCVariant & a_vOther )

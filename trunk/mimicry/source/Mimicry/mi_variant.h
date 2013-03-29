@@ -8,17 +8,17 @@ public:
     mCVariant( mCVariant const & a_vSource );
    ~mCVariant( void );
 public:
-    mCVariant & operator =  ( mCVariant const & a_vSource );
-    MIBool      operator == ( mCVariant const & a_vOther ) const;
-    MIBool      operator != ( mCVariant const & a_vOther ) const;
+    mCVariant & operator = ( mCVariant const & a_vSource );
 public:
     static void CondenseMemory( void );
 public:
                            void     Clear( void );
+    template< typename T > MIBool   Compare( mCVariant const & a_vSource ) const;
     template< typename T > T        GetData( void ) const;
     template< typename T > mEResult GetData( T & a_Dest ) const;
                            MIBool   IsEmpty( void ) const;
     template< typename T > MIBool   IsOfType( void ) const;
+                           MIBool   IsOfType( mCVariant const & a_vOther ) const;
     template< typename T > void     SetData( T const & a_Source );
                            void     Swap( mCVariant & a_vOther );
     template< typename T > mEResult SwapData( T & a_Element );
@@ -52,7 +52,7 @@ public:
 public:
     template< typename T > static T *    Access( SId const & a_idID );
                            static SId    Clone( SId const & a_idID );
-                           static MIBool Compare( SId const & a_idLeft, SId const & a_idRight );
+                           static MIBool CompareType( SId const & a_idLeft, SId const & a_idRight );
                            static void   CondenseMemory( void );
                            static void   Free( SId & a_idID );
     template< typename T > static SId    New( T const * a_pData = 0 );
@@ -65,15 +65,13 @@ private:
         template< typename T > static SFunctionAccessor         GetObject( void );
         template< typename T > static SFunctionAccessor const * GetPointer( void );
     public:
-        void   ( * m_funcClone )( SId &, SId const & );
-        void   ( * m_funcCollapse )( MIUInt );
-        MIBool ( * m_funcCompare )( SId const &, SId const & );
-        void   ( * m_funcFree )( SPool *, SId & );
+        void ( * m_funcClone )( SId &, SId const & );
+        void ( * m_funcCollapse )( MIUInt );
+        void ( * m_funcFree )( SPool *, SId & );
     };
 private:
     template< typename T > static void    CloneTemplated( SId & a_idDest, SId const & a_idSource );
     template< typename T > static void    Collapse( MIUInt a_uPoolIndex );
-    template< typename T > static MIBool  CompareTemplated( SId const & a_idLeft, SId const & a_idRight );
     template< typename T > static void    FreeTemplated( SPool * a_pPool, SId & a_idID );
                            static SPool * GetPool( SId const & a_idID );
     template< typename T > static void    HandleVacantPoolIndex( MIUInt & a_uVacantPoolIndex );

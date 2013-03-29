@@ -149,6 +149,8 @@ mEResult mCXcmshReader::ReadXcmshFileData( mCScene & a_sceneDest, mCIOStreamBina
     meshDest.WeldVertices();
     mCMaxRisenCoordShifter::GetInstance().ShiftMeshCoords( meshDest );
     nodeDest.SwapMesh( meshDest );
+    if ( mCGenomeMaterial::AccessMaterialLookupHint() )
+        mCGenomeMaterial::LoadGothic3Materials( a_sceneDest );
     a_sceneDest.SetName( strSceneName );
     return mEResult_Ok;
 }
