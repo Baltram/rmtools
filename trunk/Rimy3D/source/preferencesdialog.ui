@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>302</width>
-    <height>237</height>
+    <width>310</width>
+    <height>291</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -36,6 +36,37 @@
     <widget class="QCheckBox" name="cbGizmos">
      <property name="text">
       <string>Show Transform Gizmos</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="hl3">
+     <item>
+      <widget class="QCheckBox" name="cbLookUpMaterials">
+       <property name="text">
+        <string>Look Up Gothic 3/Risen Materials</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pbLookUpMaterials">
+       <property name="text">
+        <string>Look Up Now</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QCheckBox" name="cbLookUpTextures">
+     <property name="text">
+      <string>Look Up Textures</string>
      </property>
      <property name="checked">
       <bool>true</bool>

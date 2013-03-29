@@ -20,6 +20,7 @@ MainWindow::MainWindow( QWidget * a_pParent ) :
     setAcceptDrops( true );
     updateLanguage();
     connect( &m_SceneInfo, SIGNAL( sceneChanged( void ) ), this, SLOT( onSceneChanged( void ) ) );
+    connect( &PreferencesDialog::getInstance(), SIGNAL( materialLookupRequested( void ) ), &m_SceneInfo, SLOT( lookUpGenomeMaterials( void ) ) );
     connect( Rimy3D::getInstance(), SIGNAL( settingsSaving( QSettings & ) ), this, SLOT( saveSettings( QSettings & ) ) );
     connect( Rimy3D::getInstance(), SIGNAL( settingsLoading( QSettings & ) ), this, SLOT( loadSettings( QSettings & ) ) );
     TextureFinder::getInstance();

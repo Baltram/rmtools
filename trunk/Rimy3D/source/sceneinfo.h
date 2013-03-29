@@ -29,6 +29,7 @@ signals:
     void sceneChanged( void );
 public slots:
     void loadSettings( QSettings & a_Settings );
+    void lookUpGenomeMaterials( void );
     void saveSettings( QSettings & a_Settings );
 private:
     static void errorMessageTranslations( void );
