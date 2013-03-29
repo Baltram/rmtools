@@ -471,12 +471,13 @@ MIUInt mCGenomeMaterial::GetReferencedColorSources( MIUInt a_uShaderElementIndex
         return 0;
     MILPCByte pColorSrcProxy = ShaderElement.m_bufClassData.GetMemory() + 2 + 4;
     MIUInt const uColorSrcProxySize = reinterpret_cast< MIU32 const * >( pColorSrcProxy )[ -1 ] >= 666 ? 32 : 24;
+    pColorSrcProxy += uColorSrcProxySize - 24;
     for ( MIUInt u = uCount, v, ve; u--; )
     {
         SGuid const & ProxyToken = *reinterpret_cast< SGuid const * >( pColorSrcProxy + uColorSrcProxySize * u );
         for ( v = 0, ve = GetShaderElementCount(); ProxyToken.m_bValid && v != ve; ++v )
         {
-            SGuid Token = GetShaderElementToken( GetShaderElement( a_uShaderElementIndex ).m_bufClassData );
+            SGuid Token = GetShaderElementToken( GetShaderElement( v ).m_bufClassData );
             if ( Token.m_u64GuidHigh == ProxyToken.m_u64GuidHigh && Token.m_u64GuidLow == ProxyToken.m_u64GuidLow )
             {
                 a_arrShaderElementIndices[ u ] = v;
