@@ -18,9 +18,12 @@ public:
 public:
     bool    autoUpdate( void ) const;
     QString defaultImageFileExt( void ) const;
+    bool    lookUpTextures( void ) const;
     bool    removeAscPrefixes( void ) const;
     bool    removeXmacCollisionMesh( void ) const;
     bool    showTransformGizmos( void ) const;
+signals:
+    void materialLookupRequested( void );
 protected:
     void changeEvent( QEvent * a_pEvent );
 private:
@@ -30,6 +33,8 @@ private:
     void updateLanguage( void );
 private slots:
     void loadSettings( QSettings & a_Settings );
+    void on_cbLookUpMaterials_toggled( bool a_bChecked );
+    void on_pbLookUpMaterials_clicked( void );
     void on_pbOk_clicked( void );
     void on_pbRestoreDefaults_clicked( void );
     void on_pbUpdate_clicked( void );

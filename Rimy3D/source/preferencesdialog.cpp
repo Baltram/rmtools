@@ -1,6 +1,7 @@
 #include "preferencesdialog.h"
 #include "ui_preferencesdialog.h"
 #include "rimy3d.h"
+#include "Mimicry.h"
 
 PreferencesDialog & PreferencesDialog::getInstance( void )
 {
@@ -16,6 +17,11 @@ bool PreferencesDialog::autoUpdate( void ) const
 QString PreferencesDialog::defaultImageFileExt( void ) const
 {
     return m_pUi->cobImgExt->currentText().toLower();
+}
+
+bool PreferencesDialog::lookUpTextures( void ) const
+{
+    return m_pUi->cbLookUpTextures->isChecked();
 }
 
 bool PreferencesDialog::removeAscPrefixes( void ) const
@@ -74,7 +80,19 @@ void PreferencesDialog::loadSettings( QSettings & a_Settings )
     m_pUi->cbAutoUpdate->setChecked( iAutoUpdate != 0 );
     m_pUi->cbGizmos->setChecked( a_Settings.value( "cbGizmos", true ).toBool() );
     m_pUi->cbXmacCollisionMesh->setChecked( a_Settings.value( "cbXmacCollisionMesh", true ).toBool() );
+    m_pUi->cbLookUpMaterials->setChecked( a_Settings.value( "cbLookUpMaterials", true ).toBool() );
+    m_pUi->cbLookUpTextures->setChecked( a_Settings.value( "cbLookUpTextures", true ).toBool() );
     a_Settings.endGroup();
+}
+
+void PreferencesDialog::on_cbLookUpMaterials_toggled( bool a_bChecked )
+{
+    mCGenomeMaterial::AccessMaterialLookupHint() = a_bChecked;
+}
+
+void PreferencesDialog::on_pbLookUpMaterials_clicked( void )
+{
+    emit materialLookupRequested();
 }
 
 void PreferencesDialog::on_pbOk_clicked( void )
@@ -105,5 +123,7 @@ void PreferencesDialog::saveSettings( QSettings & a_Settings )
     a_Settings.setValue( "cbAutoUpdate", m_pUi->cbAutoUpdate->isChecked() ? 2 : 0 );
     a_Settings.setValue( "cbGizmos", m_pUi->cbGizmos->isChecked() );
     a_Settings.setValue( "cbXmacCollisionMesh", m_pUi->cbXmacCollisionMesh->isChecked() );
+    a_Settings.setValue( "cbLookUpMaterials", m_pUi->cbLookUpMaterials->isChecked() );
+    a_Settings.setValue( "cbLookUpTextures", m_pUi->cbLookUpTextures->isChecked() );
     a_Settings.endGroup();
 }

@@ -40,7 +40,7 @@ GLC_World SceneInfo::buildGlcWorld( void )
             mCTexMap const * pDiffuseMap = mtlSub.GetTextureMapAt( mCMaterial::EMapType_Diffuse );
             QImage Texture;
             if ( pDiffuseMap )
-                TextureFinder::getInstance().findTexture( pDiffuseMap->GetTextureFilePath().GetText(), getCurrentDir(), Texture );
+                TextureFinder::getInstance().findTexture( pDiffuseMap->GetTextureFilePath().GetText(), getCurrentDir(), Texture, PreferencesDialog::getInstance().lookUpTextures() );
             GLC_Texture * pTexture = Texture.isNull() ? new GLC_Texture : new GLC_Texture( Texture );
             pTexture->setMaxTextureSize( QSize( 2048, 2048 ) );
             arrMaterialArrays[ i ].append( new GLC_Material( pTexture, mtlSub.GetName().GetText() ) );
@@ -330,6 +330,15 @@ void SceneInfo::loadSettings( QSettings & a_Settings )
     m_strCurrentDir = a_Settings.value( "dir", "" ).toString();
     m_strCurrentSaveDir = a_Settings.value( "savedir", "" ).toString();
     a_Settings.endGroup();
+}
+
+void SceneInfo::lookUpGenomeMaterials( void )
+{
+    if ( m_sceneCurrentScene.GetNumMaterials() == 0 )
+        return;
+    mCGenomeMaterial::LoadGothic3Materials( m_sceneCurrentScene );
+    mCGenomeMaterial::LoadRisenMaterials( m_sceneCurrentScene );
+    emit sceneChanged();
 }
 
 void SceneInfo::saveSettings( QSettings & a_Settings )

@@ -163,7 +163,7 @@
   </action>
   <action name="actionConfigure_Bitmap_Paths">
    <property name="text">
-    <string>Configure Bitmap Paths...</string>
+    <string>Configure Search Paths...</string>
    </property>
   </action>
   <action name="actionFix_GMax_Installation">
