@@ -209,6 +209,8 @@ mEResult mCXactReader::ReadXactFileData( mCScene & a_sceneDest, mCIOStreamBinary
         for ( MIUInt u = a_sceneDest.GetNumNodes(); u--; )
             InitNode( a_sceneDest, u, arrParentNames, arrIsNodeInitialized );
     a_sceneDest.IdentifyBones();
+    if ( mCGenomeMaterial::AccessMaterialLookupHint() )
+        mCGenomeMaterial::LoadGothic3Materials( a_sceneDest );
     a_sceneDest.SetName( strSceneName );
     return mEResult_Ok;
 }

@@ -1,7 +1,13 @@
-inline
-MIBool mCVariant::IsEmpty( void ) const
+template< typename T >
+MIBool mCVariant::Compare( mCVariant const & a_vSource ) const
 {
-    return !m_idElem.IsValid();
+    if ( IsEmpty() || a_vSource.IsEmpty() )
+        return MIFalse;
+    T * pElement1 = SPool::Access< T >( m_idElem );
+    T * pElement2 = SPool::Access< T >( a_vSource.m_idElem );
+    if ( pElement1 && pElement2 )
+        return *pElement1 == *pElement2;
+    return MIFalse;
 }
 
 template< typename T >
@@ -22,6 +28,12 @@ mEResult mCVariant::GetData( T & a_Dest ) const
         return mEResult_False;
     a_Dest = *pElement;
     return mEResult_Ok;
+}
+
+inline
+MIBool mCVariant::IsEmpty( void ) const
+{
+    return !m_idElem.IsValid();
 }
 
 template< typename T >
@@ -97,9 +109,9 @@ mCVariant::SId mCVariant::SPool::Clone( SId const & a_idID )
 }
 
 inline
-MIBool mCVariant::SPool::Compare( SId const & a_idLeft, SId const & a_idRight )
+MIBool mCVariant::SPool::CompareType( SId const & a_idLeft, SId const & a_idRight )
 {
-    return ( *( GetPool( a_idLeft )->m_FunctionAccessor->m_funcCompare ) )( a_idLeft, a_idRight );
+    return GetPool( a_idLeft )->m_FunctionAccessor == GetPool( a_idRight )->m_FunctionAccessor;
 }
 
 inline
@@ -140,7 +152,6 @@ mCVariant::SPool::SFunctionAccessor mCVariant::SPool::SFunctionAccessor::GetObje
     SFunctionAccessor Result;
     Result.m_funcClone = &SPool::CloneTemplated< T >;
     Result.m_funcCollapse = &SPool::Collapse< T >;
-    Result.m_funcCompare = &SPool::CompareTemplated< T >;
     Result.m_funcFree = &SPool::FreeTemplated< T >;
     return Result;
 }
@@ -205,16 +216,6 @@ void mCVariant::SPool::Collapse( MIUInt a_uPoolIndex )
     --s_uCollapsablePoolCount;
 #endif
     s_arrCollapsedPoolIndices.AddNew() = a_uPoolIndex;
-}
-
-template< typename T >
-MIBool mCVariant::SPool::CompareTemplated( SId const & a_idLeft, SId const & a_idRight )
-{
-    T * ElemLeft = Access< T >( a_idLeft );
-    T * ElemRight = Access< T >( a_idRight );
-    if ( ElemLeft && ElemRight )
-        return ( *ElemLeft == *ElemRight );
-    return MIFalse;
 }
 
 template< typename T >

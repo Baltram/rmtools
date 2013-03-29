@@ -114,7 +114,7 @@ void mCFace::Swap( mCFace & a_faceOther )
     g_swap( m_uC, a_faceOther.m_uC );
 }
 
-mCIOStreamBinary & operator >> ( mCIOStreamBinary & a_streamSource, mCFace & a_faceDest )
+mCIStreamBinary & operator >> ( mCIStreamBinary & a_streamSource, mCFace & a_faceDest )
 {
     a_streamSource >> g_32( a_faceDest.AccessA() );
     a_streamSource >> g_32( a_faceDest.AccessB() );
@@ -122,12 +122,12 @@ mCIOStreamBinary & operator >> ( mCIOStreamBinary & a_streamSource, mCFace & a_f
     return a_streamSource;
 }
 
-mCIOStreamBinary & operator << ( mCFace & a_faceDest, mCIOStreamBinary & a_streamSource )
+mCIStreamBinary & operator << ( mCFace & a_faceDest, mCIStreamBinary & a_streamSource )
 {
     return ( a_streamSource >> a_faceDest );
 }
 
-mCIOStreamBinary & operator << ( mCIOStreamBinary & a_streamDest, mCFace const & a_faceSource )
+mCOStreamBinary & operator << ( mCOStreamBinary & a_streamDest, mCFace const & a_faceSource )
 {
     a_streamDest << g_32( a_faceSource.GetA() );
     a_streamDest << g_32( a_faceSource.GetB() );
@@ -135,7 +135,7 @@ mCIOStreamBinary & operator << ( mCIOStreamBinary & a_streamDest, mCFace const &
     return a_streamDest;
 }
 
-mCIOStreamBinary & operator >> ( mCFace const & a_faceSource, mCIOStreamBinary & a_streamDest )
+mCOStreamBinary & operator >> ( mCFace const & a_faceSource, mCOStreamBinary & a_streamDest )
 {
     return ( a_streamDest << a_faceSource );
 }

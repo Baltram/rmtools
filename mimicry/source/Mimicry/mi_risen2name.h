@@ -8,8 +8,8 @@ public:
     explicit mCRisen2Name( mCString const & a_strString = "" );
              mCRisen2Name( mCName const & a_nameSource );
 public:
-    mCIOStreamBinary & operator << ( mCIOStreamBinary & a_streamSource );
-    mCIOStreamBinary & operator >> ( mCIOStreamBinary & a_streamDest ) const;
+    mCIStreamBinary & operator << ( mCIStreamBinary & a_streamSource );
+    mCOStreamBinary & operator >> ( mCOStreamBinary & a_streamDest ) const;
 public:
     MIU32 GetRisen2ID( void ) const;
     void  RegisterRisen2NameStrings( MILPCChar const * a_pStrings, MIUInt a_uCount );
@@ -24,7 +24,7 @@ private:
     static MILPCChar const        s_arrRisen2Strings[];
 };
 
-mCIOStreamBinary & operator >> ( mCIOStreamBinary & a_streamSource, mCRisen2Name & a_nameDest );
-mCIOStreamBinary & operator << ( mCIOStreamBinary & a_streamDest, mCRisen2Name const & a_nameSource );
+mCIStreamBinary & operator >> ( mCIStreamBinary & a_streamSource, mCRisen2Name & a_nameDest );
+mCOStreamBinary & operator << ( mCOStreamBinary & a_streamDest, mCRisen2Name const & a_nameSource );
 
 #endif

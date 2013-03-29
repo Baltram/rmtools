@@ -9,9 +9,10 @@ public:
     mCIOStreamBinary const & operator () ( void ) const;
     mCIOStreamBinary       & operator () ( void );
     mCGenomeFile & operator >> ( mCString & a_strDest );
-    mCGenomeFile & operator << ( mCString & a_strSource );
+    mCGenomeFile & operator << ( mCString const & a_strSource );
 public:
     void     EndWrite( void );
+    MIBool   IsArchiveFile( void );
     void     Read( mCString & a_strSource );
     mCString ReadString( void );
     void     StartRead( void );
