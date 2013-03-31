@@ -6,21 +6,27 @@ class mCGenomeMaterial
 public:
     enum EColorSourceType
     {
+        EColorSourceType_Absorbation,
+        EColorSourceType_AlphaDisolve,
+        EColorSourceType_Clouds,
         EColorSourceType_Diffuse,
+        EColorSourceType_Distortion,
+        EColorSourceType_FlowingBump,
+        EColorSourceType_LightEmission,
+        EColorSourceType_Normal,
         EColorSourceType_Opacity,
+        EColorSourceType_Reflection,
         EColorSourceType_SelfIllumination,
         EColorSourceType_Specular,
         EColorSourceType_SpecularPower,
-        EColorSourceType_Normal,
-        EColorSourceType_Distortion,
-        EColorSourceType_LightEmission,
+        EColorSourceType_StaticBump,
         EColorSourceType_Count,
         EColorSourceType_Invalid
     };
     enum ESpecialShaderElementIndex
     {
-        ESpecialShaderElementIndex_ResourceShaderMaterial = 0xAAAAAAAA,
-        ESpecialShaderElementIndex_ShaderDefault          = 0xBBBBBBBB
+        ESpecialShaderElementIndex_MaterialResourceObject = 0xAAAAAAAA,
+        ESpecialShaderElementIndex_ShaderObject           = 0xBBBBBBBB
     };
     typedef void ( * MIFMaterialFileFinderFunction )( MILPCChar a_pcFileName, MILPCChar a_pcFileExt, mCIOStreamBinary *& a_pDest );
     struct SEnumContainer;
@@ -38,7 +44,7 @@ public:
     static void     RegisterMaterialFileFinderFunction( MIFMaterialFileFinderFunction a_pfuncMaterialFileFinderFunction );
 public:
     EColorSourceType  GetColorSourceType( MIUInt a_uShaderElementIndex ) const;
-    MIUInt            GetReferencedColorSources( MIUInt a_uShaderElementIndex, MIUInt ( & a_arrShaderElementIndices )[ 3 ] ) const;
+    void              GetReferencedShaderElements( MIUInt a_uShaderElementIndex, mTArray< MIUInt > & a_arrReferencedShaderElementIndices ) const;
     void              GetMaterialData( mCMaterial & a_matDest ) const;
     SProperty const & GetProperty( MIUInt a_uShaderElementIndex, MIUInt a_uPropertyIndex ) const;
     MIUInt            GetPropertyCount( MIUInt a_uShaderElementIndex ) const;
@@ -68,8 +74,8 @@ private:
     static MIFMaterialFileFinderFunction s_pfuncMaterialFileFinderFunction;
 private:
     mCBuffer                   m_bufResourceHeader;
-    SPropertyObject *          m_pResourceShaderMaterial;
-    SPropertyObject *          m_pShaderDefault;
+    SPropertyObject *          m_pMaterialResourceObject;
+    SPropertyObject *          m_pShaderObject;
     mTArray< SPropertyObject > m_arrShaderElements;
     MIBool                     m_bOldVersion;
 };
@@ -93,7 +99,7 @@ struct mCGenomeMaterial::SPropertyObject
     mCString             m_strClassName;
     MIUInt               m_uSize;
     MIUInt               m_uVersion;
-    mCBuffer             m_bufClassData;
+    mCMemoryStream       m_streamClassData;
     mTArray< SProperty > m_arrProperties;
 };
 
