@@ -5,6 +5,7 @@ mCXactWriter::SOptions::SOptions( void ) :
     m_bIndirectVertexMatching( MITrue ),
     m_pBaseXactStream( 0 )
 {
+    m_fMaxAngleInDegrees = 180.0f;
 }
 
 namespace
@@ -39,14 +40,20 @@ namespace
         a_streamSource.Seek( uSourceOffsetOld );
     }
 
-    void WriteMeshSection( mCScene const & a_sceneSource, MIUInt a_uMeshIndex, MIUInt a_uFxaMeshIndex, MIUInt a_uMeshMaterialCount, MIU32 a_u32DW1, MIU32 a_u32DW2, mCIOStreamBinary & a_streamDest, mCIOStreamBinary & a_streamMeshExtraDataDest )
+    void WriteMeshSection( mCScene const & a_sceneSource, MIUInt a_uMeshIndex, MIUInt a_uFxaMeshIndex, MIUInt a_uMeshMaterialCount, MIU32 a_u32DW1, MIU32 a_u32DW2, mCIOStreamBinary & a_streamDest, mCIOStreamBinary & a_streamMeshExtraDataDest, mCXactWriter::SOptions const & a_Options )
     {
         mCString const strMaterialName = a_sceneSource.GetNodeAt( a_uMeshIndex )->GetMaterialName();
         mCMesh meshSource( *a_sceneSource.GetNodeAt( a_uMeshIndex )->GetMesh() );
         mCMaxFace * pFacesTemp = meshSource.AccessFaces();
         for ( MIUInt u = meshSource.GetNumFaces(); u--; pFacesTemp[ u ].AccessMatID() %= a_uMeshMaterialCount );
         meshSource.SortFacesByMatID();
-        meshSource.CalcVNormalsByAngle( 180.0f );
+        if ( !meshSource.HasVNFaces() || a_Options.m_bRecalculateVertexNormals )
+        {
+            if ( a_Options.m_bUseAnglesInsteadOfSGs )
+                meshSource.CalcVNormalsByAngle( a_Options.m_fMaxAngleInDegrees );
+            else
+                meshSource.CalcVNormalsBySGs();
+        }
         if ( !meshSource.HasTVFaces() )
             meshSource.CalcFakeTexturing();
         meshSource.CalcVTangents();
@@ -358,7 +365,7 @@ mEResult mCXactWriter::WriteXactFileData( mCScene const & a_sceneSource, mCIOStr
         for ( MIUInt u = 0; u != uMeshMaterialCount; ++u )
             WriteMaterialSection( pFirstMeshMaterial[ u ], u, streamMaterialSections );
     }
-    WriteMeshSection( a_sceneSource, uMeshIndex, uFxaMeshIndex, uMeshMaterialCount, u32DW1, u32DW2, streamMeshSection, streamMeshExtraData );
+    WriteMeshSection( a_sceneSource, uMeshIndex, uFxaMeshIndex, uMeshMaterialCount, u32DW1, u32DW2, streamMeshSection, streamMeshExtraData, a_Options );
     if ( !WriteSkinSection( a_sceneSource, uMeshIndex, uFxaMeshIndex, arrFxaNodeNames, arrOriginalVerts, arrOriginalSkinSection, streamSkinSection, a_Options ) )
         return MI_ERROR( mCConverterError, EMiscellaneous, "Skinning includes bone not present in base .xact file." ), mEResult_False;
 

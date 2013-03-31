@@ -5,6 +5,7 @@ mCXmacWriter::SOptions::SOptions( void ) :
     m_bIndirectVertexMatching( MITrue ),
     m_pBaseXmacStream( 0 )
 {
+    m_fMaxAngleInDegrees = 180.0f;
 }
 
 namespace
@@ -246,10 +247,16 @@ mEResult mCXmacWriter::WriteXmacFileData( mCScene a_sceneSource, mCIOStreamBinar
                     for ( MIUInt v = 0, ve = arrBoneUsagePerMat[ u ].GetCount(); v != ve; ++v )
                         if ( arrBoneUsagePerMat[ u ][ v ] )
                             arrBoneIndicesPerMat[ u ].Add( arrBaseNodeIndices[ a_sceneSource.GetNodeIndexByID( skinSource.GetBoneIDByIndex( v ) ) ] );
-                meshSource.CalcVNormalsByAngle( 180.0f );
+                meshSource.SortFacesByMatID();
+                if ( !meshSource.HasVNFaces() || a_Options.m_bRecalculateVertexNormals )
+                {
+                    if ( a_Options.m_bUseAnglesInsteadOfSGs )
+                        meshSource.CalcVNormalsByAngle( a_Options.m_fMaxAngleInDegrees );
+                    else
+                        meshSource.CalcVNormalsBySGs();
+                }
                 if ( meshSource.HasTVFaces() )
                     meshSource.CalcVTangents();
-                meshSource.SortFacesByMatID();
                 mCMaxRisenCoordShifter::GetInstance().ShiftMeshCoords( meshSource );
                 boxExtents |= meshSource.CalcExtents();
                 mTArray< mCMesh::SUniVert > arrUVerts;
