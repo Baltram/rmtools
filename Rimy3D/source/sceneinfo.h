@@ -16,6 +16,7 @@ public:
     SceneInfo( void );
    ~SceneInfo( void );
 public:
+    QString &       accessMaterialDir( void );
     GLC_World       buildGlcWorld( void );
     void            clearScene( void );
     QString const & getCurrentDir( void );
@@ -38,6 +39,7 @@ private:
     QString m_strCurrentDir;
     QString m_strCurrentFile;
     QString m_strCurrentSaveDir;
+    QString m_strMaterialDir;
     mCScene m_sceneCurrentScene;
 };
 

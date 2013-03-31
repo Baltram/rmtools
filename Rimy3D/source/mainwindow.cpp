@@ -13,7 +13,8 @@ MainWindow::MainWindow( QWidget * a_pParent ) :
     m_aseDialog( this, "ase", exportSettingsDialog::Normals ),
     m_objDialog( this, "obj", exportSettingsDialog::Normals | exportSettingsDialog::CreateMtl ),
     m_xactDialog( this, "xact", exportSettingsDialog::VertsOnly | exportSettingsDialog::BaseXact | exportSettingsDialog::AutoSkin ),
-    m_xmacDialog( this, "_xmac", exportSettingsDialog::VertsOnly | exportSettingsDialog::BaseXmac | exportSettingsDialog::AutoSkin )
+    m_xmacDialog( this, "_xmac", exportSettingsDialog::VertsOnly | exportSettingsDialog::BaseXmac | exportSettingsDialog::AutoSkin ),
+    m_GenomeMaterialDialog( m_SceneInfo )
 {
     m_pUi->setupUi( this );
     setWindowTitle( Rimy3D::applicationName() );
@@ -203,6 +204,12 @@ void MainWindow::on_actionFix_GMax_Installation_triggered( void )
     m_pUi->actionFix_GMax_Installation->setVisible( !Rimy3D::checkGmaxInstallation() );
 }
 
+void MainWindow::on_actionGenome_Material_Editor_triggered( void )
+{
+    m_GenomeMaterialDialog.move( this->geometry().center() - m_GenomeMaterialDialog.rect().center() );
+    m_GenomeMaterialDialog.exec();
+}
+
 void MainWindow::on_actionGerman_triggered( void )
 {
     Rimy3D::setLanguage( Rimy3D::ELanguage_German );
@@ -272,4 +279,5 @@ void MainWindow::onSceneChanged( void )
 {
     m_pUi->widget->resetCamera();
     m_pUi->widget->setWorld( m_SceneInfo.buildGlcWorld() );
+    m_GenomeMaterialDialog.updateMaterialSuggestions();
 }
