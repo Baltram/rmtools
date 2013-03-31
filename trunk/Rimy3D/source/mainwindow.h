@@ -3,6 +3,7 @@
 
 #include "sceneinfo.h"
 #include "exportsettingsdialog.h"
+#include "genomematerialdialog.h"
 #include "preferencesdialog.h"
 #include <QMainWindow>
 #include <QQueue>
@@ -43,6 +44,7 @@ private slots:
     void on_actionExit_triggered( void );
     void on_actionExtended_Saving_For_GMax_triggered( void );
     void on_actionFix_GMax_Installation_triggered( void );
+    void on_actionGenome_Material_Editor_triggered( void );
     void on_actionGerman_triggered( void );
     void on_actionOpen_triggered( void );
     void on_actionPreferences_triggered( void );
@@ -57,6 +59,7 @@ private:
     Ui::MainWindow *     m_pUi;
     SceneInfo            m_SceneInfo;
     QQueue< QString >    m_RecentFiles;
+    GenomeMaterialDialog m_GenomeMaterialDialog;
     exportSettingsDialog m_3dbDialog;
     exportSettingsDialog m_ascDialog;
     exportSettingsDialog m_aseDialog;

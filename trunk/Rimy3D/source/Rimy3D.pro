@@ -27,7 +27,8 @@ SOURCES += glwidget.cpp \
            exportsettingsdialog.cpp \
            extendedsavingdialog.cpp \
            preferencesdialog.cpp \
-           networkmanager.cpp
+           networkmanager.cpp \
+           genomematerialdialog.cpp
 
 HEADERS += glwidget.h \
            mainwindow.h \
@@ -38,13 +39,15 @@ HEADERS += glwidget.h \
            exportsettingsdialog.h \
            extendedsavingdialog.h \
            preferencesdialog.h \
-           networkmanager.h
+           networkmanager.h \
+           genomematerialdialog.h
 
 FORMS += mainwindow.ui \
          searchpathsdialog.ui \
          exportsettingsdialog.ui \
          extendedsavingdialog.ui \
-         preferencesdialog.ui
+         preferencesdialog.ui \
+         genomematerialdialog.ui
 
 TRANSLATIONS = resources/translations/Rimy3D_de.ts
 

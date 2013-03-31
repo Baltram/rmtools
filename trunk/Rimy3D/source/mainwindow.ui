@@ -73,6 +73,7 @@
     </property>
     <addaction name="actionFix_GMax_Installation"/>
     <addaction name="actionExtended_Saving_For_GMax"/>
+    <addaction name="actionGenome_Material_Editor"/>
     <addaction name="actionConfigure_Bitmap_Paths"/>
     <addaction name="actionPreferences"/>
    </widget>
@@ -179,6 +180,11 @@
   <action name="actionPreferences">
    <property name="text">
     <string>Preferences...</string>
+   </property>
+  </action>
+  <action name="actionGenome_Material_Editor">
+   <property name="text">
+    <string>Genome Material Editor...</string>
    </property>
   </action>
  </widget>

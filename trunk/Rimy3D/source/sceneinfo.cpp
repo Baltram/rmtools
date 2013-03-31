@@ -17,6 +17,11 @@ SceneInfo::~SceneInfo( void )
 {
 }
 
+QString & SceneInfo::accessMaterialDir( void )
+{
+    return m_strMaterialDir;
+}
+
 GLC_World SceneInfo::buildGlcWorld( void )
 {
     GLC_World world;
@@ -329,6 +334,7 @@ void SceneInfo::loadSettings( QSettings & a_Settings )
     a_Settings.beginGroup( "SceneInfo" );
     m_strCurrentDir = a_Settings.value( "dir", "" ).toString();
     m_strCurrentSaveDir = a_Settings.value( "savedir", "" ).toString();
+    m_strMaterialDir = a_Settings.value( "materialdir", QDir::homePath() ).toString();
     a_Settings.endGroup();
 }
 
@@ -346,6 +352,7 @@ void SceneInfo::saveSettings( QSettings & a_Settings )
     a_Settings.beginGroup( "SceneInfo" );
     a_Settings.setValue( "dir", m_strCurrentDir );
     a_Settings.setValue( "savedir", m_strCurrentSaveDir );
+    a_Settings.setValue( "materialdir", m_strMaterialDir );
     a_Settings.endGroup();
 }
 
