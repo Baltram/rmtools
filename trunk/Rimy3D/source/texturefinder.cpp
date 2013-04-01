@@ -85,13 +85,13 @@ bool TextureFinder::findTexture( QString const & a_strFilePathGuess, QString con
         for ( int i = 0, ie = sizeof( arrExts ) / sizeof( arrExts[ 0 ] ); i != ie; ++i )
             if ( File.suffix().toLower() == arrExts[ i ] )
                 if ( a_imgDest.load( File.canonicalFilePath(), File.suffix().toAscii().data() ) )
-                    return true;
+                    return a_imgDest.setText( "OriginalFileName", File.fileName() ), true;
     for ( int i = 0, ie = sizeof( arrExts ) / sizeof( arrExts[ 0 ] ); i != ie; ++i )
     {
         File.setFile( a_strCurrentDir + QDir::separator() + File.baseName() + "." + arrExts[ i ] );
         if ( File.exists() )
             if ( a_imgDest.load( File.canonicalFilePath(), File.suffix().toAscii().data() ) )
-                return true;
+                return a_imgDest.setText( "OriginalFileName", File.fileName() ), true;
     }
     if ( !a_bExtensiveSearch )
         return false;
@@ -109,7 +109,7 @@ bool TextureFinder::findTexture( QString const & a_strFilePathGuess, QString con
             QBuffer ImageData;
             ImageData.setData( static_cast< char const * >( streamData.GetBuffer() ), streamData.GetSize() );
             if ( a_imgDest.load( &ImageData, File.suffix().toAscii().data() ) )
-                return true;
+                return a_imgDest.setText( "OriginalFileName", QFileInfo( strRelativeFilePath.GetText() ).fileName() ), true;
         }
     }
     for ( int i = 0, ie = sizeof( arrExts ) / sizeof( arrExts[ 0 ] ); i != ie; ++i )
@@ -117,7 +117,7 @@ bool TextureFinder::findTexture( QString const & a_strFilePathGuess, QString con
         File.setFile( "bitmap:" + File.baseName() + "." + arrExts[ i ] );
         if ( File.exists() )
             if ( a_imgDest.load( File.canonicalFilePath(), File.suffix().toAscii().data() ) )
-                return true;
+                return a_imgDest.setText( "OriginalFileName", File.fileName() ), true;
     }
     return false;
 }

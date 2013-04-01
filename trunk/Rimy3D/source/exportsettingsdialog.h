@@ -43,6 +43,7 @@ public:
     bool    normals( void ) const;
     bool    recalcNormals( void ) const;
     void    setAutoSkinVisible( bool a_bVisible );
+    QString textureImageFileExtension( void ) const;
     bool    vertsOnly( void ) const;
 protected:
     void changeEvent( QEvent * a_pEvent );
@@ -51,6 +52,7 @@ private:
 private slots:
     void loadSettings( QSettings & a_Settings );
     void on_cbNormals_toggled( bool a_bIsChecked );
+    void on_cbSaveTextures_toggled( bool a_bChecked );
     void on_cbVertsOnly_toggled( bool a_bChecked );
     void on_pbBaseXact_clicked( void );
     void on_pbBaseXmac_clicked( void );

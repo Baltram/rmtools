@@ -16,6 +16,8 @@ exportSettingsDialog::exportSettingsDialog( QWidget * a_pParent, QString a_strEx
     m_pUi->w4->setVisible( a_Flags & BaseXact );
     m_pUi->w5->setVisible( a_Flags & CreateMtl );
     m_pUi->w6->setVisible( a_Flags & BaseXmac );
+    m_pUi->w7->setVisible( true );
+    m_pUi->cbTextureFormat->insertItems( 0, QStringList() << "JPG" << "PNG" << "BMP" );
     m_pUi->cbNormals->setEnabled( a_Flags & Normals );
     m_pUi->gbAutoSkin->setVisible( a_Flags & AutoSkin );
     updateLanguage();
@@ -79,6 +81,13 @@ void exportSettingsDialog::setAutoSkinVisible( bool a_bVisible )
     m_pUi->gbAutoSkin->setVisible( a_bVisible );
 }
 
+QString exportSettingsDialog::textureImageFileExtension( void ) const
+{
+    if ( !m_pUi->cbSaveTextures->isChecked() )
+        return "";
+    return m_pUi->cbTextureFormat->currentText().toLower();
+}
+
 bool exportSettingsDialog::vertsOnly( void ) const
 {
     return m_pUi->cbVertsOnly->isChecked();
@@ -112,12 +121,24 @@ void exportSettingsDialog::loadSettings( QSettings & a_Settings )
     m_pUi->leBaseXact->setText( a_Settings.value( "leBaseXact" ).toString() );
     m_pUi->leBaseXmac->setText( a_Settings.value( "leBaseXmac" ).toString() );
     m_pUi->cbMtl->setChecked( a_Settings.value( "cbMtl", true ).toBool() );
+    m_pUi->cbSaveTextures->setChecked( a_Settings.value( "cbSaveTextures", false ).toBool() );
+    m_pUi->cbTextureFormat->setCurrentIndex( a_Settings.value( "cbTextureFormat", 0 ).toInt() );
     a_Settings.endGroup();
+    if ( m_strExt == "_xmac" || m_strExt == "xact" )
+    {
+        m_pUi->sbAngle->setValue( 180 );
+        m_pUi->rbNRecalcA->setChecked( true );
+    }
 }
 
 void exportSettingsDialog::on_cbNormals_toggled( bool a_bIsChecked )
 {
     m_pUi->gbVNRecalc->setEnabled( a_bIsChecked );
+}
+
+void exportSettingsDialog::on_cbSaveTextures_toggled( bool a_bChecked )
+{
+    m_pUi->cbTextureFormat->setEnabled( a_bChecked );
 }
 
 void exportSettingsDialog::on_cbVertsOnly_toggled( bool a_bChecked )
@@ -163,5 +184,7 @@ void exportSettingsDialog::saveSettings( QSettings & a_Settings )
     a_Settings.setValue( "leBaseXact", m_pUi->leBaseXact->text() );
     a_Settings.setValue( "leBaseXmac", m_pUi->leBaseXmac->text() );
     a_Settings.setValue( "cbMtl", m_pUi->cbMtl->isChecked() );
+    a_Settings.setValue( "cbSaveTextures", m_pUi->cbSaveTextures->isChecked() );
+    a_Settings.setValue( "cbTextureFormat", m_pUi->cbTextureFormat->currentIndex() );
     a_Settings.endGroup();
 }

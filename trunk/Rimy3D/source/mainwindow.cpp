@@ -12,8 +12,8 @@ MainWindow::MainWindow( QWidget * a_pParent ) :
     m_ascDialog( this, "asc", exportSettingsDialog::None ),
     m_aseDialog( this, "ase", exportSettingsDialog::Normals ),
     m_objDialog( this, "obj", exportSettingsDialog::Normals | exportSettingsDialog::CreateMtl ),
-    m_xactDialog( this, "xact", exportSettingsDialog::VertsOnly | exportSettingsDialog::BaseXact | exportSettingsDialog::AutoSkin ),
-    m_xmacDialog( this, "_xmac", exportSettingsDialog::VertsOnly | exportSettingsDialog::BaseXmac | exportSettingsDialog::AutoSkin ),
+    m_xactDialog( this, "xact", exportSettingsDialog::VertsOnly | exportSettingsDialog::BaseXact | exportSettingsDialog::AutoSkin | exportSettingsDialog::NormalsCalc ),
+    m_xmacDialog( this, "_xmac", exportSettingsDialog::VertsOnly | exportSettingsDialog::BaseXmac | exportSettingsDialog::AutoSkin | exportSettingsDialog::NormalsCalc ),
     m_GenomeMaterialDialog( m_SceneInfo )
 {
     m_pUi->setupUi( this );
@@ -76,7 +76,7 @@ void MainWindow::save( QString a_strFilePath )
         Rimy3D::showError( tr( "Unknown file extension:" ).append( QString( " '.%1'" ).arg( strExt ) ) );
     if ( !pDialog || ( ( strExt != "asc" ) && !pDialog->exec() ) )
         return;
-    m_SceneInfo.saveSceneFile( a_strFilePath, *pDialog );
+    m_SceneInfo.saveSceneFile( a_strFilePath, *pDialog, &m_pUi->widget->getWorld() );
 }
 
 void MainWindow::loadSettings( QSettings & a_Settings )

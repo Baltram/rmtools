@@ -15,8 +15,9 @@ public:
     GLWidget( QWidget * a_pParent );
    ~GLWidget( void );
 public:
-    void resetCamera( void );
-    void setWorld( GLC_World const & a_Source );
+    void              resetCamera( void );
+    GLC_World const & getWorld( void );
+    void              setWorld( GLC_World const & a_Source );
 private:
     void initializeGL( void );
     void mousePressEvent( QMouseEvent * a_pEvent );

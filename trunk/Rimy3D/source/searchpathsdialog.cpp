@@ -92,17 +92,21 @@ void SearchPathsDialog::on_lwPaths_currentRowChanged( int a_iCurrentRow )
 
 void SearchPathsDialog::on_pbAddArchive_clicked( void )
 {
-    QStringList arrArchives( QFileDialog::getOpenFileName( this, tr( "Choose an archive" ), QDir::homePath(), "Genome Volumes and Patches (*.pak *.p00 *.00 *.p0? *.0?)" ) );
+    static QString s_strPath = QDir::homePath();
+    QStringList arrArchives( QFileDialog::getOpenFileName( this, tr( "Choose an archive" ), s_strPath, "Genome Volumes and Patches (*.pak *.p00 *.00 *.p0? *.0?)" ) );
     if ( arrArchives.front() == "" )
         return;
+    s_strPath = QFileInfo( arrArchives.front() ).absolutePath();
     addArchives( arrArchives );
 }
 
 void SearchPathsDialog::on_pbAddPath_clicked( void )
 {
-    QStringList arrDirs( QFileDialog::getExistingDirectory( this, "Choose a folder", QDir::homePath() ) );
+    static QString s_strPath = QDir::homePath();
+    QStringList arrDirs( QFileDialog::getExistingDirectory( this, "Choose a folder", s_strPath ) );
     if ( arrDirs.front() == "" )
         return;
+    s_strPath = QFileInfo( arrDirs.front() + ".1" ).absolutePath();
     if ( m_pUi->cbAddSubpaths->isChecked() )
         addSubDirectories( arrDirs );
     addPaths( arrDirs );
