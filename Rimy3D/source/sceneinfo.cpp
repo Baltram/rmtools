@@ -230,10 +230,50 @@ bool SceneInfo::openSceneFile( QString a_strFilePath )
     return false;
 }
 
-bool SceneInfo::saveSceneFile( QString a_strFilePath, exportSettingsDialog const & a_SettingsDialog )
+namespace
+{
+    QString s_strTexExt;
+    QQueue< mCMaterial > s_queueMaterialsOld;
+
+    void patchTextureFileNames( mCMaterial & a_matDest )
+    {
+        s_queueMaterialsOld.enqueue( a_matDest );
+        for ( int i = 0, ie = mCMaterial::EMapType_Count; i != ie; ++i )
+        {
+            mCTexMap const * pMap = a_matDest.GetTextureMapAt( static_cast< mCMaterial::EMapType >( i ) );
+            if ( !pMap )
+                continue;
+            mCTexMap mapPatched = *pMap;
+            mapPatched.AccessTextureFilePath() = ( QFileInfo( mapPatched.GetTextureFilePath().GetText() ).baseName() + "." + s_strTexExt ).toAscii().data();
+            a_matDest.SetTextureMapAt( static_cast< mCMaterial::EMapType >( i ), &mapPatched );
+        }
+    }
+
+    void unPatchTextureFileNames( mCMaterial & a_matDest )
+    {
+        a_matDest = s_queueMaterialsOld.dequeue();
+    }
+
+    void iterateOverSceneMaterials( mCScene & a_sceneScene, void ( * a_pfuncCallback )( mCMaterial & ) )
+    {
+        for ( unsigned int u = 0, ue = a_sceneScene.GetNumMaterials(); u != ue; ++u )
+        {
+            mCMaterial * pMaterial = dynamic_cast< mCMaterial * >( a_sceneScene.AccessMaterialAt( u ) );
+            mCMultiMaterial * pMultiMaterial = dynamic_cast< mCMultiMaterial * >( a_sceneScene.AccessMaterialAt( u ) );
+            if ( pMaterial )
+                ( *a_pfuncCallback )( *pMaterial );
+            else if ( pMultiMaterial )
+                for ( unsigned int v = 0, ve = pMultiMaterial->GetSubMaterials().GetCount(); v != ve; ++v )
+                    ( *a_pfuncCallback )( pMultiMaterial->AccessSubMaterials()[ v ] );
+        }
+    }
+}
+
+bool SceneInfo::saveSceneFile( QString a_strFilePath, exportSettingsDialog const & a_SettingsDialog, GLC_World const * a_pWorldHint )
 {
     m_strCurrentSaveDir = QFileInfo( a_strFilePath ).absolutePath();
     QString strExt = QFileInfo( a_strFilePath ).suffix().toLower();
+    s_strTexExt = a_SettingsDialog.textureImageFileExtension();
     mEResult enuResult = mEResult_False;
     mCMemoryStream streamBase;
     if ( strExt == "xact" )
@@ -246,6 +286,8 @@ bool SceneInfo::saveSceneFile( QString a_strFilePath, exportSettingsDialog const
         Rimy3D::showError( tr( "Cannot create/open the file \"%1\"." ).arg( a_strFilePath ), a_SettingsDialog.windowTitle() );
         return false;
     }
+    if ( s_strTexExt != "" )
+        iterateOverSceneMaterials( m_sceneCurrentScene, &patchTextureFileNames );
     eSConverterOptions BaseOptions;
     BaseOptions.m_bDropVertexColors = !a_SettingsDialog.colors();
     BaseOptions.m_bDropVertexNormals = !a_SettingsDialog.normals();
@@ -314,8 +356,21 @@ bool SceneInfo::saveSceneFile( QString a_strFilePath, exportSettingsDialog const
         enuResult = mEResult_False;
     }
     streamOut.Close();
+    if ( s_strTexExt != "" )
+        iterateOverSceneMaterials( m_sceneCurrentScene, &unPatchTextureFileNames );
     if ( enuResult == mEResult_Ok )
+    {
+        if ( !a_pWorldHint || !a_pWorldHint->rootOccurence() || s_strTexExt.length() == 0 )
+            return true;
+        QSet< GLC_Material * > setMaterials = a_pWorldHint->rootOccurence()->materialSet();
+        for ( QSet< GLC_Material * >::const_iterator i = setMaterials.begin(), ie = setMaterials.end(); i != ie; ++i )
+        {
+            QImage imgTexture = ( *i )->textureHandle() ? ( *i )->textureHandle()->imageOfTexture() : QImage();
+            if ( !imgTexture.isNull() && !imgTexture.text( "OriginalFileName" ).isNull() )
+                imgTexture.save( QFileInfo( a_strFilePath ).absolutePath() + QDir::separator() + QFileInfo( imgTexture.text( "OriginalFileName" ) ).baseName() + "." + s_strTexExt );
+        }
         return true;
+    }
     QFile::remove( a_strFilePath );
     showLastMimicryError( pLastError, a_SettingsDialog.windowTitle() );
     return false;

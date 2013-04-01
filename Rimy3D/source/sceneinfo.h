@@ -24,7 +24,7 @@ public:
     QString const & getCurrentSaveDir( void );
     mCScene const & getCurrentScene( void );
     bool            openSceneFile( QString a_strFilePath );
-    bool            saveSceneFile( QString a_strFilePath, exportSettingsDialog const & a_SettingsDialog );
+    bool            saveSceneFile( QString a_strFilePath, exportSettingsDialog const & a_SettingsDialog, GLC_World const * a_pWorldHint = 0 );
     bool            sceneContainsUnskinnedMeshes( void );
 signals:
     void sceneChanged( void );

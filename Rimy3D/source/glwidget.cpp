@@ -20,6 +20,11 @@ void GLWidget::resetCamera( void )
     m_GlView.cameraHandle()->setIsoView();
 }
 
+GLC_World const & GLWidget::getWorld( void )
+{
+    return m_World;
+}
+
 void GLWidget::setWorld( GLC_World const & a_Source )
 {
     m_World = a_Source;
