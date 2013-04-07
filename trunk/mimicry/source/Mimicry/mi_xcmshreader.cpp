@@ -105,11 +105,19 @@ mEResult mCXcmshReader::ReadXcmshFileData( mCScene & a_sceneDest, mCIOStreamBina
                     File() >> *pVNormal;
                 break;
             case EVertexStreamArrayType_DiffuseColor:
+            case EVertexStreamArrayType_SpecularColor:
                 if ( !bVertsAllocated )
                     bVertsAllocated = MITrue, meshDest.SetNumVerts( meshDest.GetNumVerts() + uElementCount );
                 meshDest.SetHasVertexColors( MITrue );
                 for ( mCColor * pEnd = meshDest.AccessVertexColors() + meshDest.GetNumVerts(), * pVColor = pEnd - uElementCount; pVColor != pEnd; ++pVColor )
-                    File() >> pVColor->AccessBlue() >> pVColor->AccessGreen() >> pVColor->AccessRed() >> pVColor->AccessAlpha();  // ToDo: Verify byte order.
+                {
+                    File().Skip( 3 );
+                    MIU8 u8Alpha = File().ReadU8();
+                    if ( uVertexStreamArrayType == EVertexStreamArrayType_SpecularColor )
+                        pVColor->AccessAlpha() = u8Alpha;
+                    else
+                        pVColor->AccessRed() = pVColor->AccessGreen() = pVColor->AccessBlue() = u8Alpha;
+                }
                 break;
             case EVertexStreamArrayType_UVs:
                 meshDest.SetNumTVerts( meshDest.GetNumTVerts() + uElementCount );
@@ -126,7 +134,6 @@ mEResult mCXcmshReader::ReadXcmshFileData( mCScene & a_sceneDest, mCIOStreamBina
             case EVertexStreamArrayType_Unknown2DCoords3:
             case EVertexStreamArrayType_SecondaryUVs:
                 uElementSize += 4;
-            case EVertexStreamArrayType_SpecularColor:
             case EVertexStreamArrayType_PointSize:
                 File().Skip( uElementCount * uElementSize );
                 break;

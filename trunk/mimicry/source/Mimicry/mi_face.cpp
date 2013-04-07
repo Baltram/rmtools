@@ -131,7 +131,7 @@ mCOStreamBinary & operator << ( mCOStreamBinary & a_streamDest, mCFace const & a
 {
     a_streamDest << g_32( a_faceSource.GetA() );
     a_streamDest << g_32( a_faceSource.GetB() );
-    a_streamDest << g_32( a_faceSource.GetB() );
+    a_streamDest << g_32( a_faceSource.GetC() );
     return a_streamDest;
 }
 

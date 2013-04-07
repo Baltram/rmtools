@@ -135,7 +135,7 @@ namespace
         MIUInt const uVertCount = a_meshSource.GetNumVerts();
         MIUInt const uFaceCount = a_meshSource.GetNumFaces();
         MIUInt const uTVertCount = a_meshSource.GetNumTVerts();
-        MIUInt const uVColorCount = ( a_meshSource.HasVertexColors() && a_Options.m_bDropVertexColors ) ? uVertCount : 0;
+        MIUInt const uVColorCount = ( a_meshSource.HasVertexColors() && !a_Options.m_bDropVertexColors ) ? uVertCount : 0;
         mCVec3 const * pVerts = a_meshSource.GetVerts();
         mCMaxFace const * pFaces = a_meshSource.GetFaces();
         mCVec3 const * pTVerts = a_meshSource.GetTVerts();

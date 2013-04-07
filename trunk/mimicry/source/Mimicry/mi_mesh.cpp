@@ -532,11 +532,16 @@ void mCMesh::WeldVertices( void )
             arrNewVertexIndices[ u ] = *pNewIndex;
     }
     mTArray< mCVec3 > arrVertices( mCVec3(), mapVertexIndices.GetCount() );
+    mTArray< mCColor > arrVertexColors( mCColor(), HasVertexColors() ? mapVertexIndices.GetCount() : 0 );
     for ( MIUInt u = 0, ue = GetNumVerts(); u != ue; ++u )
         arrVertices[ arrNewVertexIndices[ u ] ] = m_arrVertices[ u ];
+    if ( HasVertexColors() )
+        for ( MIUInt u = 0, ue = GetNumVerts(); u != ue; ++u )
+            arrVertexColors[ arrNewVertexIndices[ u ] ] = m_arrVertexColors[ u ];
     for ( MIUInt u = GetNumFaces(); u--; )
         for ( MIUInt v = 3; v--; m_arrFaces[ u ][ v ] = arrNewVertexIndices[ m_arrFaces[ u ][ v ] ] );
     m_arrVertices.Swap( arrVertices );
+    m_arrVertexColors.Swap( arrVertexColors );
 }
 
 void mCMesh::CalcIndicesPerVert( mTArray< MIUInt > & a_arrFirstIndexPerVert, mTArray< MIUInt > & a_arrNextIndexPerIndex ) const
