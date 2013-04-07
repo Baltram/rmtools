@@ -107,6 +107,7 @@ macroScript createExtraInfo category:"Extended Saving" tooltip:"Ignore Me"
 		if ( ndClass != Editable_mesh ) and ( ndClass != Editable_Poly ) and ( ndClass != Editable_Patch ) then throw ""
 		local result = copy meshChunkPattern #noMap
 		local m = snapshotAsMesh nd
+		if ( meshop.getMapSupport m 0 ) then meshop.deleteIsoMapVertsAll m
 		local verts = #()
 		local faces = #()
 		local faceMatIds = #()
@@ -147,6 +148,7 @@ macroScript createExtraInfo category:"Extended Saving" tooltip:"Ignore Me"
 		(
 			vColors.count = numVColors
 			for i = 1 to numVColors do vColors[ i ] = ( getVertColor m i )
+			if ( ( meshop.getMapSupport m -2 ) and ( meshop.getNumMapVerts m -2 ) == numVColors ) then for i = 1 to numVColors do vColors[ i ].alpha = 255 * ( meshop.getMapVert m -2 i ).x
 			vCFaces.count = numFaces
 			for i = 1 to numFaces do vCFaces[ i ] = ( getVCFace m i )
 		)
