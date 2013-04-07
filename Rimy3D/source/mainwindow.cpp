@@ -10,8 +10,9 @@ MainWindow::MainWindow( QWidget * a_pParent ) :
     m_pUi( new Ui::MainWindow ),
     m_3dbDialog( this, "3db", exportSettingsDialog::NormalsRecalc | exportSettingsDialog::Colors ),
     m_ascDialog( this, "asc", exportSettingsDialog::None ),
-    m_aseDialog( this, "ase", exportSettingsDialog::Normals ),
+    m_aseDialog( this, "ase", exportSettingsDialog::Normals | exportSettingsDialog::Colors ),
     m_objDialog( this, "obj", exportSettingsDialog::Normals | exportSettingsDialog::CreateMtl ),
+    m_xcmshDialog( this, "xcmsh", exportSettingsDialog::NormalsCalc | exportSettingsDialog::Colors ),
     m_xactDialog( this, "xact", exportSettingsDialog::VertsOnly | exportSettingsDialog::BaseXact | exportSettingsDialog::AutoSkin | exportSettingsDialog::NormalsCalc ),
     m_xmacDialog( this, "_xmac", exportSettingsDialog::VertsOnly | exportSettingsDialog::BaseXmac | exportSettingsDialog::AutoSkin | exportSettingsDialog::NormalsCalc ),
     m_GenomeMaterialDialog( m_SceneInfo )
@@ -39,6 +40,14 @@ void MainWindow::open( QString a_strFilePath )
     if ( a_strFilePath == "" )
         return;
     a_strFilePath = QDir::toNativeSeparators( a_strFilePath );
+    QString strExt = QFileInfo( a_strFilePath ).suffix();
+    if ( strExt == "_xmat" || strExt == "xshmat" )
+    {
+        if ( !m_GenomeMaterialDialog.isVisible() )
+            m_GenomeMaterialDialog.show();
+        m_GenomeMaterialDialog.openMaterial( a_strFilePath );
+        return;
+    }
     m_RecentFiles.removeOne( a_strFilePath );
     if ( m_SceneInfo.openSceneFile( a_strFilePath ) )
     {
@@ -68,6 +77,8 @@ void MainWindow::save( QString a_strFilePath )
         pDialog = &m_aseDialog;
     else if ( strExt == "obj" )
         pDialog = &m_objDialog;
+    else if ( strExt == "xcmsh" )
+        pDialog = &m_xcmshDialog;
     else if ( strExt == "xact" )
         ( pDialog = &m_xactDialog )->setAutoSkinVisible( m_SceneInfo.sceneContainsUnskinnedMeshes() );
     else if ( strExt == "_xmac" )
@@ -269,6 +280,7 @@ void MainWindow::on_actionSave_As_triggered( void )
                         "Baltram's 3D format (*.3db);;"
                         "3ds Max ASCII Scene (*.ase);;"
                         "Gothic ASCII Scene (*.asc);;"
+                        "Gothic 3 Mesh (*.xcmsh);;"
                         "Gothic 3 Motion Actor (*.xact);;"
                         "Risen Motion Actor (*._xmac);;" );
     QString strFilePath = m_SceneInfo.getCurrentSaveDir() + QDir::separator() + QFileInfo( m_SceneInfo.getCurrentFile() ).baseName();
