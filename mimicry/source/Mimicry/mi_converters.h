@@ -4,6 +4,7 @@
 MI_ERROR_DEFINE_DERIVED( mCConverterError, 
                          mCError, 
                          EBadFormat,
+                         EBadScene,
                          EMiscellaneous )
 
 struct eSConverterOptions
