@@ -322,6 +322,12 @@ bool SceneInfo::saveSceneFile( QString a_strFilePath, exportSettingsDialog const
         Options.m_strMtlFilePath = QString( a_strFilePath ).replace( ".obj", ".mtl", Qt::CaseInsensitive ).toAscii().data();
         enuResult = mCObjWriter::WriteObjFileData( m_sceneCurrentScene, streamOut, Options );
     }
+    else if ( strExt == "xcmsh" )
+    {
+        mCXcmshWriter::SOptions Options;
+        static_cast< eSConverterOptions & >( Options ) = BaseOptions;
+        enuResult = mCXcmshWriter::WriteXcmshFileData( m_sceneCurrentScene, streamOut, Options );
+    }
     else if ( strExt == "xact" )
     {
         if ( enuResult == mEResult_False )
@@ -430,6 +436,8 @@ void SceneInfo::errorMessageTranslations( void )
     tr( "Skinning includes bone not present in base ._xmac file." );
     tr( "Skinning does not cover all vertices." );
     tr( "Unknown vertex stream array type." );
+    tr( "The scene contains more than one mesh." );
+    tr( "The scene contains no mesh." );
 }
 
 void SceneInfo::showLastMimicryError( mCError const * a_pLastError, QString a_strTitle )
