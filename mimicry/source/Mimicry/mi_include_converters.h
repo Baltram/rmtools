@@ -20,6 +20,8 @@
 #include "mi_xmacwriter.h"
 #include "mi_xcmshreader.h"
 #include "mi_xcmshwriter.h"
+#include "mi_xlmshreader.h"
+#include "mi_xlmshwriter.h"
 #include "mi_genomefile.h"
 #include "mi_genomevolume.h"
 #include "mi_genomematerial.h"

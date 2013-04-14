@@ -32,6 +32,7 @@ public:
     MIUInt                 GetNumMaterials( void ) const;
     MIUInt                 GetNumNodes( void ) const;
     void                   IdentifyBones( void );
+    void                   Merge( mCScene & a_sceneSource );
     void                   RemoveMaterial( mCMaterialBase * a_pMaterial );
     void                   RemoveNode( mCNode * a_pNode );
     void                   SetName( mCString const & a_strName );

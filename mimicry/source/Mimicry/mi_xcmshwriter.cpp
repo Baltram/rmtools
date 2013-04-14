@@ -80,9 +80,9 @@ mEResult mCXcmshWriter::WriteXcmshFileData( mCScene a_sceneSource, mCIOStreamBin
         uMatID = pUniVerts->m_uMatID;
         uPartVertCount = uPartFaceCount = 0;
         boxBoundary.Invalidate();
-        for ( MIUInt uVertCountMax = pUniVertsEnd - pUniVerts; uPartVertCount != uVertCountMax && pUniVerts[ uPartVertCount ].m_uMatID == uMatID; ++uPartVertCount )
+        for ( MIUInt uVertCountMax = static_cast< MIUInt >( pUniVertsEnd - pUniVerts ); uPartVertCount != uVertCountMax && pUniVerts[ uPartVertCount ].m_uMatID == uMatID; ++uPartVertCount )
             boxBoundary |= *pUniVerts[ uPartVertCount ].m_pVert;
-        for ( MIUInt uFaceCountMax = pUVFacesEnd - pUVFaces; uPartFaceCount != uFaceCountMax && pUniVerts[ pUVFaces[ uPartFaceCount ][ 0 ] - uPassedVertCount ].m_uMatID == uMatID; ++uPartFaceCount );
+        for ( MIUInt uFaceCountMax = static_cast< MIUInt >( pUVFacesEnd - pUVFaces ); uPartFaceCount != uFaceCountMax && pUniVerts[ pUVFaces[ uPartFaceCount ][ 0 ] - uPassedVertCount ].m_uMatID == uMatID; ++uPartFaceCount );
         MIUInt const uVertexStreamCount = 3 + ( bHasColorVerts ? 2 : 0 ) + ( bHasTVerts ? 1 : 0 ) + ( bHasVTangents ? 1 : 0 );
         MIUInt const uMeshElementSize = 124 + uVertexStreamCount * 20 + uPartFaceCount * 12 + uPartVertCount * ( 12 + 12 + ( bHasColorVerts ? 4 + 4 : 0 ) + ( bHasTVerts ? 8 : 0 ) + ( bHasVTangents ? 12 : 0 ) );
         a_streamDest << ( MIU16 )( 1 ) << u32FVF << boxBoundary.GetMin() << boxBoundary.GetMax() << g_32( uMeshElementSize );

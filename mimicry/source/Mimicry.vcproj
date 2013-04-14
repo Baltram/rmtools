@@ -686,6 +686,22 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Mimicry\mi_xlmshreader.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Mimicry\mi_xlmshreader.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Mimicry\mi_xlmshwriter.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Mimicry\mi_xlmshwriter.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Mimicry\mi_xmacreader.cpp"
 				>
 			</File>

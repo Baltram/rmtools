@@ -197,6 +197,16 @@ void mCScene::IdentifyBones( void )
                 pNode = AccessNodeAt( GetNodeIndexByID( pNode->GetParentID() ) );
 }
 
+void mCScene::Merge( mCScene & a_sceneSource )
+{
+    mCScene sceneSource;
+    sceneSource.Swap( a_sceneSource );
+    m_arrMaterials.SetAt( m_arrMaterials.GetCount(), sceneSource.m_arrMaterials.GetBuffer(), sceneSource.m_arrMaterials.GetCount() );
+    sceneSource.m_arrMaterials.Clear();
+    for ( MIUInt u = 0, ue = sceneSource.GetNumNodes(); u != ue; ++u )
+        AddNewNode().Swap( *sceneSource.AccessNodeAt( u ) );
+}
+
 void mCScene::RemoveMaterial( mCMaterialBase * a_pMaterial )
 {
     MIUInt const uIndex = m_arrMaterials.IndexOf( a_pMaterial );
