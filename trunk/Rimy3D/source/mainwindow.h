@@ -46,6 +46,7 @@ private slots:
     void on_actionFix_GMax_Installation_triggered( void );
     void on_actionGenome_Material_Editor_triggered( void );
     void on_actionGerman_triggered( void );
+    void on_actionMerge_triggered( void );
     void on_actionOpen_triggered( void );
     void on_actionPreferences_triggered( void );
     void on_actionRecent1_triggered( void );
@@ -65,8 +66,10 @@ private:
     exportSettingsDialog m_aseDialog;
     exportSettingsDialog m_objDialog;
     exportSettingsDialog m_xcmshDialog;
+    exportSettingsDialog m_xlmshDialog;
     exportSettingsDialog m_xactDialog;
     exportSettingsDialog m_xmacDialog;
+    bool                 m_bOnMerge;
 };
 
 #endif  // MAINWINDOW_H_INCLUDED

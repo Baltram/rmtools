@@ -144,16 +144,14 @@ mCScene const & SceneInfo::getCurrentScene( void )
     return m_sceneCurrentScene;
 }
 
-bool SceneInfo::openSceneFile( QString a_strFilePath )
+bool SceneInfo::openSceneFile( QString a_strFilePath, bool a_bMerge )
 {
+    static bool s_bRecursive = false;
     PreferencesDialog const & Prefs = PreferencesDialog::getInstance();
     QFileInfo FileInfo( a_strFilePath );
     QString strExt = FileInfo.suffix().toLower();
     if ( !FileInfo.exists() )
-    {
-        Rimy3D::showError( tr( "The file \"%1\" doesn't exist." ).arg( a_strFilePath ), Rimy3D::applicationName() );
-        return false;
-    }
+        return Rimy3D::showError( tr( "Could not open \"%1\"." ).arg( a_strFilePath ), Rimy3D::applicationName() ), false;
     QString strTitle = tr( "%1 Import" ).arg( QString( strExt ).toUpper() );
     mCFileStream streamIn;
     if ( streamIn.Open( FileInfo.absoluteFilePath().toAscii().data(), mEFileOpenMode_Read ) == mEResult_False )
@@ -203,6 +201,19 @@ bool SceneInfo::openSceneFile( QString a_strFilePath )
         mCXcmshReader::SOptions Options;
         enuResult = mCXcmshReader::ReadXcmshFileData( sceneNew, streamIn, Options );
     }
+    else if ( strExt == "xlmsh" )
+    {
+        mTArray< mCString > arrMeshNames;
+        enuResult = mCXlmshReader::ReadXlmshFileData( arrMeshNames, streamIn );
+        MIBool bRecursive = s_bRecursive;
+        s_bRecursive = true;
+        m_sceneCurrentScene.Swap( sceneNew );
+        for ( unsigned int u = arrMeshNames.GetCount(); enuResult == mEResult_Ok && u--; )
+            if ( openSceneFile( FileInfo.absolutePath() + QDir::separator() + arrMeshNames[ u ].GetText(), true ) == false )
+                enuResult = mEResult_False;
+        m_sceneCurrentScene.Swap( sceneNew );
+        s_bRecursive = bRecursive;
+    }
     else if ( strExt == "_xmac" )
     {
         mCXmacReader::SOptions Options;
@@ -222,8 +233,12 @@ bool SceneInfo::openSceneFile( QString a_strFilePath )
     {
         m_strCurrentDir = FileInfo.absolutePath();
         m_strCurrentFile = FileInfo.fileName();
-        m_sceneCurrentScene.Swap( sceneNew );
-        emit sceneChanged();
+        if ( a_bMerge )
+            m_sceneCurrentScene.Merge( sceneNew );
+        else
+            m_sceneCurrentScene.Swap( sceneNew );
+        if ( !s_bRecursive )
+            emit sceneChanged();
         return true;
     }
     showLastMimicryError( pLastError, strTitle );
@@ -328,6 +343,10 @@ bool SceneInfo::saveSceneFile( QString a_strFilePath, exportSettingsDialog const
         static_cast< eSConverterOptions & >( Options ) = BaseOptions;
         enuResult = mCXcmshWriter::WriteXcmshFileData( m_sceneCurrentScene, streamOut, Options );
     }
+    else if ( strExt == "xlmsh" )
+    {
+        enuResult = mCXlmshWriter::WriteXlmshFileData( m_sceneCurrentScene, streamOut );
+    }
     else if ( strExt == "xact" )
     {
         if ( enuResult == mEResult_False )
@@ -425,6 +444,7 @@ void SceneInfo::errorMessageTranslations( void )
     tr( "Invalid .3db file." );
     tr( "Invalid .xact file." );
     tr( "Invalid .xcmsh file." );
+    tr( "Invalid .xlmsh file." );
     tr( "Invalid ._xmac file." );
     tr( "Unknown ._xmac file version." );
     tr( "Invalid base .xact file." );
