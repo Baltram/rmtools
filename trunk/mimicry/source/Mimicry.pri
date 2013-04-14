@@ -20,7 +20,7 @@ HEADERS += "$$PWD/Mimicry.h" \
            "$$PWD/Mimicry/mi_face.h" \
            "$$PWD/Mimicry/mi_filestream.h" \
            "$$PWD/Mimicry/mi_genomefile.h" \
-		   "$$PWD/Mimicry/mi_genomematerial.h" \
+           "$$PWD/Mimicry/mi_genomematerial.h" \
            "$$PWD/Mimicry/mi_genomevolume.h" \
            "$$PWD/Mimicry/mi_global.h" \
            "$$PWD/Mimicry/mi_global.inl" \
@@ -82,7 +82,9 @@ HEADERS += "$$PWD/Mimicry.h" \
            "$$PWD/Mimicry/mi_xactreader.h" \
            "$$PWD/Mimicry/mi_xactwriter.h" \
            "$$PWD/Mimicry/mi_xcmshreader.h" \
-		   "$$PWD/Mimicry/mi_xcmshwriter.h" \
+           "$$PWD/Mimicry/mi_xcmshwriter.h" \
+           "$$PWD/Mimicry/mi_xlmshreader.h" \
+           "$$PWD/Mimicry/mi_xlmshwriter.h" \
            "$$PWD/Mimicry/mi_xmacreader.h" \
            "$$PWD/Mimicry/mi_xmacwriter.h"
 
@@ -99,7 +101,7 @@ SOURCES += "$$PWD/Mimicry/mi_3dbreader.cpp" \
            "$$PWD/Mimicry/mi_face.cpp" \
            "$$PWD/Mimicry/mi_filestream.cpp" \
            "$$PWD/Mimicry/mi_genomefile.cpp" \
-		   "$$PWD/Mimicry/mi_genomematerial.cpp" \
+           "$$PWD/Mimicry/mi_genomematerial.cpp" \
            "$$PWD/Mimicry/mi_genomevolume.cpp" \
            "$$PWD/Mimicry/mi_global.cpp" \
            "$$PWD/Mimicry/mi_map.cpp" \
@@ -133,6 +135,8 @@ SOURCES += "$$PWD/Mimicry/mi_3dbreader.cpp" \
            "$$PWD/Mimicry/mi_xactreader.cpp" \
            "$$PWD/Mimicry/mi_xactwriter.cpp" \
            "$$PWD/Mimicry/mi_xcmshreader.cpp" \
-		   "$$PWD/Mimicry/mi_xcmshwriter.cpp" \
+           "$$PWD/Mimicry/mi_xcmshwriter.cpp" \
+           "$$PWD/Mimicry/mi_xlmshreader.cpp" \
+           "$$PWD/Mimicry/mi_xlmshwriter.cpp" \
            "$$PWD/Mimicry/mi_xmacreader.cpp" \
            "$$PWD/Mimicry/mi_xmacwriter.cpp"
