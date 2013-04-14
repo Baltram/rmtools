@@ -13,9 +13,11 @@ MainWindow::MainWindow( QWidget * a_pParent ) :
     m_aseDialog( this, "ase", exportSettingsDialog::Normals | exportSettingsDialog::Colors ),
     m_objDialog( this, "obj", exportSettingsDialog::Normals | exportSettingsDialog::CreateMtl ),
     m_xcmshDialog( this, "xcmsh", exportSettingsDialog::NormalsCalc | exportSettingsDialog::Colors ),
+    m_xlmshDialog( this, "xlmsh", exportSettingsDialog::None ),
     m_xactDialog( this, "xact", exportSettingsDialog::VertsOnly | exportSettingsDialog::BaseXact | exportSettingsDialog::AutoSkin | exportSettingsDialog::NormalsCalc ),
     m_xmacDialog( this, "_xmac", exportSettingsDialog::VertsOnly | exportSettingsDialog::BaseXmac | exportSettingsDialog::AutoSkin | exportSettingsDialog::NormalsCalc ),
-    m_GenomeMaterialDialog( m_SceneInfo )
+    m_GenomeMaterialDialog( m_SceneInfo ),
+    m_bOnMerge( false )
 {
     m_pUi->setupUi( this );
     setWindowTitle( Rimy3D::applicationName() );
@@ -37,6 +39,8 @@ MainWindow::~MainWindow( void )
 
 void MainWindow::open( QString a_strFilePath )
 {
+    bool bOnMerge = m_bOnMerge;
+    m_bOnMerge = false;
     if ( a_strFilePath == "" )
         return;
     a_strFilePath = QDir::toNativeSeparators( a_strFilePath );
@@ -49,17 +53,18 @@ void MainWindow::open( QString a_strFilePath )
         return;
     }
     m_RecentFiles.removeOne( a_strFilePath );
-    if ( m_SceneInfo.openSceneFile( a_strFilePath ) )
+    if ( m_SceneInfo.openSceneFile( a_strFilePath, bOnMerge ) )
     {
-        if ( m_pUi->actionClose->isEnabled() )
-            setWindowTitle( Rimy3D::applicationName() );
         m_pUi->actionClose->setEnabled( true );
+        m_pUi->actionMerge->setEnabled( true );
         m_pUi->actionSave_As->setEnabled( true );
         m_RecentFiles.enqueue( a_strFilePath );
         QFileInfo File( a_strFilePath );
-        setWindowTitle( Rimy3D::applicationName() + " - " + File.fileName() );
+        if ( !bOnMerge )
+            setWindowTitle( Rimy3D::applicationName() + " - " + File.fileName() );
     }
     updateRecentFiles();
+
 }
 
 void MainWindow::save( QString a_strFilePath )
@@ -79,13 +84,15 @@ void MainWindow::save( QString a_strFilePath )
         pDialog = &m_objDialog;
     else if ( strExt == "xcmsh" )
         pDialog = &m_xcmshDialog;
+    else if ( strExt == "xlmsh" )
+        pDialog = &m_xlmshDialog;
     else if ( strExt == "xact" )
         ( pDialog = &m_xactDialog )->setAutoSkinVisible( m_SceneInfo.sceneContainsUnskinnedMeshes() );
     else if ( strExt == "_xmac" )
         ( pDialog = &m_xmacDialog )->setAutoSkinVisible( m_SceneInfo.sceneContainsUnskinnedMeshes() );
     else
         Rimy3D::showError( tr( "Unknown file extension:" ).append( QString( " '.%1'" ).arg( strExt ) ) );
-    if ( !pDialog || ( ( strExt != "asc" ) && !pDialog->exec() ) )
+    if ( !pDialog || ( strExt != "asc" && strExt != "xlmsh" && !pDialog->exec() ) )
         return;
     m_SceneInfo.saveSceneFile( a_strFilePath, *pDialog, &m_pUi->widget->getWorld() );
 }
@@ -186,6 +193,7 @@ void MainWindow::on_actionClose_triggered( void )
 {
     m_SceneInfo.clearScene();
     m_pUi->actionClose->setEnabled( false );
+    m_pUi->actionMerge->setEnabled( false );
     m_pUi->actionSave_As->setEnabled( false );
     setWindowTitle( Rimy3D::applicationName() );
 }
@@ -226,9 +234,15 @@ void MainWindow::on_actionGerman_triggered( void )
     Rimy3D::setLanguage( Rimy3D::ELanguage_German );
 }
 
+void MainWindow::on_actionMerge_triggered( void )
+{
+    m_bOnMerge = true;
+    on_actionOpen_triggered();
+}
+
 void MainWindow::on_actionOpen_triggered( void )
 {
-    QString strFilter = tr( "All files" ).append( " (*.obj *.3db *.gmax *.ase *.asc *.xcmsh *.xact *._xmac);;"
+    QString strFilter = tr( "All files" ).append( " (*.obj *.3db *.gmax *.ase *.asc *.xcmsh *.xlmsh *.xact *._xmac);;"
                                                   "Wavefront OBJ format (*.obj);;"
                                                   "Baltram's 3D format (*.3db);;"
                                                   "GMax Scene (*.gmax);;"
@@ -236,8 +250,9 @@ void MainWindow::on_actionOpen_triggered( void )
                                                   "Gothic ASCII Scene (*.asc);;"
                                                   "Gothic 3 Motion Actor (*.xact);;"
                                                   "Gothic 3 Mesh (*.xcmsh);;"
+                                                  "Gothic 3 LOD Mesh (*.xlmsh);;"
                                                   "Risen Motion Actor (*._xmac);;" );
-    open( QFileDialog::getOpenFileName( this, tr( "Open" ), m_SceneInfo.getCurrentDir(), strFilter ) );
+    open( QFileDialog::getOpenFileName( this, tr( m_bOnMerge ? "Merge" : "Open" ), m_SceneInfo.getCurrentDir(), strFilter ) );
 }
 
 void MainWindow::on_actionPreferences_triggered( void )
@@ -280,6 +295,7 @@ void MainWindow::on_actionSave_As_triggered( void )
                         "Baltram's 3D format (*.3db);;"
                         "3ds Max ASCII Scene (*.ase);;"
                         "Gothic ASCII Scene (*.asc);;"
+                        "Gothic 3 LOD Mesh (*.xlmsh);;"
                         "Gothic 3 Mesh (*.xcmsh);;"
                         "Gothic 3 Motion Actor (*.xact);;"
                         "Risen Motion Actor (*._xmac);;" );
