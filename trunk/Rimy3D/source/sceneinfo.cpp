@@ -42,7 +42,7 @@ GLC_World SceneInfo::buildGlcWorld( void )
         for ( int j = 0, je = pMultiMat->GetSubMaterials().GetCount(); j != je; ++j )
         {
             mCMaterial const & mtlSub = pMultiMat->GetSubMaterials()[ j ];
-            mCTexMap const * pDiffuseMap = mtlSub.GetTextureMapAt( mCMaterial::EMapType_Diffuse );
+            mCTexMap const * pDiffuseMap = mtlSub.GetTexMap( mCMaterial::EMapType_Diffuse );
             QImage Texture;
             if ( pDiffuseMap )
                 TextureFinder::getInstance().findTexture( pDiffuseMap->GetTextureFilePath().GetText(), getCurrentDir(), Texture, PreferencesDialog::getInstance().lookUpTextures() );
@@ -202,7 +202,14 @@ bool SceneInfo::openSceneFile( QString a_strFilePath, bool a_bMerge )
     else if ( strExt == "xcmsh" )
     {
         mCXcmshReader::SOptions Options;
+        Options.m_strTextureFileExtension = Prefs.defaultImageFileExt().toAscii().data();
         enuResult = mCXcmshReader::ReadXcmshFileData( sceneNew, streamIn, Options );
+    }
+    else if ( strExt == "_xmsh" )
+    {
+        mCXmshReader::SOptions Options;
+        Options.m_strTextureFileExtension = Prefs.defaultImageFileExt().toAscii().data();
+        enuResult = mCXmshReader::ReadXmshFileData( sceneNew, streamIn, Options );
     }
     else if ( strExt == "xlmsh" )
     {
@@ -256,14 +263,14 @@ namespace
     void patchTextureFileNames( mCMaterial & a_matDest )
     {
         s_queueMaterialsOld.enqueue( a_matDest );
-        for ( int i = 0, ie = mCMaterial::EMapType_Count; i != ie; ++i )
+        for ( mCMaterial::EMapType i = mCMaterial::EMapType_Diffuse, ie = mCMaterial::EMapType_Count; i != ie; ++i )
         {
-            mCTexMap const * pMap = a_matDest.GetTextureMapAt( static_cast< mCMaterial::EMapType >( i ) );
+            mCTexMap const * pMap = a_matDest.GetTexMap( i );
             if ( !pMap )
                 continue;
             mCTexMap mapPatched = *pMap;
             mapPatched.AccessTextureFilePath() = ( QFileInfo( mapPatched.GetTextureFilePath().GetText() ).baseName() + "." + s_strTexExt ).toAscii().data();
-            a_matDest.SetTextureMapAt( static_cast< mCMaterial::EMapType >( i ), &mapPatched );
+            a_matDest.AccessTexMap( i ) = mapPatched;
         }
     }
 
