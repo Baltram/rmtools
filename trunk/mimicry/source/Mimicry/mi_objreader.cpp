@@ -40,17 +40,17 @@ namespace
             if ( strToken == "map_kd" )
             {
                 mCTexMap tmapDiffuse( "", strLine );
-                matDest.SetTextureMapAt( mCMaterial::EMapType_Diffuse, &tmapDiffuse );
+                matDest.AccessTexMap( mCMaterial::EMapType_Diffuse ) = tmapDiffuse;
             }
             else if ( ( strToken == "map_bump" ) || ( strToken == "bump" ) )
             {
                 mCTexMap tmapBump( "", strLine );
-                matDest.SetTextureMapAt( mCMaterial::EMapType_Normal, &tmapBump );
+                matDest.AccessTexMap( mCMaterial::EMapType_Normal ) = tmapBump;
             }
             else if ( strToken == "map_ks" )
             {
                 mCTexMap tmapSpecular( "", strLine );
-                matDest.SetTextureMapAt( mCMaterial::EMapType_Specular, &tmapSpecular );
+                matDest.AccessTexMap( mCMaterial::EMapType_Specular ) = tmapSpecular;
             }
         }
     }

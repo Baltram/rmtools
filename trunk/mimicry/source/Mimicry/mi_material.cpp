@@ -31,9 +31,10 @@ mCMaterial & mCMaterial::operator = ( mCMaterial const & a_mtlSource )
     return *this;
 }
 
-mCMaterial * mCMaterial::Clone( void ) const
+mCTexMap & mCMaterial::AccessTexMap( EMapType a_enuMapType )
 {
-    return new mCMaterial( *this );
+    m_u32MapStates |= ( 1 << a_enuMapType );
+    return m_arrMaps[ a_enuMapType ];
 }
 
 void mCMaterial::Clear( void )
@@ -42,24 +43,31 @@ void mCMaterial::Clear( void )
     Swap( mtlTemp );
 }
 
-mCTexMap const * mCMaterial::GetTextureMapAt( EMapType a_enuMapType ) const
+mCMaterial * mCMaterial::Clone( void ) const
 {
-    if ( ( a_enuMapType < EMapType_Count ) && ( m_u32MapStates & ( 1 << a_enuMapType ) ) )
-        return &m_arrMaps[ a_enuMapType ];
-    return 0;
+    return new mCMaterial( *this );
 }
 
-void mCMaterial::SetTextureMapAt( EMapType a_enuMapType, mCTexMap const * a_pSource )
+mCTexMap const * mCMaterial::GetTexMap( EMapType a_enuMapType ) const
 {
-    if ( ( a_enuMapType < EMapType_Count ) && a_pSource )
-    {
-        m_u32MapStates |= ( 1 << a_enuMapType );
-        m_arrMaps[ a_enuMapType ] = *a_pSource;
-    }
-    else
-    {
-        m_u32MapStates &= ~( 1 << a_enuMapType );
-    }
+    return HasTexMap( a_enuMapType ) ? &m_arrMaps[ a_enuMapType ] : 0;
+}
+
+MIBool mCMaterial::HasTexMap( EMapType a_enuMapType ) const
+{
+    return ( a_enuMapType < EMapType_Count ) && ( m_u32MapStates & ( 1 << a_enuMapType ) );
+}
+
+void mCMaterial::RemoveEmptyTexMaps( void )
+{
+    for ( EMapType i = EMapType_Diffuse; i != EMapType_Count; ++i )
+        if ( AccessTexMap( i ).IsEmpty() )
+            RemoveTexMap( i );
+}
+
+void mCMaterial::RemoveTexMap( EMapType a_enuMapType )
+{
+    m_u32MapStates &= ~( 1 << a_enuMapType );
 }
 
 void mCMaterial::Swap( mCMaterial & a_mtlOther )

@@ -171,6 +171,13 @@ MILPCVoid mTMemoryStreamBase< M >::GetBuffer( void ) const
 }
 
 template< mEStreamType M >
+void mTMemoryStreamBase< M >::Resize( MIUInt a_uSize )
+{
+    m_uPosition = g_min( m_uPosition, a_uSize );
+    m_arrBuffer.Resize( a_uSize );
+}
+
+template< mEStreamType M >
 mEResult mTMemoryStreamBase< M >::ToFile( mCString const & a_strFileName )
 {
     MI_CRT_NO_WARNINGS( FILE * pDestFile = fopen( a_strFileName.GetText(), "wb" ); )

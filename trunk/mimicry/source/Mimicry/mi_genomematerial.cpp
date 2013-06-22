@@ -562,6 +562,8 @@ void mCGenomeMaterial::GetMaterialData( mCMaterial & a_matDest ) const
 {
     if ( !IsValid() )
         return;
+    for ( mCMaterial::EMapType i = mCMaterial::EMapType_Count; i != mCMaterial::EMapType_Count; ++i )
+        a_matDest.RemoveTexMap( i );
     for ( MIUInt u = GetShaderElementCount(); u--; )
     {
         EColorSourceType enumType = GetColorSourceType( u );
@@ -570,16 +572,18 @@ void mCGenomeMaterial::GetMaterialData( mCMaterial & a_matDest ) const
         if ( !GetPropertyDeep( u, "ImageFilePath", varPath ) )
             continue;
         mapSource.AccessTextureFilePath() = varPath.GetData< mCString >();
+        if ( mapSource.GetTextureFilePath().GetLength() == 0 )
+            continue;
         switch ( enumType )
         {
         case EColorSourceType_Diffuse:
-            a_matDest.SetTextureMapAt( mCMaterial::EMapType_Diffuse, mapSource.GetTextureFilePath().GetLength() ? &mapSource : 0 );
+            a_matDest.AccessTexMap( mCMaterial::EMapType_Diffuse ) = mapSource;
             break;
         case EColorSourceType_Specular:
-            a_matDest.SetTextureMapAt( mCMaterial::EMapType_Specular, mapSource.GetTextureFilePath().GetLength() ? &mapSource : 0 );
+            a_matDest.AccessTexMap( mCMaterial::EMapType_Specular ) = mapSource;
             break;
         case EColorSourceType_Normal:
-            a_matDest.SetTextureMapAt( mCMaterial::EMapType_Normal, mapSource.GetTextureFilePath().GetLength() ? &mapSource : 0 );
+            a_matDest.AccessTexMap( mCMaterial::EMapType_Normal ) = mapSource;
             break;
         }
     }
@@ -754,13 +758,13 @@ void mCGenomeMaterial::SetMaterialData( mCMaterial const & a_matSource )
         switch ( enumType )
         {
         case EColorSourceType_Diffuse:
-            pMapSource = a_matSource.GetTextureMapAt( mCMaterial::EMapType_Diffuse );
+            pMapSource = a_matSource.GetTexMap( mCMaterial::EMapType_Diffuse );
             break;
         case EColorSourceType_Specular:
-            pMapSource = a_matSource.GetTextureMapAt( mCMaterial::EMapType_Specular );
+            pMapSource = a_matSource.GetTexMap( mCMaterial::EMapType_Specular );
             break;
         case EColorSourceType_Normal:
-            pMapSource = a_matSource.GetTextureMapAt( mCMaterial::EMapType_Normal );
+            pMapSource = a_matSource.GetTexMap( mCMaterial::EMapType_Normal );
             break;
         }
         varImagePath.SetData< mCString >( pMapSource ? pMapSource->GetTextureFilePath() : "" );

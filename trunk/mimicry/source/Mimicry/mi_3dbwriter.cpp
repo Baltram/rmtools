@@ -106,10 +106,9 @@ namespace
         {
             if ( !a_bIsSubMaterial )
                 s_uCurrentSubMaterialIndex = MI_DW_INVALID;
-            mCMaterial::EMapType enuMapType;
-            for ( MIInt iMapType = mCMaterial::EMapType_Diffuse; iMapType != mCMaterial::EMapType_Count; ++iMapType )
-                if ( pStandardMatSource->GetTextureMapAt( enuMapType = static_cast< mCMaterial::EMapType >( iMapType ) ) )
-                    WriteTexMapChunk( a_streamDest, *pStandardMatSource->GetTextureMapAt( enuMapType ), enuMapType );
+            for ( mCMaterial::EMapType i = mCMaterial::EMapType_Diffuse; i != mCMaterial::EMapType_Count; ++i )
+                if ( pStandardMatSource->HasTexMap( i ) )
+                    WriteTexMapChunk( a_streamDest, *pStandardMatSource->GetTexMap( i ), i );
         }
         else
             for ( s_uCurrentSubMaterialIndex = 0; s_uCurrentSubMaterialIndex != pMultiMatSource->GetSubMaterials().GetCount(); ++s_uCurrentSubMaterialIndex )

@@ -74,11 +74,11 @@ namespace
             pMaterialDest = &( dynamic_cast< mCMultiMaterial * >( pMaterial )->AccessSubMaterials()[ uSubMaterialIndex ] );
         mCTexMap mapMap( g_GetFileNameNoExt( strPath ), strPath );
         if ( enuMapType == EMapType_Normal )
-            pMaterialDest->SetTextureMapAt( mCMaterial::EMapType_Normal, &mapMap );
+            pMaterialDest->AccessTexMap( mCMaterial::EMapType_Normal ) = mapMap;
         else if ( enuMapType == EMapType_Specular )
-            pMaterialDest->SetTextureMapAt( mCMaterial::EMapType_Specular, &mapMap );
+            pMaterialDest->AccessTexMap( mCMaterial::EMapType_Specular ) = mapMap;
         else
-            pMaterialDest->SetTextureMapAt( mCMaterial::EMapType_Diffuse, &mapMap );
+            pMaterialDest->AccessTexMap( mCMaterial::EMapType_Diffuse ) = mapMap;
     }
 
     void ReadNodeChunk( mCScene & a_sceneDest, mCIOStreamBinary & a_streamSource )

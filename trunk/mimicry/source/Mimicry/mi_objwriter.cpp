@@ -26,12 +26,12 @@ namespace
     void WriteMaterial( mCMaterial const & a_mtlSource, mCIOStreamBinary & a_streamDest )
     {
         a_streamDest << "newmtl " << GetCoherentName( a_mtlSource.GetName() ) << EndLine();
-        if ( a_mtlSource.GetTextureMapAt( mCMaterial::EMapType_Diffuse ) )
-            a_streamDest << "map_Kd " << g_GetFileName( a_mtlSource.GetTextureMapAt( mCMaterial::EMapType_Diffuse )->GetTextureFilePath() ) << EndLine();
-        if ( a_mtlSource.GetTextureMapAt( mCMaterial::EMapType_Normal ) )
-            a_streamDest << "map_bump " << g_GetFileName( a_mtlSource.GetTextureMapAt( mCMaterial::EMapType_Normal )->GetTextureFilePath() ) << EndLine();
-        if ( a_mtlSource.GetTextureMapAt( mCMaterial::EMapType_Specular ) )
-            a_streamDest << "map_Ks " << g_GetFileName( a_mtlSource.GetTextureMapAt( mCMaterial::EMapType_Specular )->GetTextureFilePath() ) << EndLine();
+        if ( a_mtlSource.GetTexMap( mCMaterial::EMapType_Diffuse ) )
+            a_streamDest << "map_Kd " << g_GetFileName( a_mtlSource.GetTexMap( mCMaterial::EMapType_Diffuse )->GetTextureFilePath() ) << EndLine();
+        if ( a_mtlSource.GetTexMap( mCMaterial::EMapType_Normal ) )
+            a_streamDest << "map_bump " << g_GetFileName( a_mtlSource.GetTexMap( mCMaterial::EMapType_Normal )->GetTextureFilePath() ) << EndLine();
+        if ( a_mtlSource.GetTexMap( mCMaterial::EMapType_Specular ) )
+            a_streamDest << "map_Ks " << g_GetFileName( a_mtlSource.GetTexMap( mCMaterial::EMapType_Specular )->GetTextureFilePath() ) << EndLine();
         a_streamDest << EndLine();
     }
 }
