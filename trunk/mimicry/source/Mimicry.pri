@@ -11,6 +11,7 @@ HEADERS += "$$PWD/Mimicry.h" \
            "$$PWD/Mimicry/mi_box.h" \
            "$$PWD/Mimicry/mi_buffer.h" \
            "$$PWD/Mimicry/mi_color.h" \
+		   "$$PWD/Mimicry/mi_cooking.h" \
            "$$PWD/Mimicry/mi_converters.h" \
            "$$PWD/Mimicry/mi_coordshifter.h" \
            "$$PWD/Mimicry/mi_error.h" \
@@ -95,6 +96,7 @@ SOURCES += "$$PWD/Mimicry/mi_3dbreader.cpp" \
            "$$PWD/Mimicry/mi_box.cpp" \
            "$$PWD/Mimicry/mi_buffer.cpp" \
            "$$PWD/Mimicry/mi_color.cpp" \
+		   "$$PWD/Mimicry/mi_cooking.cpp" \
            "$$PWD/Mimicry/mi_converters.cpp" \
            "$$PWD/Mimicry/mi_coordshifter.cpp" \
            "$$PWD/Mimicry/mi_error.cpp" \

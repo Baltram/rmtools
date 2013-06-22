@@ -20,7 +20,7 @@ MIInt     ( MI_CDECL * const g_funcStrcmp )( MILPCChar, MILPCChar )          = &
 MISize    ( MI_CDECL * const g_funcStrlen )( MILPCChar )                     = &strlen;
 MIInt     ( MI_CDECL * const g_funcStrncmp )( MILPCChar, MILPCChar, MISize ) = &strncmp;
 
-MI_CRT_NO_WARNINGS( MILPChar  ( MI_CDECL * const g_funcStrcpy )( MILPChar, MILPCChar ) = &strcpy; )
+MI_CRT_NO_WARNINGS( MILPChar ( MI_CDECL * const g_funcStrcpy )( MILPChar, MILPCChar ) = &strcpy; )
 
 MIU64 g_time( void )
 {

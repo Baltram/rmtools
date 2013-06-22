@@ -70,6 +70,13 @@ MIBool g_getbit( MILPVoid a_pBase, MIUInt uOffset )
 }
 
 inline
+MIBool g_isBigEndian( void )
+{
+    MIU32 u32Dummy = 1;
+    return *reinterpret_cast< MILPCByte >( &u32Dummy ) == 0;
+}
+
+inline
 void g_setbit( MILPVoid a_pBase, MIUInt uOffset )
 {
     static_cast< MILPByte >( a_pBase )[ uOffset / 8 ] |= ( ( MIByte ) 1 << uOffset % 8 );

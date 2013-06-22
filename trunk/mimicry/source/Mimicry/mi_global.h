@@ -19,6 +19,7 @@ template< typename T > void      g_reorder( T * a_pElements, MIUInt const * a_pP
 template< typename T > void      g_swap( T & a_1, T & a_2 );
 
 MIBool g_getbit( MILPVoid a_pBase, MIUInt uOffset );
+MIBool g_isBigEndian( void );
 void   g_setbit( MILPVoid a_pBase, MIUInt uOffset );
 MIU64  g_time( void );
 void   g_unsetbit( MILPVoid a_pBase, MIUInt uOffset );
