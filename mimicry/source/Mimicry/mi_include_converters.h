@@ -6,6 +6,7 @@
 #include "mi_include_variant.h"
 
 #include "mi_converters.h"
+#include "mi_cooking.h"
 #include "mi_coordshifter.h"
 #include "mi_3dbreader.h"
 #include "mi_3dbwriter.h"

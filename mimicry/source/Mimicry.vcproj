@@ -598,6 +598,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Mimicry\mi_cooking.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Mimicry\mi_cooking.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Mimicry\mi_coordshifter.cpp"
 				>
 			</File>

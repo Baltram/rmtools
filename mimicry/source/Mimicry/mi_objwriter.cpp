@@ -14,7 +14,7 @@ namespace
         a_strName.Replace( ' ', '_' );
         a_strName.Replace( '\t', '_' );
         if ( a_strName == "" )
-            a_strName.Format( "%u", uId++ );
+            a_strName.Format( "object_%u", uId++ );
         return a_strName;
     }
 

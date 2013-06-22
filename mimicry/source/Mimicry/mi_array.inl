@@ -1,33 +1,54 @@
-template< typename T, typename U >
-struct _SZeroHelper;
-
-template< typename T >
-struct _SZeroHelper< T, mSTagScalar >
+namespace array_internal
 {
-    static void Zero( T & a_Dest ) { a_Dest = 0; }
-};
+    template< typename T, typename U >
+    struct SZeroHelper;
 
-template< typename T >
-struct _SZeroHelper< T, mSTagNonScalar >
-{
-    static void Zero( T & ) {}
-};
+    template< typename T >
+    struct SZeroHelper< T, mSTagScalar >
+    {
+        static void Zero( T & a_Dest ) { a_Dest = 0; }
+    };
+
+    template< typename T >
+    struct SZeroHelper< T, mSTagNonScalar >
+    {
+        static void Zero( T & ) {}
+    };
+}
 
 template< typename T > inline
 void g_zero( T & a_Dest )
 {
-    _SZeroHelper< T, mSTypeTagHelper< T >::msTag >::Zero( a_Dest );
+    array_internal::SZeroHelper< T, mSTypeTagHelper< T >::msTag >::Zero( a_Dest );
 }
 
 template< typename T >
 typename mSTypeTagHelper< T >::msTag mTArray< T >::s_Tag;
+
+namespace array_internal
+{
+    template< typename T >
+    MIBool CanZeroMemory( T a_Value, mSTagScalar )
+    {
+        return a_Value == 0;
+    }
+
+    template< typename T >
+    MIBool CanZeroMemory( T const &, mSTagNonScalar )
+    {
+        return MIFalse;
+    }
+}
 
 template< typename T >
 mTArray< T >::mTArray( T a_Value, MIUInt a_uCount )
 {
     Init();
     Resize( a_uCount );
-    for ( MIUInt u = a_uCount; u--; m_pElements[ u ] = a_Value );
+    if ( array_internal::CanZeroMemory( a_Value, s_Tag ) )
+        g_memset( m_pElements, 0, sizeof( T ) * a_uCount );
+    else
+        for ( MIUInt u = a_uCount; u--; m_pElements[ u ] = a_Value );
 }
 
 template< typename T >
@@ -321,17 +342,17 @@ void mTArray< T >::UnReserve( void )
     Reserve( m_uCount );
 }
 
-namespace
+namespace array_internal
 {
     template< typename T >
-    void Copy_( T * a_pDestination, T const * a_pSource, MIUInt a_uCount, mSTagScalar )
+    void Copy( T * a_pDestination, T const * a_pSource, MIUInt a_uCount, mSTagScalar )
     {
         if ( a_uCount )
             g_memcpy( a_pDestination, a_pSource, ( a_uCount * sizeof( T ) ) );
     }
 
     template< typename T >
-    void Copy_( T * a_pDestination, T const * a_pSource, MIUInt a_uCount, mSTagNonScalar )
+    void Copy( T * a_pDestination, T const * a_pSource, MIUInt a_uCount, mSTagNonScalar )
     {
         while ( a_uCount-- )
             *a_pDestination++ = *a_pSource++;
@@ -341,18 +362,18 @@ namespace
 template< typename T >
 void mTArray< T >::Copy( T * a_pDestination, T const * a_pSource, MIUInt a_uCount )
 {
-    Copy_( a_pDestination, a_pSource, a_uCount, s_Tag );
+    array_internal::Copy( a_pDestination, a_pSource, a_uCount, s_Tag );
 }
 
-namespace
+namespace array_internal
 {
     template< typename T >
-    void Delete_( T *, MIUInt, mSTagScalar )
+    void Delete( T *, MIUInt, mSTagScalar )
     {
     }
 
     template< typename T >
-    void Delete_( T * a_pElements, MIUInt a_uCount, mSTagNonScalar )
+    void Delete( T * a_pElements, MIUInt a_uCount, mSTagNonScalar )
     {
         for ( ; a_uCount--; ++a_pElements )
             a_pElements->~T();
@@ -362,7 +383,7 @@ namespace
 template< typename T >
 void mTArray< T >::Delete( T * a_pElements, MIUInt a_uCount )
 {
-    Delete_( a_pElements, a_uCount, s_Tag );
+    array_internal::Delete( a_pElements, a_uCount, s_Tag );
 }
 
 template<> inline
@@ -384,18 +405,17 @@ void mTArray< T >::Move( T * a_pDestination, T const * a_pSource, MIUInt a_uCoun
         g_memmove( a_pDestination, a_pSource, ( a_uCount * sizeof( T ) ) );
 }
 
-namespace
+namespace array_internal
 {
     template< typename T >
-    void New_( T * a_pElements, MIUInt a_uCount, mSTagScalar )
+    void New( T * a_pElements, MIUInt a_uCount, mSTagScalar )
     {
         g_memset( a_pElements, 0, ( a_uCount * sizeof( T ) ) );
     }
 
     template< typename T >
-    void New_( T * a_pElements, MIUInt a_uCount, mSTagNonScalar )
+    void New( T * a_pElements, MIUInt a_uCount, mSTagNonScalar )
     {
-        //g_memset( a_pElements, 0, ( a_uCount * sizeof( T ) ) );
         for( ; a_uCount--; ++a_pElements )
             ::new( a_pElements ) T;
     }
@@ -404,7 +424,7 @@ namespace
 template< typename T >
 void mTArray< T >::New( T * a_pElements, MIUInt a_uCount )
 {
-    New_( a_pElements, a_uCount, s_Tag );
+    array_internal::New( a_pElements, a_uCount, s_Tag );
 }
 
 template< typename T >
