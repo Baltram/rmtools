@@ -105,7 +105,10 @@ GLC_World SceneInfo::buildGlcWorld( void )
             iCurrentMatId = iMatId;
         }
         pMesh->finish();
-        world.rootOccurence()->addChild( new GLC_StructInstance( new GLC_3DRep( pMesh ) ) );
+        if ( !pMesh->isEmpty() )
+            world.rootOccurence()->addChild( new GLC_StructInstance( new GLC_3DRep( pMesh ) ) );
+        else
+            delete pMesh;
     }
 
     for ( int i = arrMaterialArrays.count(); i--; )

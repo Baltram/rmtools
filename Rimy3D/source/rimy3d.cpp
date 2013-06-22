@@ -6,6 +6,7 @@
 #include <QMessageBox>
 #include <QHash>
 #include <QDir>
+#include <QLibrary>
 #include <QSystemLocale>
 
 #ifdef Q_WS_WIN
@@ -172,6 +173,33 @@ int Rimy3D::getVersion( void )
 QString Rimy3D::getVersionString( void )
 {
     return QString::number( EVersionMajor ) + "." + QString::number( EVersionMinor );
+}
+
+namespace
+{
+    void unloadModule( char const * a_pcName )
+    {
+        a_pcName;
+#ifdef Q_WS_WIN
+        FreeLibrary( GetModuleHandleA( a_pcName ) );
+#endif
+    }
+
+    void requestPhysXLoaderFunctions( void )
+    {
+        QLibrary libPhysXLoader( "PhysXLoader" );
+        mCCooking::RegisterPhysXLoaderFunctions( libPhysXLoader.resolve( "NxCreatePhysicsSDK" ), libPhysXLoader.resolve( "NxReleasePhysicsSDK" ), libPhysXLoader.resolve( "NxGetCookingLib" ) );
+    }
+}
+
+void Rimy3D::initCooking( void )
+{
+    static bool s_bInit = false;
+    if ( s_bInit )
+        return;
+    requestPhysXLoaderFunctions();
+    mCCooking::RegisterMultiVersionFunctions( &unloadModule, &requestPhysXLoaderFunctions );
+    s_bInit = true;
 }
 
 void Rimy3D::loadSettings( void )

@@ -30,6 +30,7 @@ public:
     static int         getVersion( void );
     static QString     getVersionString( void );
     static void        init( int & argc, char * argv[] );
+    static void        initCooking( void );
     static void        loadSettings( void );
     static bool        quiet( void );
     static void        saveSettings( void );
