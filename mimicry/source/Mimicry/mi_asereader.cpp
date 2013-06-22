@@ -159,8 +159,7 @@ namespace
                     mCString strName, strPath;
                     ReadStringTokenLine( "MAP_NAME", strName );
                     ReadStringTokenLine( "BITMAP", strPath );
-                    mCTexMap mapDest( strName, strPath );
-                    matDest.SetTextureMapAt( enuMapType, &mapDest );
+                    matDest.AccessTexMap( enuMapType ) = mCTexMap( strName, strPath );
                 }
                 AccessIntegrityState() = MITrue;
             }

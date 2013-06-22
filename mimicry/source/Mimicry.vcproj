@@ -686,6 +686,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Mimicry\mi_xmshreader.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Mimicry\mi_xmshreader.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Mimicry\mi_xcmshwriter.cpp"
 				>
 			</File>

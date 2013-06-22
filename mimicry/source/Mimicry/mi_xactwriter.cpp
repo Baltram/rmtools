@@ -210,9 +210,9 @@ namespace
         a_streamDest << 0.0f;
         mCTexMap const * arrMaps[ 3 ];
         ETexMapType arrMapTypes[ 3 ] = { ETexMapType_Diffuse, ETexMapType_Normal, ETexMapType_Specular };
-        arrMaps[ 0 ] = a_mtlSource.GetTextureMapAt( mCMaterial::EMapType_Diffuse );
-        arrMaps[ 1 ] = a_mtlSource.GetTextureMapAt( mCMaterial::EMapType_Normal );
-        arrMaps[ 2 ] = a_mtlSource.GetTextureMapAt( mCMaterial::EMapType_Specular );
+        arrMaps[ 0 ] = a_mtlSource.GetTexMap( mCMaterial::EMapType_Diffuse );
+        arrMaps[ 1 ] = a_mtlSource.GetTexMap( mCMaterial::EMapType_Normal );
+        arrMaps[ 2 ] = a_mtlSource.GetTexMap( mCMaterial::EMapType_Specular );
         for ( MIUInt u = 0; u != 3; ++u )
             if ( arrMaps[ u ] )
                 WriteTextureMapSection( *arrMaps[ u ], arrMapTypes[ u ], a_uMaterialIndex, a_streamDest );

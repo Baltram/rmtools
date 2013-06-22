@@ -24,13 +24,23 @@ public:
 public:
     virtual mCMaterial * Clone( void ) const;
 public:
+    mCTexMap &       AccessTexMap( EMapType a_enuMapType );
     void             Clear( void );
-    mCTexMap const * GetTextureMapAt( EMapType a_enuMapType ) const;
-    void             SetTextureMapAt( EMapType a_enuMapType, mCTexMap const * a_pSource );
+    mCTexMap const * GetTexMap( EMapType a_enuMapType ) const;
+    MIBool           HasTexMap( EMapType a_enuMapType ) const;
+    void             RemoveEmptyTexMaps( void );
+    void             RemoveTexMap( EMapType a_enuMapType );
     void             Swap( mCMaterial & a_mtlOther );
 private:
     mCTexMap m_arrMaps[ EMapType_Count ];
     MIU32    m_u32MapStates;
 };
+
+inline
+mCMaterial::EMapType operator ++ ( mCMaterial::EMapType & a_enuMapType )
+{
+    a_enuMapType = static_cast< mCMaterial::EMapType >( static_cast< MIInt >( a_enuMapType ) + 1 );
+    return a_enuMapType;
+}
 
 #endif

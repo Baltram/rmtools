@@ -93,7 +93,7 @@ mEResult mCXmacReader::ReadXmacFileData( mCScene & a_sceneDest, mCIOStreamBinary
                     MIUInt const uMapType = a_streamSource.ReadU8();
                     a_streamSource.Skip( 1 );
                     mCTexMap mapDest( "", a_streamSource.ReadString( a_streamSource.ReadU32() ) + "." + a_Options.m_strTextureFileExtension );
-                    matDest.SetTextureMapAt( arrNativeMapTypes[ uMapType ], &mapDest );
+                    matDest.AccessTexMap( arrNativeMapTypes[ uMapType ] ) = mapDest;
                 }
             }
             uNextSection = a_streamSource.Tell();
@@ -213,10 +213,15 @@ mEResult mCXmacReader::ReadXmacFileData( mCScene & a_sceneDest, mCIOStreamBinary
             nodeDest.SwapSkin( skinDest );
         }
     }
-    a_sceneDest.AddNewMultiMaterial().Swap( matMultiDest );
+    mCMultiMaterial & matMultiDest2 = a_sceneDest.AddNewMultiMaterial();
+    matMultiDest2.Swap( matMultiDest );
     a_sceneDest.IdentifyBones();
     if ( mCGenomeMaterial::AccessMaterialLookupHint() )
         mCGenomeMaterial::LoadRisenMaterials( a_sceneDest );
+    if ( a_Options.m_strTextureFileExtension != "" )
+        for ( mCMaterial * pMat = matMultiDest2.AccessSubMaterials().AccessBuffer(), * pEnd = pMat + matMultiDest2.GetSubMaterials().GetCount(); pMat != pEnd; ( pMat++ )->RemoveEmptyTexMaps() )
+            for ( mCMaterial::EMapType i = mCMaterial::EMapType_Diffuse; i != mCMaterial::EMapType_Count; ++i )
+                g_ReplaceFileExt( pMat->AccessTexMap( i ).AccessTextureFilePath(), a_Options.m_strTextureFileExtension );
     a_sceneDest.SetName( strSceneName );
     return mEResult_Ok;
 }

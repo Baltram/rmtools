@@ -520,13 +520,22 @@ void mCMesh::Swap( mCMesh & a_meshOther )
 
 void mCMesh::WeldVertices( void )
 {
+    struct SVertexWithColor
+    {
+        mCVec3  m_vec3Position;
+        mCColor m_colColor;
+        MIBool operator == ( SVertexWithColor const & a_Other ) const { return m_vec3Position == a_Other.m_vec3Position && m_colColor == a_Other.m_colColor; }
+    } Vert;
     mTArray< MIUInt > arrNewVertexIndices;
-    mTMap< mCVec3, MIUInt > mapVertexIndices;
+    mTMap< SVertexWithColor, MIUInt > mapVertexIndices;
     arrNewVertexIndices.Resize( GetNumVerts() );
     mapVertexIndices.Reserve( GetNumVerts() );
     for ( MIUInt u = 0, ue = GetNumVerts(), v, * pNewIndex; u != ue; ++u )
     {
-        if ( v = mapVertexIndices.GetCount(), pNewIndex = &mapVertexIndices[ m_arrVertices[ u ] ], v != mapVertexIndices.GetCount() )
+        Vert.m_vec3Position = m_arrVertices[ u ];
+        if ( HasVertexColors() )
+            Vert.m_colColor = m_arrVertexColors[ u ];
+        if ( v = mapVertexIndices.GetCount(), pNewIndex = &mapVertexIndices[ Vert ], v != mapVertexIndices.GetCount() )
             arrNewVertexIndices[ u ] = *pNewIndex = v;
         else
             arrNewVertexIndices[ u ] = *pNewIndex;

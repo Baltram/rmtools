@@ -111,9 +111,9 @@ namespace
             mCTexMap const * arrMaps[ 3 ];
             MILPCChar arrTokens[ 3 ] = { "MAP_DIFFUSE", "MAP_SPECULAR", "MAP_BUMP" };
             MIUInt arrSubNos[ 3 ] = { 1, 2, 8 };
-            arrMaps[ 0 ] = pMaterial->GetTextureMapAt( mCMaterial::EMapType_Diffuse );
-            arrMaps[ 1 ] = pMaterial->GetTextureMapAt( mCMaterial::EMapType_Specular );
-            arrMaps[ 2 ] = pMaterial->GetTextureMapAt( mCMaterial::EMapType_Normal );
+            arrMaps[ 0 ] = pMaterial->GetTexMap( mCMaterial::EMapType_Diffuse );
+            arrMaps[ 1 ] = pMaterial->GetTexMap( mCMaterial::EMapType_Specular );
+            arrMaps[ 2 ] = pMaterial->GetTexMap( mCMaterial::EMapType_Normal );
             for ( MIUInt u = 0; u != 3; ++u )
             {
                 if ( !arrMaps[ u ] )

@@ -188,6 +188,7 @@ void mCCooking::RegisterMultiVersionFunctions( void ( * a_pfuncUnloadModule )( M
 
 MIBool mCCooking::WriteCookedMesh( mCIOStreamBinary & a_streamDest, mCMesh const & a_meshSource )
 {
+    a_streamDest; a_meshSource;
     if ( !s_pCooking || !s_pPhysicsSDK )
         return MIFalse;
     return MIFalse;

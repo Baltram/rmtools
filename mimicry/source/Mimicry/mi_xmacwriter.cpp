@@ -203,17 +203,17 @@ mEResult mCXmacWriter::WriteXmacFileData( mCScene a_sceneSource, mCIOStreamBinar
                     a_streamDest << ( MIU32 ) ESection_Material << g_32( 88 + Material.GetName().GetLength() ) << ( MIU32 ) 2;
                     a_streamDest << 0.0f << 0.0f << 0.0f << 1.0f << 0.75f << 0.75f << 0.75f << 1.0f << 1.0f << 1.0f << 1.0f << 1.0f;
                     a_streamDest << 0.0f << 0.0f << 0.0f << 1.0f << 25.0f << 0.0f << 1.0f << 1.5f << ( MIU16 ) 0 << ( MIU8 ) 70;
-                    a_streamDest << ( MIU8 ) ( ( Material.GetTextureMapAt( mCMaterial::EMapType_Diffuse ) ? 1 : 0 ) +
-                                               ( Material.GetTextureMapAt( mCMaterial::EMapType_Normal ) ? 1 : 0 ) +
-                                               ( Material.GetTextureMapAt( mCMaterial::EMapType_Specular ) ? 1 : 0 ) );
+                    a_streamDest << ( MIU8 ) ( ( Material.GetTexMap( mCMaterial::EMapType_Diffuse ) ? 1 : 0 ) +
+                                               ( Material.GetTexMap( mCMaterial::EMapType_Normal ) ? 1 : 0 ) +
+                                               ( Material.GetTexMap( mCMaterial::EMapType_Specular ) ? 1 : 0 ) );
                     a_streamDest << g_32( Material.GetName().GetLength() ) << Material.GetName();
-                    for ( MIInt v = 0; v != mCMaterial::EMapType_Count; ++v )
+                    for ( mCMaterial::EMapType i = mCMaterial::EMapType_Diffuse; i != mCMaterial::EMapType_Count; ++i )
                     {
-                        mCTexMap const * pMap = Material.GetTextureMapAt( static_cast< mCMaterial::EMapType >( v ) );
+                        mCTexMap const * pMap = Material.GetTexMap( i );
                         if ( !pMap )
                             continue;
                         MIU8 u8MapType = 0;
-                        for ( MIU8 w = sizeof( arrNativeMapTypes ) / sizeof( arrNativeMapTypes[ 0 ] ); w--; u8MapType = arrNativeMapTypes[ w ] == v ? w : u8MapType );
+                        for ( MIU8 w = sizeof( arrNativeMapTypes ) / sizeof( arrNativeMapTypes[ 0 ] ); w--; u8MapType = arrNativeMapTypes[ w ] == i ? w : u8MapType );
                         a_streamDest << 1.0f << 0.0f << 0.0f << 1.0f << 1.0f << 0.0f << static_cast< MIU16 >( u ) << u8MapType << ( MIU8 ) 0;
                         mCString strFileName = g_GetFileNameNoExt( pMap->GetTextureFilePath() );
                         a_streamDest << g_32( strFileName.GetLength() ) << strFileName;

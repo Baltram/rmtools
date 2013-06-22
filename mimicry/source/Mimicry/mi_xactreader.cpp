@@ -1,10 +1,5 @@
 #include "mi_include_converters.h"
 
-mCXactReader::SOptions::SOptions( void ) :
-    m_strTextureFileExtension( "jpg" )
-{
-}
-
 namespace
 {
     enum ESection
@@ -197,11 +192,11 @@ mEResult mCXactReader::ReadXactFileData( mCScene & a_sceneDest, mCIOStreamBinary
             mCMaterial & matDest = matMultiDest.AccessSubMaterials().Back();
             mCTexMap tmapDest( "", strPath + "." + a_Options.m_strTextureFileExtension );
             if ( u8Type == ETexMapType_Diffuse )
-                matDest.SetTextureMapAt( mCMaterial::EMapType_Diffuse, &tmapDest );
+                matDest.AccessTexMap( mCMaterial::EMapType_Diffuse ) = tmapDest;
             else if ( u8Type == ETexMapType_Normal )
-                matDest.SetTextureMapAt( mCMaterial::EMapType_Normal, &tmapDest );
+                matDest.AccessTexMap( mCMaterial::EMapType_Normal ) = tmapDest;
             else if ( u8Type == ETexMapType_Specular )
-                matDest.SetTextureMapAt( mCMaterial::EMapType_Specular, &tmapDest );
+                matDest.AccessTexMap( mCMaterial::EMapType_Specular ) = tmapDest;
         }
     }
     a_sceneDest.AddNewMultiMaterial().Swap( matMultiDest );

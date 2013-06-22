@@ -15,6 +15,7 @@ public:
     mCString &       AccessTextureFilePath( void );
     mCString const & GetName( void ) const;
     mCString const & GetTextureFilePath( void ) const;
+    MIBool           IsEmpty( void ) const;
     void             Swap( mCTexMap & a_tmapOther );
 private:
     mCString m_strName;

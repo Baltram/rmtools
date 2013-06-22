@@ -44,11 +44,11 @@ namespace
                 arrMap[ 1 ].SwapData( strTexturePath );
                 mCTexMap mapDest( strType, strTexturePath );
                 if ( strType == "diffuse" )
-                    mtlDest.SetTextureMapAt( mCMaterial::EMapType_Diffuse, &mapDest );
+                    mtlDest.AccessTexMap( mCMaterial::EMapType_Diffuse ) = mapDest;
                 else if ( strType == "specular" )
-                    mtlDest.SetTextureMapAt( mCMaterial::EMapType_Specular, &mapDest );
+                    mtlDest.AccessTexMap( mCMaterial::EMapType_Specular ) = mapDest;
                 else if ( strType == "bump" )
-                    mtlDest.SetTextureMapAt( mCMaterial::EMapType_Normal, &mapDest );
+                    mtlDest.AccessTexMap( mCMaterial::EMapType_Normal ) = mapDest;
             }
             return &mtlDest;
         }

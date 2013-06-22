@@ -636,7 +636,13 @@ MIBool operator >= ( MILPCChar a_pcText1, mCString const & a_strText2 )
 mCString g_GetFileExt( mCString const & a_strFilePath )
 {
     MIUInt const uLastPoint = a_strFilePath.LastOf( '.' );
-    return ( uLastPoint == MI_DW_INVALID ) ? "" : a_strFilePath.Right( a_strFilePath.GetLength() - uLastPoint - 1 );
+    MIUInt const uLastSlash = a_strFilePath.LastOf( '/' );
+    MIUInt const uLastBackSlash = a_strFilePath.LastOf( '\\' );
+    if ( uLastPoint == MI_DW_INVALID ||
+         ( uLastSlash != MI_DW_INVALID && uLastSlash > uLastPoint ) ||
+         ( uLastBackSlash != MI_DW_INVALID && uLastBackSlash > uLastPoint ) )
+        return "";
+    return a_strFilePath.Right( a_strFilePath.GetLength() - uLastPoint - 1 );
 }
 
 mCString g_GetFileName( mCString const & a_strFilePath )
@@ -673,5 +679,13 @@ mCString g_GetDirectoryName( mCString const & a_strFilePath )
     strResult.TrimLeft( g_max( ( uLastSlash != MI_DW_INVALID ? uLastSlash + 1 : 0 ), 
                                ( uLastBackSlash != MI_DW_INVALID ? uLastBackSlash + 1 : 0 ) ) );
     return strResult;
+}
+
+mCString & g_ReplaceFileExt( mCString & a_strFilePath, mCString const & a_strNewExt )
+{
+    MIUInt const uLastPoint = a_strFilePath.LastOf( '.' );
+    if ( g_GetFileExt( a_strFilePath ) != "" )
+        a_strFilePath = a_strFilePath.Left( uLastPoint + 1 ) + a_strNewExt;
+    return a_strFilePath;
 }
 

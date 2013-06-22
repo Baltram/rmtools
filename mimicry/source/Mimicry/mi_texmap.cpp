@@ -49,6 +49,11 @@ mCString const & mCTexMap::GetTextureFilePath( void ) const
     return m_strTextureFilePath;
 }
 
+MIBool mCTexMap::IsEmpty( void ) const
+{
+    return m_strTextureFilePath.GetLength() == 0;
+}
+
 void mCTexMap::Swap( mCTexMap & a_tmapOther )
 {
     if ( this == &a_tmapOther )

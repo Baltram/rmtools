@@ -27,7 +27,7 @@ namespace
     }
 }
 
-mEResult mCXcmshReader::ReadXcmshFileData( mCScene & a_sceneDest, mCIOStreamBinary & a_streamSource, SOptions )
+mEResult mCXcmshReader::ReadXcmshFileData( mCScene & a_sceneDest, mCIOStreamBinary & a_streamSource, SOptions a_Options )
 {
     a_sceneDest.Clear();
     mCString const strSceneName = dynamic_cast< mCFileStream * >( &a_streamSource ) ? g_GetFileNameNoExt( dynamic_cast< mCFileStream * >( &a_streamSource )->GetFileName() ) : "";
@@ -158,6 +158,10 @@ mEResult mCXcmshReader::ReadXcmshFileData( mCScene & a_sceneDest, mCIOStreamBina
     nodeDest.SwapMesh( meshDest );
     if ( mCGenomeMaterial::AccessMaterialLookupHint() )
         mCGenomeMaterial::LoadGothic3Materials( a_sceneDest );
+    if ( a_Options.m_strTextureFileExtension != "" )
+        for ( mCMaterial * pMat = matMultiDest.AccessSubMaterials().AccessBuffer(), * pEnd = pMat + matMultiDest.GetSubMaterials().GetCount(); pMat != pEnd; ( pMat++ )->RemoveEmptyTexMaps() )
+            for ( mCMaterial::EMapType i = mCMaterial::EMapType_Diffuse; i != mCMaterial::EMapType_Count; ++i )
+                g_ReplaceFileExt( pMat->AccessTexMap( i ).AccessTextureFilePath(), a_Options.m_strTextureFileExtension );
     a_sceneDest.SetName( strSceneName );
     return mEResult_Ok;
 }
