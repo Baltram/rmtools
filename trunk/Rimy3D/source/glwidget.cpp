@@ -28,7 +28,7 @@ GLC_World const & GLWidget::getWorld( void )
 void GLWidget::setWorld( GLC_World const & a_Source )
 {
     m_World = a_Source;
-    if ( !m_World.isEmpty() )
+    if ( !m_World.isEmpty() && !m_World.boundingBox().isEmpty() )
         m_GlView.reframe( m_World.boundingBox() );
     updateGL();
 }
