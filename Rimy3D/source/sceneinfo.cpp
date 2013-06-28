@@ -353,6 +353,12 @@ bool SceneInfo::saveSceneFile( QString a_strFilePath, exportSettingsDialog const
         static_cast< eSConverterOptions & >( Options ) = BaseOptions;
         enuResult = mCXcmshWriter::WriteXcmshFileData( m_sceneCurrentScene, streamOut, Options );
     }
+    else if ( strExt == "_xmsh" )
+    {
+        mCXmshWriter::SOptions Options;
+        static_cast< eSConverterOptions & >( Options ) = BaseOptions;
+        enuResult = mCXmshWriter::WriteXmshFileData( m_sceneCurrentScene, streamOut, Options );
+    }
     else if ( strExt == "xlmsh" )
     {
         enuResult = mCXlmshWriter::WriteXlmshFileData( m_sceneCurrentScene, streamOut );
@@ -455,6 +461,7 @@ void SceneInfo::errorMessageTranslations( void )
     tr( "Invalid .xact file." );
     tr( "Invalid .xcmsh file." );
     tr( "Invalid .xlmsh file." );
+    tr( "Invalid ._xmsh file." );
     tr( "Invalid ._xmac file." );
     tr( "Unknown ._xmac file version." );
     tr( "Invalid base .xact file." );

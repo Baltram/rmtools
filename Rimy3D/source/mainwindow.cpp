@@ -13,6 +13,7 @@ MainWindow::MainWindow( QWidget * a_pParent ) :
     m_aseDialog( this, "ase", exportSettingsDialog::Normals | exportSettingsDialog::Colors ),
     m_objDialog( this, "obj", exportSettingsDialog::Normals | exportSettingsDialog::CreateMtl ),
     m_xcmshDialog( this, "xcmsh", exportSettingsDialog::NormalsCalc | exportSettingsDialog::Colors ),
+    m_xmshDialog( this, "xmsh", exportSettingsDialog::NormalsCalc | exportSettingsDialog::Colors ),
     m_xlmshDialog( this, "xlmsh", exportSettingsDialog::None ),
     m_xactDialog( this, "xact", exportSettingsDialog::VertsOnly | exportSettingsDialog::BaseXact | exportSettingsDialog::AutoSkin | exportSettingsDialog::NormalsCalc ),
     m_xmacDialog( this, "_xmac", exportSettingsDialog::VertsOnly | exportSettingsDialog::BaseXmac | exportSettingsDialog::AutoSkin | exportSettingsDialog::NormalsCalc ),
@@ -84,6 +85,8 @@ void MainWindow::save( QString a_strFilePath )
         pDialog = &m_objDialog;
     else if ( strExt == "xcmsh" )
         pDialog = &m_xcmshDialog;
+    else if ( strExt == "_xmsh" )
+        pDialog = &m_xmshDialog;
     else if ( strExt == "xlmsh" )
         pDialog = &m_xlmshDialog;
     else if ( strExt == "xact" )
@@ -299,7 +302,8 @@ void MainWindow::on_actionSave_As_triggered( void )
                         "Gothic 3 LOD Mesh (*.xlmsh);;"
                         "Gothic 3 Mesh (*.xcmsh);;"
                         "Gothic 3 Motion Actor (*.xact);;"
-                        "Risen Motion Actor (*._xmac);;" );
+                        "Risen Motion Actor (*._xmac);;"
+                        "Risen Mesh (*._xmsh);;" );
     QString strFilePath = m_SceneInfo.getCurrentSaveDir() + QDir::separator() + QFileInfo( m_SceneInfo.getCurrentFile() ).baseName();
     save( QFileDialog::getSaveFileName( this, tr( "Save As" ), strFilePath, strFilter, &strSelectedFilter ) );
 }
