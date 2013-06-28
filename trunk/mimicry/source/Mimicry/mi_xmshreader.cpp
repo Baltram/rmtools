@@ -13,7 +13,7 @@ mEResult mCXmshReader::ReadXmshFileData( mCScene & a_sceneDest, mCIOStreamBinary
     a_sceneDest.Clear();
     mCString const strSceneName = dynamic_cast< mCFileStream * >( &a_streamSource ) ? g_GetFileNameNoExt( dynamic_cast< mCFileStream * >( &a_streamSource )->GetFileName() ) : "";
     if ( a_streamSource.GetSize() < 8 || a_streamSource.ReadString( 8 ) != "GR01MS02" )
-        return MI_ERROR( mCStreamError, EBadFormat, "Invalid .xcmsh file." ), mEResult_False;
+        return MI_ERROR( mCStreamError, EBadFormat, "Invalid ._xmsh file." ), mEResult_False;
     a_streamSource.Seek( a_streamSource.ReadU32() );
     if ( ( a_streamSource.ReadU16() != 1 ) ||
          ( a_streamSource.ReadU8() != 1 ) ||
@@ -22,7 +22,7 @@ mEResult mCXmshReader::ReadXmshFileData( mCScene & a_sceneDest, mCIOStreamBinary
          ( ReadString( a_streamSource ) != "eCMeshResource2" ) ||
          ( a_streamSource.ReadU8() != 1 ) ||
          ( a_streamSource.ReadU16() != 0 ) )
-        return MI_ERROR( mCStreamError, EBadFormat, "Invalid .xcmsh file." ), mEResult_False;
+        return MI_ERROR( mCStreamError, EBadFormat, "Invalid ._xmsh file." ), mEResult_False;
     mCMesh meshDest;
     mCNode & nodeDest = a_sceneDest.AddNewNode();
     mCMultiMaterial & matMultiDest = a_sceneDest.AddNewMultiMaterial();
@@ -67,7 +67,8 @@ mEResult mCXmshReader::ReadXmshFileData( mCScene & a_sceneDest, mCIOStreamBinary
     MIUInt uPositionOffset = MI_DW_INVALID;
     MIUInt uNormalOffset = MI_DW_INVALID;
     MIUInt uTexCoordOffset = MI_DW_INVALID;
-    MIUInt uColorOffset = MI_DW_INVALID;
+    MIUInt uColor1Offset = MI_DW_INVALID;
+    MIUInt uColor2Offset = MI_DW_INVALID;
     struct SVertexElement  // D3DVERTEXELEMENT9
     {
         MIU16 m_u16StreamIndex;
@@ -91,10 +92,12 @@ mEResult mCXmshReader::ReadXmshFileData( mCScene & a_sceneDest, mCIOStreamBinary
         else if ( Decl.m_u8Usage == 05 && Decl.m_u8Type == 1 && Decl.m_u8UsageIndex == 0 )
             uTexCoordOffset = Decl.m_u16Offset;
         else if ( Decl.m_u8Usage == 10 && Decl.m_u8Type == 4 && Decl.m_u8UsageIndex == 0 )
-            uColorOffset = Decl.m_u16Offset;
+            uColor1Offset = Decl.m_u16Offset;
+        else if ( Decl.m_u8Usage == 10 && Decl.m_u8Type == 4 && Decl.m_u8UsageIndex == 1 )
+            uColor2Offset = Decl.m_u16Offset;
     }
     if ( uPositionOffset == MI_DW_INVALID )
-        return MI_ERROR( mCStreamError, EBadFormat, "Invalid .xcmsh file." ), mEResult_False;
+        return MI_ERROR( mCStreamError, EBadFormat, "Invalid ._xmsh file." ), mEResult_False;
     MIUInt const uVertexStreamSize = a_streamSource.ReadU32();
     a_streamSource.Skip( 12 );
     MIUInt const uVertexSize = a_streamSource.ReadU32();
@@ -124,12 +127,19 @@ mEResult mCXmshReader::ReadXmshFileData( mCScene & a_sceneDest, mCIOStreamBinary
         for ( mCVec3 * pTVert = meshDest.AccessTVerts(), * pEnd = pTVert + uVertexCount; pTVert != pEnd; ++pTVert, streamVertices.Skip( uVertexSize - sizeof( MIFloat ) * 2 ) )
             streamVertices >> pTVert->AccessX() >> pTVert->AccessY();
     }
-    if ( uColorOffset != MI_DW_INVALID )
+    if ( uColor1Offset != MI_DW_INVALID )
     {
-        streamVertices.Seek( uColorOffset + 3 );
+        streamVertices.Seek( uColor1Offset + 3 );
         meshDest.SetHasVertexColors( MITrue );
         for ( mCColor * pVColor = meshDest.AccessVertexColors(), * pEnd = pVColor + uVertexCount; pVColor != pEnd; ++pVColor, streamVertices.Skip( uVertexSize - sizeof( MIU8 ) ) )
             pVColor->AccessRed() = pVColor->AccessGreen() = pVColor->AccessBlue() = streamVertices.ReadU8();
+    }
+    if ( uColor2Offset != MI_DW_INVALID )
+    {
+        streamVertices.Seek( uColor2Offset + 3 );
+        meshDest.SetHasVertexColors( MITrue );
+        for ( mCColor * pVColor = meshDest.AccessVertexColors(), * pEnd = pVColor + uVertexCount; pVColor != pEnd; ++pVColor, streamVertices.Skip( uVertexSize - sizeof( MIU8 ) ) )
+            streamVertices >> g_08( pVColor->AccessAlpha() );
     }
     meshDest.SetNumFaces( uFaceCount );
     mCMaxFace * pFace = meshDest.AccessFaces();

@@ -88,7 +88,8 @@ HEADERS += "$$PWD/Mimicry.h" \
            "$$PWD/Mimicry/mi_xlmshwriter.h" \
            "$$PWD/Mimicry/mi_xmacreader.h" \
            "$$PWD/Mimicry/mi_xmacwriter.h" \
-           "$$PWD/Mimicry/mi_xmshreader.h"
+           "$$PWD/Mimicry/mi_xmshreader.h" \
+           "$$PWD/Mimicry/mi_xmshwriter.h"
 
 SOURCES += "$$PWD/Mimicry/mi_3dbreader.cpp" \
            "$$PWD/Mimicry/mi_3dbwriter.cpp" \
@@ -143,4 +144,5 @@ SOURCES += "$$PWD/Mimicry/mi_3dbreader.cpp" \
            "$$PWD/Mimicry/mi_xlmshwriter.cpp" \
            "$$PWD/Mimicry/mi_xmacreader.cpp" \
            "$$PWD/Mimicry/mi_xmacwriter.cpp" \
-           "$$PWD/Mimicry/mi_xmshreader.cpp"
+           "$$PWD/Mimicry/mi_xmshreader.cpp" \
+           "$$PWD/Mimicry/mi_xmshwriter.cpp"
