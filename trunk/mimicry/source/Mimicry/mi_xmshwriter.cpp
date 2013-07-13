@@ -28,6 +28,11 @@ mEResult mCXmshWriter::WriteXmshFileData( mCScene a_sceneSource, mCIOStreamBinar
     else for ( MIUInt u = 0, ue = pMultiMaterial->GetSubMaterials().GetCount(); u != ue; ++u )
         arrMaterialNames.Add( pMultiMaterial->GetSubMaterials()[ u ].GetName() + "._xmat" );
     mCMesh & meshSource = *pSourceNode->AccessMesh();
+    mCVec3 * pVerts = meshSource.AccessVerts();
+    for ( MIUInt u = meshSource.GetNumVerts(); u--; )
+        for ( MIUInt j = 3; j--; )
+            pVerts[ u ][ j ] = static_cast< MIInt >( pVerts[ u ][ j ] * 22.2f + 0.5f ) / 22.2f;
+    meshSource.WeldVertices();
     meshSource.SortFacesByMatID();
     mCMaxFace * pFaces = meshSource.AccessFaces();
     MIUInt uMatCountMax = arrMaterialNames.GetCount(), uMatCount = 0;
