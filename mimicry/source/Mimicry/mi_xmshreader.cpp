@@ -45,7 +45,8 @@ mEResult mCXmshReader::ReadXmshFileData( mCScene & a_sceneDest, mCIOStreamBinary
         for ( MIUInt v = a_streamSource.ReadU32(); v--; )
         {
             a_streamSource.Skip( 2 );
-            MIUInt uEndSubMeshOffset = a_streamSource.Tell() + 4 + a_streamSource.ReadU32();
+            MIUInt uEndSubMeshOffset = a_streamSource.ReadU32();
+            uEndSubMeshOffset += a_streamSource.Tell();
             a_streamSource.Skip( 2 );
             for ( MIUInt w = a_streamSource.ReadU32(); w--; )
             {
