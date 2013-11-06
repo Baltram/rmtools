@@ -125,7 +125,7 @@ bool Rimy3D::checkGmaxInstallation( void )
                                                  "It is highly recommended to let Rimy3D fix this. Continue?" ) );
                 if ( bResult )
                 {
-                    QByteArray arrTemp( arrPossibleLocations[ i ].toAscii() );
+                    QByteArray arrTemp( ( "\"" + arrPossibleLocations[ i ] + "\"" ).toAscii() );
                     SHELLEXECUTEINFOA Info = { 0 };
                     Info.cbSize = sizeof( SHELLEXECUTEINFO );
                     Info.fMask = SEE_MASK_NOCLOSEPROCESS;

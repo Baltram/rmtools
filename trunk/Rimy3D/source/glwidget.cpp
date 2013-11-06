@@ -83,6 +83,7 @@ void GLWidget::mouseReleaseEvent( QMouseEvent * )
 
 void GLWidget::paintGL( void )
 {
+    glGetError();
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
     glLoadIdentity();
     m_GlView.setDistMinAndMax( m_World.boundingBox() );
