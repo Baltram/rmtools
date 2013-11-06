@@ -35,7 +35,10 @@ namespace
         va_list argp;
         va_start( argp, a_pcFormat );
         if ( !AccessIntegrityState() )
+        {
+            va_end( argp );
             return MIFalse;
+        }
         MIBool bResult = MIFalse;
         mCError const * const pLastError = mCError::GetLastError< mCError >();
         MIUInt const uOffset = AccessStream()->Tell();
@@ -128,7 +131,7 @@ namespace
             mCMultiMaterial matDest( strMaterialName );
             MIUInt uSubMaterialCount = 0;
             ReadTokenLine( "NUMSUBMTLS", "%u", &uSubMaterialCount );
-            for ( MIUInt u = 0; u != uSubMaterialCount; ++u )
+            for ( MIUInt u = 0; u != uSubMaterialCount && AccessIntegrityState(); ++u )
             {
                 EnterBlock( mCString().Format( "SUBMATERIAL %u", u ) );
                 ReadMaterialBlock( a_sceneDest );
@@ -140,6 +143,7 @@ namespace
                 a_sceneDest.RemoveMaterial( pSubMaterial );
                 LeaveBlock();
             }
+            AccessIntegrityState() = MITrue;
             a_sceneDest.AddNewMultiMaterial().Swap( matDest );
         }
         else
@@ -157,7 +161,8 @@ namespace
                     else if ( strBlockName != "MAP_BUMP" )
                         continue;
                     mCString strName, strPath;
-                    ReadStringTokenLine( "MAP_NAME", strName );
+                    if ( !ReadStringTokenLine( "MAP_NAME", strName ) )
+                        AccessIntegrityState() = MITrue;
                     ReadStringTokenLine( "BITMAP", strPath );
                     matDest.AccessTexMap( enuMapType ) = mCTexMap( strName, strPath );
                 }
@@ -193,9 +198,9 @@ namespace
                 if ( uSmoothingOffset != MI_DW_INVALID )
                 {
                     strLine.TrimLeft( uSmoothingOffset + 14 );
-                    for ( MIUInt u; ( u = atoi( strLine.TrimLeft( ", \t" ).GetText() ) ) != 0; strLine.TrimLeft( "0123456789" ) )
+                    for ( MIUInt u; strLine.TrimLeft( ", \t" ).Scan( "%u", &u ) > 0; strLine.TrimLeft( "0123456789" ) )
                         pFace->AccessSGs() |= ( 1 << ( u - 1 ) );
-                    strLine.Scan( "*MESH_MTLID %u", &pFace->AccessMatID() );
+                    strLine.Scan( " *MESH_MTLID %u", &pFace->AccessMatID() );
                 }
             }
             LeaveBlock();
@@ -255,9 +260,12 @@ namespace
                         pColorDest->AccessRed() = static_cast< MIU8 >( pColor->GetX() * 255.0f );
                         pColorDest->AccessGreen() = static_cast< MIU8 >( pColor->GetY() * 255.0f );
                         pColorDest->AccessBlue() = static_cast< MIU8 >( pColor->GetZ() * 255.0f );
+                        pColorDest->AccessAlpha() = 255;
                     }
                 }
             }
+            else
+                AccessIntegrityState() = MIFalse;
         }
         AccessIntegrityState() = MITrue;
         AccessStream()->Seek( uOffset );
