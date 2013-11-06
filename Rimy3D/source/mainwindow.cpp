@@ -293,19 +293,18 @@ void MainWindow::on_actionRecent5_triggered( void )
 
 void MainWindow::on_actionSave_As_triggered( void )
 {
-    QString strSelectedFilter = "Baltram's 3D format (*.3db)";
-    QString strFilter = tr( "All files" ).append( " (*.*);;"
-                        "Wavefront OBJ format (*.obj);;"
+    QString strFilter = tr( "All files" ).append( " (*.*);;" ) +
                         "Baltram's 3D format (*.3db);;"
+                        "Wavefront OBJ format (*.obj);;"
                         "3ds Max ASCII Scene (*.ase);;"
                         "Gothic ASCII Scene (*.asc);;"
-                        "Gothic 3 LOD Mesh (*.xlmsh);;"
                         "Gothic 3 Mesh (*.xcmsh);;"
+                        "Gothic 3 LOD Mesh (*.xlmsh);;"
                         "Gothic 3 Motion Actor (*.xact);;"
-                        "Risen Motion Actor (*._xmac);;"
-                        "Risen Mesh (*._xmsh);;" );
+                        "Risen Mesh (*._xmsh);;"
+                        "Risen Motion Actor (*._xmac);;";
     QString strFilePath = m_SceneInfo.getCurrentSaveDir() + QDir::separator() + QFileInfo( m_SceneInfo.getCurrentFile() ).baseName();
-    save( QFileDialog::getSaveFileName( this, tr( "Save As" ), strFilePath, strFilter, &strSelectedFilter ) );
+    save( QFileDialog::getSaveFileName( this, tr( "Save As" ), strFilePath, strFilter ) );
 }
 
 void MainWindow::onSceneChanged( void )
