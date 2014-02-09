@@ -28,6 +28,21 @@ mCMultiMaterial & mCMultiMaterial::operator = ( mCMultiMaterial const & a_mtlSou
     return *this;
 }
 
+MIBool mCMultiMaterial::operator == ( mCMultiMaterial const & a_mtlOther ) const
+{
+    if ( m_arrSubMaterials.GetCount() != m_arrSubMaterials.GetCount() )
+        return MIFalse;
+    for ( MIUInt u = m_arrSubMaterials.GetCount(); u--; )
+        if ( m_arrSubMaterials[ u ] != a_mtlOther.m_arrSubMaterials[ u ] )
+            return MIFalse;
+    return MITrue;
+}
+
+MIBool mCMultiMaterial::operator != ( mCMultiMaterial const & a_mtlOther ) const
+{
+    return !( *this == a_mtlOther );
+}
+
 mCMaterial & mCMultiMaterial::operator [] ( MIUInt a_uIndex )
 {
     return m_arrSubMaterials[ a_uIndex ];

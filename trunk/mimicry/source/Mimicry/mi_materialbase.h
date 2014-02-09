@@ -11,7 +11,9 @@ public:
     mCMaterialBase( mCMaterialBase const & a_mtlSource );
     mCMaterialBase( void );
 public:
-    mCMaterialBase & operator = ( mCMaterialBase const & a_mtlSource );
+    mCMaterialBase & operator =  ( mCMaterialBase const & a_mtlSource );
+    MIBool           operator == ( mCMaterialBase const & a_mtlOther ) const;
+    MIBool           operator != ( mCMaterialBase const & a_mtlOther ) const;
 public:
     virtual mCMaterialBase * Clone( void ) const = 0;
 public:

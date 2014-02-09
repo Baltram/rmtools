@@ -9,7 +9,9 @@ public:
     mCTexMap( void );
    ~mCTexMap( void );
 public:
-    mCTexMap & operator = ( mCTexMap const & a_tmapSource );
+    mCTexMap & operator =  ( mCTexMap const & a_tmapSource );
+    MIBool     operator == ( mCTexMap const & a_tmapOther ) const;
+    MIBool     operator != ( mCTexMap const & a_tmapOther ) const;
 public:
     mCString &       AccessName( void );
     mCString &       AccessTextureFilePath( void );

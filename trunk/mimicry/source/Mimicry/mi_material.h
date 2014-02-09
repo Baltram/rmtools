@@ -20,7 +20,9 @@ public:
     mCMaterial( mCMaterial const & a_mtlSource );
     mCMaterial( void );
 public:
-    mCMaterial & operator = ( mCMaterial const & a_mtlSource );
+    mCMaterial & operator =  ( mCMaterial const & a_mtlSource );
+    MIBool       operator == ( mCMaterial const & a_mtlOther ) const;
+    MIBool       operator != ( mCMaterial const & a_mtlOther ) const;
 public:
     virtual mCMaterial * Clone( void ) const;
 public:

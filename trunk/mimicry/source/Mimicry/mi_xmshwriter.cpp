@@ -68,7 +68,7 @@ mEResult mCXmshWriter::WriteXmshFileData( mCScene a_sceneSource, mCIOStreamBinar
             uMatID = pUniVert->m_uMatID;
             arrSubMeshBoundaries.AddNew().Invalidate();
             arrUsedMaterialIndices.Add( uMatID );
-            arrFirstVertexPerMaterial.Add( pUniVert - arrUVerts.GetBuffer() );
+            arrFirstVertexPerMaterial.Add( static_cast< MIUInt >( pUniVert - arrUVerts.GetBuffer() ) );
         }
         arrSubMeshBoundaries.Back() |= *pUniVert->m_pVert;
     }
