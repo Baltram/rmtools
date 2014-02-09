@@ -12,6 +12,8 @@ public:
     mCMultiMaterial( void );
 public:
     mCMultiMaterial &  operator =  ( mCMultiMaterial const & a_mtlSource );
+    MIBool             operator == ( mCMultiMaterial const & a_mtlOther ) const;
+    MIBool             operator != ( mCMultiMaterial const & a_mtlOther ) const;
     mCMaterial &       operator [] ( MIUInt a_uIndex );
     mCMaterial const & operator [] ( MIUInt a_uIndex ) const;
 public:

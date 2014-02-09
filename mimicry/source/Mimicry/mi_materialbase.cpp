@@ -28,6 +28,23 @@ mCMaterialBase & mCMaterialBase::operator = ( mCMaterialBase const & a_mtlSource
     return *this;
 }
 
+MIBool mCMaterialBase::operator == ( mCMaterialBase const & a_mtlOther ) const
+{
+    mCMaterial const * pMaterialSelf = dynamic_cast< mCMaterial const * >( this );
+    mCMaterial const * pMaterialOther = dynamic_cast< mCMaterial const * >( &a_mtlOther );
+    mCMultiMaterial const * pMultiMaterialSelf = dynamic_cast< mCMultiMaterial const * >( this );
+    mCMultiMaterial const * pMultiMaterialOther = dynamic_cast< mCMultiMaterial const * >( &a_mtlOther );
+    if ( ( pMaterialSelf && ( !pMaterialOther || *pMaterialOther != *pMaterialSelf ) ) ||
+         ( pMultiMaterialSelf && ( !pMultiMaterialOther || *pMultiMaterialOther != *pMultiMaterialSelf ) ) )
+        return MIFalse;
+    return MITrue;
+}
+
+MIBool mCMaterialBase::operator != ( mCMaterialBase const & a_mtlOther ) const
+{
+    return !( *this == a_mtlOther );
+}
+
 mCString & mCMaterialBase::AccessName( void )
 {
     return m_strName;

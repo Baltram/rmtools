@@ -29,6 +29,16 @@ mCTexMap & mCTexMap::operator = ( mCTexMap const & a_tmapSource )
     return *this;
 }
 
+MIBool mCTexMap::operator == ( mCTexMap const & a_tmapOther ) const
+{
+    return m_strTextureFilePath == a_tmapOther.m_strTextureFilePath;
+}
+
+MIBool mCTexMap::operator != ( mCTexMap const & a_tmapOther ) const
+{
+    return !( *this == a_tmapOther );
+}
+
 mCString & mCTexMap::AccessName( void )
 {
     return m_strName;

@@ -31,6 +31,20 @@ mCMaterial & mCMaterial::operator = ( mCMaterial const & a_mtlSource )
     return *this;
 }
 
+MIBool mCMaterial::operator == ( mCMaterial const & a_mtlOther ) const
+{
+    for ( mCMaterial::EMapType i = mCMaterial::EMapType_Diffuse; i != mCMaterial::EMapType_Count; ++i )
+        if ( HasTexMap( i ) != a_mtlOther.HasTexMap( i ) ||
+             HasTexMap( i ) && *GetTexMap( i ) != *a_mtlOther.GetTexMap( i ) )
+            return MIFalse;
+    return MITrue;
+}
+
+MIBool mCMaterial::operator != ( mCMaterial const & a_mtlOther ) const
+{
+    return !( *this == a_mtlOther );
+}
+
 mCTexMap & mCMaterial::AccessTexMap( EMapType a_enuMapType )
 {
     m_u32MapStates |= ( 1 << a_enuMapType );
