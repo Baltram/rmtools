@@ -5,6 +5,7 @@
 namespace
 {
     mCIOStreamBinary * s_pStream = 0;
+    MIUInt s_uPhysicsSDKVersion = 0;
 
     class CPhysicsStream
     {
@@ -42,6 +43,8 @@ namespace
         MIFloat   convexEdgeThreshold;
     };
 
+    typedef NxTriangleMeshDesc_Dummy NxConvexMeshDesc_Dummy;
+
     class NxTriangleMesh_Dummy
     {
     public:
@@ -61,9 +64,27 @@ namespace
                                        MI_PVFD_DUMMY MI_PVFD_DUMMY MI_PVFD_DUMMY MI_PVFD_DUMMY MI_PVFD_DUMMY MI_PVFD_DUMMY MI_PVFD_DUMMY MI_PVFD_DUMMY
         virtual NxTriangleMesh_Dummy * createTriangleMesh( CPhysicsStream const & ) = 0;
         virtual void                   releaseTriangleMesh( NxTriangleMesh_Dummy & ) = 0;
-                                       MI_PVFD_DUMMY MI_PVFD_DUMMY MI_PVFD_DUMMY MI_PVFD_DUMMY MI_PVFD_DUMMY //MI_PVFD_DUMMY MI_PVFD_DUMMY MI_PVFD_DUMMY
-        virtual NxConvexMesh_Dummy *   createConvexMesh( CPhysicsStream const & ) = 0;
-        virtual void                   releaseConvexMesh( NxConvexMesh_Dummy & ) = 0;
+                                       MI_PVFD_DUMMY MI_PVFD_DUMMY MI_PVFD_DUMMY MI_PVFD_DUMMY MI_PVFD_DUMMY
+        virtual NxConvexMesh_Dummy *   createConvexMesh_Old( CPhysicsStream const & ) = 0;
+        virtual void                   releaseConvexMesh_Old( NxConvexMesh_Dummy & ) = 0;
+                                       MI_PVFD_DUMMY
+        virtual NxConvexMesh_Dummy *   createConvexMesh_New( CPhysicsStream const & ) = 0;
+        virtual void                   releaseConvexMesh_New( NxConvexMesh_Dummy & ) = 0;
+    public:
+        NxConvexMesh_Dummy * createConvexMesh( CPhysicsStream const & a_streamSource )
+        {
+            if ( s_uPhysicsSDKVersion >= ( ( 2 << 24 ) | ( 7 << 16 ) ) )
+                return createConvexMesh_New( a_streamSource );
+            else
+                return createConvexMesh_Old( a_streamSource );
+        }
+        void releaseConvexMesh( NxConvexMesh_Dummy & a_ConvexMesh )
+        {
+            if ( s_uPhysicsSDKVersion >= ( ( 2 << 24 ) | ( 7 << 16 ) ) )
+                releaseConvexMesh_New( a_ConvexMesh );
+            else
+                releaseConvexMesh_Old( a_ConvexMesh );
+        }
     };
 
     class NxCookingInterface_Dummy
@@ -73,6 +94,7 @@ namespace
         virtual MIBool NxInitCooking( MILPVoid = 0, MILPVoid = 0 ) = 0;
         virtual void   NxCloseCooking( void ) = 0;
         virtual MIBool NxCookTriangleMesh( NxTriangleMeshDesc_Dummy const &, CPhysicsStream & ) = 0;
+        virtual MIBool NxCookConvexMesh( NxConvexMeshDesc_Dummy const &, CPhysicsStream & ) = 0;
     };
 
     NxPhysicsSDK_Dummy * s_pPhysicsSDK = 0;
@@ -86,9 +108,8 @@ namespace
     void ( * s_pfuncRequestPhysXLoaderFunction )( void );
 }
 
-MIBool mCCooking::InitPhysicsSDK( MIUInt a_uPhysicsSDKVersion )
+MIBool mCCooking::InitCooking( MIUInt a_uPhysicsSDKVersion )
 {
-    static MIUInt s_uPhysicsSDKVersion = 0;
     if ( s_uPhysicsSDKVersion == a_uPhysicsSDKVersion )
         return MITrue;
     ReleaseSDK();
@@ -107,6 +128,20 @@ MIBool mCCooking::InitPhysicsSDK( MIUInt a_uPhysicsSDKVersion )
     s_pCooking->NxInitCooking();
     s_uPhysicsSDKVersion = a_uPhysicsSDKVersion;
     return MITrue;
+}
+
+mEResult mCCooking::InitGothic3Cooking( void )
+{
+    if ( !InitCooking( 2 << 24 | 5 << 16 | 0 << 0 ) )  // Actually Gothic 3 uses PhysX 2.4.1 but 2.5.0 is easier to load
+        return MI_ERROR( mCPhysXError, EMissingSystemSoftware, "Please download and install 'Nvidia PhysX Legacy System Software' (NOT 'Nvidia PhysX System Software'!) from the official Nvidia homepage and restart the program." ), mEResult_False;
+    return mEResult_Ok;
+}
+
+mEResult mCCooking::InitRisenCooking( void )
+{
+    if ( !InitCooking( 2 << 24 | 8 << 16 | 1 << 8 ) )
+        return MI_ERROR( mCPhysXError, EMissingLegacySystemSoftware, "Please download and install 'Nvidia PhysX System Software' from the official Nvidia homepage and restart the program." ), mEResult_False;
+    return mEResult_Ok;
 }
 
 MIBool mCCooking::ReadCookedMesh( mCIOStreamBinary & a_streamSource, mCMesh & a_meshDest )
@@ -186,10 +221,20 @@ void mCCooking::RegisterMultiVersionFunctions( void ( * a_pfuncUnloadModule )( M
     s_pfuncRequestPhysXLoaderFunction = a_pfuncRequestPhysXLoaderFunction;
 }
 
-MIBool mCCooking::WriteCookedMesh( mCIOStreamBinary & a_streamDest, mCMesh const & a_meshSource )
+MIBool mCCooking::WriteCookedMesh( mCIOStreamBinary & a_streamDest, mCMesh a_meshSource, MIBool a_bConvex )
 {
-    a_streamDest; a_meshSource;
     if ( !s_pCooking || !s_pPhysicsSDK )
         return MIFalse;
-    return MIFalse;
+    mCMaxRisenCoordShifter::GetInstance().ShiftMeshCoords( a_meshSource );
+    NxTriangleMeshDesc_Dummy Desc;
+    g_memset( &Desc, 0, sizeof( Desc ) );
+    Desc.numTriangles = a_meshSource.GetNumFaces();
+    Desc.numVertices = a_meshSource.GetNumVerts();
+    Desc.points = a_meshSource.GetVerts();
+    Desc.pointStrideBytes = sizeof( *a_meshSource.GetVerts() );
+    Desc.triangles = a_meshSource.GetFaces();
+    Desc.triangleStrideBytes = sizeof( *a_meshSource.GetFaces() );
+    Desc.flags = a_bConvex ? 1 << 2 : 0; // NX_CF_COMPUTE_CONVEX
+    CPhysicsStream streamDest( a_streamDest );
+    return a_bConvex ? s_pCooking->NxCookConvexMesh( Desc, streamDest ) : s_pCooking->NxCookTriangleMesh( Desc, streamDest );
 }
