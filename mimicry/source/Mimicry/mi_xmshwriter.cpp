@@ -10,13 +10,8 @@ namespace
 
 mEResult mCXmshWriter::WriteXmshFileData( mCScene a_sceneSource, mCIOStreamBinary & a_streamDest, mCXmshWriter::SOptions a_Options )
 {
-    mCNode * pSourceNode = 0;
-    for ( MIUInt u = 0, ue = a_sceneSource.GetNumNodes(); u != ue; ++u )
-        if ( a_sceneSource.GetNodeAt( u )->HasMesh() )
-            if ( pSourceNode || !( pSourceNode = a_sceneSource.AccessNodeAt( u ) ) )
-                return MI_ERROR( mCConverterError, EBadScene, "The scene contains more than one mesh." ), mEResult_False;
-    if ( !pSourceNode )
-        return MI_ERROR( mCConverterError, EBadScene, "The scene contains no mesh." ), mEResult_False;
+    a_sceneSource.MakeOneMeshScene();
+    mCNode * pSourceNode = a_sceneSource.AccessNodeAt( 0 );
     mTArray< mCString > arrMaterialNames;
     mTArray< MIUInt > arrUsedMaterialIndices;
     mTArray< MIUInt > arrFirstIndexPerMaterial;

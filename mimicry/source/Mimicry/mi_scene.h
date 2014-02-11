@@ -12,6 +12,7 @@ public:
     mCScene & operator = ( mCScene const & a_sceneSource );
 public:
     mCMaterialBase *       AccessMaterialAt( MIUInt a_uIndex );
+    mCMaterialBase *       AccessMaterialByNodeIndex( MIUInt a_uNodeIndex );
     mCNode *               AccessNodeAt( MIUInt a_uIndex );
     void                   AddMaterial( mCMaterialBase const & a_mtlSource );
     mCMaterial &           AddNewMaterial( void );
@@ -21,6 +22,7 @@ public:
     void                   Clear( void );
     void                   ClearNodeParent( MIUInt a_uNodeIndex );
     mCMaterialBase const * GetMaterialAt( MIUInt a_uIndex ) const;
+    mCMaterialBase const * GetMaterialByNodeIndex( MIUInt a_uNodeIndex ) const;
     MIUInt                 GetMaterialIndexByName( mCString const & a_strMaterialName ) const;
     mCString const &       GetName( void ) const;
     mCNode const *         GetNodeAt( MIUInt a_uIndex ) const;
@@ -32,6 +34,7 @@ public:
     MIUInt                 GetNumMaterials( void ) const;
     MIUInt                 GetNumNodes( void ) const;
     void                   IdentifyBones( void );
+    void                   MakeOneMeshScene( void );
     void                   Merge( mCScene & a_sceneSource );
     void                   RemoveMaterial( mCMaterialBase * a_pMaterial );
     void                   RemoveNode( mCNode * a_pNode );

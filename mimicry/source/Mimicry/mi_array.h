@@ -25,6 +25,7 @@ public:
 public:
     T *            AccessBuffer( void );
     void           Add( T const & a_Element );
+    void           Add( mTArray< T > const & a_arrSource );
     T &            AddNew( void );
     T const &      Back( void ) const;
     T &            Back( void );

@@ -30,7 +30,7 @@ mCMultiMaterial & mCMultiMaterial::operator = ( mCMultiMaterial const & a_mtlSou
 
 MIBool mCMultiMaterial::operator == ( mCMultiMaterial const & a_mtlOther ) const
 {
-    if ( m_arrSubMaterials.GetCount() != m_arrSubMaterials.GetCount() )
+    if ( m_arrSubMaterials.GetCount() != a_mtlOther.m_arrSubMaterials.GetCount() )
         return MIFalse;
     for ( MIUInt u = m_arrSubMaterials.GetCount(); u--; )
         if ( m_arrSubMaterials[ u ] != a_mtlOther.m_arrSubMaterials[ u ] )
