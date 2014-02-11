@@ -6,11 +6,11 @@
 #include "mi_string.h"
 
 #include "mi_skin.h"
-#include "mi_mesh.h"
 #include "mi_texmap.h"
 #include "mi_materialbase.h"
 #include "mi_material.h"
 #include "mi_multimaterial.h"
+#include "mi_mesh.h"
 #include "mi_node.h"
 #include "mi_scene.h"
 

@@ -62,6 +62,7 @@ public:
     MIBool            HasVertexColors( void ) const;
     MIBool            HasVNFaces( void ) const;
     MIBool            HasVTFaces( void ) const;
+    void              Merge( mCMesh a_meshOther, mCMaterialBase const * a_pMaterial = 0, mCMaterialBase const * a_pOtherMaterial = 0, mCMultiMaterial * a_pComposedMaterialDest = 0 );
     void              SetHasVertexColors( MIBool a_bHasVertexColors );
     void              SetNumFaces( MIUInt a_uCount );
     void              SetNumTVerts( MIUInt a_uCount );

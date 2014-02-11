@@ -132,6 +132,12 @@ void mTArray< T >::Add( T const & a_Element )
 }
 
 template< typename T >
+void mTArray< T >::Add( mTArray< T > const & a_arrSource )
+{
+    SetAt( GetCount(), a_arrSource.GetBuffer(), a_arrSource.GetCount() );
+}
+
+template< typename T >
 T & mTArray< T >::AddNew( void )
 {
     MIUInt const uIndex = GetCount();

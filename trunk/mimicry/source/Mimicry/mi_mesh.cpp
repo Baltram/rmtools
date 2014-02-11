@@ -428,6 +428,81 @@ MIBool mCMesh::HasVTFaces( void ) const
     return ( GetNumVTangents() != 0 );
 }
 
+namespace
+{
+    template< class C >
+    void ShiftFaces( mTArray< C > & a_arrFaces, MIUInt a_uCount )
+    {
+        for ( MIUInt u = 0, ue = a_arrFaces.GetCount(); u != ue; ++u )
+            for ( MIUInt v = 0; v != 3; ++v )
+                a_arrFaces[ u ][ v ] += a_uCount;
+    }
+}
+
+void mCMesh::Merge( mCMesh a_meshOther, mCMaterialBase const * a_pMaterial, mCMaterialBase const * a_pOtherMaterial, mCMultiMaterial * a_pComposedMaterialDest )
+{
+    mCMesh * arrMeshes[] = { this, &a_meshOther };
+    mTArray< mCMaxFace > * arrFaceArrays[] = { &m_arrFaces, &a_meshOther.m_arrFaces };
+    mCMaterialBase const * arrMats[] = { a_pMaterial, a_pOtherMaterial };
+    mCMultiMaterial arrMultiMats[ 2 ];
+    for ( MIUInt u = 0; u != 2; ++u )
+    {
+        mCMultiMaterial const * pMultiMaterial = dynamic_cast< mCMultiMaterial const * >( arrMats[ u ] );
+        mCMaterial const * pMaterial = dynamic_cast< mCMaterial const * >( arrMats[ u ] );
+        if ( pMultiMaterial )
+            arrMultiMats[ u ] = *pMultiMaterial;
+        else if ( pMaterial )
+        {
+            arrMultiMats[ u ].AccessName() = pMaterial->GetName();
+            arrMultiMats[ u ].AccessSubMaterials().Add( *pMaterial );
+        }
+        MIUInt uSubMaterialCount = g_max( 1U, arrMultiMats[ u ].GetSubMaterials().GetCount() );
+        for ( MIUInt v = 0, ve = arrFaceArrays[ u ]->GetCount(); v != ve; ++v )
+            ( *arrFaceArrays[ u ] )[ v ].AccessMatID() %= uSubMaterialCount;
+        if ( !arrMeshes[ u ]->HasTVFaces() && arrMeshes[ 1 - u ]->HasTVFaces() )
+            arrMeshes[ u ]->CalcFakeTexturing();
+        if ( !arrMeshes[ u ]->HasVNFaces() && arrMeshes[ 1 - u ]->HasVNFaces() )
+            arrMeshes[ u ]->CalcVNormalsBySGs();
+        if ( !arrMeshes[ u ]->HasVTFaces() && arrMeshes[ 1 - u ]->HasVTFaces() )
+            arrMeshes[ u ]->CalcVTangents();
+        if ( !arrMeshes[ u ]->HasVertexColors() && arrMeshes[ 1 - u ]->HasVertexColors() )
+            arrMeshes[ u ]->SetHasVertexColors( MITrue );
+    }
+    MIUInt uPrimarySubMaterialCount = arrMultiMats[ 0 ].GetSubMaterials().GetCount();
+    mTArray< MIUInt > arrNewMatIDs( MI_DW_INVALID, arrMultiMats[ 1 ].GetSubMaterials().GetCount() );
+    for ( MIUInt u = 0, ue = arrNewMatIDs.GetCount(), uNewID = uPrimarySubMaterialCount; u != ue; ++u )
+    {
+        for ( MIUInt v = 0; v != uPrimarySubMaterialCount; ++v )
+            if ( arrMultiMats[ 1 ].GetSubMaterials()[ u ] == arrMultiMats[ 0 ].GetSubMaterials()[ v ] )
+                arrNewMatIDs[ u ] = v;
+        if ( arrNewMatIDs[ u ] == MI_DW_INVALID )
+            arrNewMatIDs[ u ] = uNewID++;
+    }
+    if ( arrNewMatIDs.GetCount() )
+        for ( MIUInt u = 0, ue = arrFaceArrays[ 1 ]->GetCount(); u != ue; ++u )
+            ( *arrFaceArrays[ 1 ] )[ u ].AccessMatID() = arrNewMatIDs[ ( *arrFaceArrays[ 1 ] )[ u ].GetMatID() ];
+    ShiftFaces( a_meshOther.m_arrFaces, GetNumVerts() );
+    ShiftFaces( a_meshOther.m_arrTextureVertexFaces, GetNumTVerts() );
+    ShiftFaces( a_meshOther.m_arrVertexNormalFaces, GetNumVNormals() );
+    ShiftFaces( a_meshOther.m_arrVertexTangentFaces, GetNumVTangents() );
+    m_arrVertices.Add( a_meshOther.m_arrVertices );
+    m_arrTextureVertices.Add( a_meshOther.m_arrTextureVertices );
+    m_arrVertexNormals.Add( a_meshOther.m_arrVertexNormals );
+    m_arrVertexTangents.Add( a_meshOther.m_arrVertexTangents );
+    m_arrVTHandiness.Add( a_meshOther.m_arrVTHandiness );
+    m_arrFaces.Add( a_meshOther.m_arrFaces );
+    m_arrTextureVertexFaces.Add( a_meshOther.m_arrTextureVertexFaces );
+    m_arrVertexNormalFaces.Add( a_meshOther.m_arrVertexNormalFaces );
+    m_arrVertexTangentFaces.Add( a_meshOther.m_arrVertexTangentFaces );
+    m_arrVertexColors.Add( a_meshOther.m_arrVertexColors );
+    if ( !a_pComposedMaterialDest )
+        return;
+    a_pComposedMaterialDest->AccessSubMaterials().Swap( arrMultiMats[ 0 ].AccessSubMaterials() );
+    for ( MIUInt u = 0, ue = arrNewMatIDs.GetCount(); u != ue; ++u )
+        if ( arrNewMatIDs[ u ] >= uPrimarySubMaterialCount )
+            a_pComposedMaterialDest->AccessSubMaterials().Add( arrMultiMats[ 1 ].GetSubMaterials()[ u ] );
+}
+
 void mCMesh::SetHasVertexColors( MIBool a_bHasVertexColors )
 {
     m_arrVertexColors.Resize( a_bHasVertexColors ? GetNumVerts() : 0 );

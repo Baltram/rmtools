@@ -41,6 +41,11 @@ mCMaterialBase * mCScene::AccessMaterialAt( MIUInt a_uIndex )
     return m_arrMaterials[ a_uIndex ];
 }
 
+mCMaterialBase * mCScene::AccessMaterialByNodeIndex( MIUInt a_uNodeIndex )
+{
+    return const_cast< mCMaterialBase * >( GetMaterialByNodeIndex( a_uNodeIndex ) );
+}
+
 mCNode * mCScene::AccessNodeAt( MIUInt a_uIndex )
 {
     return m_arrNodes[ a_uIndex ];
@@ -94,6 +99,14 @@ mCMaterialBase const * mCScene::GetMaterialAt( MIUInt a_uIndex ) const
     if ( a_uIndex >= GetNumMaterials() )
         return 0;
     return m_arrMaterials[ a_uIndex ];
+}
+
+mCMaterialBase const * mCScene::GetMaterialByNodeIndex( MIUInt a_uNodeIndex ) const
+{
+    if ( a_uNodeIndex >= GetNumNodes() )
+        return 0;
+    MIUInt uMatIndex = GetMaterialIndexByName( GetNodeAt( a_uNodeIndex )->GetMaterialName() );
+    return uMatIndex == MI_DW_INVALID ? 0 : GetMaterialAt( uMatIndex );
 }
 
 MIUInt mCScene::GetMaterialIndexByName( mCString const & a_strMaterialName ) const
@@ -195,6 +208,23 @@ void mCScene::IdentifyBones( void )
         if ( GetNodeAt( u )->GetIsBone() )
             for ( mCNode * pNode = AccessNodeAt( u ); pNode->AccessIsBone() = MITrue, pNode->GetParentID(); )
                 pNode = AccessNodeAt( GetNodeIndexByID( pNode->GetParentID() ) );
+}
+
+void mCScene::MakeOneMeshScene( void )
+{
+    mCScene sceneNew;
+    sceneNew.SetName( GetName() );
+    mCMultiMaterial & matMerged = sceneNew.AddNewMultiMaterial();
+    mCNode & nodeMerged = sceneNew.AddNewNode();
+    nodeMerged.AccessName() = GetName() == "" ? "Merged" : GetName();
+    matMerged.AccessName() = GetNumMaterials() == 1 ? GetMaterialAt( 0 )->GetName() : ( "Mtls_" + GetName() );
+    mCMesh meshMerged;
+    for ( MIUInt u = 0, ue = GetNumNodes(); u != ue; ++u )
+        if ( GetNodeAt( u )->HasMesh() )
+            meshMerged.Merge( *GetNodeAt( u )->GetMesh(), &matMerged, GetMaterialByNodeIndex( u ), &matMerged );
+    nodeMerged.SetMesh( &meshMerged );
+    nodeMerged.AccessMaterialName() = matMerged.GetName();
+    Swap( sceneNew );
 }
 
 void mCScene::Merge( mCScene & a_sceneSource )
