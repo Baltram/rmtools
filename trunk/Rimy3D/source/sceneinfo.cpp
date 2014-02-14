@@ -234,6 +234,10 @@ bool SceneInfo::openSceneFile( QString a_strFilePath, bool a_bMerge )
                 if ( 0 == sceneNew.GetNodeAt( u )->GetName().CompareNoCase( "CollisionMesh" ) )
                     sceneNew.RemoveNode( sceneNew.AccessNodeAt( u ) );
     }
+    else if ( strExt == "_xcom" )
+    {
+        enuResult = mCXcomReader::ReadXcomFileData( sceneNew, streamIn );
+    }
     else
     {
         Rimy3D::showError( tr( "Unknown file type: \".%1\"" ).arg( strExt ), Rimy3D::applicationName() );
@@ -464,6 +468,7 @@ void SceneInfo::errorMessageTranslations( void )
     tr( "Invalid ._xmsh file." );
     tr( "Invalid ._xmac file." );
     tr( "Unknown ._xmac file version." );
+    tr( "Invalid ._xcom file." );
     tr( "Invalid base .xact file." );
     tr( "No common mesh in base .xact file found." );
     tr( "No common mesh in base ._xmac file found." );
@@ -473,7 +478,6 @@ void SceneInfo::errorMessageTranslations( void )
     tr( "Skinning includes bone not present in base ._xmac file." );
     tr( "Skinning does not cover all vertices." );
     tr( "Unknown vertex stream array type." );
-    tr( "The scene contains more than one mesh." );
     tr( "The scene contains no mesh." );
 }
 

@@ -245,7 +245,7 @@ void MainWindow::on_actionMerge_triggered( void )
 
 void MainWindow::on_actionOpen_triggered( void )
 {
-    QString strFilter = tr( "All files" ).append( " (*.obj *.3db *.gmax *.ase *.asc *.xcmsh *.xlmsh *.xact *._xmac *._xmsh);;"
+    QString strFilter = tr( "All files" ).append( " (*.obj *.3db *.gmax *.ase *.asc *.xcmsh *.xlmsh *.xact *._xmac *._xmsh *._xcom);;"
                                                   "Wavefront OBJ format (*.obj);;"
                                                   "Baltram's 3D format (*.3db);;"
                                                   "GMax Scene (*.gmax);;"
@@ -255,7 +255,8 @@ void MainWindow::on_actionOpen_triggered( void )
                                                   "Gothic 3 Mesh (*.xcmsh);;"
                                                   "Gothic 3 LOD Mesh (*.xlmsh);;"
                                                   "Risen Motion Actor (*._xmac);;"
-                                                  "Risen Mesh (*._xmsh);;" );
+                                                  "Risen Mesh (*._xmsh);;"
+                                                  "Risen Collision Mesh (*._xcom);;" );
     open( QFileDialog::getOpenFileName( this, tr( m_bOnMerge ? "Merge" : "Open" ), m_SceneInfo.getCurrentDir(), strFilter ) );
 }
 
