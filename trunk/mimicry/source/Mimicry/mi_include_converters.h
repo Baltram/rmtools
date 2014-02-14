@@ -25,6 +25,7 @@
 #include "mi_xlmshwriter.h"
 #include "mi_xmshreader.h"
 #include "mi_xmshwriter.h"
+#include "mi_xcomreader.h"
 #include "mi_genomefile.h"
 #include "mi_genomevolume.h"
 #include "mi_genomematerial.h"

@@ -222,7 +222,7 @@ void mCScene::MakeOneMeshScene( void )
     for ( MIUInt u = 0, ue = GetNumNodes(); u != ue; ++u )
         if ( GetNodeAt( u )->HasMesh() )
             meshMerged.Merge( *GetNodeAt( u )->GetMesh(), &matMerged, GetMaterialByNodeIndex( u ), &matMerged );
-    nodeMerged.SetMesh( &meshMerged );
+    nodeMerged.SwapMesh( meshMerged );
     nodeMerged.AccessMaterialName() = matMerged.GetName();
     Swap( sceneNew );
 }

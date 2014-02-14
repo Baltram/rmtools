@@ -33,6 +33,8 @@ mCMaterial & mCMaterial::operator = ( mCMaterial const & a_mtlSource )
 
 MIBool mCMaterial::operator == ( mCMaterial const & a_mtlOther ) const
 {
+    if ( GetName() != a_mtlOther.GetName() )
+        return MIFalse;
     for ( mCMaterial::EMapType i = mCMaterial::EMapType_Diffuse; i != mCMaterial::EMapType_Count; ++i )
         if ( HasTexMap( i ) != a_mtlOther.HasTexMap( i ) ||
              HasTexMap( i ) && *GetTexMap( i ) != *a_mtlOther.GetTexMap( i ) )
