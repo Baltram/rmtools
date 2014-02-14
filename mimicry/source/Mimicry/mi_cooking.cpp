@@ -177,7 +177,6 @@ MIBool mCCooking::ReadCookedMesh( mCIOStreamBinary & a_streamSource, mCMesh & a_
         for ( MIUInt v = 0; v != 3; ++v, pIndicesDest += sizeof( MIUInt ) - uIndexSize )
             for ( MIUInt w = uIndexSize; w--; )
                 *pIndicesDest++ = *pIndicesSource++;
-    mCMaxRisenCoordShifter::GetInstance().ShiftMeshCoords( a_meshDest );
     if ( bIsConvex )
         s_pPhysicsSDK->releaseConvexMesh( *pPhysicsMesh );
     else
@@ -225,7 +224,6 @@ MIBool mCCooking::WriteCookedMesh( mCIOStreamBinary & a_streamDest, mCMesh a_mes
 {
     if ( !s_pCooking || !s_pPhysicsSDK )
         return MIFalse;
-    mCMaxRisenCoordShifter::GetInstance().ShiftMeshCoords( a_meshSource );
     NxTriangleMeshDesc_Dummy Desc;
     g_memset( &Desc, 0, sizeof( Desc ) );
     Desc.numTriangles = a_meshSource.GetNumFaces();

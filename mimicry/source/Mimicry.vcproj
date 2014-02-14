@@ -686,27 +686,19 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Mimicry\mi_xmshreader.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Mimicry\mi_xmshreader.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Mimicry\mi_xmshwriter.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Mimicry\mi_xmshwriter.h"
-				>
-			</File>
-			<File
 				RelativePath=".\Mimicry\mi_xcmshwriter.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\Mimicry\mi_xcmshwriter.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Mimicry\mi_xcomreader.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Mimicry\mi_xcomreader.h"
 				>
 			</File>
 			<File
@@ -739,6 +731,22 @@
 			</File>
 			<File
 				RelativePath=".\Mimicry\mi_xmacwriter.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Mimicry\mi_xmshreader.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Mimicry\mi_xmshreader.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Mimicry\mi_xmshwriter.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Mimicry\mi_xmshwriter.h"
 				>
 			</File>
 		</Filter>
