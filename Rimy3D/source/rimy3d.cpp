@@ -32,6 +32,7 @@ Rimy3D::Rimy3D( int & argc, char * argv[] ) :
     QCoreApplication::setApplicationName( "Rimy3D" );
     s_pSettings = new QSettings;
     mCGenomeVolume::RegisterZlibUncompressFunction( &uncompress );
+    initCooking();
 }
 
 Rimy3D::~Rimy3D( void )
