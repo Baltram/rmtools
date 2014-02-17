@@ -20,12 +20,14 @@ namespace
         EMeshSection_BaseVerts = 5
     };
 
-    mCMaterial::EMapType arrNativeMapTypes[] = { mCMaterial::EMapType_Count,
-                                                 mCMaterial::EMapType_Count,
+    mCMaterial::EMapType arrNativeMapTypes[] = { mCMaterial::EMapType_Diffuse,  // Placeholder
+                                                 mCMaterial::EMapType_Diffuse,  // Placeholder
                                                  mCMaterial::EMapType_Diffuse,
                                                  mCMaterial::EMapType_Specular,
-                                                 mCMaterial::EMapType_Count,
-                                                 mCMaterial::EMapType_Normal };
+                                                 mCMaterial::EMapType_Diffuse,  // Placeholder
+                                                 mCMaterial::EMapType_Normal,
+                                                 mCMaterial::EMapType_Diffuse,  // Placeholder
+                                                 mCMaterial::EMapType_Specular };
 }
 
 mEResult mCXmacReader::ReadXmacFileData( mCScene & a_sceneDest, mCIOStreamBinary & a_streamSource, SOptions a_Options )
@@ -90,7 +92,7 @@ mEResult mCXmacReader::ReadXmacFileData( mCScene & a_sceneDest, mCIOStreamBinary
                 for ( MIUInt v = 0; v != uMapCount; ++v )
                 {
                     a_streamSource.Skip( 26 );
-                    MIUInt const uMapType = a_streamSource.ReadU8();
+                    MIUInt const uMapType = a_streamSource.ReadU8() % ( sizeof( arrNativeMapTypes ) / sizeof( *arrNativeMapTypes ) );
                     a_streamSource.Skip( 1 );
                     mCTexMap mapDest( "", a_streamSource.ReadString( a_streamSource.ReadU32() ) + "." + a_Options.m_strTextureFileExtension );
                     matDest.AccessTexMap( arrNativeMapTypes[ uMapType ] ) = mapDest;
