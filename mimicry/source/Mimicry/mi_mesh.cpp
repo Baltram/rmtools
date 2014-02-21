@@ -333,6 +333,54 @@ void mCMesh::CopyVTFacesFromFaces( void )
     for ( MIUInt u = m_arrFaces.GetCount(); u--; m_arrVertexTangentFaces[ u ] = m_arrFaces[ u ] );
 }
 
+namespace
+{
+    template< class C, class D >
+    void Extract( mTArray< C > const & a_arrFaces, mTArray< C > & a_arrFacesDest, mTArray< D > const & a_arrVerts, mTArray< D > & a_arrVertsDest, mTArray< MIBool > const & a_arrFaceMask )
+    {
+        MIUInt const uFaceCount = a_arrFaces.GetCount(), uVertCount = a_arrVerts.GetCount();
+        a_arrFacesDest.Clear();
+        a_arrVertsDest.Clear();
+        if ( !uFaceCount || !uVertCount )
+            return;
+        a_arrFacesDest.Reserve( uFaceCount );
+        a_arrVertsDest.Reserve( uVertCount );
+        mTArray< MIUInt > arrNewVertIndices( MI_DW_INVALID, uVertCount );
+        for ( MIUInt u = 0; u != uFaceCount; ++u )
+        {
+            if ( !a_arrFaceMask[ u ] )
+                continue;
+            C & faceDest = a_arrFacesDest.AddNew() = a_arrFaces[ u ];
+            for ( MIUInt v = 0; v != 3; ++v )
+            {
+                MIUInt & uVert = faceDest[ v ];
+                if ( arrNewVertIndices[ uVert ] == MI_DW_INVALID )
+                {
+                    arrNewVertIndices[ uVert ] = a_arrVertsDest.GetCount();
+                    a_arrVertsDest.Add( a_arrVerts[ uVert ] );
+                }
+                uVert = arrNewVertIndices[ uVert ];
+            }
+        }
+        a_arrFacesDest.UnReserve();
+        a_arrVertsDest.UnReserve();
+    }
+}
+
+void mCMesh::ExtractByID( MIUInt a_uMatID, mCMesh & a_meshDest ) const
+{
+    mCMesh meshDest;
+    mTArray< MIBool > arrFaceMask( MIFalse, m_arrFaces.GetCount() );
+    for ( MIUInt u = 0, ue = GetNumFaces(); u != ue; ++u )
+        arrFaceMask[ u ] = m_arrFaces[ u ].GetMatID() == a_uMatID;
+    Extract( m_arrFaces, meshDest.m_arrFaces, m_arrVertices, meshDest.m_arrVertices, arrFaceMask );
+    Extract( m_arrTextureVertexFaces, meshDest.m_arrTextureVertexFaces, m_arrTextureVertices, meshDest.m_arrTextureVertices, arrFaceMask );
+    Extract( m_arrVertexNormalFaces, meshDest.m_arrVertexNormalFaces, m_arrVertexNormals, meshDest.m_arrVertexNormals, arrFaceMask );
+    Extract( m_arrVertexTangentFaces, meshDest.m_arrVertexTangentFaces, m_arrVertexTangents, meshDest.m_arrVertexTangents, arrFaceMask );
+    Extract( m_arrFaces, meshDest.m_arrFaces, m_arrVertexColors, meshDest.m_arrVertexColors, arrFaceMask );
+    a_meshDest.Swap( meshDest );
+}
+
 mCMaxFace const * mCMesh::GetFaces( void ) const
 {
     return m_arrFaces.GetBuffer();

@@ -210,6 +210,27 @@ void mCScene::IdentifyBones( void )
                 pNode = AccessNodeAt( GetNodeIndexByID( pNode->GetParentID() ) );
 }
 
+void mCScene::MakeMatMeshScene( void )
+{
+    MakeOneMeshScene();
+    mCMesh meshSource;
+    meshSource.Swap( *AccessNodeAt( 0 )->AccessMesh() );
+    RemoveNode( AccessNodeAt( 0 ) );
+    mCMultiMaterial matMerged;
+    matMerged.Swap( *dynamic_cast< mCMultiMaterial * >( AccessMaterialAt( 0 ) ) );
+    RemoveMaterial( AccessMaterialAt( 0 ) );
+    for ( MIUInt u = 0, ue = matMerged.GetSubMaterials().GetCount(); u != ue; ++u )
+    {
+        AddNewMaterial().Swap( matMerged.AccessSubMaterials()[ u ] );
+        mCNode & nodeDest = AddNewNode();
+        nodeDest.AccessMaterialName() = nodeDest.AccessName() = GetMaterialAt( u )->GetName();
+        mCMesh meshDest;
+        meshSource.ExtractByID( u, meshDest );
+        for ( MIUInt v = meshDest.GetNumFaces(); v--; meshDest.AccessFaces()[ v ].AccessMatID() = 0 );
+        nodeDest.SwapMesh( meshDest );
+    }
+}
+
 void mCScene::MakeOneMeshScene( void )
 {
     mCScene sceneNew;
