@@ -43,6 +43,7 @@ public:
     void              CopyTVFacesFromFaces( void );
     void              CopyVNFacesFromFaces( void );
     void              CopyVTFacesFromFaces( void );
+    void              ExtractByID( MIUInt a_uMatID, mCMesh & a_meshDest ) const;
     mCMaxFace const * GetFaces( void ) const;
     MIUInt            GetNumFaces( void ) const;
     MIUInt            GetNumTVerts( void ) const;

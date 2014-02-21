@@ -20,13 +20,13 @@ namespace
         EMeshSection_BaseVerts = 5
     };
 
-    mCMaterial::EMapType arrNativeMapTypes[] = { mCMaterial::EMapType_Diffuse,  // Placeholder
-                                                 mCMaterial::EMapType_Diffuse,  // Placeholder
+    mCMaterial::EMapType arrNativeMapTypes[] = { mCMaterial::EMapType_Specular,  // Placeholder
+                                                 mCMaterial::EMapType_Specular,  // Placeholder
                                                  mCMaterial::EMapType_Diffuse,
                                                  mCMaterial::EMapType_Specular,
-                                                 mCMaterial::EMapType_Diffuse,  // Placeholder
+                                                 mCMaterial::EMapType_Specular,  // Placeholder
                                                  mCMaterial::EMapType_Normal,
-                                                 mCMaterial::EMapType_Diffuse,  // Placeholder
+                                                 mCMaterial::EMapType_Specular,  // Placeholder
                                                  mCMaterial::EMapType_Specular };
 }
 

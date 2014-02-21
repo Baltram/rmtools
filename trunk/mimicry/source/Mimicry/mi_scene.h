@@ -34,6 +34,7 @@ public:
     MIUInt                 GetNumMaterials( void ) const;
     MIUInt                 GetNumNodes( void ) const;
     void                   IdentifyBones( void );
+    void                   MakeMatMeshScene( void );
     void                   MakeOneMeshScene( void );
     void                   Merge( mCScene & a_sceneSource );
     void                   RemoveMaterial( mCMaterialBase * a_pMaterial );
