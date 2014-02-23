@@ -12,6 +12,7 @@ public:
     static mEResult ReadXcomFileData( mCScene & a_sceneDest, mCIOStreamBinary & a_streamSource, SOptions a_Options = SOptions() );
 public:
     static MILPCChar const s_arrShapeMaterialNames[];
+    static MIUInt const s_uMaterialNameCount;
 };
 
 #endif

@@ -339,10 +339,10 @@ namespace
     void Extract( mTArray< C > const & a_arrFaces, mTArray< C > & a_arrFacesDest, mTArray< D > const & a_arrVerts, mTArray< D > & a_arrVertsDest, mTArray< MIBool > const & a_arrFaceMask )
     {
         MIUInt const uFaceCount = a_arrFaces.GetCount(), uVertCount = a_arrVerts.GetCount();
-        a_arrFacesDest.Clear();
-        a_arrVertsDest.Clear();
         if ( !uFaceCount || !uVertCount )
             return;
+        a_arrFacesDest.Clear();
+        a_arrVertsDest.Clear();
         a_arrFacesDest.Reserve( uFaceCount );
         a_arrVertsDest.Reserve( uVertCount );
         mTArray< MIUInt > arrNewVertIndices( MI_DW_INVALID, uVertCount );

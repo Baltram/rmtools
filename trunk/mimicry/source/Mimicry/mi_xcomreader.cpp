@@ -27,6 +27,8 @@ MILPCChar const mCXcomReader::s_arrShapeMaterialNames[] = {
     "axe"
 };
 
+MIUInt const mCXcomReader::s_uMaterialNameCount = static_cast< MIUInt >( sizeof( mCXcomReader::s_arrShapeMaterialNames ) / sizeof( *mCXcomReader::s_arrShapeMaterialNames ) );
+
 
 namespace
 {   
@@ -63,12 +65,14 @@ mEResult mCXcomReader::ReadXcomFileData( mCScene & a_sceneDest, mCIOStreamBinary
         {
             mCMesh meshDest;
             mCCooking::ReadCookedMesh( a_streamSource, meshDest );
+            mCVec3 * pVerts = meshDest.AccessVerts();
+            for ( MIUInt u = meshDest.GetNumVerts(); u--; pVerts[ u ] *= 100.0f );
             a_sceneDest.AddNewNode().SwapMesh( meshDest );
         }
     }
     for ( MIUInt u = 0, ue = a_streamSource.ReadU32(); u != ue; ++u )
     {
-        MIUInt uShapeMaterial = a_streamSource.ReadU8() % static_cast< MIUInt >( sizeof( s_arrShapeMaterialNames ) / sizeof( *s_arrShapeMaterialNames ) );
+        MIUInt uShapeMaterial = a_streamSource.ReadU8() % s_uMaterialNameCount;
         MIBool bIgnoredByTraceRay = a_streamSource.ReadBool();
         MIBool bDisableCollision  = a_streamSource.ReadBool();
         MIBool bDisableResponse   = a_streamSource.ReadBool();

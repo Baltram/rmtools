@@ -702,6 +702,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Mimicry\mi_xcomwriter.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Mimicry\mi_xcomwriter.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Mimicry\mi_xlmshreader.cpp"
 				>
 			</File>
