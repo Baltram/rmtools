@@ -395,6 +395,13 @@ bool SceneInfo::saveSceneFile( QString a_strFilePath, exportSettingsDialog const
             enuResult = mCXmacWriter::WriteXmacFileData( m_sceneCurrentScene, streamOut, Options );
         }
     }
+    else if ( strExt == "_xcom" )
+    {
+        mCXcomWriter::SOptions Options;
+        static_cast< eSConverterOptions & >( Options ) = BaseOptions;
+        Options.m_bConvex = a_SettingsDialog.convex();
+        enuResult = mCXcomWriter::WriteXcomFileData( m_sceneCurrentScene, streamOut, Options );
+    }
     else
     {
         Rimy3D::showError( tr( "Unknown file type: \".%1\"" ).arg( strExt ), Rimy3D::applicationName() );

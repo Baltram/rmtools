@@ -26,7 +26,9 @@ public:
         BaseXact      = 1 << 5,
         BaseXmac      = 1 << 6,
         CreateMtl     = 1 << 7,
-        AutoSkin      = 1 << 8
+        AutoSkin      = 1 << 8,
+        Convex        = 1 << 9,
+        NoTextures    = 1 << 10
     };
     Q_DECLARE_FLAGS( Flags, Options )
 public:
@@ -38,6 +40,7 @@ public:
     QString baseXact( void ) const;
     QString baseXmac( void ) const;
     bool    colors( void ) const;
+    bool    convex( void ) const;
     bool    createMtl( void ) const;
     bool    indirectMatching( void ) const;
     bool    normals( void ) const;

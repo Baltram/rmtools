@@ -16,7 +16,8 @@ exportSettingsDialog::exportSettingsDialog( QWidget * a_pParent, QString a_strEx
     m_pUi->w4->setVisible( a_Flags & BaseXact );
     m_pUi->w5->setVisible( a_Flags & CreateMtl );
     m_pUi->w6->setVisible( a_Flags & BaseXmac );
-    m_pUi->w7->setVisible( true );
+    m_pUi->w7->setVisible( !( a_Flags & NoTextures ) );
+    m_pUi->w8->setVisible( a_Flags & Convex );
     m_pUi->cbTextureFormat->insertItems( 0, QStringList() << "JPG" << "PNG" << "BMP" );
     m_pUi->cbNormals->setEnabled( a_Flags & Normals );
     m_pUi->gbAutoSkin->setVisible( a_Flags & AutoSkin );
@@ -54,6 +55,11 @@ QString exportSettingsDialog::baseXmac( void ) const
 bool exportSettingsDialog::colors( void ) const
 {
     return m_pUi->cbVColors->isChecked();
+}
+
+bool exportSettingsDialog::convex( void ) const
+{
+    return m_pUi->cbConvex->isChecked();
 }
 
 bool exportSettingsDialog::createMtl( void ) const
@@ -123,6 +129,7 @@ void exportSettingsDialog::loadSettings( QSettings & a_Settings )
     m_pUi->cbMtl->setChecked( a_Settings.value( "cbMtl", true ).toBool() );
     m_pUi->cbSaveTextures->setChecked( a_Settings.value( "cbSaveTextures", false ).toBool() );
     m_pUi->cbTextureFormat->setCurrentIndex( a_Settings.value( "cbTextureFormat", 0 ).toInt() );
+    m_pUi->cbConvex->setChecked( a_Settings.value( "cbConvex", false ).toBool() );
     a_Settings.endGroup();
     if ( m_strExt == "_xmac" || m_strExt == "xact" )
     {
@@ -186,5 +193,6 @@ void exportSettingsDialog::saveSettings( QSettings & a_Settings )
     a_Settings.setValue( "cbMtl", m_pUi->cbMtl->isChecked() );
     a_Settings.setValue( "cbSaveTextures", m_pUi->cbSaveTextures->isChecked() );
     a_Settings.setValue( "cbTextureFormat", m_pUi->cbTextureFormat->currentIndex() );
+    a_Settings.setValue( "cbConvex", m_pUi->cbConvex->isChecked() );
     a_Settings.endGroup();
 }
