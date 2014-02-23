@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>208</width>
-    <height>414</height>
+    <height>419</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -323,6 +323,22 @@
         </property>
         <property name="checked">
          <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QWidget" name="w8" native="true">
+     <layout class="QHBoxLayout" name="horizontalLayout_5">
+      <property name="margin">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QCheckBox" name="cbConvex">
+        <property name="text">
+         <string>All Meshes Are Convex</string>
         </property>
        </widget>
       </item>
