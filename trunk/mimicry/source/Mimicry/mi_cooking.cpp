@@ -164,7 +164,7 @@ MIBool mCCooking::ReadCookedMesh( mCIOStreamBinary & a_streamSource, mCMesh & a_
     a_meshDest.SetNumVerts( uVertCount );
     mCVec3 * pVert = a_meshDest.AccessVerts();
     for ( MILPCByte pFloats = static_cast< MILPCByte >( pPhysicsMesh->getBase( 0, 1 ) ), pEnd = pFloats + uVertStride * uVertCount; pFloats != pEnd; pFloats += uVertStride )
-        *pVert++ = *reinterpret_cast< mCVec3 const * >( pFloats ) * 100;
+        *pVert++ = *reinterpret_cast< mCVec3 const * >( pFloats );
     MIU32 uIndexSize = 4;
     if ( pPhysicsMesh->getFormat( 0, 0 ) == 3 )
         uIndexSize = 2;
@@ -224,6 +224,7 @@ MIBool mCCooking::WriteCookedMesh( mCIOStreamBinary & a_streamDest, mCMesh a_mes
 {
     if ( !s_pCooking || !s_pPhysicsSDK )
         return MIFalse;
+    mTArray< MIU16 > arrMatIDs( 1, a_meshSource.GetNumFaces() );
     NxTriangleMeshDesc_Dummy Desc;
     g_memset( &Desc, 0, sizeof( Desc ) );
     Desc.numTriangles = a_meshSource.GetNumFaces();
@@ -232,7 +233,11 @@ MIBool mCCooking::WriteCookedMesh( mCIOStreamBinary & a_streamDest, mCMesh a_mes
     Desc.pointStrideBytes = sizeof( *a_meshSource.GetVerts() );
     Desc.triangles = a_meshSource.GetFaces();
     Desc.triangleStrideBytes = sizeof( *a_meshSource.GetFaces() );
-    Desc.flags = a_bConvex ? 1 << 2 : 0; // NX_CF_COMPUTE_CONVEX
+    Desc.materialIndices = arrMatIDs.GetBuffer();
+    Desc.materialIndexStride = sizeof( arrMatIDs[ 0 ] );
+    Desc.flags = a_bConvex ? 1 << 2 : 0;  // NX_CF_COMPUTE_CONVEX
+    Desc.heightFieldVerticalAxis = 0xFF;  // NX_NOT_HEIGHTFIELD
+    Desc.convexEdgeThreshold = 0.001f;
     CPhysicsStream streamDest( a_streamDest );
     return a_bConvex ? s_pCooking->NxCookConvexMesh( Desc, streamDest ) : s_pCooking->NxCookTriangleMesh( Desc, streamDest );
 }
