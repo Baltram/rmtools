@@ -25,7 +25,7 @@ SOURCES += glwidget.cpp \
            searchpathsdialog.cpp \
            texturefinder.cpp \
            exportsettingsdialog.cpp \
-           extendedsavingdialog.cpp \
+           pluginsdialog.cpp \
            preferencesdialog.cpp \
            networkmanager.cpp \
            genomematerialdialog.cpp
@@ -37,7 +37,7 @@ HEADERS += glwidget.h \
            searchpathsdialog.h \
            texturefinder.h \
            exportsettingsdialog.h \
-           extendedsavingdialog.h \
+           pluginsdialog.h \
            preferencesdialog.h \
            networkmanager.h \
            genomematerialdialog.h
@@ -45,7 +45,7 @@ HEADERS += glwidget.h \
 FORMS += mainwindow.ui \
          searchpathsdialog.ui \
          exportsettingsdialog.ui \
-         extendedsavingdialog.ui \
+         pluginsdialog.ui \
          preferencesdialog.ui \
          genomematerialdialog.ui
 
@@ -53,6 +53,6 @@ TRANSLATIONS = resources/translations/Rimy3D_de.ts
 
 RESOURCES += resources/flags.qrc \
              resources/translations.qrc \
-             resources/extended_saving.qrc
+             resources/plugins.qrc
 
 RC_FILE = resources/icon.rc

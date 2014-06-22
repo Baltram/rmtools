@@ -74,6 +74,7 @@
     </property>
     <addaction name="actionFix_GMax_Installation"/>
     <addaction name="actionExtended_Saving_For_GMax"/>
+    <addaction name="action3db_Import_Export_Scripts_For_Blender"/>
     <addaction name="actionGenome_Material_Editor"/>
     <addaction name="actionConfigure_Bitmap_Paths"/>
     <addaction name="actionPreferences"/>
@@ -194,6 +195,11 @@
    </property>
    <property name="text">
     <string>Merge...</string>
+   </property>
+  </action>
+  <action name="action3db_Import_Export_Scripts_For_Blender">
+   <property name="text">
+    <string>3db Import/Export Scripts For Blender...</string>
    </property>
   </action>
  </widget>

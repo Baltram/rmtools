@@ -103,7 +103,7 @@ void SearchPathsDialog::on_pbAddArchive_clicked( void )
 void SearchPathsDialog::on_pbAddPath_clicked( void )
 {
     static QString s_strPath = QDir::homePath();
-    QStringList arrDirs( QFileDialog::getExistingDirectory( this, "Choose a folder", s_strPath ) );
+    QStringList arrDirs( QFileDialog::getExistingDirectory( this, tr( "Choose a folder" ), s_strPath ) );
     if ( arrDirs.front() == "" )
         return;
     s_strPath = QFileInfo( arrDirs.front() + ".1" ).absolutePath();
