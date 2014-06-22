@@ -123,7 +123,10 @@ namespace
         WriteString( a_streamDest, nodeSource.GetName() );
         a_streamDest << AsIndex( a_sceneSource.GetNodeParentIndex( s_uCurrentNodeIndex ) );
         a_streamDest << AsIndex( a_sceneSource.GetMaterialIndexByName( nodeSource.GetMaterialName() ) );
-        a_streamDest.Write( &nodeSource.GetTransform(), sizeof( mCMatrix4 ) );
+        mCMatrix4 matTransform = nodeSource.GetTransform();
+        if ( nodeSource.GetIsBone() )
+            matTransform.RemoveScale();
+        a_streamDest.Write( &matTransform, sizeof( mCMatrix4 ) );
         MI_3DB_CHUNK_END( a_streamDest );
     }
 
