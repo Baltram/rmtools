@@ -2,7 +2,7 @@
 #include "ui_mainwindow.h"
 #include "rimy3d.h"
 #include "texturefinder.h"
-#include "extendedsavingdialog.h"
+#include "pluginsdialog.h"
 #include <QClipboard>
 
 MainWindow::MainWindow( QWidget * a_pParent ) :
@@ -185,6 +185,11 @@ void MainWindow::updateRecentFiles( void )
     }
 }
 
+void MainWindow::on_action3db_Import_Export_Scripts_For_Blender_triggered( void )
+{
+    PluginsDialog( this ).exec( PluginsDialog::Blender );
+}
+
 void MainWindow::on_actionAbout_triggered( void )
 {
     Rimy3D::showMessage( "<p></p><b>Rimy3D v" + Rimy3D::getVersionString() + tr( "</b> (April 7th 2013)"
@@ -221,7 +226,7 @@ void MainWindow::on_actionExit_triggered( void )
 
 void MainWindow::on_actionExtended_Saving_For_GMax_triggered( void )
 {
-    ExtendedSavingDialog( this ).exec();
+    PluginsDialog( this ).exec( PluginsDialog::GMax );
 }
 
 void MainWindow::on_actionFix_GMax_Installation_triggered( void )

@@ -1,0 +1,29 @@
+------
+Blender 3db import/export scripts v1.0 by Baltram <baltram-lielb@web.de> (June 22th 2014)
+------
+
+Supported Blender versions:
+
+  2.63 up to 2.70 (and possibly newer versions)
+
+Installation:
+
+  After the script files have been copied to your Blender addons directory, start Blender
+  and open the dialog File > User Preferences, then switch to the 'Addons' tab and select
+  the category 'Import-Export'. Make sure the addon 'Import-Export: Baltram's 3D format'
+  is checked and click on 'Save User Settings'.
+
+Usage:
+
+  With the addon enabled, .3db files can be im-/exported via File > Import and File > Export.
+
+Supported data:
+
+  * Meshes
+    - vertices - triangles - UV coordinates - two vertex color channels ('rgb', 'alpha')
+  * Empties
+  * Bones
+  * Armature
+    - skinning via vertex groups
+  * Materials
+    - name - diffuse/specular/normal texture file paths

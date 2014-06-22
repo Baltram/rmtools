@@ -1,0 +1,12 @@
+<RCC>
+    <qresource prefix="/plugins">
+        <file>plugins/Extended Saving/installExtendedSaving.gmax</file>
+        <file>plugins/Extended Saving/Extended Saving.txt</file>
+        <file>plugins/Extended Saving/Extended Saving_DE.txt</file>
+        <file>plugins/blender_3db/3db_plugin.txt</file>
+        <file>plugins/blender_3db/3db_plugin_DE.txt</file>
+        <file>plugins/blender_3db/__init__.py</file>
+        <file>plugins/blender_3db/export_3db.py</file>
+        <file>plugins/blender_3db/import_3db.py</file>
+    </qresource>
+</RCC>

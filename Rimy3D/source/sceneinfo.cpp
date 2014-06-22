@@ -91,7 +91,7 @@ GLC_World SceneInfo::buildGlcWorld( void )
         pMesh->addNormals( arrNormalFloats );
         for ( int i = 0, j = 0, ie = arrUVFaces.GetCount(), iCurrentMatId = 0; i != ie; ++i )
         {
-            int iMatId = arrUniVerts[ arrUVFaces[ i ][ 0 ] ].m_uMatID;
+            int iMatId = arrUniVerts[ arrUVFaces[ i ][ 0 ] ].m_uMatID & 0xFFFFFF;
             if ( ( i + 1 ) == ie )
                 ++i, ++ie, iMatId = iCurrentMatId + 1;
             if ( i && ( iMatId != iCurrentMatId ) )

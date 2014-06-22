@@ -1,0 +1,26 @@
+------
+Extended Saving v0.9 by Baltram <baltram-lielb@web.de> (21. Juni 2014)
+------
+
+Extended Saving besteht aus MacroScripts und Callbacks in der MAXScript-Sprache, welche
+die Speicherung von GMax-Dateien erweitern und den Import von .3db-Dateien ermöglichen.
+
+Ist Extended Saving aktiviert, während eine .gmax-Datei gespeichert wird, dann wird diese
+Datei um einige zusätzliche Informationen erweitert. Auf diese Weise wird es einigen
+anderen Programmen (Rimy3D) ermöglicht, diese .gmax-Datei zu importieren.
+
+Installation:
+
+  Einfach die Datei 'installExtendedSaving.gmax' in GMax öffnen.
+
+Benutzung:
+
+  Über das Menü 'Extended Saving' in der Hauptmenüleiste von GMax kann
+
+    ...Extended Saving für die geöffnete .gmax-Datei (de-)aktiviert werden
+    ...Extended Saving standardmäßig (de-)aktiviert werden (diese Einstellung wirkt sich 
+       immer dann aus, wenn File > New oder File > Reset ausgeführt wird)
+    ...Extended Saving einmalig für den folgenden Speichervorgang aktiviert werden
+    ...eine .3db-Datei importiert werden
+    ...Extended Saving deinstalliert werden
+    ...die Versionsnummer (und andere Informationen) angezeigt werden

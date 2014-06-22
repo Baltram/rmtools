@@ -37,6 +37,7 @@ private:
     void updateLanguage( void );
     void updateRecentFiles( void );
 private slots:
+    void on_action3db_Import_Export_Scripts_For_Blender_triggered( void );
     void on_actionAbout_triggered( void );
     void on_actionClose_triggered( void );
     void on_actionConfigure_Bitmap_Paths_triggered( void );
@@ -55,7 +56,7 @@ private slots:
     void on_actionRecent4_triggered( void );
     void on_actionRecent5_triggered( void );
     void on_actionSave_As_triggered( void );
-    void onSceneChanged( void ); 
+    void onSceneChanged( void );
 private:
     Ui::MainWindow *     m_pUi;
     SceneInfo            m_SceneInfo;
