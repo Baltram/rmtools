@@ -72,11 +72,13 @@ public:
     MIFloat const * GetRow( MIUInt a_uRowIndex ) const;
     mCVec3 const &  GetTranslation( void ) const;
     void            ModifyRotation( mCQuaternion const & a_quatSource );
+    void            RemoveScale( void );
     void            SetToIdentity( void );
     void            SetToRotation( mCQuaternion const & a_quatRotation );
     void            SetToProduct( mCMatrix4 const & a_matLeft, mCMatrix4 const & a_matRight );
     void            SetToZero( void );
     void            Swap( mCMatrix4 & a_matOther );
+    void            Transpose( void );
 private:
     union
     {

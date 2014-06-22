@@ -19,26 +19,26 @@ mCQuaternion::mCQuaternion( mCMatrix4 const & a_matSource )
     if ( bXGreatest )
     {
         MIFloat fTemp  = sqrt( 1.0f + pMatrixElements[ 0 ] - pMatrixElements[ 5 ] - pMatrixElements[ 10 ] ) * 2;
-        m_fX = 0.5f / fTemp;
+        m_fX = 0.5f * fTemp;
         m_fY = ( pMatrixElements[ 1 ] + pMatrixElements[ 4 ] ) / fTemp;
         m_fZ = ( pMatrixElements[ 2 ] + pMatrixElements[ 8 ] ) / fTemp;
-        m_fW = ( pMatrixElements[ 6 ] + pMatrixElements[ 9 ] ) / fTemp;
+        m_fW = ( pMatrixElements[ 9 ] - pMatrixElements[ 6 ] ) / fTemp;
     }
     else if ( bYGreaterThanZ )
     {
         MIFloat fTemp  = sqrt( 1.0f + pMatrixElements[ 5 ] - pMatrixElements[ 0 ] - pMatrixElements[ 10 ] ) * 2;
         m_fX = ( pMatrixElements[ 1 ] + pMatrixElements[ 4 ] ) / fTemp;
-        m_fY = 0.5f / fTemp;
+        m_fY = 0.5f * fTemp;
         m_fZ = ( pMatrixElements[ 6 ] + pMatrixElements[ 9 ] ) / fTemp;
-        m_fW = ( pMatrixElements[ 2 ] + pMatrixElements[ 8 ] ) / fTemp;
+        m_fW = ( pMatrixElements[ 2 ] - pMatrixElements[ 8 ] ) / fTemp;
     }
     else
     {
         MIFloat fTemp  = sqrt( 1.0f + pMatrixElements[ 10 ] - pMatrixElements[ 0 ] - pMatrixElements[ 5 ] ) * 2;
         m_fX = ( pMatrixElements[ 2 ] + pMatrixElements[ 8 ] ) / fTemp;
         m_fY = ( pMatrixElements[ 6 ] + pMatrixElements[ 9 ] ) / fTemp;
-        m_fZ = 0.5f / fTemp;
-        m_fW = ( pMatrixElements[ 1 ] + pMatrixElements[ 4 ] ) / fTemp;
+        m_fZ = 0.5f * fTemp;
+        m_fW = ( pMatrixElements[ 4 ] - pMatrixElements[ 1 ] ) / fTemp;
     }
 }
 
@@ -109,14 +109,6 @@ void mCQuaternion::Clear( void )
     m_fW = 1.0f;
 }
 
-mCQuaternion & mCQuaternion::Inverse( void )
-{
-    m_fX *= -1.0f;
-    m_fY *= -1.0f;
-    m_fZ *= -1.0f;
-    return *this;
-}
-
 MIFloat mCQuaternion::GetX( void ) const
 {
     return m_fX;
@@ -135,6 +127,24 @@ MIFloat mCQuaternion::GetZ( void ) const
 MIFloat mCQuaternion::GetW( void ) const
 {
     return m_fW;
+}
+
+mCQuaternion & mCQuaternion::Inverse( void )
+{
+    m_fX *= -1.0f;
+    m_fY *= -1.0f;
+    m_fZ *= -1.0f;
+    return *this;
+}
+
+mCQuaternion & mCQuaternion::Normalize( void )
+{
+    MIFloat fLength = sqrt( m_fX * m_fX + m_fY * m_fY + m_fZ * m_fZ + m_fW * m_fW );
+    m_fX /= fLength;
+    m_fY /= fLength;
+    m_fZ /= fLength;
+    m_fW /= fLength;
+    return *this;
 }
 
 void mCQuaternion::Swap( mCQuaternion & a_quatOther )

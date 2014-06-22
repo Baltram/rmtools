@@ -152,6 +152,21 @@ void mCMatrix4::ModifyRotation( mCQuaternion const & a_quatSource )
     m_arrElements[ 10 ] = 1.0f - ( fXX2 + fYY2 );
 }
 
+void mCMatrix4::RemoveScale( void )
+{
+    mCVec3 vecCol1( m_arrRowColumn[ 0 ][ 0 ], m_arrRowColumn[ 1 ][ 0 ], m_arrRowColumn[ 2 ][ 0 ] );
+    mCVec3 vecCol2( m_arrRowColumn[ 0 ][ 1 ], m_arrRowColumn[ 1 ][ 1 ], m_arrRowColumn[ 2 ][ 1 ] );
+    mCVec3 vecCol3( m_arrRowColumn[ 0 ][ 2 ], m_arrRowColumn[ 1 ][ 2 ], m_arrRowColumn[ 2 ][ 2 ] );
+    vecCol1.Normalize();
+    vecCol2 = ( vecCol2 - vecCol1 * vecCol1.CalcDotProduct( vecCol2 ) ).Normalize();
+    vecCol3 = ( vecCol3 - vecCol1 * vecCol1.CalcDotProduct( vecCol3 ) - vecCol2 * vecCol2.CalcDotProduct( vecCol3 ) ).Normalize();
+    m_arrRowColumn[ 0 ][ 0 ] = vecCol1[ 0 ]; m_arrRowColumn[ 1 ][ 0 ] = vecCol1[ 1 ]; m_arrRowColumn[ 2 ][ 0 ] = vecCol1[ 2 ];
+    m_arrRowColumn[ 0 ][ 1 ] = vecCol2[ 0 ]; m_arrRowColumn[ 1 ][ 1 ] = vecCol2[ 1 ]; m_arrRowColumn[ 2 ][ 1 ] = vecCol2[ 2 ];
+    m_arrRowColumn[ 0 ][ 2 ] = vecCol3[ 0 ]; m_arrRowColumn[ 1 ][ 2 ] = vecCol3[ 1 ]; m_arrRowColumn[ 2 ][ 2 ] = vecCol3[ 2 ];
+    m_arrElements[ 3 ]  = m_arrElements[ 7 ] = m_arrElements[ 11 ] = 0.0f;
+    m_arrElements[ 15 ] = 1.0f;
+}
+
 void mCMatrix4::SetToIdentity( void )
 {
     SetToZero();
@@ -203,4 +218,12 @@ void mCMatrix4::Swap( mCMatrix4 & a_matOther )
 {
     if ( this != &a_matOther )
         g_memswap( *this, a_matOther );
+}
+
+void mCMatrix4::Transpose( void )
+{
+    for ( MIUInt u = 4; u--; )
+        for ( MIUInt v = 4; v--; )
+            if ( v != u )
+                g_swap( m_arrRowColumn[ u ][ v ], m_arrRowColumn[ v ][ u ] );
 }
