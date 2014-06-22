@@ -15,8 +15,7 @@ Installation:
 
 Usage:
 
-  With the addon enabled, you can import/export .3db files via the File > Import and 
-  File > Export menus.
+  With the addon enabled, .3db files can be im-/exported via File > Import and File > Export.
 
 Supported data:
 
