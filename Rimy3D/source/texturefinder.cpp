@@ -4,6 +4,7 @@
 #include "Mimicry.h"
 #include <QBuffer>
 #include <QDir>
+#include <QSettings>
 
 namespace
 {
@@ -122,6 +123,52 @@ bool TextureFinder::findTexture( QString const & a_strFilePathGuess, QString con
     return false;
 }
 
+namespace
+{
+    char const * const s_arrKeywords[] = { "program", "games", "spiele", "deep silver", "jowood", "piranha", "risen", "gothic" };
+
+    void CheckDir( QDir a_Dir, bool & a_bRisen, bool & a_bGothic3, QDir & a_dirRisen, QDir & a_dirGothic3 )
+    {
+        QString strName = a_Dir.dirName().toLower();
+        if ( !a_bRisen && strName.contains( "risen" ) && QFileInfo( a_Dir.path() + "/bin/Risen.exe" ).exists() )
+            a_dirRisen = a_Dir, a_bRisen = true;
+        if ( !a_bGothic3 && strName.contains( "gothic" ) && QFileInfo( a_Dir.path() + "/Gothic3.exe" ).exists() )
+            a_dirGothic3 = a_Dir, a_bGothic3 = true;
+        if ( a_bRisen && a_bGothic3 )
+            return;
+        QStringList arrSubDirs = a_Dir.entryList( QDir::Dirs | QDir::NoDotAndDotDot | QDir::NoSymLinks );
+        for ( int i = arrSubDirs.count(); i--; )
+            for ( int j = sizeof( s_arrKeywords ) / sizeof( *s_arrKeywords ); j--; )
+                if ( arrSubDirs[ i ].toLower().contains( s_arrKeywords[ j ] ) )
+                    CheckDir( QDir( a_Dir.path() + "/" + arrSubDirs[ i ] ), a_bRisen, a_bGothic3, a_dirRisen, a_dirGothic3 );
+    }
+}
+
+void TextureFinder::searchForInstalledGames( void )
+{
+    bool bRisen = false, bGothic3 = false;
+    QDir dirRisen, dirGothic3;
+    for ( int i = 0; i < 26; ++i )
+        CheckDir( QDir( QString( 'A' + i ) + ":" ), bRisen, bGothic3, dirRisen, dirGothic3 );
+    CheckDir( QDir( QSettings( "Baltram", "general" ).value( "RisenDir", "" ).toString() ), bRisen, bGothic3, dirRisen, dirGothic3 );
+    CheckDir( QDir( QSettings( "Valve", "Steam" ).value( "SteamPath", "" ).toString() + "/SteamApps/common" ), bRisen, bGothic3, dirRisen, dirGothic3 );
+    QStringList arrArchives;
+    dirGothic3.cd( "Data" );
+    if ( dirGothic3.exists( "_compiledImage.p00" ) )
+        arrArchives << dirGothic3.absoluteFilePath( "_compiledImage.p00" );
+    if ( dirGothic3.exists( "_compiledImage.pak" ) )
+        arrArchives << dirGothic3.absoluteFilePath( "_compiledImage.pak" );
+    if ( dirGothic3.exists( "_compiledMaterial.pak" ) )
+        arrArchives << dirGothic3.absoluteFilePath( "_compiledMaterial.pak" );
+    dirRisen.cd( "data/compiled" );
+    if ( dirRisen.exists( "images.pak" ) )
+        arrArchives << dirRisen.absoluteFilePath( "images.pak" );
+    dirRisen.cd( "../common" );
+    if ( dirRisen.exists( "materials.pak" ) )
+        arrArchives << dirRisen.absoluteFilePath( "materials.pak" );
+    m_Dialog.addArchives( arrArchives );
+}
+
 void TextureFinder::showDialog( void )
 {
     m_Dialog.move( QApplication::activeWindow()->geometry().center() - m_Dialog.rect().center() );
@@ -152,6 +199,8 @@ void TextureFinder::loadSettings( QSettings & a_Settings )
 {
     m_Dialog.addArchives( a_Settings.value( "archives" ).toStringList() );
     m_Dialog.addPaths( a_Settings.value( "searchpaths" ).toStringList() );
+    if ( !a_Settings.value( "autosearched", false ).toBool() )
+        searchForInstalledGames();
     updateArchives();
     updateSearchPaths();
 }
@@ -162,6 +211,7 @@ void TextureFinder::saveSettings( QSettings & a_Settings )
     QStringList arrPaths = m_Dialog.getPaths();
     a_Settings.setValue( "archives", arrArchives );
     a_Settings.setValue( "searchpaths", arrPaths );
+    a_Settings.setValue( "autosearched", true );
 }
 
 TextureFinder::TextureFinder( void )

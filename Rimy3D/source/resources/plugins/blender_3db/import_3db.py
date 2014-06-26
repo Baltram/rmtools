@@ -236,6 +236,16 @@ def build_scene(scene):
         slot.use_map_normal = texMap.type == MapType.normal
 
     #Identify bones
+    def check_parents(boneIndices, i):
+        if scene.nodes[i].type == NodeType.mesh:
+            return False
+        if i in boneIndices:
+            return True
+        if scene.nodes[i].parentIndex >= 0 and check_parents(boneIndices, scene.nodes[i].parentIndex):
+            boneIndices.append(i)
+            scene.nodes[i].type = NodeType.bone
+            return True
+        return False
     if len(scene.skins) == 1:
         boneIndices = scene.skins[0].boneIndices
         for i in range(len(scene.nodes)):
@@ -255,6 +265,8 @@ def build_scene(scene):
                     skinData.boneIndices.append(nodeData.parentIndex)
                 nodeData = scene.nodes[nodeData.parentIndex]
                 nodeData.type = NodeType.bone
+        for i in range(len(scene.nodes)):
+            check_parents(skinData.boneIndices, i)
 
     #Create Blender Empties
     nodes = [None] * len(scene.nodes)
