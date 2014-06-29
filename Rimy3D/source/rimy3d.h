@@ -31,6 +31,7 @@ public:
     static QString     getVersionString( void );
     static void        init( int & argc, char * argv[] );
     static void        initCooking( void );
+    static bool        isUpToDate( void );
     static void        loadSettings( void );
     static bool        quiet( void );
     static void        saveSettings( void );

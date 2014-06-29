@@ -2,6 +2,7 @@
 #define PREFERENCESDIALOG_H_INCLUDED
 
 #include <QDialog>
+#include <QDate>
 
 class QSettings;
 
@@ -15,8 +16,10 @@ class PreferencesDialog : public QDialog
     Q_OBJECT
 public:
     static PreferencesDialog & getInstance( void );
+    static void                showAutoUpdateDialog( void );
 public:
     bool    autoUpdate( void ) const;
+    void    checkForUpdates( bool a_bManual = false, bool a_bInitial = false );
     QString defaultImageFileExt( void ) const;
     bool    lookUpTextures( void ) const;
     bool    removeAscPrefixes( void ) const;
@@ -33,6 +36,7 @@ private:
     void updateLanguage( void );
 private slots:
     void loadSettings( QSettings & a_Settings );
+    void on_cbAutoUpdate_clicked( void );
     void on_cbLookUpMaterials_toggled( bool a_bChecked );
     void on_pbLookUpMaterials_clicked( void );
     void on_pbOk_clicked( void );
@@ -40,6 +44,8 @@ private slots:
     void on_pbUpdate_clicked( void );
     void saveSettings( QSettings & a_Settings );
 private:
+    int                     m_iAutoUpdates;
+    QDate                   m_dateLastUpdateCheck;
     Ui::PreferencesDialog * m_pUi;
 };
 

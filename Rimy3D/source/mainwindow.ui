@@ -55,6 +55,7 @@
     <property name="title">
      <string>Help</string>
     </property>
+    <addaction name="actionCheck_For_Updates"/>
     <addaction name="actionAbout"/>
    </widget>
    <widget class="QMenu" name="menuLanguage">
@@ -79,10 +80,16 @@
     <addaction name="actionConfigure_Bitmap_Paths"/>
     <addaction name="actionPreferences"/>
    </widget>
+   <widget class="QMenu" name="menuNew_Version_Available">
+    <property name="title">
+     <string>- New Version Available! -</string>
+    </property>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuTools"/>
    <addaction name="menuHelp"/>
    <addaction name="menuLanguage"/>
+   <addaction name="menuNew_Version_Available"/>
   </widget>
   <action name="actionAbout">
    <property name="text">
@@ -200,6 +207,11 @@
   <action name="action3db_Import_Export_Scripts_For_Blender">
    <property name="text">
     <string>3db Import/Export Scripts For Blender...</string>
+   </property>
+  </action>
+  <action name="actionCheck_For_Updates">
+   <property name="text">
+    <string>Check For Updates</string>
    </property>
   </action>
  </widget>

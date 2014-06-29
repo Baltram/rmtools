@@ -58,7 +58,10 @@ void Rimy3D::checkForUpdates( bool a_bReportNetworkErrors, bool a_bReportUpToDat
             else if ( !m_bError )
             {
                 if ( m_iVersionNumber > Rimy3D::getVersion() )
+                {
+                    s_pSettings->setValue( "newversion", m_iVersionNumber );
                     showMessage( m_strText, tr( "Rimy3D Update" ) );
+                }
                 else if ( m_bReportUpToDate )
                     showMessage( tr( "Rimy3D is up to date." ), tr( "Rimy3D Update" ) );
             }
@@ -203,6 +206,11 @@ void Rimy3D::initCooking( void )
     s_bInit = true;
 }
 
+bool Rimy3D::isUpToDate( void )
+{
+    return getVersion() >= s_pSettings->value( "newversion", 0 ).toInt() && getVersion() >= s_pSettings->value( "version", 0 ).toInt();
+}
+
 void Rimy3D::loadSettings( void )
 {
     if ( s_pSettings && getInstance() )
@@ -279,7 +287,6 @@ void Rimy3D::showWarning( QString a_strText, QString a_strTitle )
 
 void Rimy3D::loadSettingsIntern( void )
 {
-    QSettings GeneralSettings( "Baltram", "general" );
     QVariant varDefault( static_cast< int >( ELanguage_Count ) );
     ELanguage enuLanguage = static_cast< ELanguage >( s_pSettings->value( "language", varDefault ).toInt() );
     if ( enuLanguage == ELanguage_Count )
@@ -306,5 +313,7 @@ void Rimy3D::saveSettingsIntern( void )
 {
     s_pSettings->setValue( "language", static_cast< int >( s_enuCurrentLanguage ) );
     s_pSettings->setValue( "exePath", QDir::toNativeSeparators( QCoreApplication::applicationFilePath() ) );
+    if ( s_pSettings->value( "version", 0 ).toInt() < getVersion() )
+        s_pSettings->setValue( "version", getVersion() );
     emit settingsSaving( *s_pSettings );
 }

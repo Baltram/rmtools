@@ -29,6 +29,9 @@ MainWindow::MainWindow( QWidget * a_pParent ) :
     connect( &PreferencesDialog::getInstance(), SIGNAL( materialLookupRequested( void ) ), &m_SceneInfo, SLOT( lookUpGenomeMaterials( void ) ) );
     connect( Rimy3D::getInstance(), SIGNAL( settingsSaving( QSettings & ) ), this, SLOT( saveSettings( QSettings & ) ) );
     connect( Rimy3D::getInstance(), SIGNAL( settingsLoading( QSettings & ) ), this, SLOT( loadSettings( QSettings & ) ) );
+    connect( m_pUi->menuNew_Version_Available, SIGNAL( aboutToShow( void ) ), this, SLOT( on_menuNew_Version_Available_triggered( void ) ) );
+    if ( Rimy3D::isUpToDate() )
+        m_pUi->menuBar->removeAction( m_pUi->menuNew_Version_Available->menuAction() );
     TextureFinder::getInstance();
     PreferencesDialog::getInstance();
     Rimy3D::loadSettings();
@@ -66,7 +69,6 @@ void MainWindow::open( QString a_strFilePath )
             setWindowTitle( Rimy3D::applicationName() + " - " + File.fileName() );
     }
     updateRecentFiles();
-
 }
 
 void MainWindow::save( QString a_strFilePath )
@@ -200,6 +202,11 @@ void MainWindow::on_actionAbout_triggered( void )
                          tr( "About Rimy3D" ) );
 }
 
+void MainWindow::on_actionCheck_For_Updates_triggered( void )
+{
+    PreferencesDialog::getInstance().checkForUpdates( true );
+}
+
 void MainWindow::on_actionClose_triggered( void )
 {
     m_SceneInfo.clearScene();
@@ -315,6 +322,13 @@ void MainWindow::on_actionSave_As_triggered( void )
                         "Risen Collision Mesh (*._xcom);;";
     QString strFilePath = m_SceneInfo.getCurrentSaveDir() + QDir::separator() + QFileInfo( m_SceneInfo.getCurrentFile() ).baseName();
     save( QFileDialog::getSaveFileName( this, tr( "Save As" ), strFilePath, strFilter ) );
+}
+
+void MainWindow::on_menuNew_Version_Available_triggered( void )
+{
+    m_pUi->menuNew_Version_Available->hide();
+    m_pUi->menuNew_Version_Available->show();
+    on_actionCheck_For_Updates_triggered();
 }
 
 void MainWindow::onSceneChanged( void )
