@@ -19,6 +19,7 @@ public:
     bool       read( QImage * a_pDestImage );
     void       setOption( ImageOption, QVariant const & );
     bool       supportsOption( ImageOption a_Option ) const;
+    bool       write( QImage const & a_Image );
 protected:
     struct SHeader
     {

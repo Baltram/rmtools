@@ -228,3 +228,83 @@ bool TgaHandler::preProcess( QIODevice * a_pDevice, SHeader * a_pDest )
         *a_pDest = headerResult;
     return true;
 }
+
+bool TgaHandler::write( QImage const & a_Image )
+{
+    QImage Image = a_Image.convertToFormat( QImage::Format_ARGB32 ).mirrored( false, true );
+    QRgb const * pPixels = reinterpret_cast< QRgb const * >( Image.bits() );
+    int iWidth = Image.width(), iHeight = Image.height(), iSize = iWidth * iHeight;
+    if ( iWidth >= ( 1 << 16 ) || iHeight >= ( 1 << 16 ) )
+        return false;
+    QByteArray arrPackets( iSize, 0 );
+    unsigned char * const pPackets = reinterpret_cast< unsigned char * >( arrPackets.data() );
+    QRgb Previous( iSize ? pPixels[ 0 ] : 0 );
+    bool bUsesAlpha = qAlpha( Previous ) != 0xFF;
+    bool bRaw = true;
+    int iPacketCount = 0, iSize2 = 1;
+    for ( int i = 1; i != iSize; ++i )  // First pixel is "raw" for now
+    {
+        if ( pPixels[ i ] == Previous )
+        {
+            if ( bRaw )
+            {
+                if ( pPackets[ iPacketCount ] != 0 )
+                    --pPackets[ iPacketCount++ ];
+                pPackets[ iPacketCount ] = ( 1 << 7 );
+                bRaw = false;
+            }
+            ++pPackets[ iPacketCount ];
+        }
+        else
+        {
+            ++iSize2;
+            if ( !bRaw )
+            {
+                ++iPacketCount;
+                bRaw = true;
+            }
+            else
+                ++pPackets[ iPacketCount ];
+            Previous = pPixels[ i ];
+            bUsesAlpha |= qAlpha( Previous ) != 0xFF;
+        }
+        if ( ( pPackets[ iPacketCount ] | ( 1 << 7 ) ) == 0xFF && i + 1 != iSize )  // Cap reached
+        {
+            Previous = ~pPixels[ i + 1 ];  // So the next pixel will be "raw"
+            bRaw = false;
+        }
+    }
+    ++iPacketCount;
+    int iFinalSize = iSize2 * ( bUsesAlpha ? 4 : 3 ) + iPacketCount;
+    QByteArray arrImageData( iFinalSize + 1, Qt::Uninitialized );
+    char * pImageData = arrImageData.data();
+    for ( int i = 0; i != iPacketCount; ++i )
+    {
+        *pImageData++ = arrPackets[ i ];
+        bool bRaw = !( arrPackets[ i ] & ( 1 << 7 ) );
+        int iCount = static_cast< unsigned char >( arrPackets[ i ] ) % ( 1 << 7 );
+        do
+        {
+            QRgb Pixel = *pPixels++;
+            *pImageData++ = qBlue( Pixel );
+            *pImageData++ = qGreen( Pixel );
+            *pImageData++ = qRed( Pixel );
+            if ( bUsesAlpha )
+                *pImageData++ = qAlpha( Pixel );
+        }
+        while ( bRaw && iCount-- );
+        if ( !bRaw )
+            pPixels += iCount;
+    }
+    SHeader Header;
+    qMemSet( &Header, 0, sizeof( Header ) );
+    Header.m_DataTypeCode = 10;
+    *reinterpret_cast< unsigned short * >( &Header.m_Width1 ) = iWidth;
+    *reinterpret_cast< unsigned short * >( &Header.m_Height1 ) = iHeight;
+    Header.m_BitCountPerPixel = bUsesAlpha ? 32 : 24;
+    Header.m_ImageDescriptorBit = bUsesAlpha ? 8 : 0;
+    QDataStream streamOut( device() );
+    streamOut.writeRawData( reinterpret_cast< char const * >( &Header ), sizeof( Header ) );
+    streamOut.writeRawData( arrImageData.data(), iFinalSize );
+    return streamOut.status() == QDataStream::Ok;
+}
