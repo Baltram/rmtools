@@ -28,15 +28,19 @@ QStringList TgaPlugin::keys( void ) const
 
 QImageIOPlugin::Capabilities TgaPlugin::capabilities( QIODevice * a_pDevice, QByteArray const & a_Format ) const
 {
-    if ( a_pDevice->isOpen() && a_pDevice->isReadable() )
+    if ( a_pDevice->isOpen() )
     {
-        if ( TgaHandler::canRead( a_pDevice ) )
-            return Capabilities( CanRead );
+        Capabilities capResult;
+        if ( a_pDevice->isReadable() && TgaHandler::canRead( a_pDevice ) )
+            capResult |= CanRead;
+        if ( a_pDevice->isWritable() )
+            capResult |= CanWrite;
+        return capResult;
     }
     else
     {
         if ( a_Format == "tga" )
-            return Capabilities( CanRead );
+            return Capabilities( CanRead | CanWrite );
     }
     return 0;
 }
