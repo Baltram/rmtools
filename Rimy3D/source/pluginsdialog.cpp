@@ -24,6 +24,7 @@ int PluginsDialog::exec( Plugin a_enuPlugin )
 {
     m_pUi->wBlender->setVisible( a_enuPlugin == Blender );
     m_pUi->wGmax->setVisible( a_enuPlugin == GMax );
+    m_pUi->wMax->setVisible( a_enuPlugin == Max );
     QString strReadMePath( ":/plugins/plugins/" );
     if ( a_enuPlugin == GMax )
     {
@@ -40,6 +41,14 @@ int PluginsDialog::exec( Plugin a_enuPlugin )
             strReadMePath += "blender_3db/3db_plugin_DE.txt";
         else
             strReadMePath += "blender_3db/3db_plugin.txt";
+    }
+    else if ( a_enuPlugin == Max )
+    {
+        setWindowTitle( tr( "3db Tools for 3ds Max" ) );
+        if ( Rimy3D::getLanguage() == Rimy3D::ELanguage_German )
+            strReadMePath += "max_3db/3db Tools_DE.txt";
+        else
+            strReadMePath += "max_3db/3db Tools.txt";
     }
     QFile readMeFile( strReadMePath );
     readMeFile.open( QIODevice::ReadOnly | QIODevice::Text );
@@ -122,4 +131,23 @@ void PluginsDialog::on_pushButton_3_clicked( void )
         return;
     }
     Rimy3D::showMessage( tr( "The script files have been successfully copied to %1\nYou can now start Blender and enable the addon in 'File' > 'User Preferences'." ).arg( dirBlender.absolutePath() ) );
+}
+
+void PluginsDialog::on_pushButton_4_clicked( void )
+{
+    QString strDir = QFileDialog::getExistingDirectory( this, tr( "Please specify your 3ds Max installation directory" ), QDir::homePath() );
+    if ( strDir == "" )
+        return;
+    QDir dirMax( strDir );
+    if ( !dirMax.cd( "scripts" ) || !dirMax.cd( "startup" ) )
+    {
+        Rimy3D::showError( tr( "Could not find 3ds Max's scripts\\startup directory at the specified location." ) );
+        return;
+    }
+    if ( !overwriteFile( dirMax.absolutePath() + "/3dbTools.ms", ":/plugins/plugins/max_3db/3dbTools.ms" ) )
+    {
+        Rimy3D::showError( tr( "Rimy3D has not write permissions to %1\nTry running Rimy3D with administrator rights." ).arg( dirMax.absolutePath() ) );
+        return;
+    }
+    Rimy3D::showMessage( tr( "3db Tools have been successfully installed." ) );
 }

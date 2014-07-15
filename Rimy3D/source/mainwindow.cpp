@@ -192,9 +192,14 @@ void MainWindow::on_action3db_Import_Export_Scripts_For_Blender_triggered( void 
     PluginsDialog( this ).exec( PluginsDialog::Blender );
 }
 
+void MainWindow::on_action3db_Tools_for_3ds_Max_triggered( void )
+{
+    PluginsDialog( this ).exec( PluginsDialog::Max );
+}
+
 void MainWindow::on_actionAbout_triggered( void )
 {
-    Rimy3D::showMessage( "<p></p><b>Rimy3D v" + Rimy3D::getVersionString() + tr( "</b> (April 7th 2013)"
+    Rimy3D::showMessage( "<p></p><b>Rimy3D v" + Rimy3D::getVersionString() + tr( "</b> (July 15th 2014)"
                          "<div style='text-indent:16px;'>by <a href='mailto:baltram-lielb@web.de'>Baltram</a> @<a href='http://forum.worldofplayers.de/forum/members/33859'>WoP</a></div>"
                          "<p>Support: <a href='http://www.baltr.de/Rimy3D.htm'>www.baltr.de/Rimy3D.htm</a></p>"
                          "<p>This program uses the <a href='http://www.glc-lib.net'>GLC_lib</a> library by Laurent Ribon.</p>"

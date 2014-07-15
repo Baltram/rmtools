@@ -107,7 +107,7 @@ PreferencesDialog::PreferencesDialog( void ) :
     m_dateLastUpdateCheck( 1900, 1, 1 )
 {
     m_pUi->setupUi( this );
-    m_pUi->cobImgExt->addItems( QStringList() << "JPG" << "PNG" << "GIF" << "BMP" );
+    m_pUi->cobImgExt->addItems( QStringList() << "TGA" << "JPG" << "PNG" << "BMP" );
     setFixedSize( size() );
     connect( Rimy3D::getInstance(), SIGNAL( settingsSaving( QSettings & ) ), this, SLOT( saveSettings( QSettings & ) ) );
     connect( Rimy3D::getInstance(), SIGNAL( settingsLoading( QSettings & ) ), this, SLOT( loadSettings( QSettings & ) ) );
