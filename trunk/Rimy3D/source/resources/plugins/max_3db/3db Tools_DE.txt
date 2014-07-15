@@ -1,0 +1,25 @@
+------
+3db Tools v1.0 für 3ds Max by Baltram <baltram-lielb@web.de> (15. Juli 2014)
+------
+
+Installation:
+
+  Rimy3D automatisiert die Installation. Im Fall einer manuellen Installation genügt es,
+  die Datei 3dbTools.ms in das 3ds Max\scripts\Startup -Verzeichnis zu kopieren.
+
+Verwendung:
+
+  3db-Dateien können über das neue '3db'-Menü in der Hauptmenüleiste im-/exportiert werden.
+  Alternativ kann auch das Rollout unter Utilities (Hammer-Symbol) > MaxScript > 3db Tools
+  verwendet werden. Dort lässt sich außerdem das '3db'-Menü an- und ausschalten.
+
+Unterstützte Daten:
+
+  * Allgemeine 3D-Objekte (einschließlich  Bones)
+    - Name - Position/Rotation - Hierarchie
+  * Meshes/Polys
+    - Vertices - Triangles - UV-Koordinaten - Vertex Colors (mit Alpha-Channel)
+  * Skin-Modifier
+    - Vertex Weights
+  * Materialien
+    - Name - Diffuse/Specular/Bump-Texturendateipfade

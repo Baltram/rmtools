@@ -38,6 +38,7 @@ private:
     void updateRecentFiles( void );
 private slots:
     void on_action3db_Import_Export_Scripts_For_Blender_triggered( void );
+    void on_action3db_Tools_for_3ds_Max_triggered( void );
     void on_actionAbout_triggered( void );
     void on_actionCheck_For_Updates_triggered( void );
     void on_actionClose_triggered( void );

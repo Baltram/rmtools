@@ -76,6 +76,7 @@
     <addaction name="actionFix_GMax_Installation"/>
     <addaction name="actionExtended_Saving_For_GMax"/>
     <addaction name="action3db_Import_Export_Scripts_For_Blender"/>
+    <addaction name="action3db_Tools_for_3ds_Max"/>
     <addaction name="actionGenome_Material_Editor"/>
     <addaction name="actionConfigure_Bitmap_Paths"/>
     <addaction name="actionPreferences"/>
@@ -212,6 +213,11 @@
   <action name="actionCheck_For_Updates">
    <property name="text">
     <string>Check For Updates</string>
+   </property>
+  </action>
+  <action name="action3db_Tools_for_3ds_Max">
+   <property name="text">
+    <string>3db Tools for 3ds Max...</string>
    </property>
   </action>
  </widget>

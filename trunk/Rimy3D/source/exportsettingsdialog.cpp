@@ -18,7 +18,7 @@ exportSettingsDialog::exportSettingsDialog( QWidget * a_pParent, QString a_strEx
     m_pUi->w6->setVisible( a_Flags & BaseXmac );
     m_pUi->w7->setVisible( !( a_Flags & NoTextures ) );
     m_pUi->w8->setVisible( a_Flags & Convex );
-    m_pUi->cbTextureFormat->insertItems( 0, QStringList() << "JPG" << "PNG" << "BMP" );
+    m_pUi->cbTextureFormat->insertItems( 0, QStringList() << "TGA" << "JPG" << "PNG" << "BMP" );
     m_pUi->cbNormals->setEnabled( a_Flags & Normals );
     m_pUi->gbAutoSkin->setVisible( a_Flags & AutoSkin );
     updateLanguage();
