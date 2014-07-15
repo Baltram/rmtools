@@ -85,7 +85,7 @@ macroScript export3db category:"3db Tools" tooltip:"Export 3db..."
 	fn isMesh node =
 	(
 		local class = ( classOf node )
-		return if class == Editable_mesh or class == Editable_Poly or class == Editable_Patch then true else false
+		return if class == Editable_mesh or class == Editable_Poly or class == Editable_Patch or class == PolyMeshObject then true else false
 	)
 	fn addChildrenToNodeArray parentNode =
 	(
@@ -319,6 +319,7 @@ macroScript export3db category:"3db Tools" tooltip:"Export 3db..."
 		local sel = getCurrentSelection()
 		local panelTaskMode = getCommandPanelTaskMode()
 		disableSceneRedraw()
+		subobjectlevel = 0
 		try
 		(
 			undo off
@@ -341,7 +342,7 @@ macroScript export3db category:"3db Tools" tooltip:"Export 3db..."
 					(
 						try
 						(
-							if nodes[ i ].skin != undefined then
+							if ( isMesh nodes[ i ] ) and nodes[ i ].skin != undefined then
 								writeSkinChunk nodes[ i ] i
 						)
 						catch ()
@@ -453,7 +454,7 @@ macroScript import3db category:"3db Tools" tooltip:"Import 3db..."
 	fn adjustLength b =
 	(
 		if ( classOf b ) != BoneGeometry or b.width != 123 then
-			return
+			return()
 		for c in b.children do
 			adjustLength c
 		b.length = 1e-6
