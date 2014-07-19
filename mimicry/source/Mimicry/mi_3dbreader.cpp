@@ -157,6 +157,8 @@ namespace
                 arrWeights.Add( a_streamSource.ReadFloat() );
             }
         }
+        if ( !nodeDest.HasMesh() )
+            return;
         skinDest.InitSwapping( nodeDest.GetMesh()->GetNumVerts(), arrBoneIDs, arrVertexIndices, arrBoneIndices, arrWeights );
         nodeDest.SwapSkin( skinDest );
     }

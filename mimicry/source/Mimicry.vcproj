@@ -757,6 +757,14 @@
 				RelativePath=".\Mimicry\mi_xmshwriter.h"
 				>
 			</File>
+			<File
+				RelativePath=".\Mimicry\mi_xnvmshreader.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Mimicry\mi_xnvmshreader.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="buffer"

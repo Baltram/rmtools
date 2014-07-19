@@ -86,9 +86,9 @@ mEResult mCXcomReader::ReadXcomFileData( mCScene & a_sceneDest, mCIOStreamBinary
             pNode->AccessMaterialName() = strMaterialName;
     }
     a_sceneDest.AddNewMaterial();  // Prevent the merged material from being named 'earth' or similar
+    a_sceneDest.SetName( strSceneName );
     a_sceneDest.MakeOneMeshScene();
     a_sceneDest.AccessNodeAt( 0 )->AccessName() = strSceneName;
     mCMaxRisenCoordShifter::GetInstance().ShiftMeshCoords( *a_sceneDest.AccessNodeAt( 0 )->AccessMesh() );
-    a_sceneDest.SetName( strSceneName );
     return mEResult_Ok;
 }
