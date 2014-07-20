@@ -28,7 +28,7 @@ int PluginsDialog::exec( Plugin a_enuPlugin )
     QString strReadMePath( ":/plugins/plugins/" );
     if ( a_enuPlugin == GMax )
     {
-        setWindowTitle( tr( "Extended Saving for GMax" ) );
+        setWindowTitle( tr( "Extended Saving For GMax" ) );
         if ( Rimy3D::getLanguage() == Rimy3D::ELanguage_German )
             strReadMePath += "Extended Saving/Extended Saving_DE.txt";
         else
@@ -36,7 +36,7 @@ int PluginsDialog::exec( Plugin a_enuPlugin )
     }
     else if ( a_enuPlugin == Blender )
     {
-        setWindowTitle( tr( "3db Import/Export for Blender" ) );
+        setWindowTitle( tr( "3db Import/Export For Blender" ) );
         if ( Rimy3D::getLanguage() == Rimy3D::ELanguage_German )
             strReadMePath += "blender_3db/3db_plugin_DE.txt";
         else
@@ -44,7 +44,7 @@ int PluginsDialog::exec( Plugin a_enuPlugin )
     }
     else if ( a_enuPlugin == Max )
     {
-        setWindowTitle( tr( "3db Tools for 3ds Max" ) );
+        setWindowTitle( tr( "3db Tools For 3ds Max" ) );
         if ( Rimy3D::getLanguage() == Rimy3D::ELanguage_German )
             strReadMePath += "max_3db/3db Tools_DE.txt";
         else

@@ -217,7 +217,7 @@
   </action>
   <action name="action3db_Tools_for_3ds_Max">
    <property name="text">
-    <string>3db Tools for 3ds Max...</string>
+    <string>3db Tools For 3ds Max...</string>
    </property>
   </action>
  </widget>

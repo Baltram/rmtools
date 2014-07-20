@@ -50,8 +50,6 @@ GLC_World SceneInfo::buildGlcWorld( void )
             pTexture->setMaxTextureSize( QSize( 2048, 2048 ) );
             arrMaterialArrays[ i ].append( new GLC_Material( pTexture, mtlSub.GetName().GetText() ) );
         }
-        if ( !arrMaterialArrays[ i ].count() )
-            arrMaterialArrays[ i ].append( 0 );
     }
 
     for ( int i = 0, ie = m_sceneCurrentScene.GetNumNodes(); i != ie; ++i )
@@ -99,7 +97,7 @@ GLC_World SceneInfo::buildGlcWorld( void )
                 for ( ; j != i; ++j )
                     for ( int k = 0; k != 3; ++k )
                         listIndices.append( arrUVFaces[ j ][ k ] );
-                pMesh->addTriangles( pSubMaterials ? pSubMaterials->at( iCurrentMatId % pSubMaterials->count() ) : 0, listIndices );
+                pMesh->addTriangles( ( pSubMaterials && pSubMaterials->count() ) ? pSubMaterials->at( iCurrentMatId % pSubMaterials->count() ) : 0, listIndices );
                 listIndices.clear();
             }
             iCurrentMatId = iMatId;
@@ -237,6 +235,10 @@ bool SceneInfo::openSceneFile( QString a_strFilePath, bool a_bMerge )
     else if ( strExt == "_xcom" )
     {
         enuResult = mCXcomReader::ReadXcomFileData( sceneNew, streamIn );
+    }
+    else if ( strExt == "xnvmsh" )
+    {
+        enuResult = mCXnvmshReader::ReadXnvmshFileData( sceneNew, streamIn );
     }
     else
     {
@@ -472,6 +474,9 @@ void SceneInfo::errorMessageTranslations( void )
     tr( "Invalid .xact file." );
     tr( "Invalid .xcmsh file." );
     tr( "Invalid .xlmsh file." );
+    tr( "Invalid .xnvmsh file." );
+    tr( "Incompatible PhysX version - .xnvmsh file version too old.\n\n(Gothic 3 can't read such files either. If needed, it recreates them using the original .xcmsh data.)" );
+    tr( "PhysX error." );
     tr( "Invalid ._xmsh file." );
     tr( "Invalid ._xmac file." );
     tr( "Unknown ._xmac file version." );
@@ -492,7 +497,8 @@ void SceneInfo::showLastMimicryError( mCError const * a_pLastError, QString a_st
 {
     mCString strError;
     for ( mCError const * pError = 0; ( pError = mCError::GetLastError< mCError >() ) != a_pLastError; mCError::ClearError( pError ) )
-        strError = pError->GetText();
+        if ( strError == "" )
+            strError = pError->GetText();
     if ( strError == "Invalid .gmax file. The file might have been saved without Extended Saving enabled." )
         strError = tr( "Invalid .gmax file. The file might have been saved without Extended Saving enabled. You can install Extended Saving via the tools menu." ).toAscii().data();
     if ( strError != "" )
