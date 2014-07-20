@@ -64,8 +64,8 @@ mEResult mCXnvmshReader::ReadXnvmshFileData( mCScene & a_sceneDest, mCIOStreamBi
         File.ReadString(), File.ReadString(), File().ReadU16(), File().Skip( File().ReadU32() );
     uVersion = File().ReadU16();
     // if ( uVersion < 32 )  // Rejected by the Genome engine
-    if ( uVersion <= 41 )    // PhysX 2.5.0 error when loading xnvmsh file of version 41 and 35, no error for version 64 (maybe PhysX 2.4.1 would work for all versions)
-        return MI_ERROR( mCStreamError, EBadFormat, "Unsupported .xnvmsh file version." ), mEResult_False;
+    if ( uVersion < 64 )     // PhysX 2.5.0 error when loading xnvmsh files older than version 64. Gothic 3 can't either, it recreates them using the original .xcmsh data.
+        return MI_ERROR( mCStreamError, EBadFormat, "Incompatible PhysX version - .xnvmsh file version too old.\n\n(Gothic 3 can't read such files either. If needed, it recreates them using the original .xcmsh data.)" ), mEResult_False;
     if ( uVersion >= 35 )
         File().ReadBool();  // HasConvexResource
     File().ReadFloat();     // ResourcePriority
@@ -75,7 +75,7 @@ mEResult mCXnvmshReader::ReadXnvmshFileData( mCScene & a_sceneDest, mCIOStreamBi
         File().ReadU64();  // Size
         mCMesh meshDest;
         if ( !mCCooking::ReadCookedMesh( File(), meshDest ) )
-            return MI_ERROR( mCStreamError, EBadFormat, "Unsupported .xnvmsh file version." ), mEResult_False;
+            return MI_ERROR( mCStreamError, EBadFormat, "PhysX error." ), mEResult_False;
         mCVec3 * pVerts = meshDest.AccessVerts();
         for ( MIUInt u = meshDest.GetNumVerts(); u--; pVerts[ u ] *= 100.0f );
         a_sceneDest.AddNewNode().SwapMesh( meshDest );
