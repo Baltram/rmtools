@@ -585,6 +585,7 @@ macroScript import3db category:"3db Tools" tooltip:"Import 3db..."
 		if smoothAngle != -1.0 then
 			meshop.autoSmooth meshDest meshDest.faces smoothAngle
 		nodeDest.mesh = meshDest
+        meshop.autoEdge nodeDest nodeDest.edges 0
 		nodeDest.objectoffsetpos = ( inverse nodeDest.transform ).translationPart
 		nodeDest.objectoffsetrot = ( inverse nodeDest.transform ).rotationPart
 		nodeDest.objectoffsetscale = ( inverse nodeDest.transform ).scalePart
