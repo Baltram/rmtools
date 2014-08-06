@@ -17,6 +17,7 @@ MainWindow::MainWindow( QWidget * a_pParent ) :
     m_xlmshDialog( this, "xlmsh", exportSettingsDialog::None ),
     m_xactDialog( this, "xact", exportSettingsDialog::VertsOnly | exportSettingsDialog::BaseXact | exportSettingsDialog::AutoSkin | exportSettingsDialog::NormalsCalc ),
     m_xmacDialog( this, "_xmac", exportSettingsDialog::VertsOnly | exportSettingsDialog::BaseXmac | exportSettingsDialog::AutoSkin | exportSettingsDialog::NormalsCalc ),
+    m_xnvmshDialog( this, "xnvmsh", exportSettingsDialog::Convex | exportSettingsDialog::NoTextures ),
     m_xcomDialog( this, "_xcom", exportSettingsDialog::Convex | exportSettingsDialog::NoTextures ),
     m_GenomeMaterialDialog( m_SceneInfo ),
     m_bOnMerge( false )
@@ -96,6 +97,8 @@ void MainWindow::save( QString a_strFilePath )
         ( pDialog = &m_xactDialog )->setAutoSkinVisible( m_SceneInfo.sceneContainsUnskinnedMeshes() );
     else if ( strExt == "_xmac" )
         ( pDialog = &m_xmacDialog )->setAutoSkinVisible( m_SceneInfo.sceneContainsUnskinnedMeshes() );
+    else if ( strExt == "xnvmsh" )
+        pDialog = &m_xcomDialog;
     else if ( strExt == "_xcom" )
         pDialog = &m_xcomDialog;
     else
@@ -323,6 +326,7 @@ void MainWindow::on_actionSave_As_triggered( void )
                         "Gothic 3 Mesh (*.xcmsh);;"
                         "Gothic 3 LOD Mesh (*.xlmsh);;"
                         "Gothic 3 Motion Actor (*.xact);;"
+                        "Gothic 3 Collision Mesh (*.xnvmsh);;"
                         "Risen Mesh (*._xmsh);;"
                         "Risen Motion Actor (*._xmac);;"
                         "Risen Collision Mesh (*._xcom);;";

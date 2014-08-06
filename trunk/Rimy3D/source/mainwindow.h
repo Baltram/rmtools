@@ -74,6 +74,7 @@ private:
     exportSettingsDialog m_xlmshDialog;
     exportSettingsDialog m_xactDialog;
     exportSettingsDialog m_xmacDialog;
+    exportSettingsDialog m_xnvmshDialog;
     exportSettingsDialog m_xcomDialog;
     bool                 m_bOnMerge;
 };
