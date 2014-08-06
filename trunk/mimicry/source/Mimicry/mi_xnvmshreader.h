@@ -10,9 +10,6 @@ public:
     };
 public:
     static mEResult ReadXnvmshFileData( mCScene & a_sceneDest, mCIOStreamBinary & a_streamSource, SOptions a_Options = SOptions() );
-public:
-    static MILPCChar const s_arrShapeMaterialNames[];
-    static MIUInt const s_uMaterialNameCount;
 };
 
 #endif

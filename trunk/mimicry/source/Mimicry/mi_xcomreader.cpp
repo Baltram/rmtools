@@ -36,6 +36,16 @@ namespace
     {
         return a_streamSource.ReadString( a_streamSource.ReadU16() );
     }
+
+    mCString GetUniqueMaterialName( mCString a_strName, mTStringMap< MIUInt > & a_mapMaterialUsage )
+    {
+
+        MIUInt & uUsage = a_mapMaterialUsage[ a_strName ];
+        if ( uUsage )
+            a_strName += mCString().Format( "_%u", uUsage );
+        ++uUsage;
+        return a_strName;
+    }
 }
 
 mEResult mCXcomReader::ReadXcomFileData( mCScene & a_sceneDest, mCIOStreamBinary & a_streamSource, SOptions a_Options )
@@ -70,13 +80,14 @@ mEResult mCXcomReader::ReadXcomFileData( mCScene & a_sceneDest, mCIOStreamBinary
             a_sceneDest.AddNewNode().SwapMesh( meshDest );
         }
     }
+    mTStringMap< MIUInt > mapMaterialUsage;
     for ( MIUInt u = 0, ue = a_streamSource.ReadU32(); u != ue; ++u )
     {
         MIUInt uShapeMaterial = a_streamSource.ReadU8() % s_uMaterialNameCount;
         MIBool bIgnoredByTraceRay = a_streamSource.ReadBool();
         MIBool bDisableCollision  = a_streamSource.ReadBool();
         MIBool bDisableResponse   = a_streamSource.ReadBool();
-        mCString strMaterialName = mCString ( s_arrShapeMaterialNames[ uShapeMaterial ] ) +
+        mCString strMaterialName = GetUniqueMaterialName( s_arrShapeMaterialNames[ uShapeMaterial ], mapMaterialUsage ) +
                                    ( bIgnoredByTraceRay ? "_i" : "" ) +
                                    ( bDisableCollision ? "_c" : "" ) +
                                    ( bDisableResponse ? "_r" : "" );
