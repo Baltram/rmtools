@@ -1,38 +1,21 @@
 #include "mi_include_converters.h"
 #include "mi_cooking.h"
 
-MILPCChar const mCXnvmshReader::s_arrShapeMaterialNames[] = {
-    "none",
-    "wood",
-    "metal",
-    "water",
-    "stone",
-    "earth",
-    "ice",
-    "leather",
-    "clay",
-    "glass",
-    "flesh",
-    "snow",
-    "debris",
-    "foliage",
-    "magic",
-    "grass",
-    "springanddamper1",
-    "springanddamper2",
-    "springanddamper3",
-    "damage",
-    "sand",
-    "movement"
-};
-
-MIUInt const mCXnvmshReader::s_uMaterialNameCount = static_cast< MIUInt >( sizeof( mCXnvmshReader::s_arrShapeMaterialNames ) / sizeof( *mCXnvmshReader::s_arrShapeMaterialNames ) );
-
 namespace
 {   
     mCString ReadString( mCIOStreamBinary & a_streamSource )
     {
         return a_streamSource.ReadString( a_streamSource.ReadU16() );
+    }
+
+    mCString GetUniqueMaterialName( mCString a_strName, mTStringMap< MIUInt > & a_mapMaterialUsage )
+    {
+
+        MIUInt & uUsage = a_mapMaterialUsage[ a_strName ];
+        if ( uUsage )
+            a_strName += mCString().Format( "_%u", uUsage );
+        ++uUsage;
+        return a_strName;
     }
 }
 
@@ -87,16 +70,17 @@ mEResult mCXnvmshReader::ReadXnvmshFileData( mCScene & a_sceneDest, mCIOStreamBi
         if ( File().ReadU16() > 1 )
             File().ReadBool();
     File().Skip( 24 * ( 1 + uMeshCount ) );
+    mTStringMap< MIUInt > mapMaterialUsage;
     if ( uVersion >= 42 )
     {
         File().ReadBool();
-        for ( MIUInt u = 0, ue = a_streamSource.ReadU32(); u != ue; ++u )
+        for ( MIUInt u = 0, ue = File().ReadU32(); u != ue; ++u )
         {
-            MIUInt uShapeMaterial = a_streamSource.ReadU8() % s_uMaterialNameCount;
-            MIBool bIgnoredByTraceRay = a_streamSource.ReadBool();
-            MIBool bDisableCollision  = a_streamSource.ReadBool();
-            MIBool bDisableResponse   = a_streamSource.ReadBool();
-            mCString strMaterialName = mCString ( s_arrShapeMaterialNames[ uShapeMaterial ] ) +
+            MIUInt uShapeMaterial = File().ReadU8() % mCXcomReader::s_uMaterialNameCount;
+            MIBool bIgnoredByTraceRay = File().ReadBool();
+            MIBool bDisableCollision  = File().ReadBool();
+            MIBool bDisableResponse   = File().ReadBool();
+            mCString strMaterialName = GetUniqueMaterialName( mCXcomReader::s_arrShapeMaterialNames[ uShapeMaterial ], mapMaterialUsage ) +
                                        ( bIgnoredByTraceRay ? "_i" : "" ) +
                                        ( bDisableCollision ? "_c" : "" ) +
                                        ( bDisableResponse ? "_r" : "" );
@@ -106,10 +90,9 @@ mEResult mCXnvmshReader::ReadXnvmshFileData( mCScene & a_sceneDest, mCIOStreamBi
                 pNode->AccessMaterialName() = strMaterialName;
         }
     }
-    a_sceneDest.AddNewMaterial().AccessName() == "none";
     for ( MIUInt u = 0; u != a_sceneDest.GetNumNodes(); ++u )
         if ( a_sceneDest.GetNodeAt( u )->GetMaterialName() == "" )
-            a_sceneDest.AccessNodeAt( u )->AccessMaterialName() = "none";
+            a_sceneDest.AccessNodeAt( u )->AccessMaterialName() = a_sceneDest.AddNewMaterial().AccessName() = GetUniqueMaterialName( "none", mapMaterialUsage );
     a_sceneDest.AddNewMaterial();  // Prevent the merged material from being named 'earth' or similar
     a_sceneDest.SetName( strSceneName );
     a_sceneDest.MakeOneMeshScene();

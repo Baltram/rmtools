@@ -54,7 +54,7 @@ mEResult mCXcmshWriter::WriteXcmshFileData( mCScene a_sceneSource, mCIOStreamBin
     MIU16 const u16PropertySystemVersion = 83, u16PropertyVersion = 30, u16ResourceMeshVersion = 35;
     a_streamDest << ( MIU16 )( 1 ) << ( MIU8 )( 1 ) << ( MIU16 )( 1 ) << ( MIU8 )( 1 );
     WriteString( a_streamDest, "eCResourceMeshComplex_PS" );
-    a_streamDest << ( MIU16 )( 1 ) << ( MIU8 )( 0 );
+    a_streamDest << ( MIU8 )( 1 ) << ( MIU16 )( 0 );
     a_streamDest << u16PropertySystemVersion  << u16PropertySystemVersion;
     MIUInt const uResourceMeshSizeOffset = a_streamDest.Tell();
     a_streamDest << ( MIU32 )( 0 ) << u16PropertyVersion << ( MIU32 )( 2 );

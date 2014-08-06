@@ -26,6 +26,7 @@
 #include "mi_xmshreader.h"
 #include "mi_xmshwriter.h"
 #include "mi_xnvmshreader.h"
+#include "mi_xnvmshwriter.h"
 #include "mi_xcomreader.h"
 #include "mi_xcomwriter.h"
 #include "mi_genomefile.h"

@@ -33,7 +33,7 @@ mEResult mCXlmshWriter::WriteXlmshFileData( mCScene const & a_sceneSource, mCIOS
     MIU16 const u16PropertySystemVersion = 83, u16PropertyVersion = 30, u16ResourceLodMeshVersion = 23;
     a_streamDest << ( MIU16 )( 1 ) << ( MIU8 )( 1 ) << ( MIU16 )( 1 ) << ( MIU8 )( 1 );
     WriteString( a_streamDest, "eCResourceMeshLoD_PS" );
-    a_streamDest << ( MIU16 )( 1 ) << ( MIU8 )( 0 );
+    a_streamDest << ( MIU8 )( 1 ) << ( MIU16 )( 0 );
     a_streamDest << u16PropertySystemVersion  << u16PropertySystemVersion;
     MIUInt const uResourceLodMeshSizeOffset = a_streamDest.Tell();
     a_streamDest << ( MIU32 )( 0 ) << u16PropertyVersion << ( MIU32 )( 3 );

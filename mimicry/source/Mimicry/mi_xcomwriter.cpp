@@ -24,7 +24,7 @@ mEResult mCXcomWriter::WriteXcomFileData( mCScene a_sceneSource, mCIOStreamBinar
     a_streamDest << g_time() << ( MIU64 ) 0;
     a_streamDest << ( MIU16 )( 1 ) << ( MIU8 )( 1 ) << ( MIU16 )( 1 ) << ( MIU8 )( 1 );
     WriteString( a_streamDest, "eCCollisionMeshResource2" );
-    a_streamDest << ( MIU16 )( 1 ) << ( MIU8 )( 0 );
+    a_streamDest << ( MIU8 )( 1 ) << ( MIU16 )( 0 );
     a_streamDest << u16PropertySystemVersion << u16PropertySystemVersion;
     a_streamDest << ( MIU32 ) 0;  // @79
     a_streamDest << u16PropertySystemVersion << ( MIU32 ) 3;
