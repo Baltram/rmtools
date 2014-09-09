@@ -1,4 +1,4 @@
-#include "Mimicry.h"
+#include "..\Mimicry.h"
 
 int main(int argc, char* argv[])
 {

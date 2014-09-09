@@ -177,7 +177,7 @@
 	</References>
 	<Files>
 		<File
-			RelativePath=".\MimicryApp.cpp"
+			RelativePath=".\MimicryApp\MimicryApp.cpp"
 			>
 		</File>
 	</Files>

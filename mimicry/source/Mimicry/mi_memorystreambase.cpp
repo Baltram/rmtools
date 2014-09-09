@@ -150,9 +150,9 @@ mEResult mTMemoryStreamBase< M >::FromFile( mCString const & a_strFileName )
     }
 
     Clear();
-    fseek( pSourceFile, 0, SEEK_END );
-    MIUInt const uSize = ftell( pSourceFile );
-    fseek( pSourceFile, 0, SEEK_SET );
+    g_fseek( pSourceFile, 0, SEEK_END );
+    MIUInt const uSize = g_ftell( pSourceFile );
+    g_fseek( pSourceFile, 0, SEEK_SET );
 
     MIByte * pTempBuffer = new MIByte [ uSize ];
     fread( pTempBuffer, sizeof( MIByte ), uSize, pSourceFile );
