@@ -25,6 +25,8 @@ MIU64  g_time( void );
 void   g_unsetbit( MILPVoid a_pBase, MIUInt uOffset );
 
 void      g_free( MILPVoid a_pDest );
+MIInt     g_fseek( MILPVoid a_pFile, MIUInt a_uOffset, MIInt a_iOrigin );
+MIUInt    g_ftell( MILPVoid a_pFile );
 MILPVoid  g_malloc( MISize a_sizeSize );
 MILPCVoid g_memchr( MILPCVoid a_pBlock, MIInt a_iValue, MISize a_sizeNum );
 MILPVoid  g_memchr( MILPVoid a_pBlock, MIInt a_iValue, MISize a_sizeNum );
@@ -41,6 +43,13 @@ MISize    g_strlen( MILPCChar a_pcText );
 MIInt     g_strncmp( MILPCChar a_pcText1, MILPCChar a_pcText2, MISize a_sizeNum );
 
 MI_EXTERN void      ( MI_CDECL * const g_funcFree )( MILPVoid );
+#ifdef _MSC_VER
+MI_EXTERN MIInt     ( MI_CDECL * const g_funcFseek )( MILPVoid a_pFile, MII64 a_i64Offset, MIInt a_iOrigin );
+MI_EXTERN MII64     ( MI_CDECL * const g_funcFtell )( MILPVoid a_pFile );
+#else
+MI_EXTERN MIInt     ( MI_CDECL * const g_funcFseek )( MILPVoid a_pFile, MIInt a_iOffset, MIInt a_iOrigin );
+MI_EXTERN MIInt     ( MI_CDECL * const g_funcFtell )( MILPVoid a_pFile );
+#endif
 MI_EXTERN MILPVoid  ( MI_CDECL * const g_funcMalloc )( MISize );
 MI_EXTERN MILPCVoid ( MI_CDECL * const g_funcMemchr_c )( MILPCVoid, MIInt, MISize );
 MI_EXTERN MILPVoid  ( MI_CDECL * const g_funcMemchr )( MILPVoid, MIInt, MISize );

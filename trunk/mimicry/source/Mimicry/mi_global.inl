@@ -95,6 +95,22 @@ void g_free( MILPVoid a_pDest )
 }
 
 inline
+MIInt g_fseek( MILPVoid a_pFile, MIUInt a_uOffset, MIInt a_iOrigin )
+{
+#ifdef _MSC_VER
+    return ( *g_funcFseek )( a_pFile, static_cast< MII64 >( a_uOffset ), a_iOrigin );
+#else
+    return ( *g_funcFseek )( a_pFile, static_cast< MIInt >( a_uOffset ), a_iOrigin );
+#endif
+}
+
+inline
+MIUInt g_ftell( MILPVoid a_pFile )
+{
+    return static_cast< MIUInt >( ( *g_funcFtell )( a_pFile ) );
+}
+
+inline
 MILPVoid g_malloc( MISize a_sizeSize )
 {
     return ( *g_funcMalloc )( a_sizeSize );

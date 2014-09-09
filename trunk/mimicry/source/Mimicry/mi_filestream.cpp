@@ -251,7 +251,7 @@ void mCFileStream::Flush( void )
         return;
     m_uRecentFileSize = GetSize();
     FILE * const pFile = static_cast< FILE * >( m_pFile );
-    fseek( pFile, ( m_uBufferedPosition + m_uOffsetPending ), SEEK_SET );
+    g_fseek( pFile, ( m_uBufferedPosition + m_uOffsetPending ), SEEK_SET );
     fwrite( ( m_arrBuffer.GetBuffer() + m_uOffsetPending ), sizeof( MIChar ), ( m_uOffset - m_uOffsetPending ), pFile );
     fflush( pFile );
     m_bPendingData = MIFalse;
@@ -298,17 +298,17 @@ mEResult mCFileStream::Open( mCString const & a_strFileName, mEFileOpenMode a_en
 void mCFileStream::DirectRead( MILPVoid a_pDest, MIUInt a_uPosition, MIUInt a_uSize )
 {
     FILE * const pFile = static_cast< FILE * >( m_pFile );
-    fseek( pFile, a_uPosition, SEEK_SET );
+    g_fseek( pFile, a_uPosition, SEEK_SET );
     fread( a_pDest, sizeof( MIChar ), a_uSize, pFile );
 }
 
 void mCFileStream::Init( MILPVoid a_pFile, mCString const & a_strFileName, mEFileOpenMode a_enuOpenMode )
 {
     FILE * const pFile = static_cast< FILE * >( a_pFile );
-    fseek( pFile, 0, SEEK_END );
+    g_fseek( pFile, 0, SEEK_END );
     Clear();
     m_pFile = pFile;
-    m_uRecentFileSize = ftell( pFile );
+    m_uRecentFileSize = g_ftell( pFile );
     m_enuOpenMode = a_enuOpenMode;
     m_strFileName = a_strFileName;
     Buffer( 0 );

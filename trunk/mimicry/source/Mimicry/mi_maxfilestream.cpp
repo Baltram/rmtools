@@ -147,7 +147,7 @@ void mCMaxFileStream::DirectRead( MILPVoid a_pDest, MIUInt a_uPosition, MIUInt a
     while ( a_uSize )
     {
         MIUInt uSize = g_min( a_uSize, ( m_arrJunkBlocks[ u ] - a_uPosition ) );
-        fseek( pFile, ( a_uPosition + u * mEBlockSize ), SEEK_SET );
+        g_fseek( pFile, ( a_uPosition + u * mEBlockSize ), SEEK_SET );
         fread( pDest, sizeof( MIByte ), uSize, pFile );
         a_uSize -= uSize;
         pDest += uSize;
