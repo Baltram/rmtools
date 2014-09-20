@@ -350,7 +350,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Mimicry\mi_include_risen2.h"
+				RelativePath=".\Mimicry\mi_include_risen.h"
 				>
 			</File>
 			<File
@@ -787,18 +787,18 @@
 			</File>
 		</Filter>
 		<Filter
-			Name="risen2"
+			Name="risen"
 			>
 			<File
-				RelativePath=".\Mimicry\mi_error_risen2.h"
+				RelativePath=".\Mimicry\mi_error_risen.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Mimicry\mi_risen2name.cpp"
+				RelativePath=".\Mimicry\mi_risenname.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\Mimicry\mi_risen2name.h"
+				RelativePath=".\Mimicry\mi_risenname.h"
 				>
 			</File>
 		</Filter>

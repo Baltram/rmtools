@@ -18,6 +18,8 @@ template< typename T > void      g_memswap( T & a_1, T & a_2 );
 template< typename T > void      g_reorder( T * a_pElements, MIUInt const * a_pPattern, MIUInt a_uElementCount );
 template< typename T > void      g_swap( T & a_1, T & a_2 );
 
+MIU64  g_ctimeToFiletime( MIU64 a_uCtime );
+MIU64  g_filetimeToCtime( MIU64 a_uFiletime );
 MIBool g_getbit( MILPVoid a_pBase, MIUInt uOffset );
 MIBool g_isBigEndian( void );
 void   g_setbit( MILPVoid a_pBase, MIUInt uOffset );

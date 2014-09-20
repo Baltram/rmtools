@@ -27,10 +27,20 @@ MIInt     ( MI_CDECL * const g_funcStrcmp )( MILPCChar, MILPCChar )             
 MISize    ( MI_CDECL * const g_funcStrlen )( MILPCChar )                                           = &strlen;
 MIInt     ( MI_CDECL * const g_funcStrncmp )( MILPCChar, MILPCChar, MISize )                       = &strncmp;
 
-MI_CRT_NO_WARNINGS( MILPChar ( MI_CDECL * const g_funcStrcpy )( MILPChar, MILPCChar ) = &strcpy; )
+MI_CRT_NO_WARNINGS( MILPChar( MI_CDECL * const g_funcStrcpy )( MILPChar, MILPCChar ) = &strcpy; )
+
+MIU64 g_ctimeToFiletime( MIU64 a_uCtime )
+{
+    return 10000000 * a_uCtime + 116444736000000000;
+}
+
+MIU64 g_filetimeToCtime( MIU64 a_uFiletime )
+{
+    return ( a_uFiletime - 116444736000000000 ) / 10000000;
+}
 
 MIU64 g_time( void )
 {
     time_t CurrentTime = time( 0 );
-    return ( ( MIU64 ) 10000000 ) * CurrentTime + 116444736000000000;
+    return g_ctimeToFiletime( static_cast< MIU64 >( CurrentTime ) );
 }
