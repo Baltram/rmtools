@@ -1,4 +1,5 @@
 #include "mi_include_converters.h"
+#include "mi_include_standard.h"
 
 namespace
 {
@@ -63,7 +64,30 @@ namespace
     };
 }
 
-MIInt( *mCGenomeVolume::s_pfuncUncompress )( MILPByte, MIU32 *, MILPCByte, MIU32 );
+MIInt ( *mCGenomeVolume::s_pfuncCompress )( MILPByte, MIU32 *, MILPCByte, MIU32 );
+MIInt ( *mCGenomeVolume::s_pfuncUncompress )( MILPByte, MIU32 *, MILPCByte, MIU32 );
+
+namespace
+{
+    MIBool                s_bResourceDatabase = MIFalse;
+    MIBool                s_bFirstDatabaseEntry = MIFalse;
+    MIUInt                s_uGeneration = 0;
+    mCString              s_strLanguage = "na";
+    mCString              s_strResourceToken = "img";
+    mCString              s_strProblematicFilePath;
+    mCIOStreamBinary    * s_pDataStream = 0;
+    mCIOStreamBinary    * s_pEntryStream = 0;
+    mCMemoryStream      * s_pDBStream = 0;
+    mCMemoryStream      * s_pCSVStream = 0;
+    MIUInt                s_uTotalFileCount = 0;
+    MIUInt                s_uCurrentFileCount = 0;
+    void              ( * s_pfuncShowProgress )( MIUInt, MIUInt ) = 0;
+
+    MIU64 SwapHighLow( MIU64 a_u64Time )
+    {
+        return ( a_u64Time << 32 ) | ( a_u64Time >> 32 );
+    }
+}
 
 mCGenomeVolume::CFileHandle::CFileHandle( mCGenomeVolume * a_pVolume, MIUInt a_uFileIndex, MIBool a_bResolveRisen3Entries ) :
     m_pVolume( a_pVolume ),
@@ -116,6 +140,11 @@ MIBool mCGenomeVolume::CFileHandle::GetFileData( mCIOStreamBinary & a_streamFile
     return MITrue;
 }
 
+MIUInt mCGenomeVolume::CFileHandle::GetFileIndex( void ) const
+{
+    return m_uFileIndex;
+}
+
 mCString mCGenomeVolume::CFileHandle::GetFilePath( void ) const
 {
     if ( m_bResolveRisen3Entries )
@@ -135,6 +164,7 @@ MIU64 mCGenomeVolume::CFileHandle::GetLastWriteTime( void ) const
 
 mCGenomeVolume::CDir::CDir( void )
 {
+    m_u64Accessed = m_u64Created = m_u64Modified = 0;
 }
 
 MIU64 & mCGenomeVolume::CDir::AccessCreationTime( void )
@@ -224,6 +254,132 @@ mCGenomeVolume::~mCGenomeVolume( void )
     delete m_pRoot;
 }
 
+namespace
+{
+    enum RisenPakAttributes
+    {
+        RisenPakAttribute_ReadOnly   = 0x00000001,  // FILE_ATTRIBUTE_READONLY
+        RisenPakAttribute_Hidden     = 0x00000002,  // FILE_ATTRIBUTE_HIDDEN
+        RisenPakAttribute_System     = 0x00000004,  // FILE_ATTRIBUTE_SYSTEM
+        RisenPakAttribute_Directory  = 0x00000010,  // FILE_ATTRIBUTE_DIRECTORY
+        RisenPakAttribute_Archive    = 0x00000020,  // FILE_ATTRIBUTE_ARCHIVE
+        RisenPakAttribute_Temporary  = 0x00000100,  // FILE_ATTRIBUTE_TEMPORARY
+        RisenPakAttribute_Compressed = 0x00000800,  // FILE_ATTRIBUTE_COMPRESSED
+        RisenPakAttribute_NotIndexed = 0x00002000,  // FILE_ATTRIBUTE_NOT_CONTENT_INDEXED
+        RisenPakAttribute_Encrypted  = 0x00004000,  // FILE_ATTRIBUTE_ENCRYPTED
+        RisenPakAttribute_Deleted    = 0x00008000,
+        RisenPakAttribute_Virtual    = 0x00010000,  // FILE_ATTRIBUTE_VIRTUAL
+        RisenPakAttribute_Packed     = 0x00020000,
+        RisenPakAttribute_Stream     = 0x00040000,
+        RisenPakAttribute_Stream2    = 0x00080000
+    };  // Thanks NicoDE
+
+    void UpdateDirTime( mCGenomeVolume::CDir & a_Dir, mCGenomeVolume::SFileTime const & a_Time )
+    {
+        if ( s_bResourceDatabase )
+        {
+            a_Dir.AccessCreationTime() = a_Dir.AccessLastAccessTime() = a_Dir.AccessLastWriteTime() = g_time();
+            return;
+        }
+        if ( a_Dir.GetCreationTime() == 0 || a_Dir.GetCreationTime() > a_Time.m_u64Created )
+            a_Dir.AccessCreationTime() = a_Time.m_u64Created;
+        if ( a_Dir.GetLastAccessTime() < a_Time.m_u64Accessed )
+            a_Dir.AccessLastAccessTime() = a_Time.m_u64Accessed;
+        if ( a_Dir.GetLastWriteTime() < a_Time.m_u64Modified )
+            a_Dir.AccessLastWriteTime() = a_Time.m_u64Modified;
+    }
+
+    mCGenomeVolume::CDir & ReviseDirTime( mCGenomeVolume::CDir & a_Dir )
+    {
+        for ( MIUInt u = a_Dir.GetSubDirs().GetCount(); u--; )
+            UpdateDirTime( a_Dir, ReviseDirTime( a_Dir.AccessSubDirs()[ u ] ) );
+        return a_Dir;
+    }
+
+    mCString GetArchiveDirPath( mCString const & a_strFilePath, mCString const & a_strRootPath )
+    {
+        if ( !s_bResourceDatabase )
+            return g_GetDirectoryPath( a_strFilePath ).TrimLeft( a_strRootPath.GetLength() );
+        MIU32 u32Hash = g_djb2( g_GetFileNameNoExt( a_strFilePath ).ToLower().GetText() );
+        return "\\0\\" + mCString().Format( "%.8x", u32Hash ).Left( 1 );
+    }
+}
+
+mEResult mCGenomeVolume::CreateRisen3Archive( mCString a_strRootPath, mTArray< mCString > const & a_arrFilePaths, mTArray< SFileTime > const & a_arrFileTimes, mCIOStreamBinary & a_streamDest, MIUInt ( *a_pfuncRequestGeneration )( void ), mCString * a_pVolumeName, void ( * a_pfuncShowProgress )( MIUInt, MIUInt ) )
+{
+    s_uTotalFileCount = a_arrFilePaths.GetCount();
+    s_uCurrentFileCount = 0;
+    s_pfuncShowProgress = a_pfuncShowProgress;
+    MIBool bRisen3Resource = MIFalse, bMixedFileExt = MIFalse;
+    mCString strFirstExt = a_arrFilePaths.GetCount() ? g_GetFileExt( a_arrFilePaths[ 0 ] ).ToLower() : "";
+    CDir Root;
+    a_strRootPath.TrimRight( "\\/" );
+    for ( MIUInt u = a_arrFilePaths.GetCount(); u--; )
+    {
+        mCString strExt = g_GetFileExt( a_arrFilePaths[ u ] ).ToLower();
+        if ( !bRisen3Resource && strExt.Left( 2 ) == "r3" )
+            for ( MIUInt v = sizeof( s_arrResourceTokens ) / sizeof( *s_arrResourceTokens ); v--; )
+                if ( strExt == mCString( "r3" ) + s_arrResourceTokens[ v ] )
+                    bRisen3Resource = MITrue;
+        if ( !bMixedFileExt && strExt != strFirstExt /*&& strExt != "deleted"*/ )
+            bMixedFileExt = MITrue;
+    }
+    if ( bRisen3Resource && bMixedFileExt )
+        return MI_ERROR( mCGenomeArchiveError, EMixedRisen3ResourceTypes, "Failed to create Risen3 PAK archive because input folder contains mixed resource types." ), mEResult_False;
+    s_bResourceDatabase = s_bFirstDatabaseEntry = bRisen3Resource;
+    for ( MIUInt u = a_arrFilePaths.GetCount(); u--; )
+    {
+        CDir & Dir = GetDir( Root, GetArchiveDirPath( a_arrFilePaths[ u ], a_strRootPath ) );
+        Dir.AccessFiles().Add( CFileHandle( 0, u ) );
+        UpdateDirTime( Dir, a_arrFileTimes[ u ] );
+    }
+    ReviseDirTime( Root );
+    mCMemoryStream streamEntryTable, streamDB, streamCSV;
+    s_pDataStream = &a_streamDest;
+    s_pEntryStream = &streamEntryTable;
+    s_pCSVStream = &streamCSV;
+    s_pDBStream = &streamDB;
+    if ( bRisen3Resource )
+    {
+        s_uTotalFileCount += 2;
+        s_uGeneration = ( *a_pfuncRequestGeneration )();
+        s_strLanguage = "na";
+        if ( g_GetFileName( a_strRootPath ).Scan( "%*[^_]_%99s", mCString::AccessStaticBuffer() ) == 1 )
+            s_strLanguage.SetText( mCString::AccessStaticBuffer() );
+        if ( s_strLanguage.Scan( "%*[^_]_%99s", mCString::AccessStaticBuffer() ) == 1 )  // Backward compatibility
+            s_strLanguage.SetText( mCString::AccessStaticBuffer() );
+        s_strResourceToken = strFirstExt.Right( 3 ).ToLower();
+        streamCSV << "Hash|Name|Raw File Time|Compiled File Time|\r\n";
+        streamDB << "GAR5" << ( MIU32 ) 0x20 << "RT02" << ( MIU32 ) 0 << ( MIU32 ) 0 << ( MIU32 )( a_arrFilePaths.GetCount() );
+    }
+    a_streamDest << ( MIU32 ) 1 << "G3V0" << ( MIU32 ) 0 << ( MIU32 ) 0 << ( MIU32 ) 1 << ( MIU32 ) 0xFEEDFACE << ( MIU64 ) 48 << ( MIU64 ) 0 << ( MIU64 ) 0;  // Header
+    if ( !WritePakDir( Root, a_arrFilePaths, a_arrFileTimes ) )
+        return MI_ERROR( mCGenomeArchiveError, ESourceFileOpenError, mCString().Format( "Failed to create Risen 3 volume. Error when processing %s", s_strProblematicFilePath.GetText() ).GetText() ), mEResult_False;
+    if ( bRisen3Resource )
+    {
+        WritePakFile( "<db>", Root );
+        WritePakFile( "<csv>", Root );
+    }
+    MIU64 const u64RootOffset = a_streamDest.Tell();
+    a_streamDest << streamEntryTable;
+    MIU64 const u64VolumeSize = a_streamDest.Tell();
+    a_streamDest.Seek( 32 );
+    a_streamDest << u64RootOffset << u64VolumeSize;
+    a_streamDest.Seek( static_cast< MIUInt >( u64VolumeSize ) );
+    if ( !a_pVolumeName )
+        return mEResult_Ok;
+    if ( bRisen3Resource )
+        a_pVolumeName->Format( "%u_%s_%s.pak", s_uGeneration, s_strLanguage.GetText(), s_strResourceToken.GetText() );
+    else
+        *a_pVolumeName = g_GetFileName( a_strRootPath + ".pak" );
+    return mEResult_Ok;
+}
+
+void mCGenomeVolume::RegisterZlibCompressFunction( MIInt ( *a_pfuncCompress )( MILPByte, MIU32 *, MILPCByte, MIU32 ) )
+{
+    s_pfuncCompress = a_pfuncCompress;
+}
+
 void mCGenomeVolume::RegisterZlibUncompressFunction( MIInt ( * a_pfuncUncompress )( MILPByte, MIU32 *, MILPCByte, MIU32 ) )
 {
     s_pfuncUncompress = a_pfuncUncompress;
@@ -236,7 +392,7 @@ void mCGenomeVolume::Close( void )
     m_mapDirTimes.Clear();
     m_streamArchive.Close();
     m_pRoot = 0;
-    m_strRisen3Name = m_strResourceToken = m_strResourceSuffix = "";
+    m_strRisen3Name = m_strResourceToken = m_strLanguage = "";
     m_u32ResourceClassRevision = m_u32ResourceClassHash = 0;
     m_streamResourceDatabase.Clear();
 }
@@ -245,7 +401,7 @@ mCString mCGenomeVolume::GetRisen3ResourceType( void )
 {
     for ( MIUInt u = sizeof( s_arrResourceTokens ) / sizeof( *s_arrResourceTokens ); u--; )
         if ( s_arrResourceTokens[ u ] == m_strResourceToken )
-            return s_arrResourceTypes[ u ] + ( "_" + m_strResourceSuffix );
+            return s_arrResourceTypes[ u ] + ( m_strLanguage != "na" ? "_" + m_strLanguage : "" );
     return "";
 }
 
@@ -263,7 +419,7 @@ mCGenomeVolume::CDir const & mCGenomeVolume::GetRoot( void )
     else
     {
         for ( MIUInt u = 0, ue = m_arrFiles.GetCount(); u != ue; ++u )
-            GetDir( Root, g_GetDirectoryPath( m_arrFiles[ u ].m_strFilePath ) ).AccessFiles().Add( CFileHandle( this, u ) );
+            GetDir( Root, g_GetDirectoryPath( m_arrFiles[ u ].m_strFilePath ), &m_mapDirTimes ).AccessFiles().Add( CFileHandle( this, u ) );
     }
     Root.AccessCreationTime() = Root.AccessLastAccessTime() = Root.AccessLastWriteTime() = 0;
     return Root;
@@ -342,13 +498,12 @@ mEResult mCGenomeVolume::Open( mCString const & a_strFilePath, MIBool a_bResolve
     mCMemoryStream streamBinaryCSV;
     if ( !FindFile( strFileNameCSV + ".csv", strTemp, streamBinaryCSV ) ||
          !FindFile( strFileNameDB + ".db", strTemp, m_streamResourceDatabase ) ||
-         strFileNameCSV.Scan( "%*c_%3c_%c_%2c", mCString::AccessStaticBuffer(), mCString::AccessStaticBuffer() + 3, mCString::AccessStaticBuffer() + 5 ) != 3 )
+         strFileNameCSV.Scan( "%*c_%3c_%*c_%s", mCString::AccessStaticBuffer(), mCString::AccessStaticBuffer() + 3 ) != 2 )
         return Close(), mEResult_False;
     m_strResourceToken.SetText( mCString::AccessStaticBuffer(), 3 );
     m_strResourceToken.ToLower();
-    mCString::AccessStaticBuffer()[ 4 ] = '_';
-    m_strResourceSuffix.SetText( mCString::AccessStaticBuffer() + 3, 4 );
-    m_strResourceSuffix.ToLower();
+    m_strLanguage.SetText( mCString::AccessStaticBuffer() + 3 );
+    m_strLanguage.ToLower();
     mCStringStream streamCSV;
     streamCSV << streamBinaryCSV;
     streamCSV.Seek( 0 );
@@ -418,31 +573,132 @@ mEResult mCGenomeVolume::Open( mCString const & a_strFilePath, MIBool a_bResolve
     return mEResult_Ok;
 }
 
-mCGenomeVolume::CDir & mCGenomeVolume::GetDir( mCGenomeVolume::CDir & a_Root, mCString const & a_strDirPath )
+mCGenomeVolume::CDir & mCGenomeVolume::GetDir( mCGenomeVolume::CDir & a_Root, mCString const & a_strDirPath, mTStringMap< SFileTime > const * a_pDirTimes )
 {
     if ( a_strDirPath == "" )
         return a_Root;
     mCString const strDirName = g_GetFileName( a_strDirPath );
-    mCGenomeVolume::CDir & ParentDir = GetDir( a_Root, g_GetDirectoryPath( a_strDirPath ) );
+    mCGenomeVolume::CDir & ParentDir = GetDir( a_Root, g_GetDirectoryPath( a_strDirPath ), a_pDirTimes );
     for ( MIUInt u = 0, ue = ParentDir.GetSubDirs().GetCount(); u != ue; ++u )
         if ( ParentDir.GetSubDirs()[ u ].GetName() == strDirName )
             return ParentDir.AccessSubDirs()[ u ];
     ParentDir.AccessSubDirs().AddNew().AccessName() = strDirName;
     CDir & Result = ParentDir.AccessSubDirs().Back();
-    SDirTime DirTime;
-    if ( m_mapDirTimes.GetAt( a_strDirPath + "\\", DirTime ) )
+    SFileTime DirTime;
+    DirTime.m_u64Accessed = DirTime.m_u64Created = DirTime.m_u64Modified = 0;
+    if ( a_pDirTimes )
+        a_pDirTimes->GetAt( a_strDirPath + "\\", DirTime );
+    Result.AccessCreationTime() = DirTime.m_u64Created;
+    Result.AccessLastAccessTime() = DirTime.m_u64Accessed;
+    Result.AccessLastWriteTime() = DirTime.m_u64Modified;
+    return Result;
+}
+
+MIBool mCGenomeVolume::WritePakDir( mCGenomeVolume::CDir const & a_Dir, mTArray< mCString > const & a_arrFilePaths, mTArray< mCGenomeVolume::SFileTime > const & a_arrFileTimes )
+{
+    *s_pEntryStream << ( MIU32 )( a_Dir.GetName().GetLength() ) << a_Dir.GetName();
+    if ( a_Dir.GetName().GetLength() )
+        *s_pEntryStream << ( MIU8 ) 0;
+    *s_pEntryStream << a_Dir.GetCreationTime() << a_Dir.GetLastAccessTime() << a_Dir.GetLastWriteTime();
+    *s_pEntryStream << ( MIU32 )( RisenPakAttribute_Packed | RisenPakAttribute_Directory ) << ( MIU32 )( a_Dir.GetFiles().GetCount() + a_Dir.GetSubDirs().GetCount() + ( s_bResourceDatabase && a_Dir.GetName() == "" ? 2 : 0 ) );
+    for ( MIUInt u = 0, ue = a_Dir.GetFiles().GetCount(); u != ue; ++u )
     {
-        Result.AccessCreationTime() = DirTime.m_u64Created;
-        Result.AccessLastAccessTime() = DirTime.m_u64Accessed;
-        Result.AccessLastWriteTime() = DirTime.m_u64Modified;
+        MIUInt uFile = a_Dir.GetFiles()[ u ].GetFileIndex();
+        if ( !WritePakFile( a_arrFilePaths[ uFile ], a_arrFileTimes[ uFile ] ) )
+            return MIFalse;
+    }
+    for ( MIUInt u = 0, ue = a_Dir.GetSubDirs().GetCount(); u != ue; ++u )
+    {
+        *s_pEntryStream << ( MIU32 )( RisenPakAttribute_Packed | RisenPakAttribute_Directory );
+        if ( !WritePakDir( a_Dir.GetSubDirs()[ u ], a_arrFilePaths, a_arrFileTimes ) )
+            return MIFalse;
+    }
+    return MITrue;
+}
+
+MIBool mCGenomeVolume::WritePakFile( mCString const & a_strFilePath, mCGenomeVolume::SFileTime const & a_Time )
+{
+    MIU64 u64CompiledTime = g_time();
+    mCString strExt = g_GetFileExt( a_strFilePath ), strFileName = g_GetFileName( a_strFilePath ), strResourceName = g_GetFileNameNoExt( a_strFilePath );
+    mCMemoryStream streamIn;
+    if ( a_strFilePath == "<db>" )
+    {
+        streamIn.Swap( *s_pDBStream );
+        strFileName.Format( "w_%s_%u_%s.db", s_strResourceToken.GetText(), s_uGeneration, s_strLanguage.GetText() );
+    }
+    else if ( a_strFilePath == "<csv>" )
+    {
+        streamIn.Swap( *s_pCSVStream );
+        strFileName.Format( "w_%s_%u_%s.csv", s_strResourceToken.GetText(), s_uGeneration, s_strLanguage.GetText() );
+    }
+    else if ( streamIn.FromFile( a_strFilePath ) != mEResult_Ok )
+        return s_strProblematicFilePath = a_strFilePath, MIFalse;
+    if ( s_bResourceDatabase && a_strFilePath[ 0 ] != '<' )
+    {
+        MIU32 u32Hash = g_djb2( mCString( strResourceName ).ToLower().GetText() );
+        strFileName.Format( "w_%s_%u_%s_%.8x.rom", s_strResourceToken.GetText(), s_uGeneration, s_strLanguage.GetText(), u32Hash );
+        time_t TimeRaw = static_cast< time_t >( g_filetimeToCtime( a_Time.m_u64Modified ) ), TimeCompiled = static_cast< time_t >( g_filetimeToCtime( u64CompiledTime ) );
+        MI_CRT_NO_WARNINGS( struct tm * pTimeInfoRaw = localtime( &TimeRaw ); )
+        strftime( mCString::AccessStaticBuffer(), 80, "%d.%m.%Y - %H:%M:%S", pTimeInfoRaw );
+        mCString strTimeRaw( mCString::AccessStaticBuffer() );
+        MI_CRT_NO_WARNINGS( struct tm * pTimeInfoCompiled = localtime( &TimeCompiled ); )
+        strftime( mCString::AccessStaticBuffer(), 80, "%d.%m.%Y - %H:%M:%S", pTimeInfoCompiled );
+        mCString strTimeCompiled( mCString::AccessStaticBuffer() );
+        *s_pCSVStream << mCString().Format( "%.8x|%s|%s|%s|\r\n", u32Hash, strResourceName.GetText(), strTimeRaw.GetText(), strTimeCompiled.GetText() );
+        if ( streamIn.ReadString( 4 ) != "R3RF" )
+            return s_strProblematicFilePath = a_strFilePath, MIFalse;
+        MIUInt uRomSize = streamIn.ReadU32();
+        streamIn.Seek( uRomSize );
+        if ( s_bFirstDatabaseEntry )
+        {
+            s_bFirstDatabaseEntry = MIFalse;
+            MIU32 u32ClassHash = streamIn.ReadU32();
+            MIU32 u32ClassRevision = streamIn.ReadU32();
+            s_pDBStream->Seek( 12 );
+            *s_pDBStream << u32ClassHash << u32ClassRevision;
+            s_pDBStream->Skip( 4 );
+        }
+        else
+            streamIn.Skip( 8 );
+        streamIn.Skip( 4 + 4 * 8 );
+        streamIn.Skip( streamIn.ReadU32() );
+        *s_pDBStream << SwapHighLow( a_Time.m_u64Modified ) << SwapHighLow( a_Time.m_u64Created ) << SwapHighLow( a_Time.m_u64Created ) << SwapHighLow( u64CompiledTime );
+        *s_pDBStream << ( MIU32 )( strResourceName.GetLength() ) << strResourceName;
+        s_pDBStream->Write( static_cast< MILPCByte >( streamIn.GetBuffer() ) + streamIn.Tell(), streamIn.GetSize() - streamIn.Tell() );
+        streamIn.Resize( uRomSize );
+        streamIn.Seek( 0 );
+        streamIn << "GAR5" << ( MIU32 ) 0x20;
+    }
+    mCMemoryStream streamCompressed;
+    MIBool bCompressed = MIFalse;
+    MIU32 u32CompressedSize = streamIn.GetSize();
+    if ( s_pfuncCompress && strExt != "r3img" && strExt != "r3snd" && strExt != "r3dlg" )
+    {
+        streamCompressed.Resize( streamIn.GetSize() );
+        bCompressed = 0 == ( *s_pfuncCompress )( static_cast< MILPByte >( streamCompressed.AccessBuffer() ), &u32CompressedSize, static_cast< MILPCByte >( streamIn.GetBuffer() ), u32CompressedSize );
+        if ( bCompressed && u32CompressedSize * 3 > streamIn.GetSize() * 2 )
+            bCompressed = MIFalse;
+    }
+    *s_pEntryStream << ( MIU32 )( RisenPakAttribute_Packed | RisenPakAttribute_Archive | ( bCompressed ? RisenPakAttribute_Compressed : 0 ) );
+    *s_pEntryStream << ( MIU32 )( strFileName.GetLength() ) << strFileName;
+    if ( strFileName.GetLength() )
+        *s_pEntryStream << ( MIU8 ) 0;
+    *s_pEntryStream << ( MIU64 )( s_pDataStream->Tell() );
+    if ( s_bResourceDatabase )
+        *s_pEntryStream << u64CompiledTime << u64CompiledTime << u64CompiledTime;
+    else
+        *s_pEntryStream << a_Time.m_u64Created << a_Time.m_u64Accessed << a_Time.m_u64Modified;
+    *s_pEntryStream << ( MIU32 )( RisenPakAttribute_Packed | RisenPakAttribute_Archive ) << ( MIU32 ) 0 << ( MIU32 )( bCompressed ? 1 : 0 ) << ( bCompressed ? u32CompressedSize : streamIn.GetSize() ) << streamIn.GetSize();
+    if ( bCompressed )
+    {
+        streamCompressed.Resize( u32CompressedSize );
+        *s_pDataStream << streamCompressed;
     }
     else
-    {
-        Result.AccessCreationTime() = 0;
-        Result.AccessLastAccessTime() = 0;
-        Result.AccessLastWriteTime() = 0;
-    }
-    return Result;
+        *s_pDataStream << streamIn;
+    if ( s_pfuncShowProgress )
+        ( *s_pfuncShowProgress )( ++s_uCurrentFileCount, s_uTotalFileCount );
+    return MITrue;
 }
 
 namespace
@@ -461,7 +717,7 @@ namespace
 void mCGenomeVolume::ReadNewVersionedDirectory( mCIOStreamBinary & a_streamSource, mTArray< SFile > & a_arrFilesDest, mCString a_strPath )
 {
     a_strPath += ReadString( a_streamSource ) + "\\";
-    SDirTime & DirTime = m_mapDirTimes[ a_strPath ];
+    SFileTime & DirTime = m_mapDirTimes[ a_strPath ];
     DirTime.m_u64Created = a_streamSource.ReadU64();
     DirTime.m_u64Accessed = a_streamSource.ReadU64();
     DirTime.m_u64Modified = a_streamSource.ReadU64();
@@ -503,7 +759,7 @@ void mCGenomeVolume::ReadOldVersionedEntry( mCIOStreamBinary & a_streamSource, m
     if ( u32Attributes & 0x10 )
     {
         a_strPath = "\\" + ReadString( a_streamSource ).Replace( '/', '\\' );
-        SDirTime & DirTime = m_mapDirTimes[ a_strPath ];
+        SFileTime & DirTime = m_mapDirTimes[ a_strPath ];
         DirTime.m_u64Created = File.m_u64Created;
         DirTime.m_u64Accessed = File.m_u64Accessed;
         DirTime.m_u64Modified = File.m_u64Modified;

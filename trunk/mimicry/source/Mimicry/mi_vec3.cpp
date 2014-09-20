@@ -157,7 +157,9 @@ MIFloat mCVec3::CalcAngleRad( mCVec3 const & a_vecOther, MIBool a_bAlreadyNormal
     MIFloat fDotProduct = DotProduct( *this, a_vecOther );
     if ( !a_bAlreadyNormalized )
         fDotProduct /= ( CalcMagnitude() * a_vecOther.CalcMagnitude() );
-    return acos( fDotProduct );
+    if ( fDotProduct <= 1.0f && fDotProduct >= -1.0f )
+        return acos( fDotProduct );
+    return 0.0f;
 }
 
 mCVec3 mCVec3::CalcCrossProduct( mCVec3 const & a_vecSecond ) const
@@ -182,7 +184,10 @@ MIFloat mCVec3::CalcMagnitudeSqr( void ) const
 
 mCVec3 mCVec3::CalcNormalized( void ) const
 {
-    return *this / CalcMagnitude();
+    MIFloat fMagnitude = CalcMagnitude();
+    if ( fMagnitude != 0.0f )
+        return *this / fMagnitude;
+    return mCVec3( 1.0f, 0.0f, 0.0f );
 }
 
 void mCVec3::Clear( void )
@@ -223,7 +228,11 @@ MIBool mCVec3::IsZero( void ) const
 
 mCVec3 const & mCVec3::Normalize( void )
 {
-    *this /= CalcMagnitude();
+    MIFloat fMagnitude = CalcMagnitude();
+    if ( fMagnitude != 0.0f )
+        *this /= fMagnitude;
+    else
+        *this = mCVec3( 1.0f, 0.0f, 0.0f );
     return *this;
 }
 
