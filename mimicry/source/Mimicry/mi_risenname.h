@@ -6,7 +6,9 @@ class mCRisenName :
 {
 public:
     explicit mCRisenName( mCString const & a_strString );
+    explicit mCRisenName( MIU32 a_u32Hash );
              mCRisenName( mCName const & a_nameSource );
+             mCRisenName( void );
 public:
     static void InitializeRisen2Strings( void );
     static void InitializeRisen3Strings( void );
@@ -16,8 +18,6 @@ public:
     mCOStreamBinary & operator >> ( mCOStreamBinary & a_streamDest ) const;
 public:
     MIU32 GetRisenID( void ) const;
-protected:
-    mCRisenName( void );
 private:
     static mTNameMap< MIU32 >     s_mapRisenHashes;
     static mTMap< MIU32, mCName > s_mapRisenNames;

@@ -16948,8 +16948,17 @@ mCRisenName::mCRisenName( mCString const & a_strString ) :
 {
 }
 
+mCRisenName::mCRisenName( MIU32 a_u32Hash )
+{
+    s_mapRisenNames.GetAt( a_u32Hash, *this );
+}
+
 mCRisenName::mCRisenName( mCName const & a_nameSource ) :
     mCName( a_nameSource )
+{
+}
+
+mCRisenName::mCRisenName( void )
 {
 }
 
@@ -16994,10 +17003,7 @@ void mCRisenName::RegisterNameStrings( MILPCChar const * a_pStrings, MIUInt a_uC
 
 mCIStreamBinary & mCRisenName::operator << ( mCIStreamBinary & a_streamSource )
 {
-    MIU32 u32ID = a_streamSource.ReadU32();
-    mCRisenName nameSource;
-    s_mapRisenNames.GetAt( u32ID, nameSource );
-    *this = nameSource;
+    *this = mCRisenName( a_streamSource.ReadU32() );
     return a_streamSource;
 }
 
@@ -17010,10 +17016,6 @@ mCOStreamBinary & mCRisenName::operator >> ( mCOStreamBinary & a_streamDest ) co
 MIU32 mCRisenName::GetRisenID( void ) const
 {
     return s_mapRisenHashes[ *this ];
-}
-
-mCRisenName::mCRisenName( void )
-{
 }
 
 mCIStreamBinary & operator >> ( mCIStreamBinary & a_streamSource, mCRisenName & a_nameDest )
