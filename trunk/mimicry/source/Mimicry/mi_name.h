@@ -6,6 +6,7 @@ class mCName
 public:
     explicit mCName( mCString const & a_strString );
              mCName( mCName const & a_nameSource );
+             mCName( void );
 public:
    ~mCName( void );
 public:
@@ -13,13 +14,11 @@ public:
     MIBool   operator != ( mCName const & a_nameOther ) const;
     mCName & operator =  ( mCName const & a_nameSource );
 public:
-    MIU32            GetID( void ) const;
-    mCString const & GetString( void ) const;
-    MIBool           IsValid( void ) const;
+    MIU32    GetID( void ) const;
+    mCString GetString( void ) const;
+    MIBool   IsValid( void ) const;
 protected:
     struct StringRecord;
-protected:
-    mCName( void );
 protected:
     static mTNameMap< StringRecord > s_mapNames;
 private:

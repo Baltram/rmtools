@@ -22,6 +22,11 @@ mCName::mCName( mCName const & a_nameSource ) :
 {
 }
 
+mCName::mCName( void ) :
+m_u32ID( 0 )
+{
+}
+
 mCName::~mCName( void )
 {
 }
@@ -47,7 +52,7 @@ MIU32 mCName::GetID( void )const
     return m_u32ID;
 }
 
-mCString const & mCName::GetString( void ) const
+mCString mCName::GetString( void ) const
 {
     return s_mapNames[ *this ].m_strString;
 }
@@ -55,9 +60,4 @@ mCString const & mCName::GetString( void ) const
 MIBool mCName::IsValid( void ) const
 {
     return ( m_u32ID != 0 );
-}
-
-mCName::mCName( void ) :
-    m_u32ID( 0 )
-{
 }
