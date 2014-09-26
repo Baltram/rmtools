@@ -67,8 +67,10 @@ private:
     MIUInt m_uCapacity;
 };
 
-typedef mTArray< MIByte > mCByteArray;
-typedef mTArray< MIChar > mCCharArray;  // Guaranteed to be 0-terminated.
+class mCString;
+typedef mTArray< mCString > mCStringArray;
+typedef mTArray< MIByte >   mCByteArray;
+typedef mTArray< MIChar >   mCCharArray;  // Guaranteed to be 0-terminated.
 
 template< typename T >
 class mTArray< T >::CConstIterator

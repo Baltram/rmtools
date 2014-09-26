@@ -13,6 +13,7 @@ public:
 public:
     mCMemoryStream & operator = ( mCMemoryStream const & a_Source );
 public:
+    virtual MIBool                  IsAtEnd( void ) const;
     using mCMemoryStreamBaseBinary::Read;
     virtual mEResult                Read( mCString & a_strDest );
 private:

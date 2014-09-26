@@ -5,5 +5,7 @@
 #include "mi_include_streams.h"
 
 #include "mi_risenname.h"
+#include "mi_risendoc.h"
+#include "mi_risendocparser.h"
 
 #endif

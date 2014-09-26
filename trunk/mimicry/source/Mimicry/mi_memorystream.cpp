@@ -26,6 +26,11 @@ mCMemoryStream & mCMemoryStream::operator = ( mCMemoryStream const & a_Source )
     return *this;
 }
 
+MIBool mCMemoryStream::IsAtEnd( void ) const
+{
+    return GetSize() <= Tell();
+}
+
 mEResult mCMemoryStream::Read( mCString & a_strDest )
 {
     // Note: m_arrBuffer (a mCCharArray) is guaranteed to be 0-terminated.

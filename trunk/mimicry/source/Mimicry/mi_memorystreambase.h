@@ -16,6 +16,7 @@ public:
     mTMemoryStreamBase< M > & operator = ( mTMemoryStreamBase< M > const & a_Source );
 public:
     virtual MIUInt   GetSize( void ) const;
+    virtual MIBool   IsAtEnd( void ) const = 0;
     virtual mEResult Read( MILPVoid a_pDest, MIUInt a_uSize );
     virtual mEResult Read( mCString & a_strDest, MIUInt a_uSize );
     virtual mEResult Read( mCString & a_strDest ) = 0;

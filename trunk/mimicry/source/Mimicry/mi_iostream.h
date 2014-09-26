@@ -18,6 +18,7 @@ public:
     virtual ~mTIOStream( void );
 public:
     virtual MIUInt   GetSize( void ) const = 0;
+    virtual MIBool   IsAtEnd( void ) const = 0;
     virtual mEResult Seek( MIUInt a_uPosition, mEStreamSeekMode a_enuMode = mEStreamSeekMode_Begin ) = 0;
     virtual void     SetInvertEndianness( MIBool a_bMode );
     virtual mEResult Skip( MIInt a_iCount );

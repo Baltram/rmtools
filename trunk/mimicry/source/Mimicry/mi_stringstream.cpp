@@ -75,6 +75,14 @@ mCStringStream & mCStringStream::operator = ( mCStringStream const & a_Source )
     return *this;
 }
 
+MIBool mCStringStream::IsAtEnd( void ) const
+{
+    static MILPCChar const s_pcWhiteSpaceIndicator = GetWhiteSpaceIndicator();
+    MILPChar pcBegin = const_cast< MILPChar >( m_arrBuffer.GetBuffer() + m_uPosition ), pcEnd;
+    DetectString( pcBegin, pcEnd, s_pcWhiteSpaceIndicator );
+    return pcBegin == pcEnd;
+}
+
 mEResult mCStringStream::Read( mCString & a_strDest )
 {
     static MILPCChar const s_pcWhiteSpaceIndicator = GetWhiteSpaceIndicator();

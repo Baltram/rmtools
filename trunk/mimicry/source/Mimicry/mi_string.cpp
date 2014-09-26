@@ -260,6 +260,11 @@ MIUInt mCString::Count( MIChar a_cChar ) const
     return uResult;
 }
 
+MIBool mCString::EndsWith( mCString const & a_strText ) const
+{
+    return GetLength() >= a_strText.GetLength() && a_strText == Right( a_strText.GetLength() );
+}
+
 MIUInt mCString::FirstOf( MILPCChar a_pcText ) const
 {
     MILPCChar pcText = GetText(), pcTextIt = pcText;
@@ -291,6 +296,13 @@ MIUInt mCString::GetLength( void ) const
 MILPCChar mCString::GetText( void ) const
 {
     return ( *m_pcText == -1 ) ? m_pcText + 5 : m_pcText + 1;
+}
+
+mCString mCString::Lower( void ) const
+{
+    mCString strResult = *this;
+    strResult.ToLower();
+    return strResult;
 }
 
 MIUInt mCString::LastOf( MILPCChar a_pcText ) const
@@ -381,6 +393,24 @@ mCString & mCString::Replace( MIChar a_cChar, MIChar a_cNewChar )
     return Replace( a_cChar, a_cNewChar, uCount );
 }
 
+MIBool mCString::ReplaceLeft( mCString const & a_strText, mCString const & a_strNewText )
+{
+    if ( !StartsWith( a_strText ) )
+        return MIFalse;
+    mCString strNewText = a_strNewText + Right( GetLength() - a_strText.GetLength() );
+    Swap( strNewText );
+    return MITrue;
+}
+
+MIBool mCString::ReplaceRight( mCString const & a_strText, mCString const & a_strNewText )
+{
+    if ( !EndsWith( a_strText ) )
+        return MIFalse;
+    TrimRight( a_strText.GetLength() );
+    *this += a_strNewText;
+    return MITrue;
+}
+
 mCString mCString::Right( MIUInt a_uCount ) const
 {
     return mCString( GetText() + GetLength() - a_uCount, a_uCount );
@@ -415,6 +445,25 @@ void mCString::SetText( MIChar a_cChar, MIUInt a_uCount )
 {
     m_pcText = Alloc( 0, a_uCount, m_pcText );
     for ( MILPChar pcText = AccessText(); a_uCount--; pcText[ a_uCount ] = a_cChar );
+}
+
+void mCString::Split( MIUInt a_uOffset, mCString & a_strLeft, mCString & a_strRight, MIBool a_bDiscardCharAtOffset ) const
+{
+    if ( this == &a_strLeft || this == &a_strRight )
+    {
+        mCString( *this ).Split( a_uOffset, a_strLeft, a_strRight );
+        return;
+    }
+    a_strLeft.SetText( GetText(), a_uOffset );
+    if ( a_bDiscardCharAtOffset && a_uOffset < GetLength() )
+        a_strRight.SetText( GetText() + a_uOffset + 1, GetLength() - a_uOffset - 1 );
+    else
+        a_strRight.SetText( GetText() + a_uOffset, GetLength() - a_uOffset );
+}
+
+MIBool mCString::StartsWith( mCString const & a_strText ) const
+{
+    return GetLength() >= a_strText.GetLength() && a_strText == Left( a_strText.GetLength() );
 }
 
 void mCString::Swap( mCString & a_strOther )
@@ -490,6 +539,13 @@ mCString & mCString::TrimRight( MIUInt a_uCount )
     a_uCount = g_min( a_uCount, GetLength() );
     m_pcText = Alloc( 0, GetLength() - a_uCount, m_pcText );
     return *this;
+}
+
+mCString mCString::Upper( void ) const
+{
+    mCString strResult = *this;
+    strResult.ToUpper();
+    return strResult;
 }
 
 mCString & mCString::VFormat( MILPCChar a_pcFormat, va_list a_Arguments )
