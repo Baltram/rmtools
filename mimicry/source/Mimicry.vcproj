@@ -152,6 +152,22 @@
 			Name="streams"
 			>
 			<File
+				RelativePath=".\Mimicry\mi_doc.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Mimicry\mi_doc.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Mimicry\mi_docparser.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Mimicry\mi_docparser.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Mimicry\mi_filestream.cpp"
 				>
 			</File>
@@ -790,7 +806,19 @@
 			Name="risen"
 			>
 			<File
-				RelativePath=".\Mimicry\mi_error_risen.h"
+				RelativePath=".\Mimicry\mi_risendoc.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Mimicry\mi_risendoc.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Mimicry\mi_risendocparser.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Mimicry\mi_risendocparser.h"
 				>
 			</File>
 			<File

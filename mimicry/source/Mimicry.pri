@@ -14,9 +14,10 @@ HEADERS += "$$PWD/Mimicry.h" \
 		   "$$PWD/Mimicry/mi_cooking.h" \
            "$$PWD/Mimicry/mi_converters.h" \
            "$$PWD/Mimicry/mi_coordshifter.h" \
+           "$$PWD/Mimicry/mi_doc.h" \
+           "$$PWD/Mimicry/mi_docparser.h" \
            "$$PWD/Mimicry/mi_error.h" \
            "$$PWD/Mimicry/mi_error.inl" \
-           "$$PWD/Mimicry/mi_error_risen.h" \
            "$$PWD/Mimicry/mi_errormacros.h" \
            "$$PWD/Mimicry/mi_face.h" \
            "$$PWD/Mimicry/mi_filestream.h" \
@@ -63,6 +64,8 @@ HEADERS += "$$PWD/Mimicry.h" \
            "$$PWD/Mimicry/mi_ostream.inl" \
            "$$PWD/Mimicry/mi_quaternion.h" \
            "$$PWD/Mimicry/mi_refstream.h" \
+           "$$PWD/Mimicry/mi_risendoc.h" \
+           "$$PWD/Mimicry/mi_risendocparser.h" \
            "$$PWD/Mimicry/mi_risenname.h" \
            "$$PWD/Mimicry/mi_scene.h" \
            "$$PWD/Mimicry/mi_skin.h" \
@@ -105,6 +108,8 @@ SOURCES += "$$PWD/Mimicry/mi_3dbreader.cpp" \
 		   "$$PWD/Mimicry/mi_cooking.cpp" \
            "$$PWD/Mimicry/mi_converters.cpp" \
            "$$PWD/Mimicry/mi_coordshifter.cpp" \
+           "$$PWD/Mimicry/mi_doc.cpp" \
+           "$$PWD/Mimicry/mi_docparser.cpp" \
            "$$PWD/Mimicry/mi_error.cpp" \
            "$$PWD/Mimicry/mi_face.cpp" \
            "$$PWD/Mimicry/mi_filestream.cpp" \
@@ -129,6 +134,8 @@ SOURCES += "$$PWD/Mimicry/mi_3dbreader.cpp" \
            "$$PWD/Mimicry/mi_objwriter.cpp" \
            "$$PWD/Mimicry/mi_quaternion.cpp" \
            "$$PWD/Mimicry/mi_refstream.cpp" \
+           "$$PWD/Mimicry/mi_risendoc.cpp" \
+           "$$PWD/Mimicry/mi_risendocparser.cpp" \
            "$$PWD/Mimicry/mi_risenname.cpp" \
            "$$PWD/Mimicry/mi_scene.cpp" \
            "$$PWD/Mimicry/mi_skin.cpp" \

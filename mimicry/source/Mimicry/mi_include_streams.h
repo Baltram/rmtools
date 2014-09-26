@@ -15,5 +15,7 @@
 #include "mi_stringstream.h"
 #include "mi_filestream.h"
 #include "mi_maxfilestream.h"
+#include "mi_doc.h"
+#include "mi_docparser.h"
 
 #endif

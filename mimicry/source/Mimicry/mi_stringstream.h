@@ -14,6 +14,7 @@ public:
 public:
     mCStringStream & operator = ( mCStringStream const & a_Source );
 public:
+    virtual MIBool                     IsAtEnd( void ) const;
     using mCMemoryStreamBaseFormatted::Read;
     virtual mEResult                   Read( mCString & a_strDest );
 public:

@@ -60,11 +60,13 @@ public:
     MIBool     Contains( MILPCChar a_pcString ) const;
     MIUInt     Count( MILPCChar a_pcText ) const;
     MIUInt     Count( MIChar a_cChar ) const;
+    MIBool     EndsWith( mCString const & a_strText ) const;
     MIUInt     FirstOf( MILPCChar a_pcText ) const;
     MIUInt     FirstOf( MIChar a_cChar ) const;
     mCString & Format( MILPCChar a_pcFormat, ... );  // Unsafe if resulting text is bigger than EMinStaticBufferSize.
     MIUInt     GetLength( void ) const;
     MILPCChar  GetText( void ) const;
+    mCString   Lower( void ) const;
     MIUInt     LastOf( MILPCChar a_pcText ) const;
     MIUInt     LastOf( MIChar a_cChar ) const;
     mCString   Left( MIUInt a_uCount ) const;
@@ -72,12 +74,16 @@ public:
     mCString & Replace( MILPCChar a_pcText, MILPCChar a_pcNewText );
     mCString & Replace( MIChar a_cChar, MIChar a_cNewChar, MIUInt & a_uNumReplaced );
     mCString & Replace( MIChar a_cChar, MIChar a_cNewChar );
+    MIBool     ReplaceLeft( mCString const & a_strText, mCString const & a_strNewText = "" );
+    MIBool     ReplaceRight( mCString const & a_strText, mCString const & a_strNewText = "" );
     mCString   Right( MIUInt a_uCount ) const;
     MIInt      Scan( MILPCChar a_pcFormat, ... ) const;
     void       SetText( mCString const & a_strText );
     void       SetText( MILPCChar a_pcText );
     void       SetText( MILPCChar a_pcText, MIUInt a_uCount );
     void       SetText( MIChar a_cChar, MIUInt a_uCount );
+    void       Split( MIUInt a_uOffset, mCString & a_strLeft, mCString & a_strRight, MIBool a_bDiscardCharAtOffset = MIFalse ) const;
+    MIBool     StartsWith( mCString const & a_strText ) const;
     void       Swap( mCString & a_strOther );
     mCString & ToLower( void );
     mCString & ToUpper( void );
@@ -87,6 +93,7 @@ public:
     mCString & TrimRight( MILPCChar a_pcChars );
     mCString & TrimRight( MIChar a_cChar );
     mCString & TrimRight( MIUInt a_uCount );
+    mCString   Upper( void ) const;
     mCString & VFormat( MILPCChar a_pcFormat, va_list a_Arguments );
     MIInt      VScan( MILPCChar a_pcFormat, va_list a_Arguments ) const;
 private:

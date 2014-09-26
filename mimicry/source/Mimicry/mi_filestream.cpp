@@ -30,6 +30,11 @@ MIUInt mCFileStream::GetSize( void ) const
     return g_max( m_uRecentFileSize, ( m_uBufferedPosition + m_uOffset ) );
 }
 
+MIBool mCFileStream::IsAtEnd( void ) const
+{
+    return GetSize() <= Tell();
+}
+
 mEResult mCFileStream::Read( MILPVoid a_pDest, MIUInt a_uSize )
 {
     if ( m_uOffset + a_uSize <= m_arrBuffer.GetCount() )

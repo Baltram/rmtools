@@ -20,6 +20,7 @@ public:
     mCFileStream( mCString const & a_strFileName, mEFileOpenMode a_enuOpenMode );
 public:
     virtual MIUInt   GetSize( void ) const;
+    virtual MIBool   IsAtEnd( void ) const;
     virtual mEResult Read( MILPVoid a_pDest, MIUInt a_uSize );
     virtual mEResult Read( mCString & a_strDest, MIUInt a_uSize );
     virtual mEResult Read( mCString & a_strDest );
