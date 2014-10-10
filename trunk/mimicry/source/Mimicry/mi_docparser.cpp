@@ -19,7 +19,7 @@ MIBool mCDocParser::EnterBlock( mCString * a_pName, MIBool a_bSetLastErrorLine, 
         a_pName = &strTemp;
     if ( *a_pName != "" )
         return MatchImmediate( *a_pName + " {", a_bSetLastErrorLine, a_bCaseSensitive );
-    if ( MatchImmediate( "{", a_bSetLastErrorLine, MITrue ) )
+    if ( MatchImmediate( "{", MIFalse, MITrue ) )
         return MITrue;
     mCStringArray arrTokens;
     if ( !Match( "{", arrTokens, a_bSetLastErrorLine, MITrue ) )
@@ -56,7 +56,7 @@ MIBool mCDocParser::Match( mCString a_strText, mCStringArray & a_arrTokens, MIBo
     MIUInt const uOffset = m_streamIn.Tell();
     while ( !m_streamIn.IsAtEnd() )
     {
-        if ( MatchImmediate( a_strText, a_bSetLastErrorLine, a_bCaseSensitive, a_bFulltext ) )
+        if ( MatchImmediate( a_strText, MIFalse, a_bCaseSensitive, a_bFulltext ) )
             return MITrue;
         m_streamIn >> a_arrTokens.AddNew();
     }

@@ -85,63 +85,6 @@ MIBool CreateFiles( mCString const & a_strDirectory, mCGenomeVolume::CDir const 
     return MITrue;
 }
 
-MIBool ImgToDds( mCIOStreamBinary & a_streamIn, mCString const & a_strFilePath )
-{
-    a_streamIn.Skip( -44 );
-    MIU32 u32Data1Offset, u32Data1Size;
-    a_streamIn >> u32Data1Offset >> u32Data1Size;
-    a_streamIn.Seek( u32Data1Offset );
-    mCString const strDDSPath = g_GetDirectoryPath( a_strFilePath ) + "\\" + g_GetFileNameNoExt( a_strFilePath ) + ".dds";
-    mCFileStream streamDDS( strDDSPath, mEFileOpenMode_Write );
-    if ( !streamDDS.IsOpen() )
-    {
-        printf( "Could not create %s\nThe problem might be missing access rights. Try starting the program with admin rights.\n", strDDSPath.GetText() );
-        WaitForEnterKey( MITrue );
-        return MIFalse;
-    }
-    mCByteArray arrBuffer;
-    arrBuffer.Resize( u32Data1Size );
-    a_streamIn.Read( arrBuffer.AccessBuffer(), u32Data1Size );
-    streamDDS.Write( arrBuffer.GetBuffer(), u32Data1Size );
-    return MITrue;
-}
-
-MIBool SndDlgToMp3( mCIOStreamBinary & a_streamIn, mCString const & a_strFilePath )
-{
-    a_streamIn.Skip( -44 );
-    MIU32 u32Data1Offset, u32Data1Size;
-    a_streamIn >> u32Data1Offset >> u32Data1Size;
-    a_streamIn.Seek( u32Data1Offset );
-    mCString const strWAVPath = g_GetDirectoryPath( a_strFilePath ) + "\\" + g_GetFileNameNoExt( a_strFilePath ) + ".wav";
-    mCFileStream streamWAV( strWAVPath, mEFileOpenMode_Write );
-    if ( !streamWAV.IsOpen() )
-    {
-        printf( "Could not create %s\nThe problem might be missing access rights. Try starting the program with admin rights.\n", strWAVPath.GetText() );
-        WaitForEnterKey( MITrue );
-        return MIFalse;
-    }
-    mCByteArray arrBuffer;
-    arrBuffer.Resize( u32Data1Size );
-    a_streamIn.Read( arrBuffer.AccessBuffer(), u32Data1Size );
-    streamWAV.Write( arrBuffer.GetBuffer(), u32Data1Size );
-    return MITrue;
-}
-
-MIBool ReadResourceFile( mCIOStreamBinary & streamIn, mCString const & a_strFilePath, MIBool & a_bIsResourceFile )
-{
-    if ( !( a_bIsResourceFile = ( streamIn.ReadString( 4 ) == "R3RF" ) ) )
-        return streamIn.Seek( 0 ), MIFalse;
-    streamIn.Seek( streamIn.ReadU32() + 4 );
-    mCString const strResourceRevision = streamIn.ReadString( 4 );
-    if ( strResourceRevision == "IM06" )
-        return ImgToDds( streamIn, a_strFilePath );
-    if ( strResourceRevision == "SN09" || strResourceRevision == "DI14" )
-        return SndDlgToMp3( streamIn, a_strFilePath );
-    printf( "Error: Unsupported resource type.\n" );
-    WaitForEnterKey( MITrue );
-    return MIFalse;
-}
-
 MIBool GetFileTime( mCString const & a_strFilePath, mCGenomeVolume::SFileTime & a_TimeDest )
 {
     a_TimeDest.m_u64Created = a_TimeDest.m_u64Accessed = a_TimeDest.m_u64Modified = g_time();
@@ -208,7 +151,7 @@ MIBool CreateRisen3Volume( mCString a_strDirectoryPath )
     if ( !mCGenomeVolume::CreateRisen3Archive( a_strDirectoryPath, arrFilePaths, arrFileTimes, streamPAK, &RequestGeneration, &strVolumeName, &ShowProgress ) )
     {
         if ( mCError::GetLastError< mCError >() )
-            printf( "%s\n", mCError::GetLastError< mCError >()->GetText() );
+            printf( "Error: %s\n", mCError::GetLastError< mCError >()->GetText() );
         streamPAK.Close();
         DeleteFileA( strPakPath.GetText() );
         return MIFalse;
@@ -222,148 +165,82 @@ MIBool CreateRisen3Volume( mCString a_strDirectoryPath )
     return MIFalse;
 }
 
-namespace
+MIBool ImgToDds( mCIOStreamBinary & a_streamIn, mCString const & a_strFilePath )
 {
-    mCIOStreamBinary * s_pStreamSource = 0;
-    mCIOStreamBinary * s_pStreamDest = 0;
-    mCString           s_strIndent;
-
-    mCString ReadHash( mCString const & a_strType = "hash" )
+    a_streamIn.Skip( -44 );
+    MIU32 u32Data1Offset, u32Data1Size;
+    a_streamIn >> u32Data1Offset >> u32Data1Size;
+    a_streamIn.Seek( u32Data1Offset );
+    mCString const strDDSPath = g_GetDirectoryPath( a_strFilePath ) + "\\" + g_GetFileNameNoExt( a_strFilePath ) + ".dds";
+    mCFileStream streamDDS( strDDSPath, mEFileOpenMode_Write );
+    if ( !streamDDS.IsOpen() )
     {
-        mCRisenName nameHash;
-        *s_pStreamSource >> nameHash;
-        if ( nameHash.IsValid() )
-            return nameHash.GetString();
-        s_pStreamSource->Skip( -4 );
-        return mCString().Format( "<unknown %s 0x%.8x>", a_strType.GetText(), s_pStreamSource->ReadU32() );
+        printf( "Error: Could not create %s\nThe problem might be missing access rights. Try starting the program with admin rights.\n", strDDSPath.GetText() );
+        WaitForEnterKey( MITrue );
+        return MIFalse;
     }
-
-    void WriteLine( mCString const & a_strText )
-    {
-        *s_pStreamDest << ( s_strIndent + a_strText + "\r\n" );
-    }
-
-    void StartBlock( mCString const & a_strText )
-    {
-        WriteLine( a_strText + " {" );
-        s_strIndent += "    ";
-    }
-
-    void EndBlock( void )
-    {
-        s_strIndent.TrimRight( 4U );
-        WriteLine( "}" );
-    }
-
-    enum ETypes { EBool, EFloat, EChar, ESignedChar, EUnsignedChar, EShort, EUnsignedShort, EInt, ELong, EUnsignedInt, EUnsignedLong, EInt64, EUnsignedInt64, ETypes_Count };
-    MILPCChar const s_arrTypes[ ETypes_Count ] = { "bool", "float", "char", "signed char", "unsigned char", "short", "unsigned short", "int", "long", "unsigned int", "unsigned long", "__int64", "unsigned __int64" };
-    mTStringMap< ETypes > s_mapTypes;
-    MILPCChar const s_strHex = "0123456789ABCDEF";
-
-    mCString FormatData( mCString const & a_strType, MIUInt uSize, mCIOStreamBinary * a_pStreamSource = 0 )
-    {
-        if ( !a_pStreamSource )
-            a_pStreamSource = s_pStreamSource;
-        if ( s_mapTypes.GetCount() == 0 )
-            for ( MIUInt u = ETypes_Count; u--; reinterpret_cast< MIUInt & >( s_mapTypes[ s_arrTypes[ u ] ] ) = u );
-        ETypes enuType;
-        if ( !s_mapTypes.GetAt( a_strType, enuType ) )
-        {
-            mCBuffer bufferData( uSize );
-            MILPByte pData = bufferData.AccessMemory();
-            a_pStreamSource->Read( pData, uSize );
-            mCString strBytes( ' ', uSize * 3 + 1 );
-            for ( MIUInt u = 0, v = 1; u != uSize; ++u, ++v )
-            {
-                strBytes[ v++ ] = s_strHex[ pData[ u ] / 0x10 ];
-                strBytes[ v++ ] = s_strHex[ pData[ u ] & 0x0F ];
-            }
-            return strBytes[ 0 ] = '<', strBytes[ uSize * 3 ] = '>', strBytes;
-        }
-        mCString strResult;
-        switch ( enuType )
-        {
-        case EBool:
-            strResult = a_pStreamSource->ReadBool() ? "True" : "False";
-            break;
-        case EFloat:
-            strResult.Format( "%f", a_pStreamSource->ReadFloat() );
-            break;
-        case EChar:
-            strResult.Format( "'%c'", a_pStreamSource->ReadChar() );
-            break;
-        case ESignedChar:
-            strResult.Format( "%hhi", a_pStreamSource->ReadI8() );
-            break;
-        case EUnsignedChar:
-            strResult.Format( "%hhu", a_pStreamSource->ReadU8() );
-            break;
-        case EShort:
-            strResult.Format( "%hi", a_pStreamSource->ReadI16() );
-            break;
-        case EUnsignedShort:
-            strResult.Format( "%hu", a_pStreamSource->ReadU16() );
-            break;
-        case EInt:
-        case ELong:
-            strResult.Format( "%li", a_pStreamSource->ReadI32() );
-            break;
-        case EUnsignedInt:
-        case EUnsignedLong:
-            strResult.Format( "%lu", a_pStreamSource->ReadU32() );
-            break;
-        case EInt64:
-            strResult.Format( "%lli", a_pStreamSource->ReadI64() );
-            break;
-        case EUnsignedInt64:
-            strResult.Format( "%llu", a_pStreamSource->ReadU64() );
-            break;
-        }
-        return strResult;
-    }
+    mCByteArray arrBuffer;
+    arrBuffer.Resize( u32Data1Size );
+    a_streamIn.Read( arrBuffer.AccessBuffer(), u32Data1Size );
+    streamDDS.Write( arrBuffer.GetBuffer(), u32Data1Size );
+    return MITrue;
 }
 
-MIUInt DocumentRisen3Class( mCIOStreamBinary & a_streamSource, mCIOStreamBinary & a_streamDest, mCString const & a_strIndent )
+MIBool SndDlgToWav( mCIOStreamBinary & a_streamIn, mCString const & a_strFilePath )
 {
-    mCRisenName::InitializeRisen3Strings();
-    s_pStreamSource = &a_streamSource;
-    s_pStreamDest = &a_streamDest;
-    s_strIndent = a_strIndent;
-    MIUInt const uOffset = a_streamSource.Tell();
-    if ( a_streamSource.ReadString( 4 ) != "GEC2" )
+    a_streamIn.Skip( -44 );
+    MIU32 u32Data1Offset, u32Data1Size, u32Data2Offset, u32Data2Size;
+    a_streamIn >> u32Data1Offset >> u32Data1Size;
+    a_streamIn.Skip( 1 );
+    a_streamIn >> u32Data2Offset >> u32Data2Size;
+    a_streamIn.Seek( u32Data1Offset );
+    mCString const strWAVPath = g_GetDirectoryPath( a_strFilePath ) + "\\" + g_GetFileNameNoExt( a_strFilePath ) + ".wav";
+    mCFileStream streamWAV( strWAVPath, mEFileOpenMode_Write );
+    if ( !streamWAV.IsOpen() )
     {
-        a_streamSource.Seek( uOffset );
-        return 0;
+        printf( "Error: Could not create %s\nThe problem might be missing access rights. Try starting the program with admin rights.\n", strWAVPath.GetText() );
+        WaitForEnterKey( MITrue );
+        return MIFalse;
     }
-    StartBlock( ReadHash( "class" ) );
+    mCByteArray arrBuffer;
+    arrBuffer.Resize( u32Data1Size );
+    a_streamIn.Read( arrBuffer.AccessBuffer(), u32Data1Size );
+    streamWAV.Write( arrBuffer.GetBuffer(), u32Data1Size );
+    if ( !u32Data2Size )
+        return MITrue;
+    // dlg
+    a_streamIn.Seek( u32Data2Offset );
+    mCMemoryStream streamDoc;
+    mCRisenDoc Doc( a_streamIn, streamDoc );
+    if ( !Doc.DocumentRisen3DlgData2() )
     {
-        WriteLine( mCString().Format( "Version = %u;", a_streamSource.ReadU16() ) );
-        a_streamSource.ReadU32();
-        StartBlock( "Properties" );
-        {
-            for ( MIUInt u = a_streamSource.ReadU16(); u--; )
-            {
-                mCString strType, strName, strData;
-                strType = ReadHash( "type" );
-                strName = ReadHash( "name" );
-                strData = FormatData( strType, a_streamSource.ReadU32() );
-                WriteLine( strType + " " + strName + " = " + strData + ";" );
-            }
-        }
-        EndBlock();
-        StartBlock( "ClassData" );
-        {
-            for ( MIUInt u = a_streamSource.ReadU32(); u--; )
-            {
-                mCString strClass = ReadHash( "class" ), strLine;
-                strLine.Format( "[%s, Version %hu] = ", strClass.GetText(), a_streamSource.ReadU16() );
-                WriteLine( strLine + FormatData( "", a_streamSource.ReadU32() ) + ";" );
-            }
-        }
-        EndBlock();
+        printf( "Error: Unknown dialog file version.\n" );
+        WaitForEnterKey( MITrue );
+        return MIFalse;
     }
-    EndBlock();
-    return a_streamSource.Tell() - uOffset;
+    mCString const strDocPath = g_GetDirectoryPath( a_strFilePath ) + "\\" + g_GetFileNameNoExt( a_strFilePath ) + ".r3dlgdoc";
+    if ( !streamDoc.ToFile( strDocPath ) )
+    {
+        printf( "Error: Could not create %s\nThe problem might be missing access rights. Try starting the program with admin rights.\n", strDocPath.GetText() );
+        WaitForEnterKey( MITrue );
+        return MIFalse;
+    }
+    return MITrue;
+}
+
+MIBool ReadResourceFile( mCIOStreamBinary & streamIn, mCString const & a_strFilePath, MIBool & a_bIsResourceFile )
+{
+    if ( !( a_bIsResourceFile = ( streamIn.ReadString( 4 ) == "R3RF" ) ) )
+        return streamIn.Seek( 0 ), MIFalse;
+    streamIn.Seek( streamIn.ReadU32() + 4 );
+    mCString const strResourceRevision = streamIn.ReadString( 4 );
+    if ( strResourceRevision == "IM06" )
+        return ImgToDds( streamIn, a_strFilePath );
+    if ( strResourceRevision == "SN09" || strResourceRevision == "DI14" )
+        return SndDlgToWav( streamIn, a_strFilePath );
+    printf( "Error: Unsupported resource type.\n" );
+    WaitForEnterKey( MITrue );
+    return MIFalse;
 }
 
 int ResolveRisen3Hashes( void )
@@ -386,6 +263,154 @@ int ResolveRisen3Hashes( void )
     return 0;
 }
 
+MIBool WavToSnd( mCIOStreamBinary & a_streamIn, mCString const & a_strFilePath, MIBool & a_bIsWav )
+{
+    if ( a_streamIn.ReadString( 4 ) != "RIFF" )
+        return a_streamIn.Seek( 0 ), a_bIsWav = MIFalse;
+    a_bIsWav = MITrue;
+    mCString strResourceName = g_GetFileNameNoExt( a_strFilePath );
+    MIBool bIs2D = ! mCString( strResourceName ).ToLower().Contains( ".3d" ) &&
+                   ( mCString( strResourceName ).ToLower().Contains( ".2d" ) ||
+                     mCString( strResourceName ).ToLower().Contains( "_2d" ) || 
+                     0 == strResourceName.FirstOf( "sfx_ui_" ) ||
+                     0 == strResourceName.FirstOf( "mus_" ) ||
+                     0 == strResourceName.FirstOf( "cs_" ) ||
+                     0 == strResourceName.FirstOf( "csi_" ) );
+    strResourceName.Replace( ".2d", "" ), strResourceName.Replace( ".2D", "" ), strResourceName.Replace( ".3d", "" ), strResourceName.Replace( ".3D", "" );
+    mCString const strR3SNDPath = g_GetDirectoryPath( a_strFilePath ) + "\\" + strResourceName + ".r3snd";
+    mCFileStream streamDest( strR3SNDPath, mEFileOpenMode_Write );
+    if ( !streamDest.IsOpen() )
+    {
+        printf( "Error: Could not create %s\nThe problem might be missing access rights. Try starting the program with admin rights.\n", strR3SNDPath.GetText() );
+        WaitForEnterKey( MITrue );
+        return MIFalse;
+    }
+    MIUInt uBytesPerSecond, uDataChunkSize;
+    MIUInt uNextChunk = 12;
+    for ( ; ; )
+    {
+        a_streamIn.Seek( uNextChunk );
+        mCString strChunkId = a_streamIn.ReadString( 4 );
+        MIUInt uChunkSize = a_streamIn.ReadU32();
+        uNextChunk += uChunkSize + 8;
+        if ( strChunkId == "fmt " )
+        {
+            a_streamIn.Skip( 8 );
+            a_streamIn >> g_32( uBytesPerSecond );
+        }
+        else if ( strChunkId == "data" )
+        {
+            uDataChunkSize = uChunkSize;
+            break;
+        }
+    }
+    MIUInt uDuration = static_cast< MIUInt >( ( static_cast< MIU64 >( uDataChunkSize ) * 1000 ) / uBytesPerSecond );
+    streamDest << "R3RF" << ( MIU32 )( a_streamIn.GetSize() + 8 + 36 + 36 ) << ( MIU64 ) 0 << ( MIU64 ) 0 << ( MIU64 ) 0 << ( MIU64 ) 0 << ( MIU32 ) 0;
+    streamDest << a_streamIn;
+    mCMemoryStream streamOffsetTable;
+    MIUInt uOffset = streamDest.Tell(), uOffset2, uOffset3, uOffset4;
+    streamOffsetTable << ( MIU32 )( 8 + 36 ) << g_32( a_streamIn.GetSize() ) << ( MIU8 ) 0;
+    for ( MIUInt u = 3; u--; )
+        streamOffsetTable << g_32( uOffset ) << ( MIU32 ) 0 << ( MIU8 ) 0;
+    streamDest << streamOffsetTable;
+    mCRisenName::InitializeRisen3Strings();
+    streamDest << mCRisenName( "class eCSoundResource2" ) << "SN09";
+    uOffset = streamDest.Tell();
+    streamDest << ( MIU32 ) 0;
+    mCGenomeVolume::SFileTime Time;
+    GetFileTime( a_strFilePath, Time );
+    streamDest << SwapHighLow( Time.m_u64Modified ) << SwapHighLow( Time.m_u64Created ) << SwapHighLow( Time.m_u64Created ) << SwapHighLow( g_time() );
+    streamDest << g_32( strResourceName.GetLength() ) << strResourceName;
+    streamDest << streamOffsetTable;
+    streamDest << ( MIU32 ) 0 << ( MIU32 ) 0;
+    uOffset2 = streamDest.Tell();
+    streamDest << ( MIU32 ) 0 << "GEC2" << mCRisenName( "class eCSoundResource2" ) << ( MIU16 ) 1;
+    uOffset3 = streamDest.Tell();
+    streamDest << ( MIU32 ) 0 << ( MIU16 ) 2;
+    streamDest << mCRisenName( "unsigned int" ) << mCRisenName( "Duration" ) << ( MIU32 ) 4 << g_32( uDuration );
+    streamDest << mCRisenName( "unsigned char" ) << mCRisenName( "Flags" ) << ( MIU32 ) 1 << ( MIU8 )( bIs2D ? 3 : 0 );
+    streamDest << ( MIU32 ) 0;
+    uOffset4 = streamDest.Tell();
+    streamDest.Seek( uOffset );
+    streamDest << g_32( uOffset4 - uOffset - 4 );
+    streamDest.Seek( uOffset2 );
+    streamDest << g_32( uOffset4 - uOffset2 - 4 );
+    streamDest.Seek( uOffset3 );
+    streamDest << g_32( uOffset4 - uOffset3 - 4 );
+    return MITrue;
+}
+
+MIBool DlgDocToDlg( mCIOStreamBinary & a_streamIn, mCString const & a_strFilePath )
+{
+    mCString strResourceName = g_GetFileNameNoExt( a_strFilePath );
+    mCString const strR3DlgPath = g_GetDirectoryPath( a_strFilePath ) + "\\" + strResourceName + ".r3dlg";
+    mCString const strWavPath = g_GetDirectoryPath( a_strFilePath ) + "\\" + strResourceName + ".wav";
+    mCFileStream streamWav( strWavPath, mEFileOpenMode_Read );
+    if ( !streamWav.IsOpen() )
+    {
+        printf( "Error: Could not open %s\n", strWavPath.GetText() );
+        WaitForEnterKey( MITrue );
+        return MIFalse;
+    }
+    if ( streamWav.ReadString( 4 ) != "RIFF" )
+    {
+        printf( "Error: Invalid .wav file.\n" );
+        WaitForEnterKey( MITrue );
+        return MIFalse;
+    }
+    mCMemoryStream streamDlgData2;
+    mCStringStream streamDoc;
+    a_streamIn >> streamDoc;
+    streamDoc.Seek( 0 );
+    mCRisenDocParser Parser( streamDoc, streamDlgData2 );
+    if ( !Parser.ParseRisen3DlgData2( MITrue ) )
+    {
+        printf( "Error: Parse error at line %u.\n", Parser.GetLastErrorLine() );
+        WaitForEnterKey( MITrue );
+        return MIFalse;
+    }
+    mCFileStream streamDest( strR3DlgPath, mEFileOpenMode_Write );
+    if ( !streamDest.IsOpen() )
+    {
+        printf( "Error: Could not create %s\nThe problem might be missing access rights. Try starting the program with admin rights.\n", strR3DlgPath.GetText() );
+        WaitForEnterKey( MITrue );
+        return MIFalse;
+    }
+    streamDest << "R3RF" << ( MIU32 )( streamWav.GetSize() + streamDlgData2.GetSize() + 8 + 36 + 36 ) << ( MIU64 ) 0 << ( MIU64 ) 0 << ( MIU64 ) 0 << ( MIU64 ) 0 << ( MIU32 ) 0;
+    streamDest << streamWav;
+    streamDest << streamDlgData2;
+    mCMemoryStream streamOffsetTable;
+    MIUInt uOffset = streamDest.Tell(), uOffset2, uOffset3, uOffset4;
+    streamOffsetTable << ( MIU32 )( 8 + 36 ) << g_32( streamWav.GetSize() ) << ( MIU8 ) 0;
+    streamOffsetTable << g_32( 8 + 36 + streamWav.GetSize() ) << g_32( streamDlgData2.GetSize() ) << ( MIU8 ) 0;
+    for ( MIUInt u = 2; u--; )
+        streamOffsetTable << g_32( uOffset ) << ( MIU32 ) 0 << ( MIU8 ) 0;
+    streamDest << streamOffsetTable;
+    mCRisenName::InitializeRisen3Strings();
+    streamDest << mCRisenName( "class eCDialogueResource2" ) << "DI14";
+    uOffset = streamDest.Tell();
+    streamDest << ( MIU32 ) 0;
+    mCGenomeVolume::SFileTime Time;
+    GetFileTime( a_strFilePath, Time );
+    streamDest << SwapHighLow( Time.m_u64Modified ) << SwapHighLow( Time.m_u64Created ) << SwapHighLow( Time.m_u64Created ) << SwapHighLow( g_time() );
+    streamDest << g_32( strResourceName.GetLength() ) << strResourceName;
+    streamDest << streamOffsetTable;
+    streamDest << ( MIU32 ) 0 << ( MIU32 ) 0;
+    uOffset2 = streamDest.Tell();
+    streamDest << ( MIU32 ) 0 << "GEC2" << mCRisenName( "class eCDialogueResource2" ) << ( MIU16 ) 1;
+    uOffset3 = streamDest.Tell();
+    streamDest << ( MIU32 ) 0 << ( MIU16 ) 0;
+    streamDest << ( MIU32 ) 0;
+    uOffset4 = streamDest.Tell();
+    streamDest.Seek( uOffset );
+    streamDest << g_32( uOffset4 - uOffset - 4 );
+    streamDest.Seek( uOffset2 );
+    streamDest << g_32( uOffset4 - uOffset2 - 4 );
+    streamDest.Seek( uOffset3 );
+    streamDest << g_32( uOffset4 - uOffset3 - 4 );
+    return MITrue;
+}
+
 MIBool DdsToImg( mCIOStreamBinary & a_streamIn, mCString const & a_strFilePath, MIBool & a_bIsDds )
 {
     if ( a_streamIn.ReadString( 4 ) != "DDS " || ( a_streamIn.Seek( 76 ), a_streamIn.ReadU32() ) != 32 )
@@ -396,7 +421,7 @@ MIBool DdsToImg( mCIOStreamBinary & a_streamIn, mCString const & a_strFilePath, 
     mCFileStream streamDest( strR3IMGPath, mEFileOpenMode_Write );
     if ( !streamDest.IsOpen() )
     {
-        printf( "Could not create %s\nThe problem might be missing access rights. Try starting the program with admin rights.\n", strR3IMGPath.GetText() );
+        printf( "Error: Could not create %s\nThe problem might be missing access rights. Try starting the program with admin rights.\n", strR3IMGPath.GetText() );
         WaitForEnterKey( MITrue );
         return MIFalse;
     }
@@ -534,14 +559,16 @@ int main( int argc, char* argv[] )
 {
     if ( argc < 2 )
     {
-        printf( "Risen 3 Resource Manager v0.2 by Baltram\n"
+        printf( "Risen 3 Resource Manager v0.3 by Baltram\n"
                 "Start by dragging a file or folder onto the r3resman.exe file.\n\n"
                 "Supported file/folder types and actions:\n"
-                "  <folder>                      : Create .pak volume\n"
-                "  Risen 3 PAK volume (.pak)     : Unpack\n"
-                "  Risen 3 image (.r3img)        : Convert to .dds\n"
-                "  Risen 3 sound (.r3snd .r3dlg) : Convert to .mp3\n"
-                "  DDS image (.dds)              : Convert to .r3img\n\n" );
+                "  <folder>                            : Create .pak volume\n"
+                "  Risen 3 PAK volume (.pak)           : Unpack\n"
+                "  Risen 3 image (.r3img)              : Convert to .dds\n"
+                "  Risen 3 sound (.r3snd .r3dlg)       : Convert to .wav\n"
+                "  DDS image (.dds)                    : Convert to .r3img\n"
+                "  WAV sound (.wav)                    : Convert to .r3snd\n"
+                "  Risen 3 dialog document (.r3dlgdoc) : Convert to .r3dlg\n\n" );
         WaitForEnterKey( MITrue );
         return 1;
     }
@@ -584,7 +611,9 @@ int main( int argc, char* argv[] )
         return 1;
     }
     mCFileStream streamIn( strPath, mEFileOpenMode_Read );
-    MIBool bIsResourceFile = MIFalse, bIsDdsFile = MIFalse;
+    if ( g_GetFileExt( strPath ).ToLower() == "r3dlgdoc" )
+        return DlgDocToDlg( streamIn, strPath ) ? 0 : 1;
+    MIBool bIsResourceFile = MIFalse, bIsDdsFile = MIFalse, bIsWavFile = MIFalse;
     MIBool bSuccess = ReadResourceFile( streamIn, strPath, bIsResourceFile );
     if ( bIsResourceFile )
         return bSuccess ? 0 : 1;
@@ -594,6 +623,15 @@ int main( int argc, char* argv[] )
     else if ( g_GetFileExt( strPath ).ToLower() == "dds" )
     {
         printf( "Error: Invalid .dds file: %s\n", strPath.GetText() );
+        WaitForEnterKey( MITrue );
+        return 1;
+    }
+    bSuccess = WavToSnd( streamIn, strPath, bIsWavFile );
+    if ( bIsWavFile )
+        return bSuccess ? 0 : 1;
+    else if ( g_GetFileExt( strPath ).ToLower() == "wav" )
+    {
+        printf( "Error: Invalid .wav file: %s\n", strPath.GetText() );
         WaitForEnterKey( MITrue );
         return 1;
     }
