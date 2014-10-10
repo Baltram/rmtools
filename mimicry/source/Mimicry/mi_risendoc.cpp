@@ -116,6 +116,7 @@ MIBool mCRisenDoc::DocumentRisen3DlgData2( void )
     StartBlock( "Gestures" );
     {
         DocumentRisen3Class();
+		WriteLine();
     }
     EndBlock();
     StartBlock( "FacialAnimation" );
@@ -136,7 +137,6 @@ MIBool mCRisenDoc::DocumentRisen3DlgData2( void )
         EndArray( MIFalse ); WriteLine( ";" );
         m_streamIn.Seek( uFramesOffset );
         StartArray( "BlendShapeTimeLines" );
-        WriteComment( "1 byte per frame, approx. 30 frames per second." );
         for ( MIUInt u = 0; u != uBlendShapeCount; ++u )
         {
             FormatData( "", uFrameCount );

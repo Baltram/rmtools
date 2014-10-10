@@ -124,6 +124,33 @@ MIBool mCRisenDocParser::ParseProperty( MIBool a_bSetLastErrorLine )
     return MITrue;
 }
 
+MIBool mCRisenDocParser::ParseRisen3DlgData2( MIBool a_bSetLastErrorLine )
+{
+    MIUInt const uOffset = m_streamIn.Tell(), uOffsetOut = m_streamOut.Tell();
+    mCMemoryStream streamBlendsShapeNames, streamFrameData;
+    mCRisenDocParser ParserNames( m_streamIn, streamBlendsShapeNames ), ParserData( m_streamIn, streamFrameData );
+    m_streamOut << "GAR5" << ( MIU32 ) 32;
+    if ( !EnterBlock( "Gestures", a_bSetLastErrorLine ) ||
+         !ParseRisen3Class( a_bSetLastErrorLine ) ||
+         !LeaveBlock( a_bSetLastErrorLine ) ||
+         !EnterBlock( "FacialAnimation", a_bSetLastErrorLine ) ||
+         !MatchImmediate( "BlendShapeNames =", a_bSetLastErrorLine ) ||
+         ( !ParserNames.ParseData( "class bTObjArray<class bCString>", MIFalse, a_bSetLastErrorLine ) ) && ( m_uLastErrorLine = ParserNames.m_uLastErrorLine ) != MI_DW_INVALID ||
+         !MatchImmediate( ";", a_bSetLastErrorLine ) ||
+         !MatchImmediate( "BlendShapeTimeLines =", a_bSetLastErrorLine ) ||
+         ( !ParserData.ParseData( "class bTObjArray<blob>", MIFalse, a_bSetLastErrorLine ) ) && ( m_uLastErrorLine = ParserData.m_uLastErrorLine ) != MI_DW_INVALID ||
+         !MatchImmediate( ";", a_bSetLastErrorLine ) ||
+         !LeaveBlock( a_bSetLastErrorLine ) )
+        return mCDocParser::SetLastErrorLine( a_bSetLastErrorLine ), m_streamIn.Seek( uOffset ), m_streamOut.Seek( uOffsetOut ), MIFalse;
+    streamFrameData.Seek( 0 );
+    MIUInt const uBlendShapeCount = streamFrameData.ReadU32();
+    MIUInt const uFrameCount = ( streamFrameData.GetSize() - 4 ) / uBlendShapeCount;
+    m_streamOut << ( MIU32 ) 30 << g_32( uFrameCount ) << g_32( uFrameCount * uBlendShapeCount );
+    m_streamOut.Write( static_cast< MILPCByte >( streamFrameData.GetBuffer() ) + 4, uFrameCount * uBlendShapeCount );
+    m_streamOut << streamBlendsShapeNames;
+    return MITrue;
+}
+
 namespace
 {
     enum ETypes { EBool, EFloat, EChar, ESignedChar, EUnsignedChar, EShort, EUnsignedShort, EInt, ELong, EUnsignedInt, EUnsignedLong, EInt64, EUnsignedInt64, EString, ETypes_Count };
@@ -146,9 +173,9 @@ MIBool mCRisenDocParser::ParseData( mCString a_strType, MIBool a_bWriteSize, MIB
         {
             if ( !EnterArray( a_bSetLastErrorLine ) )
                 return m_streamIn.Seek( uOffset ), m_streamOut.Seek( uOffsetOut ), MIFalse;
+            m_streamOut << ( MIU32 ) 0;
             if ( !LeaveArray( MIFalse ) )
             {
-                m_streamOut << ( MIU32 ) 0;
                 MIUInt uCount = 0;
                 do
                 {
