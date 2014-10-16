@@ -13,11 +13,15 @@ public:
 public:
     MIBool   DocumentRisen3DlgData2( void );
     MIUInt   DocumentRisen3Class( void );
+    MIBool   DocumentRisen3Template( void );
     mCString ReadHash( mCString const & a_strType = "hash" );
 private:
     mCRisenDoc( mCRisenDoc const & );
 private:
     mCRisenDoc & operator = ( mCRisenDoc const & );
+private:
+    MIBool DocumentTemplateClassData( MIBool a_bMasterEntity );
+    MIBool SkipTemplateClassBeginning( void );
 };
 
 #endif
