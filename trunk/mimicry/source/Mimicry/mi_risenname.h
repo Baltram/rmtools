@@ -17,10 +17,12 @@ public:
     mCIStreamBinary & operator << ( mCIStreamBinary & a_streamSource );
     mCOStreamBinary & operator >> ( mCOStreamBinary & a_streamDest ) const;
 public:
-    MIU32 GetRisenID( void ) const;
+    MIBool GetEnumValue( MIInt & a_iDest ) const;
+    MIU32  GetRisenID( void ) const;
 private:
     static mTNameMap< MIU32 >     s_mapRisenHashes;
     static mTMap< MIU32, mCName > s_mapRisenNames;
+    static mTNameMap< MIInt >     s_mapRisen3EnumValues;
 };
 
 mCIStreamBinary & operator >> ( mCIStreamBinary & a_streamSource, mCRisenName & a_nameDest );

@@ -228,6 +228,30 @@ MIBool SndDlgToWav( mCIOStreamBinary & a_streamIn, mCString const & a_strFilePat
     return MITrue;
 }
 
+MIBool TplToTplDoc( mCIOStreamBinary & a_streamIn, mCString const & a_strFilePath )
+{
+    a_streamIn.Skip( -44 );
+    MIU32 u32Data1Offset, u32Data1Size;
+    a_streamIn >> u32Data1Offset >> u32Data1Size;
+    a_streamIn.Seek( u32Data1Offset );
+    mCMemoryStream streamDoc;
+    mCRisenDoc Doc( a_streamIn, streamDoc );
+    if ( !Doc.DocumentRisen3Template() )
+    {
+        printf( "Error: Unknown template file version.\n" );
+        WaitForEnterKey( MITrue );
+        return MIFalse;
+    }
+    mCString const strDocPath = g_GetDirectoryPath( a_strFilePath ) + "\\" + g_GetFileNameNoExt( a_strFilePath ) + ".r3tpldoc";
+    if ( !streamDoc.ToFile( strDocPath ) )
+    {
+        printf( "Error: Could not create %s\nThe problem might be missing access rights. Try starting the program with admin rights.\n", strDocPath.GetText() );
+        WaitForEnterKey( MITrue );
+        return MIFalse;
+    }
+    return MITrue;
+}
+
 MIBool ReadResourceFile( mCIOStreamBinary & streamIn, mCString const & a_strFilePath, MIBool & a_bIsResourceFile )
 {
     if ( !( a_bIsResourceFile = ( streamIn.ReadString( 4 ) == "R3RF" ) ) )
@@ -238,6 +262,8 @@ MIBool ReadResourceFile( mCIOStreamBinary & streamIn, mCString const & a_strFile
         return ImgToDds( streamIn, a_strFilePath );
     if ( strResourceRevision == "SN09" || strResourceRevision == "DI14" )
         return SndDlgToWav( streamIn, a_strFilePath );
+    if ( strResourceRevision == "TP02" )
+        return TplToTplDoc( streamIn, a_strFilePath );
     printf( "Error: Unsupported resource type.\n" );
     WaitForEnterKey( MITrue );
     return MIFalse;
@@ -559,13 +585,15 @@ int main( int argc, char* argv[] )
 {
     if ( argc < 2 )
     {
-        printf( "Risen 3 Resource Manager v0.3 by Baltram\n"
+        printf( "Risen 3 Resource Manager v1.0 by Baltram\n"
                 "Start by dragging a file or folder onto the r3resman.exe file.\n\n"
                 "Supported file/folder types and actions:\n"
                 "  <folder>                            : Create .pak volume\n"
                 "  Risen 3 PAK volume (.pak)           : Unpack\n"
                 "  Risen 3 image (.r3img)              : Convert to .dds\n"
-                "  Risen 3 sound (.r3snd .r3dlg)       : Convert to .wav\n"
+                "  Risen 3 sound (.r3snd )             : Convert to .wav\n"
+                "  Risen 3 dialog (.r3dlg)             : Convert to .wav and .r3dlgdoc\n"
+                "  Risen 3 template (.r3tpl)           : Convert to .r3tpldoc\n"
                 "  DDS image (.dds)                    : Convert to .r3img\n"
                 "  WAV sound (.wav)                    : Convert to .r3snd\n"
                 "  Risen 3 dialog document (.r3dlgdoc) : Convert to .r3dlg\n\n" );

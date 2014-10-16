@@ -11,7 +11,6 @@ public:
     void StartArray( mCString const & a_strName = "" );
     void StartBlock( mCString const & a_strTitle = "" );
     void Write( mCString const & a_strText );
-    void WriteComment( mCString const & a_strText, MIBool a_bNewLine = MITrue );
     void WriteLine( mCString const & a_strText = "" );
 protected:
     void DecrementIndent( void );

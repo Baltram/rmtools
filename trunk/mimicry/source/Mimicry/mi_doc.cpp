@@ -52,13 +52,6 @@ void mCDoc::Write( mCString const & a_strText )
     s_bMidLine = MITrue;
 }
 
-void mCDoc::WriteComment( mCString const & a_strText, MIBool a_bNewLine )
-{
-    Write( "// " + a_strText );
-    if ( a_bNewLine )
-        WriteLine();
-}
-
 void mCDoc::WriteLine( mCString const & a_strText )
 {
     Write( a_strText );
