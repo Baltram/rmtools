@@ -4,6 +4,7 @@ INCLUDEPATH += "$$PWD" \
 HEADERS += "$$PWD/Mimicry.h" \
            "$$PWD/Mimicry/mi_3dbreader.h" \
            "$$PWD/Mimicry/mi_3dbwriter.h" \
+           "$$PWD/Mimicry/mi_3dsreader.h" \
            "$$PWD/Mimicry/mi_array.h" \
            "$$PWD/Mimicry/mi_array.inl" \
            "$$PWD/Mimicry/mi_asereader.h" \
@@ -100,6 +101,7 @@ HEADERS += "$$PWD/Mimicry.h" \
 
 SOURCES += "$$PWD/Mimicry/mi_3dbreader.cpp" \
            "$$PWD/Mimicry/mi_3dbwriter.cpp" \
+           "$$PWD/Mimicry/mi_3dsreader.cpp" \
            "$$PWD/Mimicry/mi_asereader.cpp" \
            "$$PWD/Mimicry/mi_asewriter.cpp" \
            "$$PWD/Mimicry/mi_box.cpp" \

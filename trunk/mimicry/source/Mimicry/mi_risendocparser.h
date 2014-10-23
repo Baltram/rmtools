@@ -10,13 +10,17 @@ public:
     MIBool ParseRisen3Class( MIBool a_bSetLastErrorLine = MITrue );
     MIBool ParseProperty( MIBool a_bSetLastErrorLine = MITrue );
     MIBool ParseRisen3DlgData2( MIBool a_bSetLastErrorLine = MITrue );
+    MIBool ParseRisen3Template( mCString const a_strName, MIBool a_bSetLastErrorLine = MITrue );
 protected:
     MIBool ParseData( mCString a_strType, MIBool a_bWriteSize = MIFalse, MIBool a_bSetLastErrorLine = MITrue );
+    MIBool ParseVariable( mCString const a_strName, mCString const a_strType, MIBool a_bSetLastErrorLine = MITrue );
     MIBool ParseVersion( MIU16 & a_u16Version, MIBool a_bSetLastErrorLine = MITrue );
 private:
     mCRisenDocParser( mCRisenDocParser const & );
 private:
     mCRisenDocParser & operator = ( mCRisenDocParser const & );
+private:
+    MIBool ParseRisen3TemplateClass( mCString a_strName, MIU64 a_u4TimeSwapped, MIBool a_bSetLastErrorLine = MITrue );
 };
 
 #endif

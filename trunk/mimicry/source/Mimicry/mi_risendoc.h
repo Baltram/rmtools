@@ -20,8 +20,7 @@ private:
 private:
     mCRisenDoc & operator = ( mCRisenDoc const & );
 private:
-    MIBool DocumentTemplateClassData( MIBool a_bMasterEntity );
-    MIBool SkipTemplateClassBeginning( void );
+    MIBool DocumentRisen3TemplateClass( MIBool a_bMasterEntity );
 };
 
 #endif
