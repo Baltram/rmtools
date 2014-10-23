@@ -437,6 +437,61 @@ MIBool DlgDocToDlg( mCIOStreamBinary & a_streamIn, mCString const & a_strFilePat
     return MITrue;
 }
 
+MIBool TplDocToTpl( mCIOStreamBinary & a_streamIn, mCString const & a_strFilePath )
+{
+    mCString strResourceName = g_GetFileNameNoExt( a_strFilePath );
+    mCString const strR3TplPath = g_GetDirectoryPath( a_strFilePath ) + "\\" + strResourceName + ".r3tpl";
+    mCMemoryStream streamTpl;
+    mCStringStream streamDoc;
+    a_streamIn >> streamDoc;
+    streamDoc.Seek( 0 );
+    mCRisenDocParser Parser( streamDoc, streamTpl );
+    if ( !Parser.ParseRisen3Template( strResourceName, MITrue ) )
+    {
+        printf( "Error: Parse error at line %u.\n", Parser.GetLastErrorLine() );
+        WaitForEnterKey( MITrue );
+        return MIFalse;
+    }
+    mCFileStream streamDest( strR3TplPath, mEFileOpenMode_Write );
+    if ( !streamDest.IsOpen() )
+    {
+        printf( "Error: Could not create %s\nThe problem might be missing access rights. Try starting the program with admin rights.\n", strR3TplPath.GetText() );
+        WaitForEnterKey( MITrue );
+        return MIFalse;
+    }
+    streamDest << "R3RF" << ( MIU32 )( streamTpl.GetSize() + 8 + 36 + 36 ) << ( MIU64 ) 0 << ( MIU64 ) 0 << ( MIU64 ) 0 << ( MIU64 ) 0 << ( MIU32 ) 0;
+    streamDest << streamTpl;
+    mCMemoryStream streamOffsetTable;
+    MIUInt uOffset = streamDest.Tell(), uOffset2, uOffset3, uOffset4;
+    streamOffsetTable << ( MIU32 )( 8 + 36 ) << g_32( streamTpl.GetSize() ) << ( MIU8 ) 0;
+    for ( MIUInt u = 3; u--; )
+        streamOffsetTable << g_32( uOffset ) << ( MIU32 ) 0 << ( MIU8 ) 0;
+    streamDest << streamOffsetTable;
+    mCRisenName::InitializeRisen3Strings();
+    streamDest << mCRisenName( "class gCTemplateResource" ) << "TP02";
+    uOffset = streamDest.Tell();
+    streamDest << ( MIU32 ) 0;
+    mCGenomeVolume::SFileTime Time;
+    GetFileTime( a_strFilePath, Time );
+    streamDest << SwapHighLow( Time.m_u64Modified ) << SwapHighLow( Time.m_u64Created ) << SwapHighLow( Time.m_u64Created ) << SwapHighLow( g_time() );
+    streamDest << g_32( strResourceName.GetLength() ) << strResourceName;
+    streamDest << streamOffsetTable;
+    streamDest << ( MIU32 ) 0 << ( MIU32 ) 0;
+    uOffset2 = streamDest.Tell();
+    streamDest << ( MIU32 ) 0 << "GEC2" << mCRisenName( "class gCTemplateResource" ) << ( MIU16 ) 1;
+    uOffset3 = streamDest.Tell();
+    streamDest << ( MIU32 ) 0 << ( MIU16 ) 0;
+    streamDest << ( MIU32 ) 0;
+    uOffset4 = streamDest.Tell();
+    streamDest.Seek( uOffset );
+    streamDest << g_32( uOffset4 - uOffset - 4 );
+    streamDest.Seek( uOffset2 );
+    streamDest << g_32( uOffset4 - uOffset2 - 4 );
+    streamDest.Seek( uOffset3 );
+    streamDest << g_32( uOffset4 - uOffset3 - 4 );
+    return MITrue;
+}
+
 MIBool DdsToImg( mCIOStreamBinary & a_streamIn, mCString const & a_strFilePath, MIBool & a_bIsDds )
 {
     if ( a_streamIn.ReadString( 4 ) != "DDS " || ( a_streamIn.Seek( 76 ), a_streamIn.ReadU32() ) != 32 )
@@ -641,6 +696,8 @@ int main( int argc, char* argv[] )
     mCFileStream streamIn( strPath, mEFileOpenMode_Read );
     if ( g_GetFileExt( strPath ).ToLower() == "r3dlgdoc" )
         return DlgDocToDlg( streamIn, strPath ) ? 0 : 1;
+    else if ( g_GetFileExt( strPath ).ToLower() == "r3tpldoc" )
+        return TplDocToTpl( streamIn, strPath ) ? 0 : 1;
     MIBool bIsResourceFile = MIFalse, bIsDdsFile = MIFalse, bIsWavFile = MIFalse;
     MIBool bSuccess = ReadResourceFile( streamIn, strPath, bIsResourceFile );
     if ( bIsResourceFile )

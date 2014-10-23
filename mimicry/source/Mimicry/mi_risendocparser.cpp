@@ -1,5 +1,37 @@
 #include "mi_include_risen.h"
 
+namespace
+{
+    enum ETypes { EBool, EFloat, EChar, ESignedChar, EUnsignedChar, EShort, EUnsignedShort, EInt, ELong, EUnsignedInt, EUnsignedLong, EInt64, EUnsignedInt64, EString, EScriptProxyScript, EScriptProxyAIFunction, EScriptProxyAIState, EGuiBitmapProxy2, EResourceProxy, EWeatherEnvironmentProxy, EEffectProxy, EFocusModeProxy2, EMovementSpeciesProxy, EParticleSystemProxy, EGuid, ETemplateEntityProxy, EEntityProxy, EBox, EEulerAngles, EFloatColor, EMatrix, EQuaternion, ERange1, EVector, EVector2, ETypes_Count };
+
+    MILPCChar const       s_arrTypes[ ETypes_Count ] = { "bool", "float", "char", "signed char", "unsigned char", "short", "unsigned short", "int", "long", "unsigned int", "unsigned long", "__int64", "unsigned __int64", "class bCString", "class eCScriptProxyScript", "class gCScriptProxyAIFunction", "class gCScriptProxyAIState", "class eCGuiBitmapProxy2", "class eTResourceProxy", "class eCWeatherEnvironmentProxy", "class gCEffectProxy", "class gCFocusModeProxy2", "class gCMovementSpeciesProxy", "class eCParticleSystemProxy", "class bCGuid", "class eCTemplateEntityProxy", "class eCEntityProxy", "class bCBox", "class bCEulerAngles", "class bCFloatColor", "class bCMatrix", "class bCQuaternion", "class bCRange1", "class bCVector", "class bCVector2" };
+    mTStringMap< ETypes > s_mapTypes;
+
+    MIBool ReadValueString( mCStringStream & a_streamIn, mCString & a_strDest )
+    {
+        static mTArray< MIBool > s_arrChars( MIFalse, 256 );
+        if ( !s_arrChars[ '_' ] )
+        {
+            s_arrChars[ '_' ] = s_arrChars[ '{' ] = s_arrChars[ '}' ] = s_arrChars[ '-' ] = MITrue;
+            for ( MIChar c = 'a'; c <= 'z'; ++c )
+                s_arrChars[ c ] = MITrue;
+            for ( MIChar c = 'A'; c <= 'Z'; ++c )
+                s_arrChars[ c ] = MITrue;
+            for ( MIChar c = '0'; c <= '9'; ++c )
+                s_arrChars[ c ] = MITrue;
+        }
+        mCString strText = a_streamIn.ReadString();
+        MIUInt u = 0, uLength = strText.GetLength();
+        for ( MILPCChar pcIt = strText.GetText(); u != uLength && s_arrChars[ *pcIt ]; ++u, ++pcIt );
+        a_strDest = strText.Left( u );
+        a_streamIn.Skip( -static_cast< MIInt >( uLength - u ) );
+        mCError const * pLastError = mCError::GetLastError< mCError >();
+        if ( pLastError != mCError::GetLastError< mCError >() )
+            return mCError::ClearError( mCError::GetLastError< mCError >() ), MIFalse;
+        return MITrue;
+    }
+}
+
 mCRisenDocParser::mCRisenDocParser( mCStringStream & a_streamIn, mCIOStreamBinary & a_streamOut ) :
     mCDocParser( a_streamIn, a_streamOut )
 {
@@ -151,36 +183,15 @@ MIBool mCRisenDocParser::ParseRisen3DlgData2( MIBool a_bSetLastErrorLine )
     return MITrue;
 }
 
-namespace
+MIBool mCRisenDocParser::ParseRisen3Template( mCString const a_strName, MIBool a_bSetLastErrorLine )
 {
-    enum ETypes { EBool, EFloat, EChar, ESignedChar, EUnsignedChar, EShort, EUnsignedShort, EInt, ELong, EUnsignedInt, EUnsignedLong, EInt64, EUnsignedInt64, EString, EScriptProxyScript, EScriptProxyAIFunction, EScriptProxyAIState, EGuiBitmapProxy2, EResourceProxy, EWeatherEnvironmentProxy, EEffectProxy, EFocusModeProxy2, EMovementSpeciesProxy, EParticleSystemProxy, EGuid, ETemplateEntityProxy, EEntityProxy, EBox, EEulerAngles, EFloatColor, EMatrix, EQuaternion, ERange1, EVector, EVector2, ETypes_Count };
-
-    MILPCChar const       s_arrTypes[ ETypes_Count ] = { "bool", "float", "char", "signed char", "unsigned char", "short", "unsigned short", "int", "long", "unsigned int", "unsigned long", "__int64", "unsigned __int64", "class bCString", "class eCScriptProxyScript", "class gCScriptProxyAIFunction", "class gCScriptProxyAIState", "class eCGuiBitmapProxy2", "class eTResourceProxy", "class eCWeatherEnvironmentProxy", "class gCEffectProxy", "class gCFocusModeProxy2", "class gCMovementSpeciesProxy", "class eCParticleSystemProxy", "class bCGuid", "class eCTemplateEntityProxy", "class eCEntityProxy", "class bCBox", "class bCEulerAngles", "class bCFloatColor", "class bCMatrix", "class bCQuaternion", "class bCRange1", "class bCVector", "class bCVector2" };
-    mTStringMap< ETypes > s_mapTypes;
-
-    MIBool ReadValueString( mCStringStream & a_streamIn, mCString & a_strDest )
-    {
-        static mTArray< MIBool > s_arrChars( MIFalse, 255 );
-        if ( !s_arrChars[ '_' ] )
-        {
-            s_arrChars[ '_' ] = s_arrChars[ '{' ] = s_arrChars[ '}' ] = s_arrChars[ '-' ] = MITrue;
-            for ( MIChar c = 'a'; c != 'z'; ++c )
-                s_arrChars[ c ] = MITrue;
-            for ( MIChar c = 'A'; c != 'Z'; ++c )
-                s_arrChars[ c ] = MITrue;
-            for ( MIChar c = '0'; c != '9'; ++c )
-                s_arrChars[ c ] = MITrue;
-        }
-        mCString strText = a_streamIn.ReadString();
-        MIUInt u = 0, uLength = strText.GetLength();
-        for ( MILPCChar pcIt = strText.GetText(); u != uLength && s_arrChars[ *pcIt ]; ++u, ++pcIt );
-        a_strDest = strText.Left( u );
-        a_streamIn.Skip( uLength - u );
-        mCError const * pLastError = mCError::GetLastError< mCError >();
-        if ( pLastError != mCError::GetLastError< mCError >() )
-            return mCError::ClearError( mCError::GetLastError< mCError >() ), MIFalse;
-        return MITrue;
-    }
+    MIUInt const uOffset = m_streamIn.Tell(), uOffsetOut = m_streamOut.Tell();
+    MIU64 u64Time = g_time();
+    u64Time = ( u64Time << 32 ) | ( u64Time >> 32 );
+    m_streamOut << "GAR5" << ( MIU32 ) 32 << "GTP0" << u64Time;
+    if ( !ParseRisen3TemplateClass( a_strName, u64Time, a_bSetLastErrorLine ) )
+        return m_streamIn.Seek( uOffset ), m_streamOut.Seek( uOffsetOut ), MIFalse;
+    return MITrue;
 }
 
 MIBool mCRisenDocParser::ParseData( mCString a_strType, MIBool a_bWriteSize, MIBool a_bSetLastErrorLine )
@@ -225,8 +236,9 @@ MIBool mCRisenDocParser::ParseData( mCString a_strType, MIBool a_bWriteSize, MIB
             {
                 mCString strToken = m_streamIn.ReadString();
                 MIUInt uValidCharCount = 0;
-                if ( strToken.Scan( "%hhx%n", &arrData.AddNew(), &uValidCharCount ) < 1 )
-                    arrData.Resize( arrData.GetCount() - 1 );
+                MIUInt uValue;
+                if ( strToken.Scan( "%2x%n", &uValue, &uValidCharCount ) == 1 )
+                    arrData.Add( static_cast< MIByte >( uValue ) );
                 if ( uValidCharCount != strToken.GetLength() )
                 {
                     m_streamIn.Skip( -static_cast< MIInt >( strToken.GetLength() - uValidCharCount ) );
@@ -331,10 +343,11 @@ MIBool mCRisenDocParser::ParseData( mCString a_strType, MIBool a_bWriteSize, MIB
         {
             MIU32 u32Part1;
             MIU16 u16Part2, u16Part3;
-            MIU8 arrPart4[ 8 ];
+            MIU8 arrPart4[ 8 + 1 ];
             mCString strGuid;
             bResult &= ReadValueString( m_streamIn, strGuid );
-            bResult &= ( 11 == strGuid.Scan( "{%8lX-%4hX-%4hX-%2hhX%2hhX-%2hhX%2hhX%2hhX%2hhX%2hhX%2hhX}", &u32Part1, &u16Part2, &u16Part3, &arrPart4[ 0 ], &arrPart4[ 1 ], &arrPart4[ 2 ], &arrPart4[ 3 ], &arrPart4[ 4 ], &arrPart4[ 5 ], &arrPart4[ 6 ], &arrPart4[ 7 ] ) );
+            // hh specifier not supported by Visual Studio
+            bResult &= ( 11 == strGuid.Scan( "{%8lX-%4hX-%4hX-%2hX%2hX-%2hX%2hX%2hX%2hX%2hX%2hX}", &u32Part1, &u16Part2, &u16Part3, &arrPart4[ 0 ], &arrPart4[ 1 ], &arrPart4[ 2 ], &arrPart4[ 3 ], &arrPart4[ 4 ], &arrPart4[ 5 ], &arrPart4[ 6 ], &arrPart4[ 7 ] ) );
             m_streamOut << u32Part1 << u16Part2 << u16Part3;
             m_streamOut.Write( arrPart4, 8 );
             break;
@@ -366,7 +379,7 @@ MIBool mCRisenDocParser::ParseData( mCString a_strType, MIBool a_bWriteSize, MIB
             if ( uFloatCount != 0 )
             {
                 bResult &= MatchImmediate( "( " + strShortName, MIFalse );
-                for ( MIUInt u = uFloatCount; u++; )
+                for ( MIUInt u = uFloatCount; u--; )
                     m_streamOut << m_streamIn.ReadFloat();
                 bResult &= MatchImmediate( ")", MIFalse );
             }
@@ -385,11 +398,77 @@ MIBool mCRisenDocParser::ParseData( mCString a_strType, MIBool a_bWriteSize, MIB
     return MITrue;
 }
 
+MIBool mCRisenDocParser::ParseVariable( mCString const a_strName, mCString const a_strType, MIBool a_bSetLastErrorLine )
+{
+    MIUInt const uOffset = m_streamIn.Tell(), uOffsetOut = m_streamOut.Tell();
+    if ( !MatchImmediate( a_strName + " =", a_bSetLastErrorLine ) ||
+         !ParseData( a_strType, MIFalse, a_bSetLastErrorLine ) ||
+         !MatchImmediate( ";", a_bSetLastErrorLine ) )
+        return m_streamIn.Seek( uOffset ), m_streamOut.Seek( uOffsetOut ), mCError::ClearError( mCError::GetLastError< mCError >() ), MIFalse;
+    return MITrue;
+}
+
 MIBool mCRisenDocParser::ParseVersion( MIU16 & a_u16Version, MIBool a_bSetLastErrorLine )
 {
     mCError const * pError = mCError::GetLastError< mCError >();
     m_streamIn >> a_u16Version;
     if ( pError != mCError::GetLastError< mCError >() )
         return mCDocParser::SetLastErrorLine( a_bSetLastErrorLine ), mCError::ClearError( mCError::GetLastError< mCError >() ), MIFalse;
+    return MITrue;
+}
+
+MIBool mCRisenDocParser::ParseRisen3TemplateClass( mCString a_strName, MIU64 a_u4TimeSwapped, MIBool a_bSetLastErrorLine )
+{
+    MIUInt const uOffset = m_streamIn.Tell(), uOffsetOut = m_streamOut.Tell();
+    if ( !MatchImmediate( "<master>", MIFalse ) )
+        if ( mEResult_False == m_streamIn.ReadStringInQuotes( a_strName ) )
+            return mCDocParser::SetLastErrorLine( a_bSetLastErrorLine ), m_streamIn.Seek( uOffset ), m_streamOut.Seek( uOffsetOut ), MIFalse;
+    if ( !EnterBlock( "", a_bSetLastErrorLine ) )
+        return m_streamIn.Seek( uOffset ), m_streamOut.Seek( uOffsetOut ), MIFalse;
+    m_streamOut << "GEC2" << mCRisenName( "class eCTemplateEntity" ) << ( MIU16 ) 3;
+    m_streamOut << ( MIU32 ) 0 << ( MIU16 ) 0 << ( MIU32 ) 2;
+    m_streamOut << mCRisenName( "class eCTemplateEntity" ) << ( MIU16 ) 3 << ( MIU32 ) 52;
+    m_streamOut.Write( mCString::AccessStaticBuffer(), 52 );
+    m_streamOut << mCRisenName( "class eCEntity" ) << ( MIU16 ) 3 << ( MIU32 ) 0;
+    if ( !ParseVariable( "GUID", s_arrTypes[ EGuid ], a_bSetLastErrorLine ) )
+        return m_streamIn.Seek( uOffset ), m_streamOut.Seek( uOffsetOut ), MIFalse;
+    m_streamOut << ( MIU16 )( a_strName.GetLength() ) << a_strName << a_u4TimeSwapped;
+    m_streamOut.Seek( uOffsetOut + 30 );
+    if ( !ParseVariable( "RefTemplateGUID", s_arrTypes[ EGuid ], a_bSetLastErrorLine ) )
+        return m_streamIn.Seek( uOffset ), m_streamOut.Seek( uOffsetOut ), MIFalse;
+    m_streamOut << ( MIU8 ) 0;
+    if ( !ParseVariable( "Position", s_arrTypes[ EVector ], a_bSetLastErrorLine ) ||
+         !ParseVariable( "Rotation", s_arrTypes[ EQuaternion ], a_bSetLastErrorLine ) )
+        return m_streamIn.Seek( uOffset ), m_streamOut.Seek( uOffsetOut ), MIFalse;
+    m_streamOut << ( MIU32 ) 0xFEEDFACE << ( MIU8 ) 0xFF;
+    if ( !ParseVariable( "Unknown1", "blob", a_bSetLastErrorLine ) )
+        return m_streamIn.Seek( uOffset ), m_streamOut.Seek( uOffsetOut ), MIFalse;
+    m_streamOut.Seek( uOffsetOut + 118 + a_strName.GetLength() );
+    if ( !ParseVariable( "Unknown2", "blob", a_bSetLastErrorLine ) )
+        return m_streamIn.Seek( uOffset ), m_streamOut.Seek( uOffsetOut ), MIFalse;
+    MIUInt uOffsetPS = m_streamOut.Tell(), uPSCount = 0;
+    m_streamOut << ( MIU8 ) 0;
+    for ( ; !MatchImmediate( "\"", MIFalse, MITrue ) && !MatchImmediate( "}", MIFalse, MITrue ); ++uPSCount )
+        if ( !ParseRisen3Class( a_bSetLastErrorLine ) )
+            return m_streamIn.Seek( uOffset ), m_streamOut.Seek( uOffsetOut ), MIFalse;
+    m_streamIn.Skip( -1 );
+    MIUInt uOffsetChildren = m_streamOut.Tell(), uChildCount = 0;
+    m_streamOut.Seek( uOffsetPS );
+    m_streamOut << ( MIU8 )( uPSCount );
+    m_streamOut.Seek( uOffsetChildren );
+    m_streamOut << ( MIU32 ) 0;
+    for ( ; MatchImmediate( "\"", MIFalse, MITrue ); ++uChildCount )
+        if ( m_streamIn.Skip( -1 ), !ParseRisen3TemplateClass( "", a_u4TimeSwapped, a_bSetLastErrorLine ) )
+            return m_streamIn.Seek( uOffset ), m_streamOut.Seek( uOffsetOut ), MIFalse;
+    MIUInt uOffsetEnd = m_streamOut.Tell();
+    m_streamOut.Seek( uOffsetChildren );
+    m_streamOut << g_32( uChildCount );
+    m_streamOut.Seek( uOffsetOut + 10 );
+    m_streamOut << g_32( uOffsetEnd - uOffsetOut - 14 );
+    m_streamOut.Seek( uOffsetOut + 88 );
+    m_streamOut << g_32( uOffsetEnd - uOffsetOut - 92 );
+    m_streamOut.Seek( uOffsetEnd );
+    if ( !LeaveBlock( a_bSetLastErrorLine ) )
+        return m_streamIn.Seek( uOffset ), m_streamOut.Seek( uOffsetOut ), MIFalse;
     return MITrue;
 }

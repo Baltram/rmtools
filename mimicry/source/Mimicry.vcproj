@@ -590,6 +590,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Mimicry\mi_3dsreader.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Mimicry\mi_3dsreader.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Mimicry\mi_asereader.cpp"
 				>
 			</File>
