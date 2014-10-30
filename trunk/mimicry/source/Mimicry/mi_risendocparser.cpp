@@ -275,7 +275,6 @@ MIBool mCRisenDocParser::ParseData( mCString a_strType, MIBool a_bWriteSize, MIB
     {
         MIBool bResult = MITrue;
         mCError const * pLastError = mCError::GetLastError< mCError >();
-        mCString strTemp;
         MIUInt uFloatCount = 0;
         mCString strShortName;
         switch ( enuType )
@@ -334,9 +333,30 @@ MIBool mCRisenDocParser::ParseData( mCString a_strType, MIBool a_bWriteSize, MIB
         case EFocusModeProxy2:
         case EMovementSpeciesProxy:
         case EParticleSystemProxy:
-            bResult &= ( mEResult_Ok == m_streamIn.ReadStringInQuotes( strTemp ) );
-            m_streamOut << ( MIU16 )( strTemp.GetLength() ) << strTemp;
+        {
+            mCString strText, strPart;
+            if ( MatchImmediate( "\"\"\"", MIFalse, MITrue ) )
+            {
+                bResult = MIFalse;
+                while ( m_streamIn.Skip( -1 ), mEResult_Ok == m_streamIn.ReadStringInQuotes( strPart ) )
+                {
+                    strText += strPart;
+                    if ( MatchImmediate( "\"\"", MIFalse, MITrue ) )
+                    {
+                        bResult = MITrue;
+                        while ( MatchImmediate( "\"", MIFalse, MITrue ) )
+                            strText += "\"";
+                        break;
+                    }
+                    else
+                        strText  += "\"";
+                }
+            }
+            else
+                bResult &= ( mEResult_Ok == m_streamIn.ReadStringInQuotes( strText ) );
+            m_streamOut << ( MIU16 )( strText.GetLength() ) << strText;
             break;
+        }
         case EGuid:
         case ETemplateEntityProxy:
         case EEntityProxy:
@@ -354,7 +374,7 @@ MIBool mCRisenDocParser::ParseData( mCString a_strType, MIBool a_bWriteSize, MIB
         }
         case EBox:
             if ( uFloatCount == 0 )
-                uFloatCount = 2, strShortName = "box";
+                uFloatCount = 6, strShortName = "box";
         case EEulerAngles:
             if ( uFloatCount == 0 )
                 uFloatCount = 3, strShortName = "euler";

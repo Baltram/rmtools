@@ -439,6 +439,8 @@ MIBool mCGenomeVolume::FindFile( mCString a_strFileBaseName, mCString & a_strFil
     m_streamArchive.Read( arrFileData.AccessBuffer(), File.m_uDataSize );
     if ( File.m_bCompressed )
     {
+        if ( !s_pfuncUncompress )
+            return MIFalse;
         MIU32 u32FileSize = File.m_uFileSize;
         mCByteArray arrUncompressedFileData;
         arrUncompressedFileData.Resize( u32FileSize );

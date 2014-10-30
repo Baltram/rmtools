@@ -172,7 +172,7 @@ mEResult mCXmacWriter::WriteXmacFileData( mCScene a_sceneSource, mCIOStreamBinar
         a_streamDest.SetInvertEndianness( MITrue );
         streamBaseXmac.SetInvertEndianness( MITrue );
     }
-    MIUInt uNewEndXacOffset;
+    MIUInt uNewEndXacOffset = 0;
     mCBox boxExtents;
     MIUInt uNextSection = 148;
     for ( MIUInt uSyncOffset = 0; uNextSection < uEndXacOffset; )

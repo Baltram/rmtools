@@ -562,7 +562,7 @@ void mCGenomeMaterial::GetMaterialData( mCMaterial & a_matDest ) const
 {
     if ( !IsValid() )
         return;
-    for ( mCMaterial::EMapType i = mCMaterial::EMapType_Count; i != mCMaterial::EMapType_Count; ++i )
+    for ( mCMaterial::EMapType i = mCMaterial::EMapType_Diffuse; i != mCMaterial::EMapType_Count; ++i )
         a_matDest.RemoveTexMap( i );
     for ( MIUInt u = GetShaderElementCount(); u--; )
     {

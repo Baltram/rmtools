@@ -124,8 +124,14 @@ void mCRisenDoc::FormatData( mCString a_strType, MIUInt a_uSize )
     case EFocusModeProxy2:
     case EMovementSpeciesProxy:
     case EParticleSystemProxy:
-        strResult = "\"" + m_streamIn.ReadString( m_streamIn.ReadU16() ) + "\"";
+    {
+        mCString strText = m_streamIn.ReadString( m_streamIn.ReadU16() );
+        if ( strText.Contains( '\"' ) )
+            strResult = "\"\"\"" + strText + "\"\"\"";
+        else
+            strResult = "\"" + strText + "\"";
         break;
+    }
     case EGuid:
     case ETemplateEntityProxy:
     case EEntityProxy:
@@ -257,6 +263,25 @@ MIUInt mCRisenDoc::DocumentRisen3Class( void )
     return m_streamIn.Tell() - uOffset;
 }
 
+MIBool mCRisenDoc::DocumentRisen3Sector( void )
+{
+    MIUInt const uOffset = m_streamIn.Tell();
+    if ( m_streamIn.ReadString( 4 ) != "GAR5" || m_streamIn.ReadU32() != 32 )
+        return m_streamIn.Seek( uOffset ), MIFalse;
+    for ( MIUInt u = m_streamIn.ReadU16(); u--; )
+    {
+        StartBlock( m_streamIn.ReadString( m_streamIn.ReadU16() ) );
+        if ( m_streamIn.Skip( 4 ), m_streamIn.ReadU32() != mCRisenName( "class gCEmbeddedLayer" ).GetRisenID() )
+            return m_streamIn.Seek( uOffset ), MIFalse;
+        m_streamIn.Skip( 88 );
+        for ( MIUInt u = m_streamIn.ReadU32(); u--; WriteLine() )
+            if ( !DocumentRisen3DynamicEntity() )
+                return m_streamIn.Seek( uOffset ), MIFalse;
+        EndBlock( MIFalse );
+    }
+    return MITrue;
+}
+
 MIBool mCRisenDoc::DocumentRisen3Template( void )
 {
     MIUInt const uOffset = m_streamIn.Tell();
@@ -274,6 +299,53 @@ mCString mCRisenDoc::ReadHash( mCString const & a_strType )
         return nameHash.GetString();
     m_streamIn.Skip( -4 );
     return mCString().Format( "<unknown %s 0x%.8x>", a_strType.GetText(), m_streamIn.ReadU32() );
+}
+
+MIBool mCRisenDoc::DocumentRisen3DynamicEntity( void )
+{
+    MIUInt const uOffset = m_streamIn.Tell();
+    if ( m_streamIn.ReadString( 4 ) != "GEC2" || m_streamIn.ReadU32() != mCRisenName( "class eCDynamicEntity" ).GetRisenID() || m_streamIn.ReadU16() != 6 )
+        return m_streamIn.Seek( uOffset ), MIFalse;
+    m_streamIn.ReadU32();
+    for ( MIUInt u = m_streamIn.ReadU16(); u--; )
+    {
+        m_streamIn.Skip( 8 );
+        m_streamIn.Skip( m_streamIn.ReadU32() );
+    }
+    m_streamIn.ReadU32();
+    if ( m_streamIn.ReadU32() != mCRisenName( "class eCDynamicEntity" ).GetRisenID() || m_streamIn.ReadU16() != 6 || m_streamIn.ReadU32() != 186 )
+        return m_streamIn.Seek( uOffset ), MIFalse;
+    MIUInt const uClassDataOffset1 = m_streamIn.Tell();
+    m_streamIn.Skip( 186 );
+    if ( m_streamIn.ReadU32() != mCRisenName( "class eCEntity" ).GetRisenID() || m_streamIn.ReadU16() != 3 || m_streamIn.ReadU32() == 0 )
+        return m_streamIn.Seek( uOffset ), MIFalse;
+    MIUInt const uClassDataOffset2 = m_streamIn.Tell();
+    m_streamIn.Skip( 16 );
+    MIUInt const uNameLength = m_streamIn.ReadU16();
+    StartBlock( "\"" + m_streamIn.ReadString( uNameLength ) + "\"" );
+    m_streamIn.Seek( uClassDataOffset2 );
+    FormatVariable( "GUID", s_arrTypes[ EGuid ] );
+    m_streamIn.Seek( uClassDataOffset1 + 169 );
+    FormatVariable( "Creator", s_arrTypes[ EGuid ] );
+    m_streamIn.Seek( uClassDataOffset1 );
+    FormatVariable( "Matrix1", s_arrTypes[ EMatrix ] );
+    FormatVariable( "Matrix2", s_arrTypes[ EMatrix ] );
+    FormatVariable( "Extents", s_arrTypes[ EBox ] );
+    FormatVariable( "Center", s_arrTypes[ EVector ] );
+    FormatVariable( "Radius", s_arrTypes[ EFloat ] );
+    m_streamIn.Seek( uClassDataOffset2 + 18 + uNameLength );
+    FormatVariable( "TimeStamp", "blob", 8 );
+    m_streamIn.Seek( uClassDataOffset1 + 185 );
+    FormatVariable( "Unknown1", "blob", 1 );
+    m_streamIn.Seek( uClassDataOffset2 + 26 + uNameLength );
+    FormatVariable( "Unknown2", "blob", 6 );
+    for ( MIUInt u = m_streamIn.ReadU8(); u--; WriteLine() )
+        DocumentRisen3Class();
+    for ( MIUInt u = m_streamIn.ReadU32(); u--; WriteLine() )
+        if ( !DocumentRisen3DynamicEntity() )
+            return m_streamIn.Seek( uOffset ), MIFalse;
+    EndBlock( MIFalse );
+    return MITrue;
 }
 
 MIBool mCRisenDoc::DocumentRisen3TemplateClass( MIBool a_bMasterEntity )
@@ -303,28 +375,16 @@ MIBool mCRisenDoc::DocumentRisen3TemplateClass( MIBool a_bMasterEntity )
         strName = "\"" + strName + "\"";
     StartBlock( strName );
     m_streamIn.Seek( uClassDataOffset + 72 );
-    Write( "GUID = " );
-    FormatData( s_arrTypes[ EGuid ] );
-    WriteLine( ";" );
+    FormatVariable( "GUID", s_arrTypes[ EGuid ] );
     m_streamIn.Seek( uClassDataOffset + 10 );
-    Write( "RefTemplateGUID = " );
-    FormatData( s_arrTypes[ EGuid ] );
-    WriteLine( ";" );
+    FormatVariable( "RefTemplateGUID", s_arrTypes[ EGuid ] );
     m_streamIn.Skip( 1 );
-    Write( "Position = " );
-    FormatData( s_arrTypes[ EVector ] );
-    WriteLine( ";" );
-    Write( "Rotation = " );
-    FormatData( s_arrTypes[ EQuaternion ] );
-    WriteLine( ";" );
+    FormatVariable( "Position", s_arrTypes[ EVector ] );
+    FormatVariable( "Rotation", s_arrTypes[ EQuaternion ] );
     m_streamIn.Skip( 5 );
-    Write( "Unknown1 = " );
-    FormatData( "blob", 2 );
-    WriteLine( ";" );
+    FormatVariable( "Unknown1", "blob", 2 );
     m_streamIn.Seek( uOffset2 + 8 );
-    Write( "Unknown2 = " );
-    FormatData( "blob", 6 );
-    WriteLine( ";" );
+    FormatVariable( "Unknown2", "blob", 6 );
     for ( MIUInt v = m_streamIn.ReadU8(); v--; WriteLine() )
         if ( 0 == DocumentRisen3Class() )
             return m_streamIn.Seek( uOffset ), MIFalse;
@@ -333,4 +393,11 @@ MIBool mCRisenDoc::DocumentRisen3TemplateClass( MIBool a_bMasterEntity )
             return m_streamIn.Seek( uOffset ), MIFalse;
     EndBlock();
     return MITrue;
+}
+
+void mCRisenDoc::FormatVariable( mCString const & a_strName, mCString const & a_strType, MIUInt a_uSize )
+{
+    Write( a_strName + " = " );
+    FormatData( a_strType, a_uSize );
+    WriteLine( ";" );
 }
