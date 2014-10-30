@@ -207,7 +207,7 @@ namespace
         }
         if ( !AccessIntegrityState() )
             return;
-        MIUInt uOffset;
+        MIUInt uOffset = 0;
         while ( AccessIntegrityState() )
         {
             uOffset = AccessStream()->Tell();

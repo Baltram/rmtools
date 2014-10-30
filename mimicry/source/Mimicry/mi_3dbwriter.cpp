@@ -107,7 +107,7 @@ namespace
             if ( !a_bIsSubMaterial )
                 s_uCurrentSubMaterialIndex = MI_DW_INVALID;
             for ( mCMaterial::EMapType i = mCMaterial::EMapType_Diffuse; i != mCMaterial::EMapType_Count; ++i )
-                if ( pStandardMatSource->HasTexMap( i ) )
+                if ( pStandardMatSource && pStandardMatSource->HasTexMap( i ) )
                     WriteTexMapChunk( a_streamDest, *pStandardMatSource->GetTexMap( i ), i );
         }
         else
