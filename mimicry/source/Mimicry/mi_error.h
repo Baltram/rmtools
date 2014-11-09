@@ -16,6 +16,14 @@ public:
         EGeneral,
         EForceDWORD = MI_FORCE_DWORD
     };
+    class CProbe
+    {
+    public:
+        CProbe( void );
+       ~CProbe( void );
+    private:
+        mCError const * m_pLastError;
+    };
 public:
     template< typename T > static void            ClearAllErrors();
                            static void            ClearError( mCError const * a_pError ); 

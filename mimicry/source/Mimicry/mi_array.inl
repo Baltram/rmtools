@@ -447,6 +447,15 @@ void mTArray< T >::Init( void )
     m_uCount = 0;
 }
 
+template<> inline
+void mCCharArray::Init( void )
+{
+    m_pElements = 0;
+    m_uCapacity = 0;
+    m_uCount = 0;
+    Reserve( 1 );
+}
+
 template< typename T >
 mTArray< T >::CConstIterator::CConstIterator( CConstIterator const & a_itIterator ) :
     m_uIndex( a_itIterator.m_uIndex ),

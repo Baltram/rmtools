@@ -9,6 +9,8 @@ namespace
 
     MIBool ReadValueString( mCStringStream & a_streamIn, mCString & a_strDest )
     {
+        mCError::CProbe Probe;
+        mCError const * pLastError = mCError::GetLastError< mCError >();
         static mTArray< MIBool > s_arrChars( MIFalse, 256 );
         if ( !s_arrChars[ '_' ] )
         {
@@ -25,9 +27,8 @@ namespace
         for ( MILPCChar pcIt = strText.GetText(); u != uLength && s_arrChars[ *pcIt ]; ++u, ++pcIt );
         a_strDest = strText.Left( u );
         a_streamIn.Skip( -static_cast< MIInt >( uLength - u ) );
-        mCError const * pLastError = mCError::GetLastError< mCError >();
         if ( pLastError != mCError::GetLastError< mCError >() )
-            return mCError::ClearError( mCError::GetLastError< mCError >() ), MIFalse;
+            return MIFalse;
         return MITrue;
     }
 }
@@ -183,6 +184,49 @@ MIBool mCRisenDocParser::ParseRisen3DlgData2( MIBool a_bSetLastErrorLine )
     return MITrue;
 }
 
+MIBool mCRisenDocParser::ParseRisen3Sector( MIBool a_bSetLastErrorLine )
+{
+    MIUInt const uOffset = m_streamIn.Tell(), uOffsetOut = m_streamOut.Tell();
+    mCError::CProbe Probe;
+    m_streamOut << "GAR5" << ( MIU32 ) 32 << ( MIU16 ) 0;
+    mCString strLayerName;
+    MIUInt uLayerCount = 0;
+    while ( mEResult_Ok == m_streamIn.ReadStringInQuotes( strLayerName ) )
+    {
+        ++uLayerCount;
+        m_streamOut << ( MIU16 )( strLayerName.GetLength() ) << strLayerName;
+        MIUInt uOffsetLayer = m_streamOut.Tell(), uEntityCount = 0;
+        m_streamOut << "GEC2" << mCRisenName( "class gCEmbeddedLayer" ) << ( MIU16 ) 1 << ( MIU32 ) 0 << ( MIU16 ) 0;
+        m_streamOut << ( MIU32 ) 1 << mCRisenName( "class gCEmbeddedLayer" ) << ( MIU16 ) 1 << ( MIU32 ) 0 << mCRisenName( "gEEntityType_Game" ) << ( MIU32 ) 0;
+        m_streamOut << "GEC2" << mCRisenName( "class eCScene" ) << ( MIU16 ) 1 << ( MIU32 ) 0;
+        m_streamOut << ( MIU16 ) 1 << mCRisenName( "class bCGuid" ) << mCRisenName( "ID" ) << ( MIU32 ) 16 << ( MIU64 ) 0 << ( MIU64 ) 0;
+        m_streamOut << ( MIU32 ) 1 << mCRisenName( "class eCScene" ) << ( MIU16 ) 1 << ( MIU32 ) 0 << ( MIU32 ) 0;
+        if ( !EnterBlock( "", a_bSetLastErrorLine ) )
+            return m_streamIn.Seek( uOffset ), m_streamOut.Seek( uOffsetOut ), MIFalse;
+        while ( MatchImmediate( "\"", MIFalse ) )
+            if ( MIFalse == ( m_streamIn.Skip( -1 ), ++uEntityCount, ParseRisen3DynamicEntity( a_bSetLastErrorLine ) ) )
+                return m_streamIn.Seek( uOffset ), m_streamOut.Seek( uOffsetOut ), MIFalse;
+        if ( !LeaveBlock( a_bSetLastErrorLine ) )
+            return m_streamIn.Seek( uOffset ), m_streamOut.Seek( uOffsetOut ), MIFalse;
+        MIUInt uOffsetLayerEnd = m_streamOut.Tell();
+        m_streamOut.Seek( uOffsetLayer + 10 );
+        m_streamOut << g_32( uOffsetLayerEnd - uOffsetLayer - 10 - 4 );
+        m_streamOut.Seek( uOffsetLayer + 26 );
+        m_streamOut << g_32( uOffsetLayerEnd - uOffsetLayer - 26 - 4 );
+        m_streamOut.Seek( uOffsetLayer + 48 );
+        m_streamOut << g_32( uOffsetLayerEnd - uOffsetLayer - 48 - 4 );
+        m_streamOut.Seek( uOffsetLayer + 92 );
+        m_streamOut << g_32( uOffsetLayerEnd - uOffsetLayer - 92 - 4 );
+        m_streamOut << g_32( uEntityCount );
+        m_streamOut.Seek( uOffsetLayerEnd );
+    }
+    MIUInt const uOffsetEnd = m_streamOut.Tell();
+    m_streamOut.Seek( uOffsetOut + 4 + 4 );
+    m_streamOut << ( MIU16 )( uLayerCount );
+    m_streamOut.Seek( uOffsetEnd );
+    return MITrue;
+}
+
 MIBool mCRisenDocParser::ParseRisen3Template( mCString const a_strName, MIBool a_bSetLastErrorLine )
 {
     MIUInt const uOffset = m_streamIn.Tell(), uOffsetOut = m_streamOut.Tell();
@@ -274,7 +318,7 @@ MIBool mCRisenDocParser::ParseData( mCString a_strType, MIBool a_bWriteSize, MIB
     else
     {
         MIBool bResult = MITrue;
-        mCError const * pLastError = mCError::GetLastError< mCError >();
+        mCError::CProbe Probe;
         MIUInt uFloatCount = 0;
         mCString strShortName;
         switch ( enuType )
@@ -404,8 +448,6 @@ MIBool mCRisenDocParser::ParseData( mCString a_strType, MIBool a_bWriteSize, MIB
                 bResult &= MatchImmediate( ")", MIFalse );
             }
         }
-        while ( pLastError != mCError::GetLastError< mCError >() )
-            mCError::ClearError( mCError::GetLastError< mCError >() ), bResult = MIFalse;
         if ( !bResult )
             return mCDocParser::SetLastErrorLine( a_bSetLastErrorLine ), m_streamIn.Seek( uOffset ), m_streamOut.Seek( uOffsetOut ), MIFalse;
     }
@@ -424,16 +466,82 @@ MIBool mCRisenDocParser::ParseVariable( mCString const a_strName, mCString const
     if ( !MatchImmediate( a_strName + " =", a_bSetLastErrorLine ) ||
          !ParseData( a_strType, MIFalse, a_bSetLastErrorLine ) ||
          !MatchImmediate( ";", a_bSetLastErrorLine ) )
-        return m_streamIn.Seek( uOffset ), m_streamOut.Seek( uOffsetOut ), mCError::ClearError( mCError::GetLastError< mCError >() ), MIFalse;
+        return m_streamIn.Seek( uOffset ), m_streamOut.Seek( uOffsetOut ), MIFalse;
     return MITrue;
 }
 
 MIBool mCRisenDocParser::ParseVersion( MIU16 & a_u16Version, MIBool a_bSetLastErrorLine )
 {
+    mCError::CProbe Probe;
     mCError const * pError = mCError::GetLastError< mCError >();
     m_streamIn >> a_u16Version;
     if ( pError != mCError::GetLastError< mCError >() )
-        return mCDocParser::SetLastErrorLine( a_bSetLastErrorLine ), mCError::ClearError( mCError::GetLastError< mCError >() ), MIFalse;
+        return mCDocParser::SetLastErrorLine( a_bSetLastErrorLine ), MIFalse;
+    return MITrue;
+}
+
+MIBool mCRisenDocParser::ParseRisen3DynamicEntity( MIBool a_bSetLastErrorLine )
+{
+    MIUInt const uOffset = m_streamIn.Tell(), uOffsetOut = m_streamOut.Tell();
+    mCError::CProbe Probe;
+    mCString strName;
+    if ( mEResult_False == m_streamIn.ReadStringInQuotes( strName ) || 
+         !EnterBlock( "", a_bSetLastErrorLine ) )
+        return mCDocParser::SetLastErrorLine( a_bSetLastErrorLine ), m_streamIn.Seek( uOffset ), m_streamOut.Seek( uOffsetOut ), MIFalse;
+    m_streamOut << "GEC2" << mCRisenName( "class eCDynamicEntity" ) << ( MIU16 ) 6;
+    m_streamOut << ( MIU32 ) 0 << ( MIU16 ) 0 << ( MIU32 ) 2;
+    m_streamOut << mCRisenName( "class eCDynamicEntity" ) << ( MIU16 ) 6 << ( MIU32 ) 186;
+    MIUInt const uClassDataOffset1 = m_streamOut.Tell();
+    m_streamOut.Write( mCString::AccessStaticBuffer(), 186 );
+    m_streamOut << mCRisenName( "class eCEntity" ) << ( MIU16 ) 3 << ( MIU32 ) 0;
+    MIUInt const uClassDataOffset2 = m_streamOut.Tell();
+    if ( !ParseVariable( "GUID", s_arrTypes[ EGuid ], a_bSetLastErrorLine ) )
+        return m_streamIn.Seek( uOffset ), m_streamOut.Seek( uOffsetOut ), MIFalse;
+    m_streamOut.Seek( uClassDataOffset1 + 169 );
+    if ( !ParseVariable( "Creator", s_arrTypes[ EGuid ], a_bSetLastErrorLine ) )
+        return m_streamIn.Seek( uOffset ), m_streamOut.Seek( uOffsetOut ), MIFalse;
+    m_streamOut.Seek( uClassDataOffset1 );
+    if ( !ParseVariable( "Matrix1", s_arrTypes[ EMatrix ], a_bSetLastErrorLine ) ||
+         !ParseVariable( "Matrix2", s_arrTypes[ EMatrix ], a_bSetLastErrorLine ) ||
+         !ParseVariable( "Extents", s_arrTypes[ EBox ], a_bSetLastErrorLine ) ||
+         !ParseVariable( "Center", s_arrTypes[ EVector ], a_bSetLastErrorLine ) ||
+         !ParseVariable( "Radius", s_arrTypes[ EFloat ], a_bSetLastErrorLine ) )
+        return m_streamIn.Seek( uOffset ), m_streamOut.Seek( uOffsetOut ), MIFalse;
+    m_streamOut << ( MIU8 ) 0xFF;
+    m_streamOut.Seek( uClassDataOffset2 + 16 );
+    m_streamOut << ( MIU16 )( strName.GetLength() ) << strName;
+    if ( !ParseVariable( "TimeStamp", "blob", a_bSetLastErrorLine ) )
+        return m_streamIn.Seek( uOffset ), m_streamOut.Seek( uOffsetOut ), MIFalse;
+    m_streamOut.Seek( uClassDataOffset1 + 185 );
+    if ( !ParseVariable( "Unknown1", "blob", a_bSetLastErrorLine ) )
+        return m_streamIn.Seek( uOffset ), m_streamOut.Seek( uOffsetOut ), MIFalse;
+    m_streamOut.Seek( uClassDataOffset2 + 26 + strName.GetLength() );
+    if ( !ParseVariable( "Unknown2", "blob", a_bSetLastErrorLine ) )
+        return m_streamIn.Seek( uOffset ), m_streamOut.Seek( uOffsetOut ), MIFalse;
+    MIUInt uOffsetPS = m_streamOut.Tell(), uPSCount = 0;
+    m_streamOut << ( MIU8 ) 0;
+    for ( ; !MatchImmediate( "\"", MIFalse, MITrue ) && !MatchImmediate( "}", MIFalse, MITrue ); ++uPSCount )
+        if ( !ParseRisen3Class( a_bSetLastErrorLine ) )
+            return m_streamIn.Seek( uOffset ), m_streamOut.Seek( uOffsetOut ), MIFalse;
+    m_streamIn.Skip( -1 );
+    MIUInt uOffsetChildren = m_streamOut.Tell(), uChildCount = 0;
+    m_streamOut.Seek( uOffsetPS );
+    m_streamOut << ( MIU8 )( uPSCount );
+    m_streamOut.Seek( uOffsetChildren );
+    m_streamOut << ( MIU32 ) 0;
+    for ( ; MatchImmediate( "\"", MIFalse, MITrue ); ++uChildCount )
+        if ( m_streamIn.Skip( -1 ), !ParseRisen3DynamicEntity( a_bSetLastErrorLine ) )
+            return m_streamIn.Seek( uOffset ), m_streamOut.Seek( uOffsetOut ), MIFalse;
+    MIUInt uOffsetEnd = m_streamOut.Tell();
+    m_streamOut.Seek( uOffsetChildren );
+    m_streamOut << g_32( uChildCount );
+    m_streamOut.Seek( uOffsetOut + 10 );
+    m_streamOut << g_32( uOffsetEnd - uOffsetOut - 10 - 4 );
+    m_streamOut.Seek( uOffsetOut + 222 );
+    m_streamOut << g_32( uOffsetEnd - uOffsetOut - 222 - 4 );
+    m_streamOut.Seek( uOffsetEnd );
+    if ( !LeaveBlock( a_bSetLastErrorLine ) )
+        return m_streamIn.Seek( uOffset ), m_streamOut.Seek( uOffsetOut ), MIFalse;
     return MITrue;
 }
 
