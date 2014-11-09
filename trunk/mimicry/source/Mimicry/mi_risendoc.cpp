@@ -270,7 +270,7 @@ MIBool mCRisenDoc::DocumentRisen3Sector( void )
         return m_streamIn.Seek( uOffset ), MIFalse;
     for ( MIUInt u = m_streamIn.ReadU16(); u--; )
     {
-        StartBlock( m_streamIn.ReadString( m_streamIn.ReadU16() ) );
+        StartBlock( "\"" + m_streamIn.ReadString( m_streamIn.ReadU16() ) + "\"" );
         if ( m_streamIn.Skip( 4 ), m_streamIn.ReadU32() != mCRisenName( "class gCEmbeddedLayer" ).GetRisenID() )
             return m_streamIn.Seek( uOffset ), MIFalse;
         m_streamIn.Skip( 88 );

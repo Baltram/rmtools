@@ -797,10 +797,8 @@ MIBool mCGenomeMaterial::FindMaterial( mCString const & a_strMaterialName, mCGen
     ( *s_pfuncMaterialFileFinderFunction )( a_strMaterialName.GetText(), a_strExt.GetText(), pStreamIn );
     if ( !pStreamIn )
         return MIFalse;
-    mCError const * const pLastError = mCError::GetLastError< mCError >();
+    mCError::CProbe Probe;
     MIBool bResult = ( a_matDest.Load( *pStreamIn ) == mEResult_Ok );
-    while ( mCError::GetLastError< mCError >() != pLastError )
-        mCError::ClearError( mCError::GetLastError< mCError >() );
     delete pStreamIn;
     return bResult;
 }

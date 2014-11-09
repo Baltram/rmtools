@@ -2,6 +2,17 @@
 
 mCError * mCError::s_pLastError = 0;
 
+mCError::CProbe::CProbe( void ) :
+    m_pLastError( mCError::GetLastError< mCError >() )
+{
+}
+
+mCError::CProbe::~CProbe( void )
+{
+    while ( m_pLastError != mCError::GetLastError< mCError >() )
+        mCError::ClearError( mCError::GetLastError< mCError >() );
+}
+
 void mCError::ClearError( mCError const * a_pError )
 {
     mCError ** pErrorPointer = &s_pLastError;

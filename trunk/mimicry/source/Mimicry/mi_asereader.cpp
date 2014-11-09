@@ -40,6 +40,7 @@ namespace
             return MIFalse;
         }
         MIBool bResult = MIFalse;
+        mCError::CProbe Probe;
         mCError const * const pLastError = mCError::GetLastError< mCError >();
         MIUInt const uOffset = AccessStream()->Tell();
         mCString strSource;
@@ -73,8 +74,6 @@ namespace
             AccessStream()->Seek( uOffset );
             AccessIntegrityState() = MIFalse;
         }
-        while ( mCError::GetLastError< mCError >() != pLastError )
-            mCError::ClearError( mCError::GetLastError< mCError >() );
         va_end( argp );
         return bResult;
     }
