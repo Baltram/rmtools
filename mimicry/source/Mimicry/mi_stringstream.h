@@ -18,6 +18,7 @@ public:
     using mCMemoryStreamBaseFormatted::Read;
     virtual mEResult                   Read( mCString & a_strDest );
 public:
+    MIUInt   GetLineNumber( void ) const;
     mCString ReadLine( void );
     mEResult ReadStringInQuotes( mCString & a_strDest );
     void     ToString( mCString & a_strDest );

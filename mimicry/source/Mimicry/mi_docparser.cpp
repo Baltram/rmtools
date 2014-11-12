@@ -96,5 +96,5 @@ void mCDocParser::SetLastErrorLine( MIBool a_bForReal, MIBool a_bSkipWhitespaces
         return;
     if ( a_bSkipWhitespaces && !m_streamIn.IsAtEnd() )
         m_streamIn.Skip( -static_cast< MIInt >( m_streamIn.ReadString().GetLength() ) );
-    m_uLastErrorLine = mCString( static_cast< MILPCChar >( m_streamIn.GetBuffer() ), m_streamIn.Tell() ).Count( '\n' ) + 1;
+    m_uLastErrorLine = m_streamIn.GetLineNumber();
 }
