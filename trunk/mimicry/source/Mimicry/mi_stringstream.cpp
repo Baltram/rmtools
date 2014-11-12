@@ -108,6 +108,15 @@ mEResult mCStringStream::Read( mCString & a_strDest )
     return mEResult_False;
 }
 
+MIUInt mCStringStream::GetLineNumber( void ) const
+{
+    MIUInt uCount = 0;
+    MILPCChar pStart = static_cast< MILPCChar >( GetBuffer() ), pEnd = pStart + Tell();
+    while ( ( pStart = static_cast< MILPCChar >( g_memchr( pStart, '\n', pEnd - pStart ) ) ) != 0 )
+        ++pStart, ++uCount;
+    return uCount + 1;
+}
+
 mCString mCStringStream::ReadLine( void )
 {
     MILPCChar const pcBeginLine = m_arrBuffer.GetBuffer() + m_uPosition;

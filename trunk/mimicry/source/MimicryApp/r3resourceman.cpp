@@ -252,6 +252,36 @@ MIBool TplToTplDoc( mCIOStreamBinary & a_streamIn, mCString const & a_strFilePat
     return MITrue;
 }
 
+MIBool SecToSecDoc( mCIOStreamBinary & a_streamIn, mCString const & a_strFilePath )
+{
+    mCMemoryStream streamDoc;
+    mCRisenDoc Doc( a_streamIn, streamDoc );
+    a_streamIn.Skip( -44 );
+    MIU32 u32Data1Offset, u32Data1Size;
+    a_streamIn >> u32Data1Offset >> u32Data1Size;
+    a_streamIn.Skip( 1 + 3 * ( 4 + 4 + 1 ) + 3 * 4 + 4 * 8 );
+    a_streamIn.ReadString( a_streamIn.ReadU32() );
+    a_streamIn.Skip( 4 * ( 4 + 4 + 1 ) );
+    MIUInt uReferencedFileCount = a_streamIn.ReadU32();
+    a_streamIn.Skip( uReferencedFileCount * 8 );
+    for ( ; uReferencedFileCount--; a_streamIn.ReadString( a_streamIn.ReadU32() ) );
+    a_streamIn.Skip( 2 * 4 );
+    if ( 0 == Doc.DocumentRisen3Class() || ( a_streamIn.Seek( u32Data1Offset ), Doc.WriteLine(), !Doc.DocumentRisen3Sector() ) )
+    {
+        printf( "Error: Unknown sector file version.\n" );
+        WaitForEnterKey( MITrue );
+        return MIFalse;
+    }
+    mCString const strDocPath = g_GetDirectoryPath( a_strFilePath ) + "\\" + g_GetFileNameNoExt( a_strFilePath ) + ".r3secdoc";
+    if ( !streamDoc.ToFile( strDocPath ) )
+    {
+        printf( "Error: Could not create %s\nThe problem might be missing access rights. Try starting the program with admin rights.\n", strDocPath.GetText() );
+        WaitForEnterKey( MITrue );
+        return MIFalse;
+    }
+    return MITrue;
+}
+
 MIBool ReadResourceFile( mCIOStreamBinary & streamIn, mCString const & a_strFilePath, MIBool & a_bIsResourceFile )
 {
     if ( !( a_bIsResourceFile = ( streamIn.ReadString( 4 ) == "R3RF" ) ) )
@@ -264,6 +294,8 @@ MIBool ReadResourceFile( mCIOStreamBinary & streamIn, mCString const & a_strFile
         return SndDlgToWav( streamIn, a_strFilePath );
     if ( strResourceRevision == "TP02" )
         return TplToTplDoc( streamIn, a_strFilePath );
+    if ( strResourceRevision == "SC02" )
+        return SecToSecDoc( streamIn, a_strFilePath );
     printf( "Error: Unsupported resource type.\n" );
     WaitForEnterKey( MITrue );
     return MIFalse;
@@ -434,6 +466,246 @@ MIBool DlgDocToDlg( mCIOStreamBinary & a_streamIn, mCString const & a_strFilePat
     streamDest << g_32( uOffset4 - uOffset2 - 4 );
     streamDest.Seek( uOffset3 );
     streamDest << g_32( uOffset4 - uOffset3 - 4 );
+    return MITrue;
+}
+
+namespace
+{
+    MIInt CompareReplace( MILPCVoid a_pReplace1, MILPCVoid a_pReplace2 )
+    {
+        return *static_cast< MIInt const * >( a_pReplace1 ) - *static_cast< MIInt const * >( a_pReplace2 );
+    }
+}
+
+MIBool ProcessSecMod( mCIOStreamBinary & a_streamIn, mCString const & a_strFilePath )
+{
+    mCError::CProbe Probe;
+    mCRisenName::InitializeRisen3Strings();
+    mCStringStream streamIn;
+    streamIn << a_streamIn;
+    streamIn.Seek( a_streamIn.Tell() );
+    mCMemoryStream streamTemp;
+    mCDocParser Parser( streamIn, streamTemp );
+    mTArray< mCString > arrTemplateEntities;
+    mTArray< mTArray< mCString > > arrPropertySetNames;
+    while ( !streamIn.IsAtEnd() )
+    {
+        if ( Parser.MatchImmediate( "\"", MIFalse ) )
+        {
+            streamIn.Skip( -1 );
+            if ( mEResult_False == streamIn.ReadStringInQuotes( arrTemplateEntities.AddNew() ) )
+                return printf( "Error: Missing enclosing quotes at line %u.\n", streamIn.GetLineNumber() ), WaitForEnterKey( MITrue ), MIFalse;
+            arrPropertySetNames.AddNew();
+        }
+        else if ( Parser.MatchImmediate( "{", MIFalse ) )
+        {
+            arrTemplateEntities.Add( "{" + streamIn.ReadString( 36 ) + "}" );
+            if ( !Parser.MatchImmediate( "}", MIFalse ) )
+                return printf( "Error: Invalid GUID format at line %u.\n", streamIn.GetLineNumber() ), WaitForEnterKey( MITrue ), MIFalse;
+            arrPropertySetNames.AddNew();
+        }
+        else
+        {
+            if ( 0 == arrTemplateEntities.GetCount() )
+                return printf( "Error: Sector modification files must start with template entity GUID or name (in quotes).\n" ), WaitForEnterKey( MITrue ), MIFalse;
+            mCString strPropertySet = streamIn.ReadString();
+            if ( !strPropertySet.EndsWith( "_PS" ) || 0 == mCRisenName( "class " + strPropertySet ).GetRisenID() )
+                return printf( "Error: Unknown property set : \"%s\".\n", strPropertySet.GetText() ), WaitForEnterKey( MITrue ), MIFalse;
+            arrPropertySetNames.Back().Add( strPropertySet );
+        }
+    }
+    mTArray< mCString > arrFiles;
+    mTArray< mCGenomeVolume::SFileTime > arrFileTimes;
+    AddFiles( g_GetDirectoryPath( a_strFilePath ), arrFiles, arrFileTimes );
+    mTArray< mCString > arrTemplateDocs;
+    mTArray< mCString > arrSectorDocs;
+    for ( MIUInt u = arrFiles.GetCount(); u--; )
+    {
+        mCString strExt = g_GetFileExt( arrFiles[ u ] ).ToLower();
+        if ( strExt == "r3tpldoc" )
+            arrTemplateDocs.Add( arrFiles[ u ] );
+        else if ( strExt == "r3secdoc" )
+            arrSectorDocs.Add( arrFiles[ u ] );
+    }
+    mTArray< mCString > arrPendingTemplateEntities( arrTemplateEntities );
+    mTArray< mTArray< mCString > > arrPropertySets( arrPropertySetNames );
+    for ( MIUInt u = arrTemplateDocs.GetCount(); u--; )
+    {
+        mCStringStream streamTplDoc;
+        if ( mEResult_False == streamTplDoc.FromFile( arrTemplateDocs[ u ] ) )
+        {
+            printf( "Warning: Could not open %s\n", arrTemplateDocs[ u ].GetText() );
+            continue;
+        }
+        for ( MIUInt v = arrPendingTemplateEntities.GetCount(); v--; )
+        {
+            if ( arrPendingTemplateEntities[ v ] == "" )
+                continue;
+            streamTplDoc.Seek( 0 );
+            mCString strMarker = "\"" + arrPendingTemplateEntities[ v ] + "\" {";
+            if ( arrPendingTemplateEntities[ v ].StartsWith( "{" ) )
+                strMarker = "GUID = " + arrPendingTemplateEntities[ v ];
+            if ( !streamTplDoc.SkipTo( strMarker.GetText(), strMarker.GetLength() ) )
+                continue;
+            streamTplDoc.Skip( strMarker.GetLength() );
+            MIUInt uMarkerOffset = streamTplDoc.Tell();
+            MIUInt uEndOffset = streamTplDoc.GetSize();
+            if ( streamTplDoc.SkipTo( "\" {", mCString( "\" {" ).GetLength() ) )
+                uEndOffset = streamTplDoc.Tell();
+            for ( MIUInt w = arrPropertySetNames[ v ].GetCount(); w--; )
+            {
+                streamTplDoc.Seek( uMarkerOffset );
+                if ( !streamTplDoc.SkipTo( ( arrPropertySetNames[ v ][ w ] + " {" ).GetText(), ( arrPropertySetNames[ v ][ w ] + " {" ).GetLength() ) ||
+                     streamTplDoc.Tell() >= uEndOffset )
+                    return printf( "Error: Could not find property set %s of %s in %s.\n", arrPropertySetNames[ v ][ w ].GetText(), arrPendingTemplateEntities[ v ].GetText(), g_GetFileName( arrTemplateDocs[ u ] ).GetText() ), WaitForEnterKey( MITrue ), MIFalse;
+                MIUInt uOffsetPSStart = streamTplDoc.Tell();
+                if ( !streamTplDoc.SkipTo( "ClassData {", mCString( "ClassData {" ).GetLength() ) )
+                    return printf( "Error: Unsupported template document formatting in %s.\n", g_GetFileName( arrTemplateDocs[ u ] ).GetText() ), WaitForEnterKey( MITrue ), MIFalse;
+                MIUInt uOffsetPSEnd = streamTplDoc.Tell();
+                streamTplDoc.Seek( uOffsetPSStart );
+                arrPropertySets[ v ][ w ] = streamTplDoc.ReadString( uOffsetPSEnd - uOffsetPSStart );
+            }
+            arrPendingTemplateEntities[ v ] = "";
+        }
+    }
+    for ( MIUInt u = arrPendingTemplateEntities.GetCount(); u--; )
+        if ( arrPendingTemplateEntities[ u ] != "" )
+            return printf( "Error: Could not find .tpldoc file for %s.\n", arrPendingTemplateEntities[ u ].GetText() ), WaitForEnterKey( MITrue ), MIFalse;
+    for ( MIUInt u = 0, ue = arrSectorDocs.GetCount(); u != ue; ++u )
+    {
+        mCStringStream streamSecDoc;
+        if ( mEResult_False == streamSecDoc.FromFile( arrSectorDocs[ u ] ) )
+        {
+            printf( "Warning: Could not open %s\n", arrSectorDocs[ u ].GetText() );
+            continue;
+        }
+        printf( "%s...\n", g_GetFileName( arrSectorDocs[ u ] ).GetText() );
+        struct SReplace
+        {
+            MIUInt   m_uOffset;
+            MIUInt   m_uSize;
+            MIUInt   m_uTemplateEntity;
+            MIUInt   m_uPropertySet;
+            mCString m_strIndent;
+        };
+        mTArray< SReplace > arrReplace;
+        for ( MIUInt v = 0, ve = arrTemplateEntities.GetCount(); v != ve; ++v )
+        {
+            streamSecDoc.Seek( 0 );
+            mCString strMarker = "\"" + arrTemplateEntities[ v ] + "\" {";
+            if ( arrTemplateEntities[ v ].StartsWith( "{" ) )
+                strMarker = "Creator = " + arrTemplateEntities[ v ];
+            MIUInt uCount = 0;
+            for ( ; streamSecDoc.SkipTo( strMarker.GetText(), strMarker.GetLength() ); ++uCount )
+            {
+                streamSecDoc.Skip( strMarker.GetLength() );
+                MIUInt uMarkerOffset = streamSecDoc.Tell();
+                MIUInt uEndOffset = streamSecDoc.GetSize();
+                if ( streamSecDoc.SkipTo( "\" {", mCString( "\" {" ).GetLength() ) )
+                    uEndOffset = streamSecDoc.Tell();
+                for ( MIUInt w = arrPropertySetNames[ v ].GetCount(); w--; )
+                {
+                    streamSecDoc.Seek( uMarkerOffset );
+                    if ( !streamSecDoc.SkipTo( ( arrPropertySetNames[ v ][ w ] + " {" ).GetText(), ( arrPropertySetNames[ v ][ w ] + " {" ).GetLength() ) ||
+                         streamSecDoc.Tell() >= uEndOffset )
+                    {
+                        printf( "Warning: Could not find property set %s of %s in %s.\n", arrPropertySetNames[ v ][ w ].GetText(), arrTemplateEntities[ v ].GetText(), g_GetFileName( arrSectorDocs[ u ] ).GetText() );
+                        continue;
+                    }
+                    SReplace & Replace = arrReplace.AddNew();
+                    Replace.m_uOffset = streamSecDoc.Tell();
+                    streamSecDoc.SkipTo( "\n", 1 );
+                    for ( MILPCChar pcIt = static_cast< MILPCChar >( streamSecDoc.GetBuffer() ) + streamSecDoc.Tell() + 1; *pcIt++ == ' '; Replace.m_strIndent += ' ' );
+                    if ( !streamSecDoc.SkipTo( "ClassData {", mCString( "ClassData {" ).GetLength() ) )
+                        return printf( "Error: Unsupported sector document formatting in %s.\n", g_GetFileName( arrSectorDocs[ u ].GetText() ) ), WaitForEnterKey( MITrue ), MIFalse;
+                    Replace.m_uSize = streamSecDoc.Tell() - Replace.m_uOffset;
+                    Replace.m_uTemplateEntity = v;
+                    Replace.m_uPropertySet = w;
+                }
+                streamSecDoc.Seek( uMarkerOffset );
+            }
+            printf( "  %ux %s\n", uCount, arrTemplateEntities[ v ].GetText() );
+        }
+        qsort( arrReplace.AccessBuffer(), arrReplace.GetCount(), sizeof( arrReplace[ 0 ] ), &CompareReplace );
+        if ( arrReplace.GetCount() == 0 )
+            continue;
+        mCStringStream streamSecDocNew;
+        streamSecDoc.Seek( 0 );
+        for ( MIUInt v = 0, ve = arrReplace.GetCount(); v != ve; ++v )
+        {
+            streamSecDocNew.Write( static_cast< MILPCChar >( streamSecDoc.GetBuffer() ) + streamSecDoc.Tell(), arrReplace[ v ].m_uOffset - streamSecDoc.Tell() );
+            streamSecDoc.Seek( arrReplace[ v ].m_uOffset + arrReplace[ v ].m_uSize );
+            mCString strPS = arrPropertySets[ arrReplace[ v ].m_uTemplateEntity ][ arrReplace[ v ].m_uPropertySet ];
+            mCString strIndentRaw = "";
+            if ( strPS.Contains( "\n " ) )
+                for ( MIUInt w = strPS.FirstOf( "\n " ) + 1; strPS[ w++ ] == ' '; strIndentRaw += " " );
+            strPS.Replace( ( "\n" + strIndentRaw ).GetText(), ( "\n" + arrReplace[ v ].m_strIndent ).GetText() );
+            streamSecDocNew.Write( strPS.GetText(), strPS.GetLength() );
+        }
+        streamSecDocNew.Write( static_cast< MILPCChar >( streamSecDoc.GetBuffer() ) + streamSecDoc.Tell(), streamSecDoc.GetSize() - streamSecDoc.Tell() );
+        if ( mEResult_False == streamSecDocNew.ToFile( arrSectorDocs[ u ] ) )
+            printf( "Warning: Could not write %s\n", arrSectorDocs[ u ].GetText() );
+        printf( "\n" );
+    }
+    WaitForEnterKey( MITrue );
+    return MITrue;
+}
+
+MIBool SecDocToSec( mCIOStreamBinary & a_streamIn, mCString const & a_strFilePath )
+{
+    mCString strResourceName = g_GetFileNameNoExt( a_strFilePath );
+    mCString const strR3SecPath = g_GetDirectoryPath( a_strFilePath ) + "\\" + strResourceName + ".r3sec";
+    mCMemoryStream streamSec;
+    mCMemoryStream streamResourceClass;
+    mCStringStream streamDoc;
+    a_streamIn >> streamDoc;
+    streamDoc.Seek( 0 );
+    mCRisenDocParser Parser( streamDoc, streamSec );
+    mCRisenDocParser ResourceClassParser( streamDoc, streamResourceClass );
+    if ( !ResourceClassParser.ParseRisen3Class( MITrue ) )
+    {
+        printf( "Error: Parse error at line %u.\n", ResourceClassParser.GetLastErrorLine() );
+        WaitForEnterKey( MITrue );
+        return MIFalse;
+    }
+    if ( !Parser.ParseRisen3Sector( MITrue ) )
+    {
+        printf( "Error: Parse error at line %u.\n", Parser.GetLastErrorLine() );
+        WaitForEnterKey( MITrue );
+        return MIFalse;
+    }
+    mCFileStream streamDest( strR3SecPath, mEFileOpenMode_Write );
+    if ( !streamDest.IsOpen() )
+    {
+        printf( "Error: Could not create %s\nThe problem might be missing access rights. Try starting the program with admin rights.\n", strR3SecPath.GetText() );
+        WaitForEnterKey( MITrue );
+        return MIFalse;
+    }
+    streamDest << "R3RF" << ( MIU32 )( streamSec.GetSize() + 8 + 36 + 36 ) << ( MIU64 ) 0 << ( MIU64 ) 0 << ( MIU64 ) 0 << ( MIU64 ) 0 << ( MIU32 ) 0;
+    streamDest << streamSec;
+    mCMemoryStream streamOffsetTable;
+    MIUInt uOffset = streamDest.Tell(), uOffset2, uOffset4;
+    streamOffsetTable << ( MIU32 )( 8 + 36 ) << g_32( streamSec.GetSize() ) << ( MIU8 ) 0;
+    for ( MIUInt u = 3; u--; )
+        streamOffsetTable << g_32( uOffset ) << ( MIU32 ) 0 << ( MIU8 ) 0;
+    streamDest << streamOffsetTable;
+    mCRisenName::InitializeRisen3Strings();
+    streamDest << mCRisenName( "class gCSectorResource" ) << "SC02";
+    uOffset = streamDest.Tell();
+    streamDest << ( MIU32 ) 0;
+    mCGenomeVolume::SFileTime Time;
+    GetFileTime( a_strFilePath, Time );
+    streamDest << SwapHighLow( Time.m_u64Modified ) << SwapHighLow( Time.m_u64Created ) << SwapHighLow( Time.m_u64Created ) << SwapHighLow( g_time() );
+    streamDest << g_32( strResourceName.GetLength() ) << strResourceName;
+    streamDest << streamOffsetTable;
+    streamDest << ( MIU32 ) 0 << ( MIU32 ) 0;
+    uOffset2 = streamDest.Tell();
+    streamDest << ( MIU32 ) 0 << streamResourceClass;
+    uOffset4 = streamDest.Tell();
+    streamDest.Seek( uOffset );
+    streamDest << g_32( uOffset4 - uOffset - 4 );
+    streamDest.Seek( uOffset2 );
+    streamDest << g_32( uOffset4 - uOffset2 - 4 );
     return MITrue;
 }
 
@@ -643,15 +915,19 @@ int main( int argc, char* argv[] )
         printf( "Risen 3 Resource Manager v1.0 by Baltram\n"
                 "Start by dragging a file or folder onto the r3resman.exe file.\n\n"
                 "Supported file/folder types and actions:\n"
-                "  <folder>                            : Create .pak volume\n"
-                "  Risen 3 PAK volume (.pak)           : Unpack\n"
-                "  Risen 3 image (.r3img)              : Convert to .dds\n"
-                "  Risen 3 sound (.r3snd )             : Convert to .wav\n"
-                "  Risen 3 dialog (.r3dlg)             : Convert to .wav and .r3dlgdoc\n"
-                "  Risen 3 template (.r3tpl)           : Convert to .r3tpldoc\n"
-                "  DDS image (.dds)                    : Convert to .r3img\n"
-                "  WAV sound (.wav)                    : Convert to .r3snd\n"
-                "  Risen 3 dialog document (.r3dlgdoc) : Convert to .r3dlg\n\n" );
+                "  <folder>                              : Create .pak volume\n"
+                "  Risen 3 PAK volume (.pak)             : Unpack\n"
+                "  Risen 3 image (.r3img)                : Convert to .dds\n"
+                "  Risen 3 sound (.r3snd )               : Convert to .wav\n"
+                "  Risen 3 dialog (.r3dlg)               : Convert to .wav and .r3dlgdoc\n"
+                "  Risen 3 template (.r3tpl)             : Convert to .r3tpldoc\n"
+                "  Risen 3 sector (.r3sec)               : Convert to .r3secdoc\n"
+                "  DDS image (.dds)                      : Convert to .r3img\n"
+                "  WAV sound (.wav)                      : Convert to .r3snd\n"
+                "  Risen 3 dialog document (.r3dlgdoc)   : Convert to .r3dlg\n"
+                "  Risen 3 template document (.r3tpldoc) : Convert to .r3tpl\n"
+                "  Risen 3 sector document (.r3secdoc)   : Convert to .r3sec\n"
+                "  Sector modification file (.r3secmod)  : Process\n" );
         WaitForEnterKey( MITrue );
         return 1;
     }
@@ -698,6 +974,10 @@ int main( int argc, char* argv[] )
         return DlgDocToDlg( streamIn, strPath ) ? 0 : 1;
     else if ( g_GetFileExt( strPath ).ToLower() == "r3tpldoc" )
         return TplDocToTpl( streamIn, strPath ) ? 0 : 1;
+    else if ( g_GetFileExt( strPath ).ToLower() == "r3secdoc" )
+        return SecDocToSec( streamIn, strPath ) ? 0 : 1;
+    else if ( g_GetFileExt( strPath ).ToLower() == "r3secmod" )
+        return ProcessSecMod( streamIn, strPath ) ? 0 : 1;
     MIBool bIsResourceFile = MIFalse, bIsDdsFile = MIFalse, bIsWavFile = MIFalse;
     MIBool bSuccess = ReadResourceFile( streamIn, strPath, bIsResourceFile );
     if ( bIsResourceFile )
