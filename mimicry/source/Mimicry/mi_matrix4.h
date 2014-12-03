@@ -69,6 +69,7 @@ public:
     MIFloat         GetElement( MIUInt a_uElementIndex ) const;
     MIFloat         GetElement( MIUInt a_uRowIndex, MIUInt a_uColumnIndex ) const;
     MIFloat const * GetElements( void ) const;
+    mCMatrix4       GetInverted( void ) const;
     MIFloat const * GetRow( MIUInt a_uRowIndex ) const;
     mCVec3 const &  GetTranslation( void ) const;
     void            ModifyRotation( mCQuaternion const & a_quatSource );

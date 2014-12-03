@@ -1,4 +1,6 @@
 #include "mi_include_risen.h"
+#include "mi_include_3d.h"
+#include "mi_include_standard.h"
 
 namespace
 {
@@ -460,8 +462,30 @@ MIBool mCRisenDocParser::ParseData( mCString a_strType, MIBool a_bWriteSize, MIB
     return MITrue;
 }
 
-MIBool mCRisenDocParser::ParseVariable( mCString const a_strName, mCString const a_strType, MIBool a_bSetLastErrorLine )
+namespace
 {
+    MIBool bNewPosition = MIFalse;
+    MIBool bNewRotation = MIFalse;
+    mCVec3 vecRotation;
+    mCVec3 vecPosition;
+}
+
+void mCRisenDocParser::CheckNewPosRot( void )
+{
+    mCMemoryStream streamTemp;
+    mCRisenDocParser Parser( m_streamIn, streamTemp );
+    if ( Parser.ParseVariable( "NewPos", s_arrTypes[ EVector ], MIFalse ) )
+        bNewPosition = MITrue, g_memcpy( &vecPosition, static_cast< MILPCByte >( streamTemp.GetBuffer() ) + streamTemp.Tell() - sizeof( vecPosition ), sizeof( vecPosition ) );
+    if ( Parser.ParseVariable( "NewRot", s_arrTypes[ EEulerAngles ], MIFalse ) )
+        bNewRotation = MITrue, g_memcpy( &vecRotation, static_cast< MILPCByte >( streamTemp.GetBuffer() ) + streamTemp.Tell() - sizeof( vecRotation ), sizeof( vecRotation ) );
+    if ( Parser.ParseVariable( "NewPos", s_arrTypes[ EVector ], MIFalse ) )
+        bNewPosition = MITrue, g_memcpy( &vecPosition, static_cast< MILPCByte >( streamTemp.GetBuffer() ) + streamTemp.Tell() - sizeof( vecPosition ), sizeof( vecPosition ) );
+}
+
+MIBool mCRisenDocParser::ParseVariable( mCString const a_strName, mCString const a_strType, MIBool a_bSetLastErrorLine, MIBool a_bCheckNewPosRot )
+{
+    if ( a_bCheckNewPosRot )
+        CheckNewPosRot();
     MIUInt const uOffset = m_streamIn.Tell(), uOffsetOut = m_streamOut.Tell();
     if ( !MatchImmediate( a_strName + " =", a_bSetLastErrorLine ) ||
          !ParseData( a_strType, MIFalse, a_bSetLastErrorLine ) ||
@@ -480,7 +504,7 @@ MIBool mCRisenDocParser::ParseVersion( MIU16 & a_u16Version, MIBool a_bSetLastEr
     return MITrue;
 }
 
-MIBool mCRisenDocParser::ParseRisen3DynamicEntity( MIBool a_bSetLastErrorLine )
+MIBool mCRisenDocParser::ParseRisen3DynamicEntity( MIBool a_bSetLastErrorLine, MILPCVoid a_pParentMat )
 {
     MIUInt const uOffset = m_streamIn.Tell(), uOffsetOut = m_streamOut.Tell();
     mCError::CProbe Probe;
@@ -495,23 +519,61 @@ MIBool mCRisenDocParser::ParseRisen3DynamicEntity( MIBool a_bSetLastErrorLine )
     m_streamOut.Write( mCString::AccessStaticBuffer(), 186 );
     m_streamOut << mCRisenName( "class eCEntity" ) << ( MIU16 ) 3 << ( MIU32 ) 0;
     MIUInt const uClassDataOffset2 = m_streamOut.Tell();
+    bNewPosition = bNewRotation = MIFalse;
     if ( !ParseVariable( "GUID", s_arrTypes[ EGuid ], a_bSetLastErrorLine ) )
         return m_streamIn.Seek( uOffset ), m_streamOut.Seek( uOffsetOut ), MIFalse;
     m_streamOut.Seek( uClassDataOffset1 + 169 );
     if ( !ParseVariable( "Creator", s_arrTypes[ EGuid ], a_bSetLastErrorLine ) )
         return m_streamIn.Seek( uOffset ), m_streamOut.Seek( uOffsetOut ), MIFalse;
     m_streamOut.Seek( uClassDataOffset1 );
-    if ( !ParseVariable( "Matrix1", s_arrTypes[ EMatrix ], a_bSetLastErrorLine ) ||
-         !ParseVariable( "Matrix2", s_arrTypes[ EMatrix ], a_bSetLastErrorLine ) ||
-         !ParseVariable( "Extents", s_arrTypes[ EBox ], a_bSetLastErrorLine ) ||
-         !ParseVariable( "Center", s_arrTypes[ EVector ], a_bSetLastErrorLine ) ||
-         !ParseVariable( "Radius", s_arrTypes[ EFloat ], a_bSetLastErrorLine ) )
-        return m_streamIn.Seek( uOffset ), m_streamOut.Seek( uOffsetOut ), MIFalse;
+    mCMemoryStream stream3D;
+    mCRisenDocParser Parser( m_streamIn, stream3D );
+    if ( !Parser.ParseVariable( "MatrixLocal", s_arrTypes[ EMatrix ], a_bSetLastErrorLine, MITrue ) ||
+         !Parser.ParseVariable( "MatrixGlobal", s_arrTypes[ EMatrix ], a_bSetLastErrorLine, MITrue ) ||
+         !Parser.ParseVariable( "Extents", s_arrTypes[ EBox ], a_bSetLastErrorLine, MITrue ) ||
+         !Parser.ParseVariable( "Center", s_arrTypes[ EVector ], a_bSetLastErrorLine, MITrue ) ||
+         !Parser.ParseVariable( "Radius", s_arrTypes[ EFloat ], a_bSetLastErrorLine, MITrue ) )
+        return m_uLastErrorLine = Parser.m_uLastErrorLine, m_streamIn.Seek( uOffset ), m_streamOut.Seek( uOffsetOut ), MIFalse;
+    m_streamOut << stream3D;
     m_streamOut << ( MIU8 ) 0xFF;
     m_streamOut.Seek( uClassDataOffset2 + 16 );
     m_streamOut << ( MIU16 )( strName.GetLength() ) << strName;
-    if ( !ParseVariable( "TimeStamp", "blob", a_bSetLastErrorLine ) )
+    if ( !ParseVariable( "TimeStamp", "blob", a_bSetLastErrorLine, MITrue ) )
         return m_streamIn.Seek( uOffset ), m_streamOut.Seek( uOffsetOut ), MIFalse;
+    mCMatrix4 matGlobal( static_cast< mCMatrix4 const * >( stream3D.GetBuffer() )[ 1 ] );
+    if ( bNewPosition || bNewRotation )
+    {
+        // Convert euler angles to quaternion
+        mCVec3 vecCos( cos( vecRotation.GetY() / 2 ), cos( vecRotation.GetX() / 2 ), cos( vecRotation.GetZ() / 2 ) );
+        mCVec3 vecSin( sin( vecRotation.GetY() / 2 ), sin( vecRotation.GetX() / 2 ), sin( vecRotation.GetZ() / 2 ) );
+        mCQuaternion quatRot( vecSin.GetX() * vecCos.GetY() * vecCos.GetZ() - vecCos.GetX() * vecSin.GetY() * vecSin.GetZ(),
+                              vecCos.GetX() * vecSin.GetY() * vecCos.GetZ() + vecSin.GetX() * vecCos.GetY() * vecSin.GetZ(),
+                              vecCos.GetX() * vecCos.GetY() * vecSin.GetZ() - vecSin.GetX() * vecSin.GetY() * vecCos.GetZ(),
+                              vecCos.GetX() * vecCos.GetY() * vecCos.GetZ() + vecSin.GetX() * vecSin.GetY() * vecSin.GetZ() );
+        if ( bNewRotation )
+            matGlobal = mCMatrix4( quatRot );
+        stream3D.Seek( 4 * ( 16 + 16 + 6 ) );
+        mCVec3 vecCenter;
+        stream3D >> vecCenter;
+        MIFloat fRadius = stream3D.ReadFloat();
+        if ( bNewPosition )
+        {
+            vecCenter += vecPosition - matGlobal.GetTranslation();
+            matGlobal.AccessTranslation() = vecPosition;
+        }
+        mCMatrix4 matParent;
+        if ( a_pParentMat )
+            matParent = *static_cast< mCMatrix4 const * >( a_pParentMat );
+        mCMatrix4 matLocal = matGlobal * matParent.GetInverted();
+        stream3D.Seek( 0 );
+        stream3D.Write( &matLocal, sizeof( matLocal ) );
+        stream3D.Write( &matGlobal, sizeof( matGlobal ) );
+        // ToDo: Better bounding box approximation
+        stream3D << ( vecCenter - mCVec3( fRadius, fRadius, fRadius ) ) << ( vecCenter + mCVec3( fRadius, fRadius, fRadius ) );
+        stream3D << vecCenter;
+    }
+    m_streamOut.Seek( uClassDataOffset1 );
+    m_streamOut << stream3D;
     m_streamOut.Seek( uClassDataOffset1 + 185 );
     if ( !ParseVariable( "Unknown1", "blob", a_bSetLastErrorLine ) )
         return m_streamIn.Seek( uOffset ), m_streamOut.Seek( uOffsetOut ), MIFalse;
@@ -530,7 +592,7 @@ MIBool mCRisenDocParser::ParseRisen3DynamicEntity( MIBool a_bSetLastErrorLine )
     m_streamOut.Seek( uOffsetChildren );
     m_streamOut << ( MIU32 ) 0;
     for ( ; MatchImmediate( "\"", MIFalse, MITrue ); ++uChildCount )
-        if ( m_streamIn.Skip( -1 ), !ParseRisen3DynamicEntity( a_bSetLastErrorLine ) )
+        if ( m_streamIn.Skip( -1 ), !ParseRisen3DynamicEntity( a_bSetLastErrorLine, &matGlobal ) )
             return m_streamIn.Seek( uOffset ), m_streamOut.Seek( uOffsetOut ), MIFalse;
     MIUInt uOffsetEnd = m_streamOut.Tell();
     m_streamOut.Seek( uOffsetChildren );

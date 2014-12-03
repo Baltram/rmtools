@@ -328,8 +328,8 @@ MIBool mCRisenDoc::DocumentRisen3DynamicEntity( void )
     m_streamIn.Seek( uClassDataOffset1 + 169 );
     FormatVariable( "Creator", s_arrTypes[ EGuid ] );
     m_streamIn.Seek( uClassDataOffset1 );
-    FormatVariable( "Matrix1", s_arrTypes[ EMatrix ] );
-    FormatVariable( "Matrix2", s_arrTypes[ EMatrix ] );
+    FormatVariable( "MatrixLocal", s_arrTypes[ EMatrix ] );
+    FormatVariable( "MatrixGlobal", s_arrTypes[ EMatrix ] );
     FormatVariable( "Extents", s_arrTypes[ EBox ] );
     FormatVariable( "Center", s_arrTypes[ EVector ] );
     FormatVariable( "Radius", s_arrTypes[ EFloat ] );

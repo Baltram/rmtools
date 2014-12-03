@@ -165,6 +165,56 @@ MIBool CreateRisen3Volume( mCString a_strDirectoryPath )
     return MIFalse;
 }
 
+namespace
+{
+    MIBool ProcessDir( mCFileStream & a_streamArchive, MIUInt uNewGeneration )
+    {
+        MIUInt uNameLength = a_streamArchive.ReadU32();
+        a_streamArchive.Skip( 8 * 3 + 4 + uNameLength + ( uNameLength ? 1 : 0 ) );
+        for ( MIUInt u = a_streamArchive.ReadU32(); u--; )
+        {
+            if ( 0x10 & a_streamArchive.ReadU32() )
+            {
+                if ( ProcessDir( a_streamArchive, uNewGeneration ) )
+                    continue;
+                return MIFalse;
+            }
+            uNameLength = a_streamArchive.ReadU32();
+            mCString strName = a_streamArchive.ReadString( uNameLength );
+            if ( strName.Scan( "w_%*3c_%*u_%c", mCString::AccessStaticBuffer() ) != 1 )
+                return MIFalse;
+            a_streamArchive.Skip( -static_cast< MIInt >( uNameLength ) + 6 );
+            a_streamArchive << ( MIChar )( uNewGeneration + '0' );
+            a_streamArchive.Skip( uNameLength - 7 + 1 + 4 * 8 + 5 * 4 );
+        }
+        return MITrue;
+    }
+}
+
+MIBool UpdateArchiveGeneration( mCString const & a_strPath )
+{
+    MIUInt uNewGeneration = 0;
+    if ( g_GetFileName( a_strPath ).Scan( "%*u_%*2c_%*3c.pak.%u", &uNewGeneration ) != 1 || uNewGeneration > 9 )
+        return printf( "Error: Invalid archive file name.\n" ), MIFalse;
+    mCString strPathNew = g_GetDirectoryPath( a_strPath ) + mCString().Format( "\\%u", uNewGeneration ) + g_GetFileName( a_strPath ).TrimLeft( "0123456789" ).TrimRight( ".0123456789" );
+    if ( strPathNew.Lower() != a_strPath.Lower() && !MoveFileA( a_strPath.GetText(), strPathNew.GetText() ) )
+        return printf( "Error: Could not rename %s to %s\n", g_GetFileName( a_strPath ).GetText(), g_GetFileName( strPathNew ).GetText() ), MIFalse;
+    mCFileStream streamArchive( strPathNew, mEFileOpenMode_ReadWrite );
+    if ( !streamArchive.IsOpen() )
+        return printf( "Error: Could not write to %s.\n", g_GetFileName( strPathNew ).GetText() ), MIFalse;
+    if ( streamArchive.ReadU32() != 1 || streamArchive.ReadString( 4 ) != "G3V0" )
+        return printf( "Error: Invalid archive file structure.\n" ), MIFalse;
+    streamArchive.Seek( 32 );
+    streamArchive.Seek( streamArchive.ReadU32() );
+    if ( !ProcessDir( streamArchive, uNewGeneration ) )
+    {
+        streamArchive.Close();
+        MoveFileA( strPathNew.GetText(), a_strPath.GetText() );
+        return printf( "Error: Invalid archive file structure.\n" ), MIFalse;
+    }
+    return printf( "Successfully updated archive generation to %u.\n", uNewGeneration ), MITrue;
+}
+
 MIBool ImgToDds( mCIOStreamBinary & a_streamIn, mCString const & a_strFilePath )
 {
     a_streamIn.Skip( -44 );
@@ -514,6 +564,10 @@ MIBool ProcessSecMod( mCIOStreamBinary & a_streamIn, mCString const & a_strFileP
             arrPropertySetNames.Back().Add( strPropertySet );
         }
     }
+    mTStringMap< MIBool > mapUniquenessCheck;
+    for ( MIUInt u = arrTemplateEntities.GetCount(); u--; mapUniquenessCheck[ arrTemplateEntities[ u ] ] = MITrue )
+        if ( mapUniquenessCheck[ arrTemplateEntities[ u ] ] )
+            return printf( "Error: Template entity listed multiple times: %s.\n", arrTemplateEntities[ u ].GetText() ), WaitForEnterKey( MITrue ), MIFalse;
     mTArray< mCString > arrFiles;
     mTArray< mCGenomeVolume::SFileTime > arrFileTimes;
     AddFiles( g_GetDirectoryPath( a_strFilePath ), arrFiles, arrFileTimes );
@@ -917,6 +971,7 @@ int main( int argc, char* argv[] )
                 "Supported file/folder types and actions:\n"
                 "  <folder>                              : Create .pak volume\n"
                 "  Risen 3 PAK volume (.pak)             : Unpack\n"
+                "  Risen 3 PAK volume, renamed (.pak.x)  : Update archive generation to x\n"
                 "  Risen 3 image (.r3img)                : Convert to .dds\n"
                 "  Risen 3 sound (.r3snd )               : Convert to .wav\n"
                 "  Risen 3 dialog (.r3dlg)               : Convert to .wav and .r3dlgdoc\n"
@@ -927,7 +982,7 @@ int main( int argc, char* argv[] )
                 "  Risen 3 dialog document (.r3dlgdoc)   : Convert to .r3dlg\n"
                 "  Risen 3 template document (.r3tpldoc) : Convert to .r3tpl\n"
                 "  Risen 3 sector document (.r3secdoc)   : Convert to .r3sec\n"
-                "  Sector modification file (.r3secmod)  : Process\n" );
+                "  Sector modification file (.r3secmod)  : Process\n\n" );
         WaitForEnterKey( MITrue );
         return 1;
     }
@@ -962,7 +1017,7 @@ int main( int argc, char* argv[] )
     GetFullPathNameA( argv[ 1 ], mCString::GetStaticBufferSize(), mCString::AccessStaticBuffer(), NULL );
     mCString strPath( mCString::AccessStaticBuffer() );
     DWORD dwAttrib = GetFileAttributesA( strPath.GetText() );
-    if ( dwAttrib & FILE_ATTRIBUTE_DIRECTORY )
+    if ( dwAttrib != INVALID_FILE_ATTRIBUTES && dwAttrib & FILE_ATTRIBUTE_DIRECTORY )
     {
         if ( CreateRisen3Volume( strPath ) )
             return 0;
@@ -1001,6 +1056,14 @@ int main( int argc, char* argv[] )
         return 1;
     }
     streamIn.Close();
+    MIUInt uNumber = MI_DW_INVALID;
+    if ( g_GetFileExt( strPath ).Scan( "%u", &uNumber ) == 1 && strPath.Lower().EndsWith( mCString().Format( ".pak.%u", uNumber ) ) )
+    {
+        if ( UpdateArchiveGeneration( strPath ) )
+            return 0;
+        WaitForEnterKey( MITrue );
+        return 1;
+    }
     mCGenomeVolume Pak( strPath, MITrue );
     if ( !Pak.IsOpen() )
     {

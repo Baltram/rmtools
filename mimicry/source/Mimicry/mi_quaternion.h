@@ -6,6 +6,7 @@ MI_UNNAMED_STRUCTS_NO_WARNINGS_BEGIN
 class mCQuaternion
 {
 public:
+    mCQuaternion( MIFloat a_fX, MIFloat a_fY, MIFloat a_fZ, MIFloat a_fW );
     mCQuaternion( mCMatrix4 const & a_matSource );
     mCQuaternion( mCQuaternion const & a_quatSource );
     mCQuaternion( void );

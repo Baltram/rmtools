@@ -113,6 +113,133 @@ MIFloat const * mCMatrix4::GetElements( void ) const
     return m_arrElements;
 }
 
+mCMatrix4 mCMatrix4::GetInverted( void ) const
+{
+    mCMatrix4 matInverse;
+    MIFloat * pInv = matInverse.AccessElements();
+    MIFloat const * pEnt = GetElements();
+    MIFloat fDeterminant;
+
+    pInv[ 0 ] = pEnt[ 5 ]  * pEnt[ 10 ] * pEnt[ 15 ] - 
+                pEnt[ 5 ]  * pEnt[ 11 ] * pEnt[ 14 ] - 
+                pEnt[ 9 ]  * pEnt[ 6 ]  * pEnt[ 15 ] + 
+                pEnt[ 9 ]  * pEnt[ 7 ]  * pEnt[ 14 ] +
+                pEnt[ 13 ] * pEnt[ 6 ]  * pEnt[ 11 ] - 
+                pEnt[ 13 ] * pEnt[ 7 ]  * pEnt[ 10 ];
+
+    pInv[ 4 ] = -pEnt[ 4 ]  * pEnt[ 10 ] * pEnt[ 15 ] + 
+                 pEnt[ 4 ]  * pEnt[ 11 ] * pEnt[ 14 ] + 
+                 pEnt[ 8 ]  * pEnt[ 6 ]  * pEnt[ 15 ] - 
+                 pEnt[ 8 ]  * pEnt[ 7 ]  * pEnt[ 14 ] - 
+                 pEnt[ 12 ] * pEnt[ 6 ]  * pEnt[ 11 ] + 
+                 pEnt[ 12 ] * pEnt[ 7 ]  * pEnt[ 10 ];
+
+    pInv[ 8 ] = pEnt[ 4 ]  * pEnt[ 9 ] * pEnt[ 15 ] - 
+                pEnt[ 4 ]  * pEnt[ 11 ] * pEnt[ 13 ] - 
+                pEnt[ 8 ]  * pEnt[ 5 ] * pEnt[ 15 ] + 
+                pEnt[ 8 ]  * pEnt[ 7 ] * pEnt[ 13 ] + 
+                pEnt[ 12 ] * pEnt[ 5 ] * pEnt[ 11 ] - 
+                pEnt[ 12 ] * pEnt[ 7 ] * pEnt[ 9 ];
+
+    pInv[ 12 ] = -pEnt[ 4 ]  * pEnt[ 9 ] * pEnt[ 14 ] + 
+                  pEnt[ 4 ]  * pEnt[ 10 ] * pEnt[ 13 ] +
+                  pEnt[ 8 ]  * pEnt[ 5 ] * pEnt[ 14 ] - 
+                  pEnt[ 8 ]  * pEnt[ 6 ] * pEnt[ 13 ] - 
+                  pEnt[ 12 ] * pEnt[ 5 ] * pEnt[ 10 ] + 
+                  pEnt[ 12 ] * pEnt[ 6 ] * pEnt[ 9 ];
+
+    pInv[ 1 ] = -pEnt[ 1 ]  * pEnt[ 10 ] * pEnt[ 15 ] + 
+                 pEnt[ 1 ]  * pEnt[ 11 ] * pEnt[ 14 ] + 
+                 pEnt[ 9 ]  * pEnt[ 2 ] * pEnt[ 15 ] - 
+                 pEnt[ 9 ]  * pEnt[ 3 ] * pEnt[ 14 ] - 
+                 pEnt[ 13 ] * pEnt[ 2 ] * pEnt[ 11 ] + 
+                 pEnt[ 13 ] * pEnt[ 3 ] * pEnt[ 10 ];
+
+    pInv[ 5 ] = pEnt[ 0 ]  * pEnt[ 10 ] * pEnt[ 15 ] - 
+                pEnt[ 0 ]  * pEnt[ 11 ] * pEnt[ 14 ] - 
+                pEnt[ 8 ]  * pEnt[ 2 ] * pEnt[ 15 ] + 
+                pEnt[ 8 ]  * pEnt[ 3 ] * pEnt[ 14 ] + 
+                pEnt[ 12 ] * pEnt[ 2 ] * pEnt[ 11 ] - 
+                pEnt[ 12 ] * pEnt[ 3 ] * pEnt[ 10 ];
+
+    pInv[ 9 ] = -pEnt[ 0 ]  * pEnt[ 9 ] * pEnt[ 15 ] + 
+                 pEnt[ 0 ]  * pEnt[ 11 ] * pEnt[ 13 ] + 
+                 pEnt[ 8 ]  * pEnt[ 1 ] * pEnt[ 15 ] - 
+                 pEnt[ 8 ]  * pEnt[ 3 ] * pEnt[ 13 ] - 
+                 pEnt[ 12 ] * pEnt[ 1 ] * pEnt[ 11 ] + 
+                 pEnt[ 12 ] * pEnt[ 3 ] * pEnt[ 9 ];
+
+    pInv[ 13 ] = pEnt[ 0 ]  * pEnt[ 9 ] * pEnt[ 14 ] - 
+                 pEnt[ 0 ]  * pEnt[ 10 ] * pEnt[ 13 ] - 
+                 pEnt[ 8 ]  * pEnt[ 1 ] * pEnt[ 14 ] + 
+                 pEnt[ 8 ]  * pEnt[ 2 ] * pEnt[ 13 ] + 
+                 pEnt[ 12 ] * pEnt[ 1 ] * pEnt[ 10 ] - 
+                 pEnt[ 12 ] * pEnt[ 2 ] * pEnt[ 9 ];
+
+    pInv[ 2 ] = pEnt[ 1 ]  * pEnt[ 6 ] * pEnt[ 15 ] - 
+                pEnt[ 1 ]  * pEnt[ 7 ] * pEnt[ 14 ] - 
+                pEnt[ 5 ]  * pEnt[ 2 ] * pEnt[ 15 ] + 
+                pEnt[ 5 ]  * pEnt[ 3 ] * pEnt[ 14 ] + 
+                pEnt[ 13 ] * pEnt[ 2 ] * pEnt[ 7 ] - 
+                pEnt[ 13 ] * pEnt[ 3 ] * pEnt[ 6 ];
+
+    pInv[ 6 ] = -pEnt[ 0 ]  * pEnt[ 6 ] * pEnt[ 15 ] + 
+                 pEnt[ 0 ]  * pEnt[ 7 ] * pEnt[ 14 ] + 
+                 pEnt[ 4 ]  * pEnt[ 2 ] * pEnt[ 15 ] - 
+                 pEnt[ 4 ]  * pEnt[ 3 ] * pEnt[ 14 ] - 
+                 pEnt[ 12 ] * pEnt[ 2 ] * pEnt[ 7 ] + 
+                 pEnt[ 12 ] * pEnt[ 3 ] * pEnt[ 6 ];
+
+    pInv[ 10 ] = pEnt[ 0 ]  * pEnt[ 5 ] * pEnt[ 15 ] - 
+                 pEnt[ 0 ]  * pEnt[ 7 ] * pEnt[ 13 ] - 
+                 pEnt[ 4 ]  * pEnt[ 1 ] * pEnt[ 15 ] + 
+                 pEnt[ 4 ]  * pEnt[ 3 ] * pEnt[ 13 ] + 
+                 pEnt[ 12 ] * pEnt[ 1 ] * pEnt[ 7 ] - 
+                 pEnt[ 12 ] * pEnt[ 3 ] * pEnt[ 5 ];
+
+    pInv[ 14 ] = -pEnt[ 0 ]  * pEnt[ 5 ] * pEnt[ 14 ] + 
+                  pEnt[ 0 ]  * pEnt[ 6 ] * pEnt[ 13 ] + 
+                  pEnt[ 4 ]  * pEnt[ 1 ] * pEnt[ 14 ] - 
+                  pEnt[ 4 ]  * pEnt[ 2 ] * pEnt[ 13 ] - 
+                  pEnt[ 12 ] * pEnt[ 1 ] * pEnt[ 6 ] + 
+                  pEnt[ 12 ] * pEnt[ 2 ] * pEnt[ 5 ];
+
+    pInv[ 3 ] = -pEnt[ 1 ] * pEnt[ 6 ] * pEnt[ 11 ] + 
+                 pEnt[ 1 ] * pEnt[ 7 ] * pEnt[ 10 ] + 
+                 pEnt[ 5 ] * pEnt[ 2 ] * pEnt[ 11 ] - 
+                 pEnt[ 5 ] * pEnt[ 3 ] * pEnt[ 10 ] - 
+                 pEnt[ 9 ] * pEnt[ 2 ] * pEnt[ 7 ] + 
+                 pEnt[ 9 ] * pEnt[ 3 ] * pEnt[ 6 ];
+
+    pInv[ 7 ] = pEnt[ 0 ] * pEnt[ 6 ] * pEnt[ 11 ] - 
+                pEnt[ 0 ] * pEnt[ 7 ] * pEnt[ 10 ] - 
+                pEnt[ 4 ] * pEnt[ 2 ] * pEnt[ 11 ] + 
+                pEnt[ 4 ] * pEnt[ 3 ] * pEnt[ 10 ] + 
+                pEnt[ 8 ] * pEnt[ 2 ] * pEnt[ 7 ] - 
+                pEnt[ 8 ] * pEnt[ 3 ] * pEnt[ 6 ];
+
+    pInv[ 11 ] = -pEnt[ 0 ] * pEnt[ 5 ] * pEnt[ 11 ] + 
+                  pEnt[ 0 ] * pEnt[ 7 ] * pEnt[ 9 ] + 
+                  pEnt[ 4 ] * pEnt[ 1 ] * pEnt[ 11 ] - 
+                  pEnt[ 4 ] * pEnt[ 3 ] * pEnt[ 9 ] - 
+                  pEnt[ 8 ] * pEnt[ 1 ] * pEnt[ 7 ] + 
+                  pEnt[ 8 ] * pEnt[ 3 ] * pEnt[ 5 ];
+
+    pInv[ 15 ] = pEnt[ 0 ] * pEnt[ 5 ] * pEnt[ 10 ] - 
+                 pEnt[ 0 ] * pEnt[ 6 ] * pEnt[ 9 ] - 
+                 pEnt[ 4 ] * pEnt[ 1 ] * pEnt[ 10 ] + 
+                 pEnt[ 4 ] * pEnt[ 2 ] * pEnt[ 9 ] + 
+                 pEnt[ 8 ] * pEnt[ 1 ] * pEnt[ 6 ] - 
+                 pEnt[ 8 ] * pEnt[ 2 ] * pEnt[ 5 ];
+
+    fDeterminant = pEnt[ 0 ] * pInv[ 0 ] + pEnt[ 1 ] * pInv[ 4 ] + pEnt[ 2 ] * pInv[ 8 ] + pEnt[ 3 ] * pInv[ 12 ];
+    if ( fDeterminant != 0 )
+        for ( MIUInt u = 0; u != 16; ++u )
+            pInv[ u ] /= fDeterminant;
+        
+    return matInverse;
+}
+
 MIFloat const * mCMatrix4::GetRow( MIUInt a_uRowIndex ) const
 {
     return m_arrRowColumn[ a_uRowIndex ];

@@ -1,6 +1,14 @@
 #include "mi_include_3d.h"
 #include "mi_include_standard.h"
 
+mCQuaternion::mCQuaternion( MIFloat a_fX, MIFloat a_fY, MIFloat a_fZ, MIFloat a_fW ) :
+    m_fX( a_fX ),
+    m_fY( a_fY ),
+    m_fZ( a_fZ ),
+    m_fW( a_fW )
+{
+}
+
 mCQuaternion::mCQuaternion( mCMatrix4 const & a_matSource )
 {
     MIFloat const * pMatrixElements = a_matSource.GetElements();
