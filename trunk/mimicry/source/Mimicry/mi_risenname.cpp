@@ -17226,7 +17226,7 @@ mCRisenName::mCRisenName( void )
 
 void mCRisenName::InitializeRisen2Strings( void )
 {
-    MIBool s_bRegistered = MIFalse;
+    static MIBool s_bRegistered = MIFalse;
     if ( s_bRegistered )
         return;
     s_bRegistered = MITrue;
@@ -17237,7 +17237,7 @@ void mCRisenName::InitializeRisen2Strings( void )
 
 void mCRisenName::InitializeRisen3Strings( void )
 {
-    MIBool s_bRegistered = MIFalse;
+    static MIBool s_bRegistered = MIFalse;
     if ( s_bRegistered )
         return;
     s_bRegistered = MITrue;
