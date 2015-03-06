@@ -4,9 +4,9 @@
 
 namespace
 {
-    enum ETypes { EBool, EFloat, EChar, ESignedChar, EUnsignedChar, EShort, EUnsignedShort, EInt, ELong, EUnsignedInt, EUnsignedLong, EInt64, EUnsignedInt64, EString, EScriptProxyScript, EScriptProxyAIFunction, EScriptProxyAIState, EGuiBitmapProxy2, EResourceProxy, EWeatherEnvironmentProxy, EEffectProxy, EFocusModeProxy2, EMovementSpeciesProxy, EParticleSystemProxy, EGuid, ETemplateEntityProxy, EEntityProxy, EBox, EEulerAngles, EFloatColor, EMatrix, EQuaternion, ERange1, EVector, EVector2, ETypes_Count };
+    enum ETypes { EBool, EFloat, EChar, ESignedChar, EUnsignedChar, EShort, EUnsignedShort, EInt, ELong, EUnsignedInt, EUnsignedLong, EInt64, EUnsignedInt64, EString, EScriptProxyScript, EScriptProxyAIFunction, EScriptProxyAIState, EGuiBitmapProxy2, EResourceProxy, EWeatherEnvironmentProxy, EEffectProxy, EFocusModeProxy2, EMovementSpeciesProxy, EParticleSystemProxy, EGuid, ETemplateEntityProxy, EEntityProxy, EBox, EEulerAngles, EFloatColor, EMatrix, EQuaternion, ERange1, EVector, EVector2, ELetterLocString, ETypes_Count };
 
-    MILPCChar const       s_arrTypes[ ETypes_Count ] = { "bool", "float", "char", "signed char", "unsigned char", "short", "unsigned short", "int", "long", "unsigned int", "unsigned long", "__int64", "unsigned __int64", "class bCString", "class eCScriptProxyScript", "class gCScriptProxyAIFunction", "class gCScriptProxyAIState", "class eCGuiBitmapProxy2", "class eTResourceProxy", "class eCWeatherEnvironmentProxy", "class gCEffectProxy", "class gCFocusModeProxy2", "class gCMovementSpeciesProxy", "class eCParticleSystemProxy", "class bCGuid", "class eCTemplateEntityProxy", "class eCEntityProxy", "class bCBox", "class bCEulerAngles", "class bCFloatColor", "class bCMatrix", "class bCQuaternion", "class bCRange1", "class bCVector", "class bCVector2" };
+    MILPCChar const       s_arrTypes[ ETypes_Count ] = { "bool", "float", "char", "signed char", "unsigned char", "short", "unsigned short", "int", "long", "unsigned int", "unsigned long", "__int64", "unsigned __int64", "class bCString", "class eCScriptProxyScript", "class gCScriptProxyAIFunction", "class gCScriptProxyAIState", "class eCGuiBitmapProxy2", "class eTResourceProxy", "class eCWeatherEnvironmentProxy", "class gCEffectProxy", "class gCFocusModeProxy2", "class gCMovementSpeciesProxy", "class eCParticleSystemProxy", "class bCGuid", "class eCTemplateEntityProxy", "class eCEntityProxy", "class bCBox", "class bCEulerAngles", "class bCFloatColor", "class bCMatrix", "class bCQuaternion", "class bCRange1", "class bCVector", "class bCVector2", "class gCLetterLocString" };
     mTStringMap< ETypes > s_mapTypes;
 
     MIBool ReadValueString( mCStringStream & a_streamIn, mCString & a_strDest )
@@ -373,6 +373,7 @@ MIBool mCRisenDocParser::ParseData( mCString a_strType, MIBool a_bWriteSize, MIB
         case EGuiBitmapProxy2:
             m_streamOut << ( MIU16 ) 1;
         case EString:
+        case ELetterLocString:
         case EResourceProxy:
         case EWeatherEnvironmentProxy:
         case EEffectProxy:
@@ -400,6 +401,8 @@ MIBool mCRisenDocParser::ParseData( mCString a_strType, MIBool a_bWriteSize, MIB
             }
             else
                 bResult &= ( mEResult_Ok == m_streamIn.ReadStringInQuotes( strText ) );
+            if ( enuType == ELetterLocString )
+                m_streamOut << g_djb2( strText.Lower().GetText() );
             m_streamOut << ( MIU16 )( strText.GetLength() ) << strText;
             break;
         }
