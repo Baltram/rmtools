@@ -916,7 +916,7 @@ MIBool DdsToImg( mCIOStreamBinary & a_streamIn, mCString const & a_strFilePath, 
     }
     else if ( u32Flags & 0x1 /*DDPF_ALPHAPIXELS*/ && u32ABitMask == 0xFF )
         enuColorFormat = eEColorFormat_A8, enuColorFormatHash = eEColorFormat_A8Hash;
-    MIUInt uMipMapCount, uHeight, uWidth;
+    MIUInt uMipMapCount = 0, uHeight, uWidth;
     a_streamIn.Seek( 8 );
     if ( a_streamIn.ReadU32() & 0x20000 )
         uMipMapCount = 1;
