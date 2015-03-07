@@ -11,6 +11,7 @@
 #include "mi_3dbreader.h"
 #include "mi_3dbwriter.h"
 #include "mi_3dsreader.h"
+#include "mi_3dswriter.h"
 #include "mi_maxreader.h"
 #include "mi_asereader.h"
 #include "mi_asewriter.h"
