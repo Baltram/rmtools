@@ -328,6 +328,7 @@ MIUInt mCString::LastOf( MIChar a_cChar ) const
 
 mCString mCString::Left( MIUInt a_uCount ) const
 {
+    a_uCount = g_min( GetLength(), a_uCount );
     return mCString( GetText(), a_uCount );
 }
 
@@ -413,6 +414,7 @@ MIBool mCString::ReplaceRight( mCString const & a_strText, mCString const & a_st
 
 mCString mCString::Right( MIUInt a_uCount ) const
 {
+    a_uCount = g_min( GetLength(), a_uCount );
     return mCString( GetText() + GetLength() - a_uCount, a_uCount );
 }
 

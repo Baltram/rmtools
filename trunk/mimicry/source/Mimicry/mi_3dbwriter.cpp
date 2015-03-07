@@ -1,5 +1,4 @@
 #include "mi_include_converters.h"
-#include "mi_include_map.h"
 
 #define MI_3DB_CHUNK_BEGIN( STREAM, NAME ) MIUInt uSize = 0;                                                                         \
                                            STREAM << ( MIU32 ) EChunkID_ ## NAME << ( MIU32 ) EMinVersion_ ## NAME << g_32( uSize ); \

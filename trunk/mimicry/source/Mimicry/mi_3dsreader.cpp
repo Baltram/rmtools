@@ -91,7 +91,7 @@ namespace
             else
                 return MIFalse;
             if ( s_pMaterial )
-                s_pMaterial->AccessTexMap( mCMaterial::EMapType_Diffuse ).AccessTextureFilePath() = a_streamSource.ReadString();
+                s_pMaterial->AccessTexMap( enuMapType ).AccessTextureFilePath() = a_streamSource.ReadString();
             break;
         }
         case EChunkID_NAMED_OBJECT:

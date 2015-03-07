@@ -598,6 +598,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Mimicry\mi_3dswriter.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Mimicry\mi_3dswriter.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Mimicry\mi_asereader.cpp"
 				>
 			</File>
