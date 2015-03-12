@@ -93,7 +93,7 @@ void SearchPathsDialog::on_lwPaths_currentRowChanged( int a_iCurrentRow )
 void SearchPathsDialog::on_pbAddArchive_clicked( void )
 {
     static QString s_strPath = QDir::homePath();
-    QStringList arrArchives( QFileDialog::getOpenFileName( this, tr( "Choose an archive" ), s_strPath, "Genome Volumes and Patches (*.pak *.p00 *.00 *.p0? *.0?)" ) );
+    QStringList arrArchives( QFileDialog::getOpenFileName( this, tr( "Choose Archive" ), s_strPath, "Genome Volumes and Patches (*.pak *.p00 *.00 *.p0? *.0?)" ) );
     if ( arrArchives.front() == "" )
         return;
     s_strPath = QFileInfo( arrArchives.front() ).absolutePath();
@@ -103,7 +103,7 @@ void SearchPathsDialog::on_pbAddArchive_clicked( void )
 void SearchPathsDialog::on_pbAddPath_clicked( void )
 {
     static QString s_strPath = QDir::homePath();
-    QStringList arrDirs( QFileDialog::getExistingDirectory( this, tr( "Choose a folder" ), s_strPath ) );
+    QStringList arrDirs( QFileDialog::getExistingDirectory( this, tr( "Choose Folder" ), s_strPath ) );
     if ( arrDirs.front() == "" )
         return;
     s_strPath = QFileInfo( arrDirs.front() + ".1" ).absolutePath();

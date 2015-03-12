@@ -122,9 +122,8 @@ bool Rimy3D::checkGmaxInstallation( void )
         {
             if ( QFileInfo( arrPossibleLocations[ i ] ).exists() )
             {
-                bool bResult = showQuestion( tr( "Rimy3D detected that you are using GMax under Windows " ) +
-                                             QString( QSysInfo::WindowsVersion == QSysInfo::WV_VISTA ? "Vista" : "7" ) +
-                                             tr( " without having registered the file MAXComponents.dll in the windows registry.\n\n"
+                bool bResult = showQuestion( tr( "Rimy3D detected that you are using GMax without having"
+                                                 "registered the file MAXComponents.dll in the Windows registry.\n\n"
                                                  "This may cause errors related to the 'Skin' modifier. "
                                                  "It is highly recommended to let Rimy3D fix this. Continue?" ) );
                 if ( bResult )
@@ -266,12 +265,14 @@ void Rimy3D::showError( QString a_strText, QString a_strTitle )
 {
     if ( !quiet() )
         QMessageBox::critical( QApplication::activeWindow(), a_strTitle, a_strText );
+    getInstance()->message( a_strText, EMessage_Error );
 }
 
 void Rimy3D::showMessage( QString a_strText, QString a_strTitle )
 {
     if ( !quiet() )
         QMessageBox::about( QApplication::activeWindow(), a_strTitle, a_strText );
+    getInstance()->message( a_strText, EMessage_Message );
 }
 
 bool Rimy3D::showQuestion( QString a_strText, QString a_strTitle, bool a_bDefault )
@@ -283,6 +284,7 @@ void Rimy3D::showWarning( QString a_strText, QString a_strTitle )
 {
     if ( !quiet() )
         QMessageBox::warning( QApplication::activeWindow(), a_strTitle, a_strText );
+    getInstance()->message( a_strText, EMessage_Warning );
 }
 
 void Rimy3D::loadSettingsIntern( void )
@@ -301,7 +303,7 @@ void Rimy3D::loadSettingsIntern( void )
         }
     }
 #ifdef Q_WS_WIN
-    if ( ( ( QSysInfo::WindowsVersion == QSysInfo::WV_VISTA ) || ( QSysInfo::WindowsVersion == QSysInfo::WV_WINDOWS7 ) ) &&
+    if ( ( QSysInfo::WindowsVersion != QSysInfo::WV_XP ) &&
          ( !s_pSettings->contains( "MAXComponents" ) ) )
         checkGmaxInstallation();
 #endif

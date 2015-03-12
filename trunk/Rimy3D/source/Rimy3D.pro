@@ -28,7 +28,8 @@ SOURCES += glwidget.cpp \
            pluginsdialog.cpp \
            preferencesdialog.cpp \
            networkmanager.cpp \
-           genomematerialdialog.cpp
+           genomematerialdialog.cpp \
+           batchdialog.cpp
 
 HEADERS += glwidget.h \
            mainwindow.h \
@@ -40,14 +41,16 @@ HEADERS += glwidget.h \
            pluginsdialog.h \
            preferencesdialog.h \
            networkmanager.h \
-           genomematerialdialog.h
+           genomematerialdialog.h \
+           batchdialog.h
 
 FORMS += mainwindow.ui \
          searchpathsdialog.ui \
          exportsettingsdialog.ui \
          pluginsdialog.ui \
          preferencesdialog.ui \
-         genomematerialdialog.ui
+         genomematerialdialog.ui \
+         batchdialog.ui
 
 TRANSLATIONS = resources/translations/Rimy3D_de.ts
 

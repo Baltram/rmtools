@@ -164,6 +164,10 @@ bool SceneInfo::openSceneFile( QString a_strFilePath, bool a_bMerge )
     {
         enuResult = mCObjReader::ReadObjFileData( sceneNew, streamIn, FileInfo.absolutePath().toAscii().data() );
     }
+    else if ( strExt == "3ds" )
+    {
+        enuResult = mC3dsReader::Read3dsFileData( sceneNew, streamIn );
+    }
     else if ( strExt == "3db" )
     {
         enuResult = mC3dbReader::Read3dbFileData( sceneNew, streamIn );
@@ -332,6 +336,14 @@ bool SceneInfo::saveSceneFile( QString a_strFilePath, exportSettingsDialog const
         static_cast< eSConverterOptions & >( Options ) = BaseOptions;
         enuResult = mC3dbWriter::Write3dbFileData( m_sceneCurrentScene, streamOut, Options );
     }
+    else if ( strExt == "3ds" )
+    {
+        mC3dsWriter::SOptions Options;
+        static_cast< eSConverterOptions & >( Options ) = BaseOptions;
+        Options.m_bExportSmoothingGroups = a_SettingsDialog.exportSGs();
+        Options.m_bGothic3ds = a_SettingsDialog.gothic3ds();
+        enuResult = mC3dsWriter::Write3dsFileData( m_sceneCurrentScene, streamOut, Options );
+    }
     else if ( strExt == "asc" )
     {
         mCAseWriter::SOptions Options;
@@ -498,6 +510,11 @@ void SceneInfo::errorMessageTranslations( void )
     tr( "Skinning does not cover all vertices." );
     tr( "Unknown vertex stream array type." );
     tr( "The scene contains no mesh." );
+    tr( "Invalid .3ds file." );
+    tr( "Maximum number of materials exceeded. The Gothic 3DS file format only supports up to 1024 materials." );
+    tr( "Maximum number of materials exceeded. The 3DS file format only supports up to 256 materials." );
+    tr( "Maximum vertex number exceeded. The 3DS file format only supports meshes with up to 65535 vertices. (A vertex with n different UV coordinate sets or materials counts as n vertices.)" );
+    tr( "Maximum triangle number exceeded. The 3DS file format only supports meshes with up to 65535 triangles." );
 }
 
 void SceneInfo::showLastMimicryError( mCError const * a_pLastError, QString a_strTitle )

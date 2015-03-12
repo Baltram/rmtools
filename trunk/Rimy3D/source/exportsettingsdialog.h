@@ -28,7 +28,9 @@ public:
         CreateMtl     = 1 << 7,
         AutoSkin      = 1 << 8,
         Convex        = 1 << 9,
-        NoTextures    = 1 << 10
+        NoTextures    = 1 << 10,
+        ExportSGs     = 1 << 11,
+        Gothic3ds     = 1 << 12
     };
     Q_DECLARE_FLAGS( Flags, Options )
 public:
@@ -42,6 +44,8 @@ public:
     bool    colors( void ) const;
     bool    convex( void ) const;
     bool    createMtl( void ) const;
+    bool    exportSGs( void ) const;
+    bool    gothic3ds( void ) const;
     bool    indirectMatching( void ) const;
     bool    normals( void ) const;
     bool    recalcNormals( void ) const;

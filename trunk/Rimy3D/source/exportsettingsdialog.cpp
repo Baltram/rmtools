@@ -18,6 +18,8 @@ exportSettingsDialog::exportSettingsDialog( QWidget * a_pParent, QString a_strEx
     m_pUi->w6->setVisible( a_Flags & BaseXmac );
     m_pUi->w7->setVisible( !( a_Flags & NoTextures ) );
     m_pUi->w8->setVisible( a_Flags & Convex );
+    m_pUi->w9->setVisible( a_Flags & ExportSGs );
+    m_pUi->w10->setVisible( a_Flags & Gothic3ds );
     m_pUi->cbTextureFormat->insertItems( 0, QStringList() << "TGA" << "JPG" << "PNG" << "BMP" );
     m_pUi->cbNormals->setEnabled( a_Flags & Normals );
     m_pUi->gbAutoSkin->setVisible( a_Flags & AutoSkin );
@@ -65,6 +67,16 @@ bool exportSettingsDialog::convex( void ) const
 bool exportSettingsDialog::createMtl( void ) const
 {
     return m_pUi->cbMtl->isChecked();
+}
+
+bool exportSettingsDialog::exportSGs( void ) const
+{
+    return m_pUi->cbExportSGs->isChecked();
+}
+
+bool exportSettingsDialog::gothic3ds( void ) const
+{
+    return m_pUi->cbGothic3ds->isChecked();
 }
 
 bool exportSettingsDialog::indirectMatching( void ) const
@@ -130,6 +142,8 @@ void exportSettingsDialog::loadSettings( QSettings & a_Settings )
     m_pUi->cbSaveTextures->setChecked( a_Settings.value( "cbSaveTextures", false ).toBool() );
     m_pUi->cbTextureFormat->setCurrentIndex( a_Settings.value( "cbTextureFormat", 0 ).toInt() );
     m_pUi->cbConvex->setChecked( a_Settings.value( "cbConvex", false ).toBool() );
+    m_pUi->cbExportSGs->setChecked( a_Settings.value( "cbExportSGs", false ).toBool() );
+    m_pUi->cbGothic3ds->setChecked( a_Settings.value( "cbGothic3ds", false ).toBool() );
     a_Settings.endGroup();
     if ( m_strExt == "_xmac" || m_strExt == "xact" )
     {
@@ -194,5 +208,7 @@ void exportSettingsDialog::saveSettings( QSettings & a_Settings )
     a_Settings.setValue( "cbSaveTextures", m_pUi->cbSaveTextures->isChecked() );
     a_Settings.setValue( "cbTextureFormat", m_pUi->cbTextureFormat->currentIndex() );
     a_Settings.setValue( "cbConvex", m_pUi->cbConvex->isChecked() );
+    a_Settings.setValue( "cbExportSGs", m_pUi->cbExportSGs->isChecked() );
+    a_Settings.setValue( "cbGothic3ds", m_pUi->cbGothic3ds->isChecked() );
     a_Settings.endGroup();
 }
