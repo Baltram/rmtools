@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>208</width>
-    <height>419</height>
+    <height>465</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -84,6 +84,38 @@
        <widget class="QCheckBox" name="cbVColors">
         <property name="text">
          <string>Export Vertex Colors</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QWidget" name="w10" native="true">
+     <layout class="QHBoxLayout" name="horizontalLayout_6">
+      <property name="margin">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QCheckBox" name="cbGothic3ds">
+        <property name="text">
+         <string>Gothic 3DS format</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QWidget" name="w9" native="true">
+     <layout class="QHBoxLayout" name="horizontalLayout_4">
+      <property name="margin">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QCheckBox" name="cbExportSGs">
+        <property name="text">
+         <string>Export Smoothing Groups</string>
         </property>
        </widget>
       </item>

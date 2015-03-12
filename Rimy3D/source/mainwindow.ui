@@ -41,6 +41,8 @@
     <addaction name="actionMerge"/>
     <addaction name="actionClose"/>
     <addaction name="separator"/>
+    <addaction name="actionBatch_Conversion"/>
+    <addaction name="separator"/>
     <addaction name="actionSave_As"/>
     <addaction name="separator"/>
     <addaction name="actionRecent1"/>
@@ -218,6 +220,11 @@
   <action name="action3db_Tools_for_3ds_Max">
    <property name="text">
     <string>3db Tools For 3ds Max...</string>
+   </property>
+  </action>
+  <action name="actionBatch_Conversion">
+   <property name="text">
+    <string>Batch Conversion...</string>
    </property>
   </action>
  </widget>

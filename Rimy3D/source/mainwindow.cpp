@@ -2,45 +2,96 @@
 #include "ui_mainwindow.h"
 #include "rimy3d.h"
 #include "texturefinder.h"
+#include "batchdialog.h"
 #include "pluginsdialog.h"
 #include <QClipboard>
 
-MainWindow::MainWindow( QWidget * a_pParent ) :
-    QMainWindow( a_pParent ),
-    m_pUi( new Ui::MainWindow ),
-    m_3dbDialog( this, "3db", exportSettingsDialog::NormalsRecalc | exportSettingsDialog::Colors ),
-    m_ascDialog( this, "asc", exportSettingsDialog::None ),
-    m_aseDialog( this, "ase", exportSettingsDialog::Normals | exportSettingsDialog::Colors ),
-    m_objDialog( this, "obj", exportSettingsDialog::Normals | exportSettingsDialog::CreateMtl ),
-    m_xcmshDialog( this, "xcmsh", exportSettingsDialog::NormalsCalc | exportSettingsDialog::Colors ),
-    m_xmshDialog( this, "xmsh", exportSettingsDialog::NormalsCalc | exportSettingsDialog::Colors ),
-    m_xlmshDialog( this, "xlmsh", exportSettingsDialog::None ),
-    m_xactDialog( this, "xact", exportSettingsDialog::VertsOnly | exportSettingsDialog::BaseXact | exportSettingsDialog::AutoSkin | exportSettingsDialog::NormalsCalc ),
-    m_xmacDialog( this, "_xmac", exportSettingsDialog::VertsOnly | exportSettingsDialog::BaseXmac | exportSettingsDialog::AutoSkin | exportSettingsDialog::NormalsCalc ),
-    m_xnvmshDialog( this, "xnvmsh", exportSettingsDialog::Convex | exportSettingsDialog::NoTextures ),
-    m_xcomDialog( this, "_xcom", exportSettingsDialog::Convex | exportSettingsDialog::NoTextures ),
-    m_GenomeMaterialDialog( m_SceneInfo ),
-    m_bOnMerge( false )
+MainWindow * MainWindow::s_pInstance = 0;
+
+MainWindow & MainWindow::getInstance( void )
 {
-    m_pUi->setupUi( this );
-    setWindowTitle( Rimy3D::applicationName() );
-    setAcceptDrops( true );
-    updateLanguage();
-    connect( &m_SceneInfo, SIGNAL( sceneChanged( void ) ), this, SLOT( onSceneChanged( void ) ) );
-    connect( &PreferencesDialog::getInstance(), SIGNAL( materialLookupRequested( void ) ), &m_SceneInfo, SLOT( lookUpGenomeMaterials( void ) ) );
-    connect( Rimy3D::getInstance(), SIGNAL( settingsSaving( QSettings & ) ), this, SLOT( saveSettings( QSettings & ) ) );
-    connect( Rimy3D::getInstance(), SIGNAL( settingsLoading( QSettings & ) ), this, SLOT( loadSettings( QSettings & ) ) );
-    connect( m_pUi->menuNew_Version_Available, SIGNAL( aboutToShow( void ) ), this, SLOT( on_menuNew_Version_Available_triggered( void ) ) );
-    if ( Rimy3D::isUpToDate() )
-        m_pUi->menuBar->removeAction( m_pUi->menuNew_Version_Available->menuAction() );
-    TextureFinder::getInstance();
-    PreferencesDialog::getInstance();
-    Rimy3D::loadSettings();
+    if ( !s_pInstance )
+        s_pInstance = new MainWindow;
+    return *s_pInstance;
 }
 
-MainWindow::~MainWindow( void )
+QString MainWindow::getOpenFilter( void )
 {
-    delete m_pUi;
+    QString strResult = tr( "All files" );
+    strResult.append( " (*.3ds *.obj *.3db *.gmax *.ase *.asc *.xcmsh *.xlmsh *.xnvmsh *.xact *._xmac *._xmsh *._xcom);;"
+                      "Baltram's 3D format (*.3db);;"
+                      "3D Studio Mesh (*.3ds);;"
+                      "Wavefront OBJ format (*.obj);;"
+                      "GMax Scene (*.gmax);;"
+                      "3ds Max ASCII Scene (*.ase);;"
+                      "Gothic ASCII Scene (*.asc);;"
+                      "Gothic 3 Mesh (*.xcmsh);;"
+                      "Gothic 3 Motion Actor (*.xact);;"
+                      "Gothic 3 LOD Mesh (*.xlmsh);;"
+                      "Gothic 3 Collision Mesh (*.xnvmsh);;"
+                      "Risen Mesh (*._xmsh);;"
+                      "Risen Motion Actor (*._xmac);;"
+                      "Risen Collision Mesh (*._xcom);;" );
+    return strResult;
+}
+
+QString MainWindow::getSaveFilter( void )
+{
+    QString strResult = tr( "All files" );
+    strResult.append( " (*.*);;"
+                      "Baltram's 3D format (*.3db);;"
+                      "3D Studio Mesh (*.3ds);;"
+                      "Wavefront OBJ format (*.obj);;"
+                      "3ds Max ASCII Scene (*.ase);;"
+                      "Gothic ASCII Scene (*.asc);;"
+                      "Gothic 3 Mesh (*.xcmsh);;"
+                      "Gothic 3 Motion Actor (*.xact);;"
+                      "Gothic 3 LOD Mesh (*.xlmsh);;"
+                      "Gothic 3 Collision Mesh (*.xnvmsh);;"
+                      "Risen Mesh (*._xmsh);;"
+                      "Risen Motion Actor (*._xmac);;"
+                      "Risen Collision Mesh (*._xcom);;" );
+    return strResult;
+}
+
+exportSettingsDialog const * MainWindow::getExportSettings( QString const & a_strPath, bool a_bAllowSkinCalculation )
+{
+    QString strExt = QFileInfo( a_strPath ).suffix().toLower();
+    exportSettingsDialog * pDialog = 0;
+    if ( strExt == "3db" )
+        pDialog = &m_3dbDialog;
+    else if ( strExt == "3ds" )
+        pDialog = &m_3dsDialog;
+    else if ( strExt == "asc" )
+        pDialog = &m_ascDialog;
+    else if ( strExt == "ase" )
+        pDialog = &m_aseDialog;
+    else if ( strExt == "obj" )
+        pDialog = &m_objDialog;
+    else if ( strExt == "xcmsh" )
+        pDialog = &m_xcmshDialog;
+    else if ( strExt == "_xmsh" )
+        pDialog = &m_xmshDialog;
+    else if ( strExt == "xlmsh" )
+        pDialog = &m_xlmshDialog;
+    else if ( strExt == "xact" )
+        ( pDialog = &m_xactDialog )->setAutoSkinVisible( m_SceneInfo.sceneContainsUnskinnedMeshes() && a_bAllowSkinCalculation );
+    else if ( strExt == "_xmac" )
+        ( pDialog = &m_xmacDialog )->setAutoSkinVisible( m_SceneInfo.sceneContainsUnskinnedMeshes() && a_bAllowSkinCalculation );
+    else if ( strExt == "xnvmsh" )
+        pDialog = &m_xcomDialog;
+    else if ( strExt == "_xcom" )
+        pDialog = &m_xcomDialog;
+    else
+        Rimy3D::showError( tr( "Unknown file extension:" ).append( QString( " '.%1'" ).arg( strExt ) ) );
+    if ( pDialog && strExt != "asc" && strExt != "xlmsh" )
+    {
+        pDialog->setParent( Rimy3D::activeWindow(), Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::Dialog );
+        int iResult = pDialog->exec();
+        pDialog->setParent( this );
+        return iResult ? pDialog : 0;
+    }
+    return pDialog;
 }
 
 void MainWindow::open( QString a_strFilePath )
@@ -77,35 +128,9 @@ void MainWindow::save( QString a_strFilePath )
     if ( a_strFilePath == "" )
         return;
     a_strFilePath = QDir::toNativeSeparators( a_strFilePath );
-    QString strExt = QFileInfo( a_strFilePath ).suffix().toLower();
-    exportSettingsDialog * pDialog = 0;
-    if ( strExt == "3db" )
-        pDialog = &m_3dbDialog;
-    else if ( strExt == "asc" )
-        pDialog = &m_ascDialog;
-    else if ( strExt == "ase" )
-        pDialog = &m_aseDialog;
-    else if ( strExt == "obj" )
-        pDialog = &m_objDialog;
-    else if ( strExt == "xcmsh" )
-        pDialog = &m_xcmshDialog;
-    else if ( strExt == "_xmsh" )
-        pDialog = &m_xmshDialog;
-    else if ( strExt == "xlmsh" )
-        pDialog = &m_xlmshDialog;
-    else if ( strExt == "xact" )
-        ( pDialog = &m_xactDialog )->setAutoSkinVisible( m_SceneInfo.sceneContainsUnskinnedMeshes() );
-    else if ( strExt == "_xmac" )
-        ( pDialog = &m_xmacDialog )->setAutoSkinVisible( m_SceneInfo.sceneContainsUnskinnedMeshes() );
-    else if ( strExt == "xnvmsh" )
-        pDialog = &m_xcomDialog;
-    else if ( strExt == "_xcom" )
-        pDialog = &m_xcomDialog;
-    else
-        Rimy3D::showError( tr( "Unknown file extension:" ).append( QString( " '.%1'" ).arg( strExt ) ) );
-    if ( !pDialog || ( strExt != "asc" && strExt != "xlmsh" && !pDialog->exec() ) )
-        return;
-    m_SceneInfo.saveSceneFile( a_strFilePath, *pDialog, &m_pUi->widget->getWorld() );
+    exportSettingsDialog const * pDialog = getExportSettings( a_strFilePath, true );
+    if ( pDialog )
+        m_SceneInfo.saveSceneFile( a_strFilePath, *pDialog, &m_pUi->widget->getWorld() );
 }
 
 void MainWindow::loadSettings( QSettings & a_Settings )
@@ -159,6 +184,46 @@ void MainWindow::dropEvent( QDropEvent * a_pEvent )
     open( a_pEvent->mimeData()->urls()[ 0 ].toLocalFile() );
 }
 
+MainWindow::MainWindow( QWidget * a_pParent ) :
+    QMainWindow( a_pParent ),
+    m_pUi( new Ui::MainWindow ),
+    m_3dbDialog( this, "3db", exportSettingsDialog::NormalsRecalc | exportSettingsDialog::Colors ),
+    m_3dsDialog( this, "3ds", exportSettingsDialog::ExportSGs | exportSettingsDialog::Gothic3ds ),
+    m_ascDialog( this, "asc", exportSettingsDialog::None ),
+    m_aseDialog( this, "ase", exportSettingsDialog::Normals | exportSettingsDialog::Colors ),
+    m_objDialog( this, "obj", exportSettingsDialog::Normals | exportSettingsDialog::CreateMtl ),
+    m_xcmshDialog( this, "xcmsh", exportSettingsDialog::NormalsCalc | exportSettingsDialog::Colors ),
+    m_xmshDialog( this, "xmsh", exportSettingsDialog::NormalsCalc | exportSettingsDialog::Colors ),
+    m_xlmshDialog( this, "xlmsh", exportSettingsDialog::None ),
+    m_xactDialog( this, "xact", exportSettingsDialog::VertsOnly | exportSettingsDialog::BaseXact | exportSettingsDialog::AutoSkin | exportSettingsDialog::NormalsCalc ),
+    m_xmacDialog( this, "_xmac", exportSettingsDialog::VertsOnly | exportSettingsDialog::BaseXmac | exportSettingsDialog::AutoSkin | exportSettingsDialog::NormalsCalc ),
+    m_xnvmshDialog( this, "xnvmsh", exportSettingsDialog::Convex | exportSettingsDialog::NoTextures ),
+    m_xcomDialog( this, "_xcom", exportSettingsDialog::Convex | exportSettingsDialog::NoTextures ),
+    m_GenomeMaterialDialog( m_SceneInfo ),
+    m_bOnMerge( false )
+{
+    m_pUi->setupUi( this );
+    setWindowTitle( Rimy3D::applicationName() );
+    setAcceptDrops( true );
+    updateLanguage();
+    connect( &m_SceneInfo, SIGNAL( sceneChanged( void ) ), this, SLOT( onSceneChanged( void ) ) );
+    connect( &PreferencesDialog::getInstance(), SIGNAL( materialLookupRequested( void ) ), &m_SceneInfo, SLOT( lookUpGenomeMaterials( void ) ) );
+    connect( Rimy3D::getInstance(), SIGNAL( settingsSaving( QSettings & ) ), this, SLOT( saveSettings( QSettings & ) ) );
+    connect( Rimy3D::getInstance(), SIGNAL( settingsLoading( QSettings & ) ), this, SLOT( loadSettings( QSettings & ) ) );
+    connect( m_pUi->menuNew_Version_Available, SIGNAL( aboutToShow( void ) ), this, SLOT( on_menuNew_Version_Available_triggered( void ) ) );
+    if ( Rimy3D::isUpToDate() )
+        m_pUi->menuBar->removeAction( m_pUi->menuNew_Version_Available->menuAction() );
+    TextureFinder::getInstance();
+    PreferencesDialog::getInstance();
+    BatchDialog::getInstance();
+    Rimy3D::loadSettings();
+}
+
+MainWindow::~MainWindow( void )
+{
+    delete m_pUi;
+}
+
 void MainWindow::updateLanguage( void )
 {
     char const * const arrIconFileNames[ Rimy3D::ELanguage_Count ] =
@@ -208,6 +273,13 @@ void MainWindow::on_actionAbout_triggered( void )
                          "<p>This program uses the <a href='http://www.glc-lib.net'>GLC_lib</a> library by Laurent Ribon.</p>"
                          "<p></p>" ),
                          tr( "About Rimy3D" ) );
+}
+
+void MainWindow::on_actionBatch_Conversion_triggered()
+{
+    BatchDialog & BatchDialog = BatchDialog::getInstance();
+    BatchDialog.move( this->geometry().center() - BatchDialog.rect().center() );
+    BatchDialog.exec();
 }
 
 void MainWindow::on_actionCheck_For_Updates_triggered( void )
@@ -268,20 +340,7 @@ void MainWindow::on_actionMerge_triggered( void )
 
 void MainWindow::on_actionOpen_triggered( void )
 {
-    QString strFilter = tr( "All files" ).append( " (*.obj *.3db *.gmax *.ase *.asc *.xcmsh *.xlmsh *.xnvmsh *.xact *._xmac *._xmsh *._xcom);;"
-                                                  "Wavefront OBJ format (*.obj);;"
-                                                  "Baltram's 3D format (*.3db);;"
-                                                  "GMax Scene (*.gmax);;"
-                                                  "3ds Max ASCII Scene (*.ase);;"
-                                                  "Gothic ASCII Scene (*.asc);;"
-                                                  "Gothic 3 Motion Actor (*.xact);;"
-                                                  "Gothic 3 Mesh (*.xcmsh);;"
-                                                  "Gothic 3 LOD Mesh (*.xlmsh);;"
-                                                  "Gothic 3 Collision Mesh (*.xnvmsh);;"
-                                                  "Risen Motion Actor (*._xmac);;"
-                                                  "Risen Mesh (*._xmsh);;"
-                                                  "Risen Collision Mesh (*._xcom);;" );
-    open( QFileDialog::getOpenFileName( this, tr( m_bOnMerge ? "Merge" : "Open" ), m_SceneInfo.getCurrentDir(), strFilter ) );
+    open( QFileDialog::getOpenFileName( this, tr( m_bOnMerge ? "Merge" : "Open" ), m_SceneInfo.getCurrentDir(), getOpenFilter() ) );
 }
 
 void MainWindow::on_actionPreferences_triggered( void )
@@ -318,20 +377,8 @@ void MainWindow::on_actionRecent5_triggered( void )
 
 void MainWindow::on_actionSave_As_triggered( void )
 {
-    QString strFilter = tr( "All files" ).append( " (*.*);;" ) +
-                        "Baltram's 3D format (*.3db);;"
-                        "Wavefront OBJ format (*.obj);;"
-                        "3ds Max ASCII Scene (*.ase);;"
-                        "Gothic ASCII Scene (*.asc);;"
-                        "Gothic 3 Mesh (*.xcmsh);;"
-                        "Gothic 3 LOD Mesh (*.xlmsh);;"
-                        "Gothic 3 Motion Actor (*.xact);;"
-                        "Gothic 3 Collision Mesh (*.xnvmsh);;"
-                        "Risen Mesh (*._xmsh);;"
-                        "Risen Motion Actor (*._xmac);;"
-                        "Risen Collision Mesh (*._xcom);;";
     QString strFilePath = m_SceneInfo.getCurrentSaveDir() + QDir::separator() + QFileInfo( m_SceneInfo.getCurrentFile() ).baseName();
-    save( QFileDialog::getSaveFileName( this, tr( "Save As" ), strFilePath, strFilter ) );
+    save( QFileDialog::getSaveFileName( this, tr( "Save As" ), strFilePath, getSaveFilter() ) );
 }
 
 void MainWindow::on_menuNew_Version_Available_triggered( void )

@@ -18,6 +18,13 @@ public:
         ELanguage_German,
         ELanguage_Count
     };
+    enum EMessage
+    {
+        EMessage_Message,
+        EMessage_Warning,
+        EMessage_Error,
+        EMessage_Count
+    };
 public:
     Rimy3D( int & argc, char * argv[] );
    ~Rimy3D( void );
@@ -42,6 +49,7 @@ public:
     static bool        showQuestion( QString a_strText, QString a_strTitle = "Rimy3D", bool a_bDefault = false );
     static void        showWarning( QString a_strText, QString a_strTitle = "Rimy3D" );
 signals:
+    void message( QString const & a_strText, Rimy3D::EMessage a_enuType );
     void settingsLoading( QSettings & a_Settings );
     void settingsSaving( QSettings & a_Settings );
 private:
