@@ -694,6 +694,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Mimicry\mi_r3mshreader.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Mimicry\mi_r3mshreader.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Mimicry\mi_xactreader.cpp"
 				>
 			</File>
