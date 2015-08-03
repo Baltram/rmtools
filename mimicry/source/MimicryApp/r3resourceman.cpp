@@ -15,9 +15,9 @@ void WaitForEnterKey( MIBool a_bPrintDefaultMessage = MIFalse, MIBool a_bExit = 
 {
     if ( s_bNonInteractive )
         return;
-	if ( a_bPrintDefaultMessage )
-		printf( a_bExit ? "Press ENTER to exit... " : "Press ENTER to continue... " );
-	for ( MIChar c = 0; c != '\n' && c != EOF; c = getchar() );
+    if ( a_bPrintDefaultMessage )
+        printf( a_bExit ? "Press ENTER to exit... " : "Press ENTER to continue... " );
+    for ( MIChar c = 0; c != '\n' && c != EOF; c = getchar() );
 }
 
 void ShowProgress( MIUInt a_uCurrent, MIUInt a_uTotal )
@@ -329,6 +329,59 @@ MIBool SecToSecDoc( mCIOStreamBinary & a_streamIn, mCString const & a_strFilePat
         WaitForEnterKey( MITrue );
         return MIFalse;
     }
+    return MITrue;
+}
+
+MIBool HdrToHdrDoc(mCIOStreamBinary & streamIn, mCString const & a_strFilePath)
+{
+    if (streamIn.ReadString(4) != "GAR5")
+        return streamIn.Seek(0), MIFalse;
+    streamIn.ReadU32(); // 0x00000020
+
+    mCMemoryStream streamDoc;
+    mCRisenDoc Doc(streamIn, streamDoc);
+    if (!Doc.DocumentRisen3Hdr())
+    {
+        printf("Error: Unknown hdr file version.\n");
+        WaitForEnterKey(MITrue);
+        return MIFalse;
+    }
+
+    mCString const strDocPath = g_GetDirectoryPath(a_strFilePath) + "\\" + g_GetFileNameNoExt(a_strFilePath) + ".hdrdoc";
+    if (!streamDoc.ToFile(strDocPath))
+    {
+        printf("Error: Could not create %s\nThe problem might be missing access rights. Try starting the program with admin rights.\n", strDocPath.GetText());
+        WaitForEnterKey(MITrue);
+        return MIFalse;
+    }
+    return MITrue;
+}
+
+MIBool HdrDocToHdr(mCIOStreamBinary & a_streamIn, mCString const & a_strFilePath)
+{
+    mCString strResourceName = g_GetFileNameNoExt(a_strFilePath);
+    mCString const strR3HdrPath = g_GetDirectoryPath(a_strFilePath) + "\\" + strResourceName + ".hdr";
+    mCMemoryStream streamHdr;
+    mCStringStream streamDoc;
+    a_streamIn >> streamDoc;
+    streamDoc.Seek(0);
+    mCRisenDocParser Parser(streamDoc, streamHdr);
+    if (!Parser.ParseRisen3Hdr(MITrue))
+    {
+        printf("Error: Parse error at line %u.\n", Parser.GetLastErrorLine());
+        WaitForEnterKey(MITrue);
+        return MIFalse;
+    }
+    mCFileStream streamDest(strR3HdrPath, mEFileOpenMode_Write);
+    if (!streamDest.IsOpen())
+    {
+        printf("Error: Could not create %s\nThe problem might be missing access rights. Try starting the program with admin rights.\n", strR3HdrPath.GetText());
+        WaitForEnterKey(MITrue);
+        return MIFalse;
+    }
+    streamDest << "GAR5" << 0x00000020;
+    streamDest << streamHdr;
+    
     return MITrue;
 }
 
@@ -977,11 +1030,13 @@ int main( int argc, char* argv[] )
                 "  Risen 3 dialog (.r3dlg)               : Convert to .wav and .r3dlgdoc\n"
                 "  Risen 3 template (.r3tpl)             : Convert to .r3tpldoc\n"
                 "  Risen 3 sector (.r3sec)               : Convert to .r3secdoc\n"
+                "  Risen 3 document (.hdr)               : Convert to .hdrdoc\n"
                 "  DDS image (.dds)                      : Convert to .r3img\n"
                 "  WAV sound (.wav)                      : Convert to .r3snd\n"
                 "  Risen 3 dialog document (.r3dlgdoc)   : Convert to .r3dlg\n"
                 "  Risen 3 template document (.r3tpldoc) : Convert to .r3tpl\n"
                 "  Risen 3 sector document (.r3secdoc)   : Convert to .r3sec\n"
+                "  Risen 3 document document (.hdrdoc)   : Convert to .hdr\n"
                 "  Sector modification file (.r3secmod)  : Process\n\n" );
         WaitForEnterKey( MITrue );
         return 1;
@@ -1033,6 +1088,10 @@ int main( int argc, char* argv[] )
         return SecDocToSec( streamIn, strPath ) ? 0 : 1;
     else if ( g_GetFileExt( strPath ).ToLower() == "r3secmod" )
         return ProcessSecMod( streamIn, strPath ) ? 0 : 1;
+    else if (g_GetFileExt(strPath).ToLower() == "hdr")
+        return HdrToHdrDoc(streamIn, strPath) ? 0 : 1;
+    else if (g_GetFileExt(strPath).ToLower() == "hdrdoc")
+        return HdrDocToHdr(streamIn, strPath) ? 0 : 1;
     MIBool bIsResourceFile = MIFalse, bIsDdsFile = MIFalse, bIsWavFile = MIFalse;
     MIBool bSuccess = ReadResourceFile( streamIn, strPath, bIsResourceFile );
     if ( bIsResourceFile )
