@@ -1,0 +1,15 @@
+[SIZE=5]Genome Material Editor[/SIZE]
+
+[SIZE=2]Using the Genome Material Editor you can edit material files from [B]Gothic 3[/B] ([B].xshmat[/B]) and [B]Risen[/B] ([B]._xmat[/B]). It is located in the 'Tools' menu.[/SIZE]
+
+[SIZE=2]The upper dropdown list contains the names of all Genome materials used by the currently open model. Clicking on 'Open' loads the selected material.[/SIZE]
+
+[SIZE=2]Alternatively, material files can be opened by drag and drop or by clicking on '...'.[/SIZE]
+
+[SIZE=2]A Genome material consists of different types of shader elements, each having one or more properties. For example, there are shader elements that point to a texture (eCColorSrcSampler), or to a color value (eCColorSrcConstant), or that mix other shader elements together (eCColorSrcCombiner).[/SIZE]
+
+[SIZE=2]The shader elements are numbered beginning with 0. Each channel (diffuse, specular, normal, etc.) can be assigned to one shader element, which is indicated by the channel's name in round brackets. If a shader element points to other shader elements, their numbers are listed in curly brackets.[/SIZE]
+
+[SIZE=2]Apart from shader elements, each Genome material has a 'material resource object' and a 'shader object' with various properties. For simplicity they are kept in the same list as the shader elements.[/SIZE]
+
+[SIZE=2]The structure of a material file (number, type and links of shader elements) is fixed, only the properties can be edited. So the first step when creating a custom material is to search the original materials for one that is well suited as a base for the new material.[/SIZE]

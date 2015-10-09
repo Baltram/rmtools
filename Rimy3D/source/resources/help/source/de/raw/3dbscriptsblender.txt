@@ -1,0 +1,7 @@
+[SIZE=5]Blender 3db Import/Export Scripts[/SIZE]
+
+[SIZE=2]Dieses Plugin für [B]Blender 2.63[/B] und neuer ermöglicht den Im- und Export von [B].3db[/B]-Dateien.[/SIZE]
+
+[SIZE=2]Die Installation erfolgt über den Menüpunkt 'Extras' in der Menüleiste von [B]Rimy3D[/B]. Wählen Sie dazu das Installationsverzeichnis von [B]Blender[/B] aus. Nachdem die benötigten Dateien automatisch kopiert wurden, kann das Plugin in [B]Blender[/B] unter 'File' > 'User Preferences...' > 'Addons' > 'Import-Export' > 'Baltram's 3D format' aktiviert werden. Nach dem Setzen des Häkchens sollten die vorgenommenen Einstellungen per Klick auf 'Save User Settings' gespeichert werden.[/SIZE]
+
+[SIZE=2]Nach der Installation können [B].3db[/B]-Dateien über 'File' > 'Import' und 'File' > 'Export' geladen und gespeichert werden. Für den Export von Vertex Colors sollten die betreffenden Meshes jeweils einen Vertex Color-Kanal mit dem Namen 'rgb' und einen mit dem Namen 'alpha' besitzen.[/SIZE]

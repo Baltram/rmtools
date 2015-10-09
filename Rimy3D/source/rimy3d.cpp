@@ -12,9 +12,12 @@
 #ifdef Q_WS_WIN
 #include "mi_macros.h"
 #include "Windows.h"
+#include "Htmlhelp.h"
 #include <QSysInfo>
 #include <QFileInfo>
 #pragma comment ( lib, "Shell32.lib" )
+#pragma comment ( lib, "Htmlhelp.lib" )
+#pragma comment ( lib, "Advapi32.lib" )
 #endif
 
 bool Rimy3D::s_bQuiet = false;
@@ -151,6 +154,28 @@ bool Rimy3D::checkGmaxInstallation( void )
     }
 #endif
     return true;
+}
+
+namespace
+{
+    bool overwriteFile( QString a_strPathDest, QString a_strPathSource )
+    {
+        QFile::setPermissions( a_strPathDest, QFile::permissions( a_strPathDest ) | QFile::WriteUser );
+        QFile::remove( a_strPathDest );
+        return QFile::copy( a_strPathSource, a_strPathDest );
+    }
+}
+
+void Rimy3D::displayHelp( void )
+{
+    QString const strFileName = getLanguage() == ELanguage_German ? "Rimy3D_de.chm" : "Rimy3D_en.chm";
+    QString const strTempFilePath = QDir::temp().absolutePath() + '/' + strFileName;
+    overwriteFile( strTempFilePath, ":/help/help/" + strFileName );
+#ifdef Q_WS_WIN
+    HtmlHelpA( GetDesktopWindow(), QDir::toNativeSeparators( strTempFilePath ).toAscii().data(), HH_DISPLAY_TOPIC, NULL );
+#else
+    QDesktopServices::openUrl( QUrl::fromLocalFile( strTempFilePath ) );
+#endif
 }
 
 Rimy3D * Rimy3D::getInstance( void )

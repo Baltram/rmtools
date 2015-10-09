@@ -1,0 +1,53 @@
+[SIZE=5]Öffnen und Speichern[/SIZE]
+
+[SIZE=4]Öffnen[/SIZE]
+
+[SIZE=2]Abgesehen von 'Datei' > 'Öffnen' können 3D-Dateien und Materialien auch per Drag & Drop geladen werden: ziehen Sie die Datei dazu entweder auf das [B]Rimy3D[/B]-Icon im Explorer oder direkt ins Hauptfenster von [B]Rimy3D[/B].[/SIZE]
+
+[SIZE=2]Per 'Datei' > 'Zusammenführen...' können mehrere 3D-Dateien miteinander kombiniert werden.[/SIZE]
+
+[SIZE=2]Damit [B]Rimy3D[/B] die in den 3D-Dateien verwendeten Texturen finden und laden kann, ist es empfehlenswert, die [URL="searchpaths.htm"]Suchpfade[/URL] zu konfigurieren.[/SIZE]
+
+[SIZE=4]Speichern[/SIZE]
+
+[SIZE=2]Per 'Datei' > 'Speichern unter...' können die aktuell geöffneten 3D-Modelle in eines der unterstützten [URL="fileformats.htm"]3D-Dateiformate[/URL] exportiert werden. Nach der Auswahl des Formats und des Speicherorts wird ein Dialog mit den verfügbaren Exporteinstellungen angezeigt:[/SIZE]
+
+[table="width: 700"]
+[tr]
+	[td]Texturen speichern[/td]
+	[td]Aktuell geladene Texturen werden im selben Ordner mit abgespeichert.[/td]
+[/tr]
+[tr]
+	[td]Vertex Colors exportieren[/td]
+	[td]Falls das Modell Vertex Colors besitzt, werden diese mit abgespeichert (RGBA).[/td]
+[/tr]
+[tr]
+	[td]Smoothing Groups exportieren[/td]
+	[td]Falls das Modell Smoothing Groups besitzt, werden diese mit abgespeichert.[B][/B]
+Smoothing Groups stammen aus [B]3ds Max[/B]/[B]GMax[/B] und dienen der Berechnung von Vertex Normals. Sie können in [B].3ds[/B], [B].3db[/B], [B].ase[/B] und [B].asc[/B]-Dateien enthalten sein, jedoch wird diese Option nur beim [B].3ds[/B]-Format angezeigt, da Smoothing Groups in den anderen drei Formaten zwangsläufig gespeichert werden.
+[/td]
+[/tr]
+[tr]
+	[td]Vertex Normals exportieren[/td]
+	[td][I]Beibehalten wenn möglich[/I][B][/B]
+Falls das Modell bereits Vertex Normals besitzt, werden diese beibehalten. Ansonsten werden sie basierend auf den Smoothing Groups neu berechnet.[B][/B]
+[B][/B]
+[I]Per Smoothing Groups neu berechnen[/I][B][/B]
+Berechnet die Vertex Normals auf Grundlage der Smoothing Groups. Jedes Triangle besitzt standardmäßig die Smoothing Group 0.[B][/B]
+[B][/B]
+[I]Per Winkel neu berechnen[/I][B][/B]
+Der Neigungswinkel zwischen zwei Triangles entscheidet darüber, ob die gemeinsame Kante hart oder weich erscheint. Wird die Einstellung 0° gewählt, erscheinen alle Kanten hart, bei einer Einstellung von 180° erscheinen alle Kanten weich. Häufig ist ein Wert zwischen 60° und 90° geeignet.
+[/td]
+[/tr]
+[/table]
+[SIZE=2]Mit einem Klick auf '~' werden die Standardeinstellungen wiederhergestellt.[/SIZE]
+
+[SIZE=2]Zusätzlich besitzen einige Dateiformate spezielle Einstellungsmöglichkeiten, die in den entsprechenden Artikeln erklärt werden: [URL="xact.htm"].xact[/URL], [URL="xcmsh.htm"].xcmsh[/URL], [URL="xlmsh.htm"].xlmsh[/URL], [URL="xnvmsh.htm"].xnvmsh[/URL], [URL="_xmac.htm"]._xmac[/URL], [URL="_xmsh.htm"]._xmsh[/URL], [URL="_xcom.htm"]._xcom[/URL][/SIZE]
+
+[SIZE=4]Stapelverarbeitung[/SIZE]
+
+[SIZE=2]Über 'Datei' > 'Stapelverarbeitung' können mehrere 3D-Dateien auf einmal in ein anderes Dateiformat umgewandelt werden.[/SIZE]
+
+[SIZE=2]Zur Liste der Quelldateien können einzelne 3D-Dateien oder auch ganze Ordner hinzugefügt werden. Alle diese Dateien werden nach einem Klick auf 'Start' in das ausgeählte Zielformat umgewandelt. Es stehen die selben Exporteinstellungen zur Verfügung wie beim Speichern einzelner Dateien.[/SIZE]
+
+[SIZE=2]Die neuen Dateien werden wahlweise in den gleichen Ordnern wie die Quelldateien gespeichert oder in das ausgewählte Zielverzeichnis (dazu muss das Häkchen bei 'Ausgabe in den Quellverzeichnissen' entfernt werden). Falls dabei Fehler auftreten, werden diese in den Log ausgegeben.[/SIZE]

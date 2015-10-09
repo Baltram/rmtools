@@ -1,0 +1,19 @@
+[SIZE=5]Gothic 3 motion actor (.xact)[/SIZE]
+
+[SIZE=2]When creating animated meshes for [B]Gothic 3[/B] it is important that each used material name corresponds to a [B]Gothic 3[/B] material (i.e. is named after a [B].xshmat[/B] file). The textures used in the 3D file, on the other hand, have no effect on the in-game appearance at all because the engine looks up the textures in the material  files.[/SIZE]
+
+[SIZE=2]In [B]Gothic 3[/B] rigs/skeletons contain some information that [B]Rimy3D[/B] cannot obtain from ordinary 3D files. This makes it necessary to specify an original [B]._xmac[/B] file from which [B]Rimy3D[/B] can draw the rig, when creating custom [B]._xmac[/B] files.[B][/B]
+If the custom model has no skinning, [B]Rimy3D[/B] will try to adapt the skinning from the original model as good as possible (more about this below).[/SIZE]
+
+[SIZE=2]It is recommended to recalculate the normals with an angle of 180°. This matches the appearance of the original models.[/SIZE]
+
+[SIZE=4]Automatic skinning[/SIZE]
+
+[SIZE=2]If possible, you should always skin your models manually. Transferring the skinning data from [B]GMax[/B], [B]3ds Max[/B] or [B]Blender[/B] to [B]Rimy3D[/B] is best done using the [B].3db[/B] file format.[/SIZE]
+
+[SIZE=2]As an alternative, however, [B]Rimy3D[/B] offers algorithms that seek to adapt the skinning of the original [B].xact[/B] file to the custom model. You can choose between two methods:[B][/B]
+The 'Direct Vertex Matching' assigns to each vertex of the custom model the skinning from the nearest vertex of the original model.[B][/B]
+The 'Indirect Vertex Matching' assigns to each vertex of the custom model the skinning from the nearest vertex of either the original model or the custom model.[B][/B]
+Each of the two methods has its advantages in certain situations.[/SIZE]
+
+[SIZE=2]To improve the results of this automatic skinning calculation you should first deform the original model so it closely matches the shape of your custom model. To keep the skinning of the original model intact during this step, use the option 'Replace Only Vertices' when exporting the deformed model in [B]Rimy3D[/B].[/SIZE]

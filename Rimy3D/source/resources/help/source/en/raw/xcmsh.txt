@@ -1,0 +1,11 @@
+[SIZE=5]Gothic 3 mesh (.xcmsh)[/SIZE]
+
+[SIZE=2]When creating static meshes for [B]Gothic 3[/B] it is important that each used material name corresponds to a [B]Gothic 3[/B] material (i.e. is named after a [B].xshmat[/B] file).
+The textures used in the 3D file, on the other hand, have no effect on the in-game appearance at all because the engine looks up the textures in the material  files.[/SIZE]
+
+[SIZE=2]Vertex colors are important when editing level meshes: The alpha value of a vertex determines how much (sun) light is reflected from that location of the mesh.
+The RGB values of a vertex are used by certain materials to blend between different textures, for example for creating a smooth transition between a grass and a rock texture. Such materials can be recognized in the [URL="materialeditor.htm"]Genome Material Editor[/URL] because they have a shader element of the type 'eCColorSourceVertexColor'.[/SIZE]
+
+[SIZE=2]The best way to understand how this works is to examine one of the original level meshes in a 3D editor, with special regard to the vertex colors.[/SIZE]
+
+[SIZE=2]The [B].3db[/B] file format is well-suited for importing and exporting meshes with vertex colors in [B]GMax[/B], [B]3ds Max[/B] and [B]Blender[/B]. To represent RGBA vertex colors in [B]Blender[/B], use two vertex color channels with the names 'rgb' and 'alpha'.[/SIZE]

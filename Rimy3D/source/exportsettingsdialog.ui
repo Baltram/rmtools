@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>208</width>
+    <width>211</width>
     <height>465</height>
    </rect>
   </property>
@@ -163,7 +163,7 @@
          <item>
           <widget class="QRadioButton" name="rbNRecalcS">
            <property name="text">
-            <string>Recalculate By Smooth Groups</string>
+            <string>Recalculate By Smoothing Groups</string>
            </property>
           </widget>
          </item>

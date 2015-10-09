@@ -4,14 +4,15 @@
 #include <QtGui/QApplication>
 #include <QTranslator>
 #include <QSettings>
+#include <QDesktopServices>
 
 class Rimy3D :
     public QApplication
 {
     Q_OBJECT
 public:
-    enum { EVersionMajor = 0 };
-    enum { EVersionMinor = 4 };
+    enum { EVersionMajor = 1 };
+    enum { EVersionMinor = 0 };
     enum ELanguage
     {
         ELanguage_English,
@@ -31,6 +32,7 @@ public:
 public:
     static void        checkForUpdates( bool a_bReportNetworkErrors, bool a_bReportUpToDate = false );
     static bool        checkGmaxInstallation( void );
+    static void        displayHelp( void );
     static Rimy3D *    getInstance( void );
     static ELanguage   getLanguage( void );
     static QSettings * getSettings( void );

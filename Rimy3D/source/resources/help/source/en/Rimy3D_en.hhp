@@ -1,0 +1,32 @@
+[OPTIONS]
+Binary TOC=Yes
+Compatibility=1.1 or later
+Compiled file=Rimy3D_en.chm
+Contents file=Table of Contents.hhc
+Default topic=rimy3d.htm
+Display compile progress=No
+Full-text search=Yes
+Language=0x409 Englisch (USA)
+Title=Rimy3D help
+
+
+[FILES]
+_xcom.htm
+_xmac.htm
+_xmsh.htm
+3dbscriptsblender.htm
+3dbtoolsmax.htm
+extendedsaving.htm
+fileformats.htm
+materialeditor.htm
+openingandsaving.htm
+rimy3d.htm
+searchpaths.htm
+viewport.htm
+xact.htm
+xcmsh.htm
+xlmsh.htm
+xnvmsh.htm
+
+[INFOTYPES]
+

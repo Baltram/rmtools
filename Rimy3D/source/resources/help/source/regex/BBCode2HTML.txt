@@ -1,0 +1,164 @@
+// Nesting of identical BBCodes forbidden
+// A fontcontext is a <font> area nested inside a <p> area.
+
+// [size=2]                                    // no fontcontext allowed; fontcontext defining
+// [size=4]                                    // no fontcontext allowed; final
+// [size=5]                                    // no fontcontext allowed; final
+// [/size]                                     //
+// [b][/b]                                     // fontcontext required; final
+// [url="3dbscriptsblender.htm"][/url]         // fontcontext required; final
+// [table="width: 500"][/table]                // no fontcontext allowed
+// [tr][/tr]                                   // no fontcontext allowed
+// [td][/td]                                   // no fontcontext allowed; fontcontext defining
+// [td="width: 36.23%"]                        // no fontcontext allowed; fontcontext defining
+// [i][/i]                                     // fontcontext required; final
+// [tt][/tt]                                   // fontcontext required; final
+// [code][/code]                               // no fontcontext allowed; fontcontext defining
+// [list][/list]                               // no fontcontext allowed (Exception: List in table cell is fine.)
+// [*]                                         // fontcontext defining
+
+// ------------------------
+// Intro
+// ------------------------
+
+// Make all BBCode tags lower case
+(\[/*[A-z]*\])
+\L\1
+
+// Make all BBCode tags containing a '=' lower case
+(\[[A-z]*=)([^\]]*\])
+\L\1\E\2
+
+// replace all @
+@
+%@%
+
+// Upper case to lower case
+([A-Z])
+@\l\1
+
+// ------------------------
+// Run 1
+// ------------------------
+
+\[size=2\]
+C
+\[size=4\]
+D
+\[size=5\]
+E
+\[/size\]
+F
+\[b\]\[/b\]
+<br>
+\[/*b\]
+G
+\[url="([^"]*)"\]
+H\1H
+\[/url\]
+H
+\[/*table="width: ([^"]*)"\]
+I\1I
+\[/table\]
+J
+\[/*tr\]
+K
+\[td\]
+L
+\[/td\]
+M
+\[/*td="width: ([^"]*)"\]
+N\1N
+\[/*i\]
+O
+\[/*tt\]
+P
+\[/*code\]
+Q
+\[/*list\]
+R
+\[\*\]
+S
+
+// ------------------------
+// TUVWXYZ
+// ------------------------
+
+// ------------------------
+// Run 2
+// ------------------------
+
+// Context acquired via ([CAQ])([^CAQ]*)
+// Order of replacements matters greatly in run 2!
+
+C([^F]*)F
+<p align="left" style="margin-top:0pt;margin-bottom:6pt;text-align:left;" >A\1A</p>
+
+Q([^Q]*)Q
+<p align="left" style="margin-left:18pt;margin-top:0pt;margin-bottom:0pt;text-align:left;background-color:#f3f3f3; " >B\1B</p>
+
+// list in table cell, replace multiple times if necessary
+(L[^RM]*)(R[^R]*R)
+\1A</p>\2<p align="left" style="margin-left:5.75pt;margin-right:6.50pt;margin-top:0pt;margin-bottom:6pt;text-align:left;" >A
+
+S([^RS]*)
+<li style="font-size:10pt;"><p align="left" style="margin-top:0pt;margin-bottom:6pt;text-align:left;" >A\1A</p></li>
+
+R([^R]*)R
+<ul>\1</ul>
+
+I([^I]*)I([^J]*)J
+<table width="\1" cellspacing="0" cellpadding="1" style="border-top:0.50pt solid black; border-bottom:0.50pt solid black; border-left:0.50pt solid black; border-right:0.50pt solid black; " border="1">\2</table>
+
+K([^K]*)K
+<tr valign=top>\1</tr>
+
+N([^N]*)N([^M]*)M
+<td width="\1" style="border-top:0.50pt solid black; border-bottom:0.50pt solid black; border-left:0.50pt solid black; border-right:0.50pt solid black; "><p align="left" style="margin-left:5.75pt;margin-right:6.50pt;margin-top:0pt;margin-bottom:6pt;text-align:left;" >A\2A</p></td>
+
+L([^M]*)M
+<td style="border-top:0.50pt solid black; border-bottom:0.50pt solid black; border-left:0.50pt solid black; border-right:0.50pt solid black; "><p align="left" style="margin-left:5.75pt;margin-right:6.50pt;margin-top:0pt;margin-bottom:6pt;text-align:left;" >A\1A</p></td>
+
+// replace multiple times (10)
+~~~~~~~~~~
+([CAQ])([^CAQG]*)G([^G]*)G
+\1\2\1<b><font size=2 style="font-family:'verdana'; font-size:10pt; font-weight:bold; " >\3</font></b>\1
+
+// replace multiple times (5)
+~~~~~
+([CAQ])([^CAQO]*)O([^O]*)O
+\1\2\1<i><font size=2 style="font-family:'verdana'; font-size:10pt; font-style:italic; " >\3</font></i>\1
+
+// replace multiple times (25)
+~~~~~~~~~~~~~~~~~~~~~~~~~
+([CAQ])([^CAQP]*)P([^P]*)P
+\1\2\1<b><font size=2 style="font-family:'courier new'; font-size:10pt; font-weight:bold; " >\3</font></b>\1
+
+// replace multiple times (5)
+~~~~~
+([CAQ])([^CAQH]*)H([^H]*)H([^H]*)H
+\1\2\1<a href="\3"><font size=2 style="font-family:'verdana'; font-size:10pt; " >\4</font></a>\1
+
+A([^A]*)A
+<font size=2 style="font-family:'verdana'; font-size:10pt; " >\1</font>
+
+B([^B]*)B
+<font size=2 style="font-family:'courier new'; font-size:10pt; " >\1</font>
+
+D([^F]*)F
+<h2 align="left" style="font-size:12pt;margin-top:12pt;margin-bottom:4pt;text-align:left;background-color:#000000; " ><b><font size=4 color=white style="font-family:'verdana'; font-size:13pt; color:white; font-weight:bold; " >\1</font></b></h2>
+
+E([^F]*)F
+<h1 align="left" style="font-size:12pt;margin-top:18pt;margin-bottom:4pt;text-align:left;background-color:#000000; " ><b><font size=5 color=white style="font-family:'verdana'; font-size:16pt; color:white; font-weight:bold; " >\1</font></b></h1>
+
+// ------------------------
+// Extro
+// ------------------------
+
+// Restore @
+%@%
+@
+
+// Restore upper case
+@([a-z])
+\u\1

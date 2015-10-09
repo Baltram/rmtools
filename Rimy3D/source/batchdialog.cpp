@@ -211,7 +211,7 @@ void BatchDialog::on_pbCancel_clicked( void )
 
 void BatchDialog::on_pbChooseOutputFolder_clicked( void )
 {
-    QString strDir = QFileDialog::getExistingDirectory( this, tr( "Choose Output DSirectory" ), QDir::homePath() );
+    QString strDir = QFileDialog::getExistingDirectory( this, tr( "Choose Output Directory" ), QDir::homePath() );
     if ( strDir != "" )
         m_pUi->leOutputDirectory->setText( strDir );
 }

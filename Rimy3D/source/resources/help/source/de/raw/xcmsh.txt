@@ -1,0 +1,11 @@
+[SIZE=5]Gothic 3 Mesh (.xcmsh)[/SIZE]
+
+[SIZE=2]Beim Erstellen von statischen Meshes für [B]Gothic 3[/B] ist es wichtig, dass sämtliche verwendeten Materialnamen einem [B]Gothic 3[/B]-Material entsprechen, also nach einer [B].xshmat[/B]-Datei benannt sind.
+Die in der 3D-Datei verwendeten Texturen haben hingegen keinerlei Einfluss auf das Aussehen im Spiel, da die Engine die benötigten Texturen direkt in den [B].xshmat[/B]-Dateien nachsieht.[/SIZE]
+
+[SIZE=2]Für Levelmeshes spielen außerdem die Vertex Colors eine große Rolle: Der Alpha-Wert eines Vertex legt fest, wie stark das Modell an dieser Stelle das (Sonnen-)Licht reflektiert.
+Der RGB-Wert eines Vertex wird in gewissen Materialien dafür verwendet, zwischen verschiedenen Texturen zu überblenden um beispielsweise für einen sanften Übergang zwischen einer Gras- und einer Felsentextur zu sorgen. Solche Materialien lassen sich im [URL="materialeditor.htm"]Genome Material-Editor[/URL] daran erkennen, dass sie ein Shader-Element mit dem Namen 'eCColorSourceVertexColor' aufweisen.[/SIZE]
+
+[SIZE=2]Der beste Weg um die Funktionsweise solcher Texturübergänge zu verstehen und somit selbst anwenden zu können, ist es, sich einige der originalen Landschaftsmeshes im bevorzugten 3D-Editor anzusehen und dabei besonders auf die Werte der Vertex Colors zu achten.[/SIZE]
+
+[SIZE=2]Über das [B].3db[/B]-Dateiformat können sowohl in [B]GMax[/B] und [B]3ds Max[/B] als auch in [B]Blender[/B] Vertex Colors im- und exportiert werden. In [B]Blender[/B] verwendet man dazu zwei separate Vertex Color Channels mit den Namen 'rgb' und 'alpha'.[/SIZE]

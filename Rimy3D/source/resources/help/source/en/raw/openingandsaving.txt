@@ -1,0 +1,53 @@
+[SIZE=5]Opening and saving[/SIZE]
+
+[SIZE=4]Opening files[/SIZE]
+
+[SIZE=2]Besides 'File' > 'Open' you can load 3D files by dragging and dropping them onto the viewport or the [B]Rimy3D[/B] icon in the explorer.[/SIZE]
+
+[SIZE=2]Through 'File' > 'Merge...' you can load additional 3D files into the existing scene.[/SIZE]
+
+[SIZE=2]It is recommended to configure the [URL="searchpaths.htm"]search paths[/URL] for [B]Rimy3D[/B] to find the textures when loading 3d files.[/SIZE]
+
+[SIZE=4]Saving files[/SIZE]
+
+[SIZE=2]Through 'File' > 'Save As...' you can export the currently open scene in one of the [URL="fileformats.htm"]supported 3D file formats[/URL]. After choosing file format and destination, a dialog with the available export options is shown:[/SIZE]
+
+[table="width: 700"]
+[tr]
+	[td]Save Textures[/td]
+	[td]Currently loaded textures are saved in the same folder.[/td]
+[/tr]
+[tr]
+	[td]Export Vertex Colors[/td]
+	[td]If the model uses vertex colors, they are exported (RGBA).[/td]
+[/tr]
+[tr]
+	[td]Export Smoothing Groups[/td]
+	[td]If the model uses smoothing groups, they are exported.[B][/B]
+Smoothing groups originate from [B]3ds Max[/B]/[B]GMax[/B] and are used to calculate vertex normals. They can be contained in [B].3ds[/B], [B].3db[/B], [B].ase[/B] and [B].asc[/B] files, but this option is only available for the [B].3ds[/B] format because smoothing groups are required in the other three formats.
+[/td]
+[/tr]
+[tr]
+	[td]Export Vertex Normals[/td]
+	[td][I]Keep If Possible[/I][B][/B]
+If the model already has vertex normals, they are retained. Otherwise they are calculated based on the smoothing groups.[B][/B]
+[B][/B]
+[I]Recalculate By Smoothing Groups[/I][B][/B]
+Calculates the vertex normals based on the smoothing groups. Each triangle is assigned the smoothing group 0 by default.[B][/B]
+[B][/B]
+[I]Recalculate By Angle[/I][B][/B]
+The angle between two triangles determines whether the common edge appears soft or hard. If an angle of 0° is chosen, all edges appear hard, whereas with 180° all appear soft. In most cases a value between 60° and 90° is appropriate.
+[/td]
+[/tr]
+[/table]
+[SIZE=2]The '~' button reverts to default settings.[/SIZE]
+
+[SIZE=2]Additionally, some file formats have specific export options which are explained in the respective articles: [URL="xact.htm"].xact[/URL], [URL="xcmsh.htm"].xcmsh[/URL], [URL="xlmsh.htm"].xlmsh[/URL], [URL="xnvmsh.htm"].xnvmsh[/URL], [URL="_xmac.htm"]._xmac[/URL], [URL="_xmsh.htm"]._xmsh[/URL], [URL="_xcom.htm"]._xcom[/URL][/SIZE]
+
+[SIZE=4]Batch conversion[/SIZE]
+
+[SIZE=2]Through 'File' > 'Batch Conversion' you can convert multiple 3D files at once to a different file format.[/SIZE]
+
+[SIZE=2]Individual files or entire folders can be added to the list of source files. All of these files are converted to the target file format with a click on 'Start'. The same export settings are available as when exporting single files.[/SIZE]
+
+[SIZE=2]The new files are saved either in the same directories as the source files or in the selected target directory, depending on the state of the bottom check box. If errors occur during the conversion they are printed in the log.[/SIZE]

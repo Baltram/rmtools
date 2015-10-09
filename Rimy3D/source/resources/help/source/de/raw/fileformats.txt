@@ -1,0 +1,381 @@
+[SIZE=5]Unterstützte Dateiformate[/SIZE]
+
+[SIZE=2]Neben zahlreichen Spieldateiformaten unterstützt [B]Rimy3D[/B] auch den Im- und Export einiger universeller 3D-Formate wie [B]3DS[/B], [B]OBJ[/B] oder [B]ASE[/B].[B][/B]
+Jedes dieser Formate weist allerdings ein paar Schwächen auf, beispielsweise bietet das [B]OBJ[/B]-Format keine Möglichkeit zur Speicherung der Position eines Objekts.[/SIZE]
+
+[SIZE=2]Um dieses Problem zu lösen, führt [B]Rimy3D[/B] ein eigenes Dateiformat mit der Endung [B].3db[/B] ein, das alle Informationen speichern kann, die typischerweise benötigt werden. Für dieses Format stehen Plugins für die 3D-Editoren [URL="extendedsaving.htm"]GMax[/URL], [URL="3dbscriptsblender.htm"]Blender[/URL] und [URL="3dbtoolsmax.htm"]3ds Max[/URL] zur Verfügung, die über das 'Extras'-Menü in der Menüleiste von [B]Rimy3D[/B] installiert werden können.[B][/B]
+Wann immer möglich, sollten Sie die Benutzung des [B]3DB[/B]-Formats den anderen Formaten vorziehen![/SIZE]
+
+[SIZE=2][B]Rimy3D[/B] ist in der Lage, beim Laden einer 3D-Datei automatisch die verwendeten Materialien und Texturen zu beziehen, auch wenn sich diese nicht im selben Ordner wie die geöffnete Datei befinden. Konfigurieren Sie dazu die [URL="searchpaths.htm"]Suchpfade[/URL].[/SIZE]
+
+[SIZE=2]Im Folgenden sind die unterstützten 3D-Dateiformate, Bilddateiformate und Materialdateiformate aufgelistet.[/SIZE]
+
+[SIZE=4]3D-Dateiformate[/SIZE]
+
+[table="width: 680"]
+[tr]
+	[td="width: 26%"][B]Dateiformat[/B][/td]
+	[td="width: 8.8%"][B]Endung[/B][/td]
+	[td="width: 32.6%"][B]Import[/B][/td]
+	[td="width: 32.6%"][B]Export[/B][/td]
+[/tr]
+[tr]
+	[td]Baltrams 3D-Format[/td]
+	[td].3db[/td]
+	[td][LIST]
+		[*]Objektnamen/-position
+		[*]Geometrie
+		[*]Skinning
+		[*]Texturkoordinaten
+		[*]Vertex Colors
+		[*]Smoothing Groups
+		[*]Materialnamen
+		[*]Texturdateipfade
+		[/LIST]
+	[/td]
+	[td][LIST]
+		[*]Objektnamen/-position
+		[*]Geometrie
+		[*]Skinning
+		[*]Texturkoordinaten
+		[*]Vertex Colors
+		[*]Smoothing Groups
+		[*]Materialnamen
+		[*]Texturdateipfade
+		[/LIST]
+	[/td]
+[/tr]
+[tr]
+	[td]3D Studio Mesh[B][/B]
+	[B][/B]
+	(Gothic 3DS-Format wird unterstützt)[/td]
+	[td].3ds[/td]
+	[td][LIST]
+		[*]Objektnamen/-position
+		[*]Geometrie
+		[*]Texturkoordinaten
+		[*]Smoothing Groups
+		[*]Materialnamen
+		[*]Texturdateipfade
+		[/LIST]
+	[/td]
+	[td][LIST]
+		[*]Objektnamen/-position
+		[*]Geometrie
+		[*]Texturkoordinaten
+		[*]Smoothing Groups
+		[*]Materialnamen
+		[*]Texturdateipfade
+		[/LIST]
+	[/td]
+[/tr]
+[tr]
+	[td]Wavefront OBJ format[/td]
+	[td].obj[/td]
+	[td][LIST]
+		[*]Objektnamen
+		[*]Geometrie
+		[*]Texturkoordinaten
+		[*]Vertex Normals
+		[*]Materialnamen
+		[*]Texturdateipfade
+		[/LIST]
+	[/td]
+	[td][LIST]
+		[*]Objektnamen
+		[*]Geometrie
+		[*]Texturkoordinaten
+		[*]Vertex Normals
+		[*]Materialnamen
+		[*]Texturdateipfade
+		[/LIST]
+	[/td]
+[/tr]
+[tr]
+	[td]GMax Scene[B][/B]
+	[B][/B]
+	([URL="extendedsaving.htm"]Extended Saving[/URL] benötigt!)[/td]
+	[td].gmax[/td]
+	[td][LIST]
+		[*]Objektnamen/-position
+		[*]Geometrie
+		[*]Skinning
+		[*]Texturkoordinaten
+		[*]Vertex Colors
+		[*]Smoothing Groups
+		[*]Materialnamen
+		[*]Texturdateipfade
+		[/LIST]
+	[/td]
+	[td][B][/B]
+	[/td]
+[/tr]
+[tr]
+	[td]3ds Max ASCII Scene[/td]
+	[td].ase[/td]
+	[td][LIST]
+		[*]Objektnamen/-position
+		[*]Geometrie
+		[*]Texturkoordinaten
+		[*]Vertex Colors[B][/B](ohne Alpha)
+		[*]Vertex Normals
+		[*]Smoothing Groups
+		[*]Materialnamen
+		[*]Texturdateipfade
+		[/LIST]
+	[/td]
+	[td][LIST]
+		[*]Objektnamen/-position
+		[*]Geometrie
+		[*]Texturkoordinaten
+		[*]Vertex Colors[B][/B](ohne Alpha)
+		[*]Vertex Normals
+		[*]Smoothing Groups
+		[*]Materialnamen
+		[*]Texturdateipfade
+		[/LIST]
+	[/td]
+[/tr]
+[tr]
+	[td]Gothic ASCII Scene[/td]
+	[td].asc[/td]
+	[td][LIST]
+		[*]Objektnamen/-position
+		[*]Geometrie
+		[*]Skinning
+		[*]Texturkoordinaten
+		[*]Smoothing Groups
+		[*]Materialnamen
+		[*]Texturdateipfade
+		[/LIST]
+	[/td]
+	[td][LIST]
+		[*]Objektnamen/-position
+		[*]Geometrie
+		[*]Skinning
+		[*]Texturkoordinaten
+		[*]Smoothing Groups
+		[*]Materialnamen
+		[*]Texturdateipfade
+		[/LIST]
+	[/td]
+[/tr]
+[tr]
+	[td]Gothic 3 Mesh[/td]
+	[td].xcmsh[/td]
+	[td][LIST]
+		[*]Geometrie
+		[*]Texturkoordinaten
+		[*]Vertex Colors
+		[*]Vertex Normals
+		[*]Materialnamen
+		[*]Texturdateipfade (*)
+		[/LIST]
+	[/td]
+	[td][LIST]
+		[*]Geometrie
+		[*]Texturkoordinaten
+		[*]Vertex Colors
+		[*]Vertex Normals
+		[*]Materialnamen
+		[/LIST]
+		[URL="xcmsh.htm"]Hinweise zum Export von Gothic 3 Meshes[/URL]
+	[/td]
+[/tr]
+[tr]
+	[td]Gothic 3 Motion Actor[/td]
+	[td].xact[/td]
+	[td][LIST]
+		[*]Objektnamen/-position
+		[*]Geometrie
+		[*]Skinning
+		[*]Texturkoordinaten
+		[*]Vertex Normals
+		[*]Materialnamen
+		[*]Texturdateipfade (*)
+		[/LIST]
+	[/td]
+	[td][LIST]
+		[*]Geometrie
+		[*]Skinning
+		[*]Texturkoordinaten
+		[*]Vertex Normals
+		[*]Materialnamen
+		[*]Texturdateipfade
+		[/LIST]
+		[URL="xact.htm"]Hinweise zum Export von Gothic 3 Motion Actors[/URL]
+	[/td]
+[/tr]
+[tr]
+	[td]Gothic 3 LOD Mesh[/td]
+	[td].xlmsh[/td]
+	[td][LIST]
+		[*]Referenzen auf .xcmsh-Dateien
+		[/LIST]
+	[/td]
+	[td][LIST]
+		[*]Referenzen auf .xcmsh-Dateien
+		[/LIST]
+		[URL="xlmsh.htm"]Hinweise zum Export von Gothic 3 LOD Meshes[/URL]
+	[/td]
+[/tr]
+[tr]
+	[td]Gothic 3 Collision Mesh[/td]
+	[td].xnvmsh[/td]
+	[td][LIST]
+		[*]Geometrie
+		[*]Materialnamen
+		[/LIST]
+	[/td]
+	[td][LIST]
+		[*]Geometrie
+		[*]Materialnamen
+		[/LIST]
+		[URL="xnvmsh.htm"]Hinweise zum Export von Gothic 3 Collision Meshes[/URL]
+	[/td]
+[/tr]
+[tr]
+	[td]Risen Mesh[/td]
+	[td]._xmsh[/td]
+	[td][LIST]
+		[*]Geometrie
+		[*]Texturkoordinaten
+		[*]Vertex Colors
+		[*]Vertex Normals
+		[*]Materialnamen
+		[*]Texturdateipfade (*)
+		[/LIST]
+	[/td]
+	[td][LIST]
+		[*]Geometrie
+		[*]Texturkoordinaten
+		[*]Vertex Colors
+		[*]Vertex Normals
+		[*]Materialnamen
+		[/LIST]
+		[URL="_xmsh.htm"]Hinweise zum Export von Risen Meshes[/URL]
+	[/td]
+[/tr]
+[tr]
+	[td]Risen Motion Actor[/td]
+	[td]._xmac[/td]
+	[td][LIST]
+		[*]Objektnamen/-position
+		[*]Geometrie
+		[*]Skinning
+		[*]Texturkoordinaten
+		[*]Vertex Normals
+		[*]Materialnamen
+		[*]Texturdateipfade (*)
+		[/LIST]
+	[/td]
+	[td][LIST]
+		[*]Geometrie
+		[*]Skinning
+		[*]Texturkoordinaten
+		[*]Vertex Normals
+		[*]Materialnamen
+		[*]Texturdateipfade
+		[/LIST]
+		[URL="_xmac.htm"]Hinweise zum Export von Risen Motion Actors[/URL]
+	[/td]
+[/tr]
+[tr]
+	[td]Risen Collision Mesh[/td]
+	[td]._xcom[/td]
+	[td][LIST]
+		[*]Geometrie
+		[*]Materialnamen
+		[/LIST]
+	[/td]
+	[td][LIST]
+		[*]Geometrie
+		[*]Materialnamen
+		[/LIST]
+		[URL="_xcom.htm"]Hinweise zum Export von Risen Collision Meshes[/URL]
+	[/td]
+[/tr]
+[/table]
+[SIZE=2](*) [I]Texturdateipfade werden aus den Gothic 3-/Risen-Materialien ausgelesen, wenn verfügbar.[/I][/SIZE]
+
+[SIZE=4]Bilddateiformate[/SIZE]
+
+[table="width: 500"]
+[tr]
+	[td][B]Dateiformat[/B][/td]
+	[td][B]Dateiendung[/B][/td]
+	[td][B]Import[/B][/td]
+	[td][B]Export[/B][/td]
+[/tr]
+[tr]
+	[td]Truevision Targa[/td]
+	[td].tga[/td]
+	[td]Ja[/td]
+	[td]Ja[/td]
+[/tr]
+[tr]
+	[td]JPEG[/td]
+	[td].jpg .jpeg[/td]
+	[td]Ja[/td]
+	[td]Ja[/td]
+[/tr]
+[tr]
+	[td]Portable Network Graphics[/td]
+	[td].png[/td]
+	[td]Ja[/td]
+	[td]Ja[/td]
+[/tr]
+[tr]
+	[td]Windows Bitmap[/td]
+	[td].bmp[/td]
+	[td]Ja[/td]
+	[td]Ja[/td]
+[/tr]
+[tr]
+	[td]DirectDraw Surface[/td]
+	[td].dds[/td]
+	[td]Ja[/td]
+	[td]Nein[/td]
+[/tr]
+[tr]
+	[td]Gothic 3 Image[/td]
+	[td].ximg[/td]
+	[td]Ja[/td]
+	[td]Nein[/td]
+[/tr]
+[tr]
+	[td]Risen Image[/td]
+	[td]._ximg[/td]
+	[td]Ja[/td]
+	[td]Nein[/td]
+[/tr]
+[/table]
+
+[SIZE=4]Materialdateiformate[/SIZE]
+
+[table="width: 500"]
+[tr]
+	[td][B]Dateiformat[/B][/td]
+	[td][B]Dateiendung[/B][/td]
+	[td][B]Import[/B][/td]
+	[td][B]Export[/B][/td]
+[/tr]
+[tr]
+	[td]Wavefront Material Library[/td]
+	[td].mtl[/td]
+	[td]Ja[/td]
+	[td]Ja[/td]
+[/tr]
+[tr]
+	[td]Gothic 3 Material[/td]
+	[td].xshmat[/td]
+	[td]Ja[/td]
+	[td]Ja[/td]
+[/tr]
+[tr]
+	[td]Risen Material[/td]
+	[td]._xmat[/td]
+	[td]Ja[/td]
+	[td]Ja[/td]
+[/tr]
+[/table]

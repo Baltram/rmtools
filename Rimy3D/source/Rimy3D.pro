@@ -56,6 +56,7 @@ TRANSLATIONS = resources/translations/Rimy3D_de.ts
 
 RESOURCES += resources/flags.qrc \
              resources/translations.qrc \
-             resources/plugins.qrc
+             resources/plugins.qrc \
+             resources/help.qrc
 
 RC_FILE = resources/icon.rc

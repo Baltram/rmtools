@@ -1,0 +1,21 @@
+﻿[SIZE=5]Rimy3D help[/SIZE]
+
+[SIZE=2][B]Welcome to the Rimy3D help![/B][/SIZE]
+
+[SIZE=2][B]Rimy3D[/B] is a program for converting 3D file formats, especially the game data from [B]Gothic 3[/B] and [B]Risen[/B].[/SIZE]
+
+[SIZE=2]For the best possible compatibility with popular 3D editors, [B]Rimy3D[/B] offers easy to install import/export plug-ins for [B]GMax[/B], [B]3ds Max[/B] and [B]Blender[/B].[/SIZE]
+
+[SIZE=4]Overview[/SIZE]
+
+[SIZE=2][B]Rimy3D's[/B] import/export capabilities are detailed in the list of [URL="fileformats.htm"]supported file formats[/URL].[/SIZE]
+
+[SIZE=2]Important information on the work with [B]Risen[/B] and [B]Gothic 3[/B] models is available in the articles about [URL="xact.htm"].xact[/URL], [URL="xcmsh.htm"].xcmsh[/URL], [URL="xlmsh.htm"].xlmsh[/URL], [URL="xnvmsh.htm"].xnvmsh[/URL], [URL="_xmac.htm"]._xmac[/URL], [URL="_xmsh.htm"]._xmsh[/URL] and [URL="_xcom.htm"]._xcom[/URL] files.[B][/B]
+The related material files ([B].xshmat[/B] or [B]._xmat[/B]) can be edited using the built-in [URL="materialeditor.htm"]Genome Material-Editor[/URL].[/SIZE]
+
+[SIZE=2]Different ways of importing 3D files, export options, and batch conversion are explained in the section about [URL="openingandsaving.htm"]opening and saving[/URL] 3D files.[B][/B]
+The [URL="searchpaths.htm"]search paths[/URL] play an important role in loading materials and textures.[/SIZE]
+
+[SIZE=2]The controls for zooming, panning and rotating are specified in the [URL="viewport.htm"]viewport[/URL] article.[/SIZE]
+
+[SIZE=2]Finally this help includes short instructions on how to install the plug-ins for [URL="extendedsaving.htm"]GMax[/URL], [URL="3dbtoolsmax.htm"]3ds Max[/URL] and [URL="3dbscriptsblender.htm"]Blender[/URL].[/SIZE]

@@ -1,0 +1,6 @@
+[SIZE=5]Search paths[/SIZE]
+
+[SIZE=2]When opening a 3D file that uses textures, [B]Rimy3D[/B] first tries to load them from the directory the 3D file resides in.[B][/B]
+If the texture files can't be found there, the search paths are searched next. These directories can be set up under 'Tools' > 'Configure Search Paths...'.[/SIZE]
+
+[SIZE=2]In addition to this, you can specify [B].pak[/B] files that contain textures ([B]._ximg[/B] or [B].ximg[/B]) or materials ([B]._xmat[/B] or [B].xshmat[/B]) from [B]Risen[/B] or [B]Gothic 3[/B]. Archives further up in the list are searched first. Looking up textures or materials in these archives is substantially faster than processing the search paths.[/SIZE]

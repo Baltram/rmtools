@@ -1,0 +1,7 @@
+[SIZE=5]3db Tools für 3ds Max[/SIZE]
+
+[SIZE=2]Dieses Plugin für [B]3ds Max[/B] (alle Versionen) ermöglicht den Im- und Export von [B].3db[/B]-Dateien.[/SIZE]
+
+[SIZE=2]Die Installation erfolgt über den Menüpunkt 'Extras' in der Menüleiste von [B]Rimy3D[/B]. Wählen Sie dazu das Installationsverzeichnis von [B]3ds Max[/B] aus.[/SIZE]
+
+[SIZE=2]Nach der Installation steht in [B]3ds Max[/B] ein neuer Menüpunkt '3db' zur Verfügung. Alternativ zu diesem Menüpunkt kann das Interface unter 'MaxScript' > '3db Tools' im Utilities Tab (Hammer-Symbol) verwendet werden. Dort lässt sich auch das '3db'-Menü entfernen.[/SIZE]

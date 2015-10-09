@@ -267,7 +267,7 @@ void MainWindow::on_action3db_Tools_for_3ds_Max_triggered( void )
 
 void MainWindow::on_actionAbout_triggered( void )
 {
-    Rimy3D::showMessage( "<p></p><b>Rimy3D v" + Rimy3D::getVersionString() + tr( "</b> (July 15th 2014)"
+    Rimy3D::showMessage( "<p></p><b>Rimy3D v" + Rimy3D::getVersionString() + tr( "</b> (September 6th 2015)"
                          "<div style='text-indent:16px;'>by <a href='mailto:baltram-lielb@web.de'>Baltram</a> @<a href='http://forum.worldofplayers.de/forum/members/33859'>WoP</a></div>"
                          "<p>Support: <a href='http://www.baltr.de/Rimy3D.htm'>www.baltr.de/Rimy3D.htm</a></p>"
                          "<p>This program uses the <a href='http://www.glc-lib.net'>GLC_lib</a> library by Laurent Ribon.</p>"
@@ -299,6 +299,11 @@ void MainWindow::on_actionClose_triggered( void )
 void MainWindow::on_actionConfigure_Bitmap_Paths_triggered( void )
 {
     TextureFinder::getInstance().showDialog();
+}
+
+void MainWindow::on_actionContents_triggered( void )
+{
+    Rimy3D::displayHelp();
 }
 
 void MainWindow::on_actionEnglish_triggered( void )

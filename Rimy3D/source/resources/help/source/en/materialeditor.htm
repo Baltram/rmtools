@@ -1,0 +1,23 @@
+<html>
+<head>
+<title>Genome Material Editor</title>
+</head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<body style="font-family:'Arial'; font-size:8pt;  background-color:white;" bgcolor="white">
+<h1 align="left" style="font-size:12pt;margin-top:18.00pt;margin-bottom:6.00pt;text-align:left;background-color:#000000; " ><b><font size=5 color=white style="font-family:'verdana'; font-size:16pt; color:white; font-weight:bold; " >Genome Material Editor</font></b></h1>
+
+<p align="left" style="margin-top:0.00pt;margin-bottom:6.00pt;text-align:left;" ><font size=2 style="font-family:'verdana'; font-size:10pt; " >Using the Genome Material Editor you can edit material files from </font><b><font size=2 style="font-family:'verdana'; font-size:10pt; font-weight:bold; " >Gothic 3</font></b><font size=2 style="font-family:'verdana'; font-size:10pt; " > (</font><b><font size=2 style="font-family:'verdana'; font-size:10pt; font-weight:bold; " >.xshmat</font></b><font size=2 style="font-family:'verdana'; font-size:10pt; " >) and </font><b><font size=2 style="font-family:'verdana'; font-size:10pt; font-weight:bold; " >Risen</font></b><font size=2 style="font-family:'verdana'; font-size:10pt; " > (</font><b><font size=2 style="font-family:'verdana'; font-size:10pt; font-weight:bold; " >._xmat</font></b><font size=2 style="font-family:'verdana'; font-size:10pt; " >). It is located in the 'Tools' menu.</font></p>
+
+<p align="left" style="margin-top:0.00pt;margin-bottom:6.00pt;text-align:left;" ><font size=2 style="font-family:'verdana'; font-size:10pt; " >The upper dropdown list contains the names of all Genome materials used by the currently open model. Clicking on 'Open' loads the selected material.</font></p>
+
+<p align="left" style="margin-top:0.00pt;margin-bottom:6.00pt;text-align:left;" ><font size=2 style="font-family:'verdana'; font-size:10pt; " >Alternatively, material files can be opened by drag and drop or by clicking on '...'.</font></p>
+
+<p align="left" style="margin-top:0.00pt;margin-bottom:6.00pt;text-align:left;" ><font size=2 style="font-family:'verdana'; font-size:10pt; " >A Genome material consists of different types of shader elements, each having one or more properties. For example, there are shader elements that point to a texture (eCColorSrcSampler), or to a color value (eCColorSrcConstant), or that mix other shader elements together (eCColorSrcCombiner).</font></p>
+
+<p align="left" style="margin-top:0.00pt;margin-bottom:6.00pt;text-align:left;" ><font size=2 style="font-family:'verdana'; font-size:10pt; " >The shader elements are numbered beginning with 0. Each channel (diffuse, specular, normal, etc.) can be assigned to one shader element, which is indicated by the channel's name in round brackets. If a shader element points to other shader elements, their numbers are listed in curly brackets.</font></p>
+
+<p align="left" style="margin-top:0.00pt;margin-bottom:6.00pt;text-align:left;" ><font size=2 style="font-family:'verdana'; font-size:10pt; " >Apart from shader elements, each Genome material has a 'material resource object' and a 'shader object' with various properties. For simplicity they are kept in the same list as the shader elements.</font></p>
+
+<p align="left" style="margin-top:0.00pt;margin-bottom:6.00pt;text-align:left;" ><font size=2 style="font-family:'verdana'; font-size:10pt; " >The structure of a material file (number, type and links of shader elements) is fixed, only the properties can be edited. So the first step when creating a custom material is to search the original materials for one that is well suited as a base for the new material.</font></p>
+</body>
+</html>

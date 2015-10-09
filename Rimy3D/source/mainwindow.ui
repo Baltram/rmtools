@@ -57,7 +57,10 @@
     <property name="title">
      <string>Help</string>
     </property>
+    <addaction name="actionContents"/>
+    <addaction name="separator"/>
     <addaction name="actionCheck_For_Updates"/>
+    <addaction name="separator"/>
     <addaction name="actionAbout"/>
    </widget>
    <widget class="QMenu" name="menuLanguage">
@@ -79,7 +82,9 @@
     <addaction name="actionExtended_Saving_For_GMax"/>
     <addaction name="action3db_Import_Export_Scripts_For_Blender"/>
     <addaction name="action3db_Tools_for_3ds_Max"/>
+    <addaction name="separator"/>
     <addaction name="actionGenome_Material_Editor"/>
+    <addaction name="separator"/>
     <addaction name="actionConfigure_Bitmap_Paths"/>
     <addaction name="actionPreferences"/>
    </widget>
@@ -225,6 +230,11 @@
   <action name="actionBatch_Conversion">
    <property name="text">
     <string>Batch Conversion...</string>
+   </property>
+  </action>
+  <action name="actionContents">
+   <property name="text">
+    <string>Contents</string>
    </property>
   </action>
  </widget>

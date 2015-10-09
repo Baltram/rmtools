@@ -1,0 +1,8 @@
+[SIZE=5]Blender 3db Import/Export Scripts[/SIZE]
+
+[SIZE=2]This plug-in enables [B]Blender 2.63[/B] and newer to import and export [B].3db[/B] files.[/SIZE]
+
+[SIZE=2]It is installed through the 'Tools' menu in [B]Rimy3D[/B]. Simply select the Blender installation directory so the plug-in files can copied over. To finish the installation, start [B]Blender[/B] and go to 'File' > 'User Preferences...' > 'Addons' > 'Import-Export'. Enable 'Baltram's 3D format' and click on 'Save User Settings'.[/SIZE]
+
+[SIZE=2]Once installed, you can open and save [B].3db[/B] files through 'File' > 'Import' and 'File' > 'Export'.[B][/B]
+When exporting vertex colors, the meshes should have one vertex color channel with the name 'rgb' and one with the name 'alpha'.[/SIZE]

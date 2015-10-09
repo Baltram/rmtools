@@ -1,0 +1,96 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<meta name="GENERATOR" content="Microsoft&reg; HTML Help Workshop 4.1">
+<!-- Sitemap 1.0 -->
+</HEAD><BODY>
+<OBJECT type="text/site properties">
+	<param name="ImageType" value="Folder">
+</OBJECT>
+<UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Willkommen">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Willkommen">
+			<param name="Local" value="rimy3d.htm">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Dateiformate">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Unterst&uuml;tzte Dateiformate">
+			<param name="Local" value="fileformats.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Gothic 3 Motion Actor (.xact)">
+			<param name="Local" value="xact.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Gothic 3 Mesh (.xcmsh)">
+			<param name="Local" value="xcmsh.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Gothic 3 LOD Mesh (.xlmsh)">
+			<param name="Local" value="xlmsh.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Gothic 3 Collision Mesh (.xnvmsh)">
+			<param name="Local" value="xnvmsh.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Risen Motion Actor (._xmac)">
+			<param name="Local" value="_xmac.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Risen Mesh (._xmsh)">
+			<param name="Local" value="_xmsh.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Risen Collision Mesh (._xcom)">
+			<param name="Local" value="_xcom.htm">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Bedienung">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Öffnen und Speichern">
+			<param name="Local" value="openingandsaving.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Suchpfade">
+			<param name="Local" value="searchpaths.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="3D-Ansicht">
+			<param name="Local" value="viewport.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Genome Material-Editor">
+			<param name="Local" value="materialeditor.htm">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Plugins">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Extended Saving">
+			<param name="Local" value="extendedsaving.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="3db Tools für 3ds Max">
+			<param name="Local" value="3dbtoolsmax.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Blender 3db Import/Export Scripts">
+			<param name="Local" value="3dbscriptsblender.htm">
+			</OBJECT>
+	</UL>
+</UL>
+</BODY></HTML>

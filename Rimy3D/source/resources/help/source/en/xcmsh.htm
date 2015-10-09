@@ -1,0 +1,19 @@
+<html>
+<head>
+<title>Gothic 3 mesh (.xcmsh)</title>
+</head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<body style="font-family:'Arial'; font-size:8pt;  background-color:white;" bgcolor="white">
+<h1 align="left" style="font-size:12pt;margin-top:18.00pt;margin-bottom:6.00pt;text-align:left;background-color:#000000; " ><b><font size=5 color=white style="font-family:'verdana'; font-size:16pt; color:white; font-weight:bold; " >Gothic 3 mesh (.xcmsh)</font></b></h1>
+
+<p align="left" style="margin-top:0.00pt;margin-bottom:6.00pt;text-align:left;" ><font size=2 style="font-family:'verdana'; font-size:10pt; " >When creating static meshes for </font><b><font size=2 style="font-family:'verdana'; font-size:10pt; font-weight:bold; " >Gothic 3</font></b><font size=2 style="font-family:'verdana'; font-size:10pt; " > it is important that each used material name corresponds to a </font><b><font size=2 style="font-family:'verdana'; font-size:10pt; font-weight:bold; " >Gothic 3</font></b><font size=2 style="font-family:'verdana'; font-size:10pt; " > material (i.e. is named after a </font><b><font size=2 style="font-family:'verdana'; font-size:10pt; font-weight:bold; " >.xshmat</font></b><font size=2 style="font-family:'verdana'; font-size:10pt; " > file).
+The textures used in the 3D file, on the other hand, have no effect on the in-game appearance at all because the engine looks up the textures in the material  files.</font></p>
+
+<p align="left" style="margin-top:0.00pt;margin-bottom:6.00pt;text-align:left;" ><font size=2 style="font-family:'verdana'; font-size:10pt; " >Vertex colors are important when editing level meshes: The alpha value of a vertex determines how much (sun) light is reflected from that location of the mesh.
+The RGB values of a vertex are used by certain materials to blend between different textures, for example for creating a smooth transition between a grass and a rock texture. Such materials can be recognized in the </font><a href="materialeditor.htm"><font size=2 style="font-family:'verdana'; font-size:10pt; " >Genome Material Editor</font></a><font size=2 style="font-family:'verdana'; font-size:10pt; " > because they have a shader element of the type 'eCColorSourceVertexColor'.</font></p>
+
+<p align="left" style="margin-top:0.00pt;margin-bottom:6.00pt;text-align:left;" ><font size=2 style="font-family:'verdana'; font-size:10pt; " >The best way to understand how this works is to examine one of the original level meshes in a 3D editor, with special regard to the vertex colors.</font></p>
+
+<p align="left" style="margin-top:0.00pt;margin-bottom:6.00pt;text-align:left;" ><font size=2 style="font-family:'verdana'; font-size:10pt; " >The </font><b><font size=2 style="font-family:'verdana'; font-size:10pt; font-weight:bold; " >.3db</font></b><font size=2 style="font-family:'verdana'; font-size:10pt; " > file format is well-suited for importing and exporting meshes with vertex colors in </font><b><font size=2 style="font-family:'verdana'; font-size:10pt; font-weight:bold; " >GMax</font></b><font size=2 style="font-family:'verdana'; font-size:10pt; " >, </font><b><font size=2 style="font-family:'verdana'; font-size:10pt; font-weight:bold; " >3ds Max</font></b><font size=2 style="font-family:'verdana'; font-size:10pt; " > and </font><b><font size=2 style="font-family:'verdana'; font-size:10pt; font-weight:bold; " >Blender</font></b><font size=2 style="font-family:'verdana'; font-size:10pt; " >. To represent RGBA vertex colors in </font><b><font size=2 style="font-family:'verdana'; font-size:10pt; font-weight:bold; " >Blender</font></b><font size=2 style="font-family:'verdana'; font-size:10pt; " >, use two vertex color channels with the names 'rgb' and 'alpha'.</font></p>
+</body>
+</html>

@@ -1,0 +1,8 @@
+[SIZE=5]Extended Saving[/SIZE]
+
+[SIZE=2]Extended Saving is a plug-in that enables [B]GMax[/B] to import [B].3db[/B] files and to save additional information in [B].gmax[/B] files.[B][/B]
+[B]Rimy3D[/B] can only open [B].gmax[/B] files that have been saved using Extended Saving.[/SIZE]
+
+[SIZE=2]This plug-in is installed through the 'Tools' menu in [B]Rimy3D[/B]. In case [B].gmax[/B] files are not associated with the [B]GMax[/B] application on your system, you need to manually specify the location of gmax.exe when Windows asks you how to open the file 'installExtendedSaving.gmax'.[/SIZE]
+
+[SIZE=2]Once installed, there is a new menu labeled 'Extended Saving' in the main menu bar of [B]GMax[/B]. Using this menu you can enable and disable the saving of additional information in [B].gmax[/B] files as well as import [B].3db[/B] files.[/SIZE]

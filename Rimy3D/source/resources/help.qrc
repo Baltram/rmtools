@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/help">
+        <file>help/Rimy3D_de.chm</file>
+        <file>help/Rimy3D_en.chm</file>
+    </qresource>
+</RCC>

@@ -49,6 +49,7 @@ private slots:
     void on_actionCheck_For_Updates_triggered( void );
     void on_actionClose_triggered( void );
     void on_actionConfigure_Bitmap_Paths_triggered( void );
+    void on_actionContents_triggered( void );
     void on_actionEnglish_triggered( void );
     void on_actionExit_triggered( void );
     void on_actionExtended_Saving_For_GMax_triggered( void );

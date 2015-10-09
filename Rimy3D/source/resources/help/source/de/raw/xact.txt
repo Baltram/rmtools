@@ -1,0 +1,19 @@
+[SIZE=5]Gothic 3 Motion Actor (.xact)[/SIZE]
+
+[SIZE=2]Beim Erstellen von animierten Meshes für [B]Gothic 3[/B] ist es wichtig, dass sämtliche verwendeten Materialnamen einem [B]Gothic 3[/B]-Material entsprechen, also nach einer [B].xshmat[/B]-Datei benannt sind. Die in der 3D-Datei verwendeten Texturen haben hingegen keinerlei Einfluss auf das Aussehen im Spiel, da die Engine die benötigten Texturen direkt in den [B].xshmat[/B]-Dateien nachsieht.[/SIZE]
+
+[SIZE=2]Animationsskelette in [B]Gothic 3[/B] enthalten diverse Informationen, die [B]Rimy3D[/B] nicht aus normalen 3D-Dateien rekonstruieren kann. Daher ist es notwendig, beim Erstellen von eigenen [B].xact[/B]-Dateien stets eine originale [B]._xmac[/B]-Datei anzugeben. Aus dieser wird dann das Animationsskelett übernommen.[B][/B]
+Falls das eigene Modell kein Skinning besitzt, wird [B]Rimy3D[/B] außerdem versuchen, das Skinning aus dem Originalmodell so gut es geht zu übernehmen. Näheres dazu steht im Abschnitt 'Automatisches Skinning'.[/SIZE]
+
+[SIZE=2]Es wird empfohlen, die Vertex Normals mit dem Winkel 180° neu berechnen zu lassen. Das entspricht dem Aussehen der Modelle im Originalspiel.[/SIZE]
+
+[SIZE=4]Automatisches Skinning[/SIZE]
+
+[SIZE=2]Wenn möglich, sollte man eigene Modelle stets manuell skinnen. Zur Übertragung des Skinnings von [B]GMax[/B], [B]3ds Max[/B] oder [B]Blender[/B] nach [B]Rimy3D[/B] ist das [B].3db[/B]-Dateiformat am besten geeignet.[/SIZE]
+
+[SIZE=2]Alternativ verfügt [B]Rimy3D[/B] aber auch über Algorithmen, die das Skinning der originalen [B].xact[/B]-Datei auf das eigene Modell übertragen. Es stehen zwei Methoden zur Auswahl:[B][/B]
+Die 'direkte Vertex-Zuordnung' ordnet jedem Vertex des eignen Modells das Skinning des am nächsten gelegenen Vertex aus dem Originalmodell zu.[B][/B]
+Die 'indirekte Vertex-Zuordnung' ordnet jedem Vertex des eignen Modells das Skinning des am nächsten gelegenen Vertex aus dem Originalmodell [I]oder[/I] aus dem eigenen Modell zu.[B][/B]
+Jede der beiden Methoden hat in bestimmten Situationen Vorteile gegenüber der jeweils anderen.[/SIZE]
+
+[SIZE=2]Um das Resultat dieser automatischen Skinning-Berechnung zu verbessern, sollte man als Vorbereitung zunächst das Originalmodell so verformen, dass es möglichst gut mit dem eigenen Modell übereinstimmt. Damit in diesem Schritt das Skinning intakt bleibt, verwendet man beim Export in [B]Rimy3D[/B] die Option 'nur Vertices ersetzen'.[/SIZE]

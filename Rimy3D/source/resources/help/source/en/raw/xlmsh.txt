@@ -1,0 +1,8 @@
+[SIZE=5]Gothic 3 LOD mesh (.xlmsh)[/SIZE]
+
+[SIZE=2]For performance reasons some Gothic 3 meshes exist at different quality levels. The file name is of the form [mesh name].xcmsh for the highest, [mesh name]_LOD1.xcmsh for the middle and [mesh name]_LOD2.xcmsh for the lowest quality level.[B][/B]
+A [B].xlmsh[/B] file contains merely references to the [B].xcmsh[/B] files that represent the different quality levels of one mesh. These are normally two, and in rare occasions three references.[/SIZE]
+
+[SIZE=2]When importing an LOD mesh in [B]Rimy3D[/B], all referenced [B].xcmsh[/B] files are loaded, provided they reside in the same folder as the [B].xlmsh[/B] file.[/SIZE]
+
+[SIZE=2]When exporting an LOD mesh from [B]Rimy3D[/B], a reference of the form [object name].xcmsh is added to the [B].xlmsh[/B] file for each of the objects in the currently open scene.[/SIZE]

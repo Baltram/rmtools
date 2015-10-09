@@ -1,0 +1,6 @@
+[SIZE=5]Suchpfade[/SIZE]
+
+[SIZE=2]Beim Öffnen einer 3D-Datei, die Verweise auf Texturen enthält, durchsucht [B]Rimy3D[/B] immer zuerst den Ordner der 3D-Datei nach den verwendeten Texturen.[B][/B]
+Falls sich die gesuchten Texturen dort nicht befinden, werden als Nächstes die Suchpfade durchsucht. Diese Dateipfade können unter 'Extras' > 'Suchpfade konfigurieren...' eingestellt werden.[/SIZE]
+
+[SIZE=2]Für [B]Risen[/B]- und [B]Gothic 3[/B]-Modelle können in diesem Menü darüber hinaus [B].pak[/B]-Archive angegeben werden, die Texturen ([B]._ximg[/B] bzw. [B].ximg[/B]) oder Materialien ([B]._xmat[/B] bzw. [B].xshmat[/B]) enthalten. Archive weiter oben in der Liste werden zuerst durchsucht. Die Suche in solchen Archiven ist wesentlich schneller als die Suche nach ungepackten Texturen oder Materialien in den Suchpfaden.[/SIZE]
