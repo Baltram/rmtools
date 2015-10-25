@@ -12,6 +12,7 @@ public:
     MIBool ParseRisen3DlgData2( MIBool a_bSetLastErrorLine = MITrue );
     MIBool ParseRisen3Sector( MIBool a_bSetLastErrorLine = MITrue );
     MIBool ParseRisen3Template( mCString const a_strName, MIBool a_bSetLastErrorLine = MITrue );
+    MIBool ParseRisen3Hdr( MIBool a_bSetLastErrorLine = MITrue );
 protected:
     void   CheckNewPosRot( void );
     MIBool ParseData( mCString a_strType, MIBool a_bWriteSize = MIFalse, MIBool a_bSetLastErrorLine = MITrue );

@@ -2,9 +2,9 @@
 
 namespace
 {
-    enum ETypes { EBool, EFloat, EChar, ESignedChar, EUnsignedChar, EShort, EUnsignedShort, EInt, ELong, EUnsignedInt, EUnsignedLong, EInt64, EUnsignedInt64, EString, EScriptProxyScript, EScriptProxyAIFunction, EScriptProxyAIState, EGuiBitmapProxy2, EResourceProxy, EWeatherEnvironmentProxy, EEffectProxy, EFocusModeProxy2, EMovementSpeciesProxy, EParticleSystemProxy, EGuid, ETemplateEntityProxy, EEntityProxy, EBox, EEulerAngles, EFloatColor, EMatrix, EQuaternion, ERange1, EVector, EVector2, ELetterLocString, ETypes_Count };
+    enum ETypes { EBool, EFloat, EChar, ESignedChar, EUnsignedChar, EShort, EUnsignedShort, EInt, ELong, EUnsignedInt, EUnsignedLong, EInt64, EUnsignedInt64, EString, EScriptProxyScript, EScriptProxyAIFunction, EScriptProxyAIState, EGuiBitmapProxy2, EResourceProxy, EWeatherEnvironmentProxy, EEffectProxy, EFocusModeProxy2, EMovementSpeciesProxy, EParticleSystemProxy, EGuid, ETemplateEntityProxy, EEntityProxy, EBox, EEulerAngles, EFloatColor, EMatrix, EQuaternion, ERange1, EVector, EVector2, ELetterLocString, EQuestLocString, EQuestProxy, EDeliveryEntity, EEntityStringProxy, ETypes_Count };
 
-    MILPCChar const       s_arrTypes[ ETypes_Count ] = { "bool", "float", "char", "signed char", "unsigned char", "short", "unsigned short", "int", "long", "unsigned int", "unsigned long", "__int64", "unsigned __int64", "class bCString", "class eCScriptProxyScript", "class gCScriptProxyAIFunction", "class gCScriptProxyAIState", "class eCGuiBitmapProxy2", "class eTResourceProxy", "class eCWeatherEnvironmentProxy", "class gCEffectProxy", "class gCFocusModeProxy2", "class gCMovementSpeciesProxy", "class eCParticleSystemProxy", "class bCGuid", "class eCTemplateEntityProxy", "class eCEntityProxy", "class bCBox", "class bCEulerAngles", "class bCFloatColor", "class bCMatrix", "class bCQuaternion", "class bCRange1", "class bCVector", "class bCVector2", "class gCLetterLocString" };
+    MILPCChar const       s_arrTypes[ETypes_Count] = { "bool", "float", "char", "signed char", "unsigned char", "short", "unsigned short", "int", "long", "unsigned int", "unsigned long", "__int64", "unsigned __int64", "class bCString", "class eCScriptProxyScript", "class gCScriptProxyAIFunction", "class gCScriptProxyAIState", "class eCGuiBitmapProxy2", "class eTResourceProxy", "class eCWeatherEnvironmentProxy", "class gCEffectProxy", "class gCFocusModeProxy2", "class gCMovementSpeciesProxy", "class eCParticleSystemProxy", "class bCGuid", "class eCTemplateEntityProxy", "class eCEntityProxy", "class bCBox", "class bCEulerAngles", "class bCFloatColor", "class bCMatrix", "class bCQuaternion", "class bCRange1", "class bCVector", "class bCVector2", "class gCLetterLocString", "class gCQuestLocString", "class gCQuestProxy", "struct gCQuest::gSDeliveryEntity", "class eCEntityStringProxy" };
     mTStringMap< ETypes > s_mapTypes;
     MILPCChar const       s_strHex = "0123456789ABCDEF";
 }
@@ -37,8 +37,18 @@ void mCRisenDoc::FormatData( mCString a_strType, MIUInt a_uSize )
         if ( a_strType.ReplaceLeft( "class bTObjArray<" ) && a_strType.ReplaceRight( ">" ) )
         {
             StartArray();
-            for ( MIUInt u = 0, uCount = m_streamIn.ReadU32(); u != uCount; ++u )
-                FormatData( a_strType, ( a_uSize - 4 ) / uCount /*In many cases incorrect*/ ), WriteLine( u + 1 < uCount ? "," : "" );
+            
+            
+            MIUInt uCount = m_streamIn.ReadU32();
+            if (uCount > 0)
+            {
+                MIUInt uAddToLastChunk = (a_uSize - 4) % uCount;
+                MIUInt uChunkSize = (a_uSize - uAddToLastChunk - 4) / uCount;
+
+                for (MIUInt u = 0; u != uCount; ++u)
+                    FormatData(a_strType, uChunkSize + (u + 1 < uCount ? 0 : uAddToLastChunk)), WriteLine(u + 1 < uCount ? "," : "");
+            }
+                
             EndArray( MIFalse );
         }
         else if ( a_strType.StartsWith( "class " ) && DocumentRisen3Class() != 0 )
@@ -58,6 +68,13 @@ void mCRisenDoc::FormatData( mCString a_strType, MIUInt a_uSize )
         {
             if ( a_uSize == MI_DW_INVALID )
                 return;
+            
+            if ( a_uSize == 0 )
+            {
+                Write("< >");
+                return;
+            }
+            
             mCBuffer bufferData( a_uSize );
             MILPByte pData = bufferData.AccessMemory();
             m_streamIn.Read( pData, a_uSize );
@@ -116,17 +133,20 @@ void mCRisenDoc::FormatData( mCString a_strType, MIUInt a_uSize )
     case EScriptProxyAIFunction:
     case EScriptProxyAIState:
     case EGuiBitmapProxy2:
+    case EEntityStringProxy:
         m_streamIn.ReadU16();  // Version
     case EString:
     case ELetterLocString:
+    case EQuestLocString:
     case EResourceProxy:
     case EWeatherEnvironmentProxy:
     case EEffectProxy:
     case EFocusModeProxy2:
     case EMovementSpeciesProxy:
     case EParticleSystemProxy:
+    case EQuestProxy:
     {
-        if ( enuType == ELetterLocString )
+        if (enuType == ELetterLocString || enuType == EQuestLocString)
             m_streamIn.Skip( 4 );
         mCString strText = m_streamIn.ReadString( m_streamIn.ReadU16() );
         if ( strText.Contains( '\"' ) )
@@ -180,6 +200,12 @@ void mCRisenDoc::FormatData( mCString a_strType, MIUInt a_uSize )
             strResult += ")";
         }
         break;
+    case EDeliveryEntity:
+        StartBlock(a_strType);
+        FormatVariable("Amount", s_arrTypes[EUnsignedInt]);
+        FormatVariable("Counter", s_arrTypes[EUnsignedInt]);
+        FormatVariable("Entity", s_arrTypes[EString]);
+        EndBlock(MIFalse);
     }
     Write( strResult );
 }
@@ -193,7 +219,7 @@ MIBool mCRisenDoc::DocumentRisen3DlgData2( void )
     StartBlock( "Gestures" );
     {
         DocumentRisen3Class();
-		WriteLine();
+        WriteLine();
     }
     EndBlock();
     StartBlock( "FacialAnimation" );
@@ -292,6 +318,41 @@ MIBool mCRisenDoc::DocumentRisen3Template( void )
         return m_streamIn.Seek( uOffset ), MIFalse;
     m_streamIn.ReadU64();  // Time stamp.
     return DocumentRisen3TemplateClass( MITrue );
+}
+
+MIBool mCRisenDoc::DocumentRisen3Hdr( void )
+{
+    MIUInt const uOffset = m_streamIn.Tell();
+    if (m_streamIn.ReadString(4) != "DT01" || m_streamIn.ReadU32() != 0 || m_streamIn.ReadU32() != 1)
+        return m_streamIn.Seek(uOffset), MIFalse;
+
+    MIU32 uSectionCount = m_streamIn.ReadU32();
+    MIU32 uOffsetSections = m_streamIn.Tell();
+    for (MIU32 s = 0; s < uSectionCount; s++) {
+        StartBlock("Section");
+        
+        m_streamIn.Seek(uOffsetSections + s * 4);
+        m_streamIn.Seek(m_streamIn.ReadU32() + 8); //displacement of 8 cause GAR5 header takes 8 byte
+
+        FormatVariable("Unknown2", "blob", 4);
+
+        for (MIU32 u = m_streamIn.ReadU32(); u--;)
+        {
+            mCString strName = m_streamIn.ReadString(m_streamIn.ReadU32());
+            StartBlock("\"" + strName + "\"");
+            //m_streamIn.ReadU64(); // skip timestamp
+            FormatVariable("Timestamp", "blob", 8);
+            m_streamIn.ReadI32(); // skip class size
+            if (!DocumentRisen3Class())
+                return m_streamIn.Seek(uOffset), MIFalse;
+            WriteLine();
+            EndBlock();
+        }
+
+        EndBlock();
+    }    
+
+    return MITrue;
 }
 
 mCString mCRisenDoc::ReadHash( mCString const & a_strType )

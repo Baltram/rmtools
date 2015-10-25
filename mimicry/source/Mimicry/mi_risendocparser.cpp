@@ -4,9 +4,9 @@
 
 namespace
 {
-    enum ETypes { EBool, EFloat, EChar, ESignedChar, EUnsignedChar, EShort, EUnsignedShort, EInt, ELong, EUnsignedInt, EUnsignedLong, EInt64, EUnsignedInt64, EString, EScriptProxyScript, EScriptProxyAIFunction, EScriptProxyAIState, EGuiBitmapProxy2, EResourceProxy, EWeatherEnvironmentProxy, EEffectProxy, EFocusModeProxy2, EMovementSpeciesProxy, EParticleSystemProxy, EGuid, ETemplateEntityProxy, EEntityProxy, EBox, EEulerAngles, EFloatColor, EMatrix, EQuaternion, ERange1, EVector, EVector2, ELetterLocString, ETypes_Count };
+    enum ETypes { EBool, EFloat, EChar, ESignedChar, EUnsignedChar, EShort, EUnsignedShort, EInt, ELong, EUnsignedInt, EUnsignedLong, EInt64, EUnsignedInt64, EString, EScriptProxyScript, EScriptProxyAIFunction, EScriptProxyAIState, EGuiBitmapProxy2, EResourceProxy, EWeatherEnvironmentProxy, EEffectProxy, EFocusModeProxy2, EMovementSpeciesProxy, EParticleSystemProxy, EGuid, ETemplateEntityProxy, EEntityProxy, EBox, EEulerAngles, EFloatColor, EMatrix, EQuaternion, ERange1, EVector, EVector2, ELetterLocString, EQuestLocString, EQuestProxy, EDeliveryEntity, EEntityStringProxy, ETypes_Count };
 
-    MILPCChar const       s_arrTypes[ ETypes_Count ] = { "bool", "float", "char", "signed char", "unsigned char", "short", "unsigned short", "int", "long", "unsigned int", "unsigned long", "__int64", "unsigned __int64", "class bCString", "class eCScriptProxyScript", "class gCScriptProxyAIFunction", "class gCScriptProxyAIState", "class eCGuiBitmapProxy2", "class eTResourceProxy", "class eCWeatherEnvironmentProxy", "class gCEffectProxy", "class gCFocusModeProxy2", "class gCMovementSpeciesProxy", "class eCParticleSystemProxy", "class bCGuid", "class eCTemplateEntityProxy", "class eCEntityProxy", "class bCBox", "class bCEulerAngles", "class bCFloatColor", "class bCMatrix", "class bCQuaternion", "class bCRange1", "class bCVector", "class bCVector2", "class gCLetterLocString" };
+    MILPCChar const       s_arrTypes[ ETypes_Count ] = { "bool", "float", "char", "signed char", "unsigned char", "short", "unsigned short", "int", "long", "unsigned int", "unsigned long", "__int64", "unsigned __int64", "class bCString", "class eCScriptProxyScript", "class gCScriptProxyAIFunction", "class gCScriptProxyAIState", "class eCGuiBitmapProxy2", "class eTResourceProxy", "class eCWeatherEnvironmentProxy", "class gCEffectProxy", "class gCFocusModeProxy2", "class gCMovementSpeciesProxy", "class eCParticleSystemProxy", "class bCGuid", "class eCTemplateEntityProxy", "class eCEntityProxy", "class bCBox", "class bCEulerAngles", "class bCFloatColor", "class bCMatrix", "class bCQuaternion", "class bCRange1", "class bCVector", "class bCVector2", "class gCLetterLocString", "class gCQuestLocString", "class gCQuestProxy", "struct gCQuest::gSDeliveryEntity", "class eCEntityStringProxy" };
     mTStringMap< ETypes > s_mapTypes;
 
     MIBool ReadValueString( mCStringStream & a_streamIn, mCString & a_strDest )
@@ -240,6 +240,81 @@ MIBool mCRisenDocParser::ParseRisen3Template( mCString const a_strName, MIBool a
     return MITrue;
 }
 
+MIBool mCRisenDocParser::ParseRisen3Hdr( MIBool a_bSetLastErrorLine )
+{
+    MIUInt const uOffset = m_streamIn.Tell(), uOffsetOut = m_streamOut.Tell();
+    MIU64 u64Time = g_time();
+    u64Time = (u64Time << 32) | (u64Time >> 32);
+    m_streamOut << "DT01" << (MIU32)0 << (MIU32)1 << (MIU32)0;
+
+    MIUInt uSectionCount = 0, uOffsetSections = m_streamOut.Tell();
+
+    for (MIUInt u = 0; u < 26; u++) //pad section offsets
+        m_streamOut << (MIU32)0;
+
+    for (; MatchImmediate("Section", MIFalse, MITrue); ++uSectionCount)
+    {
+        if (!EnterBlock("", a_bSetLastErrorLine))
+            return m_streamIn.Seek(uOffset), m_streamOut.Seek(uOffsetOut), MIFalse;
+
+        MIUInt uOffsetSection = m_streamOut.Tell();
+        m_streamOut.Seek(uOffsetSections + uSectionCount * 4);
+        m_streamOut << uOffsetSection;
+        m_streamOut.Seek(uOffsetSection);
+
+        if (!ParseVariable("Unknown2", "blob", a_bSetLastErrorLine))
+            return m_streamIn.Seek(uOffset), m_streamOut.Seek(uOffsetOut), MIFalse;
+
+        MIUInt uOffsetEntries = m_streamOut.Tell(), uEntriesCount = 0;
+        m_streamOut << (MIU32)0;
+
+        for (; MatchImmediate("\"", MIFalse, MITrue); ++uEntriesCount)
+        {
+            m_streamIn.Skip(-1);
+
+            mCString a_strName;
+            if (mEResult_False == m_streamIn.ReadStringInQuotes(a_strName))
+                return mCDocParser::SetLastErrorLine(a_bSetLastErrorLine), m_streamIn.Seek(uOffset), m_streamOut.Seek(uOffsetOut), MIFalse;
+
+            if (!EnterBlock("", a_bSetLastErrorLine))
+                return m_streamIn.Seek(uOffset), m_streamOut.Seek(uOffsetOut), MIFalse;
+
+            m_streamOut << (MIU32)a_strName.GetLength() << a_strName;
+            if (!ParseVariable("Timestamp", "blob", a_bSetLastErrorLine))
+                return m_streamIn.Seek(uOffset), m_streamOut.Seek(uOffsetOut), MIFalse;
+            MIUInt uOffsetClassSize = m_streamOut.Tell();
+            m_streamOut << (MIU32)0; //dummy class size
+
+            if (!ParseRisen3Class(a_bSetLastErrorLine))
+                return m_streamIn.Seek(uOffset), m_streamOut.Seek(uOffsetOut), MIFalse;
+
+            MIUInt uOffsetClassEnd = m_streamOut.Tell();
+            m_streamOut.Seek(uOffsetClassSize);
+            m_streamOut << (uOffsetClassEnd - uOffsetClassSize - 4);
+
+            m_streamOut.Seek(uOffsetClassEnd);
+
+            if (!LeaveBlock(a_bSetLastErrorLine))
+                return m_streamIn.Seek(uOffset), m_streamOut.Seek(uOffsetOut), MIFalse;
+        }
+
+        MIUInt uOffsetEntriesEnd = m_streamOut.Tell();
+        m_streamOut.Seek(uOffsetEntries);
+        m_streamOut << uEntriesCount;
+        m_streamOut.Seek(uOffsetEntriesEnd);
+
+        if (!LeaveBlock(a_bSetLastErrorLine))
+            return m_streamIn.Seek(uOffset), m_streamOut.Seek(uOffsetOut), MIFalse;
+    }
+
+    MIUInt uOffsetEnd = m_streamOut.Tell();
+    m_streamOut.Seek(uOffsetSections - 4);
+    m_streamOut << uSectionCount;
+    m_streamOut.Seek(uOffsetEnd);
+    
+    return MITrue;
+}
+
 MIBool mCRisenDocParser::ParseData( mCString a_strType, MIBool a_bWriteSize, MIBool a_bSetLastErrorLine )
 {
     if ( s_mapTypes.GetCount() == 0 )
@@ -371,15 +446,18 @@ MIBool mCRisenDocParser::ParseData( mCString a_strType, MIBool a_bWriteSize, MIB
         case EScriptProxyAIFunction:
         case EScriptProxyAIState:
         case EGuiBitmapProxy2:
+        case EEntityStringProxy:
             m_streamOut << ( MIU16 ) 1;
         case EString:
         case ELetterLocString:
+        case EQuestLocString:
         case EResourceProxy:
         case EWeatherEnvironmentProxy:
         case EEffectProxy:
         case EFocusModeProxy2:
         case EMovementSpeciesProxy:
         case EParticleSystemProxy:
+        case EQuestProxy:
         {
             mCString strText, strPart;
             if ( MatchImmediate( "\"\"\"", MIFalse, MITrue ) )
@@ -401,7 +479,7 @@ MIBool mCRisenDocParser::ParseData( mCString a_strType, MIBool a_bWriteSize, MIB
             }
             else
                 bResult &= ( mEResult_Ok == m_streamIn.ReadStringInQuotes( strText ) );
-            if ( enuType == ELetterLocString )
+            if ( enuType == ELetterLocString || enuType == EQuestLocString )
                 m_streamOut << g_djb2( strText.Lower().GetText() );
             m_streamOut << ( MIU16 )( strText.GetLength() ) << strText;
             break;
@@ -452,6 +530,14 @@ MIBool mCRisenDocParser::ParseData( mCString a_strType, MIBool a_bWriteSize, MIB
                     m_streamOut << m_streamIn.ReadFloat();
                 bResult &= MatchImmediate( ")", MIFalse );
             }
+            break;
+        case EDeliveryEntity:
+            EnterBlock(a_strType);
+            ParseVariable("Amount", s_arrTypes[EUnsignedInt]);
+            ParseVariable("Counter", s_arrTypes[EUnsignedInt]);
+            ParseVariable("Entity", s_arrTypes[EString]);
+            LeaveBlock();
+            break;
         }
         if ( !bResult )
             return mCDocParser::SetLastErrorLine( a_bSetLastErrorLine ), m_streamIn.Seek( uOffset ), m_streamOut.Seek( uOffsetOut ), MIFalse;

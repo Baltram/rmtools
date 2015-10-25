@@ -15,6 +15,7 @@ public:
     MIUInt   DocumentRisen3Class( void );
     MIBool   DocumentRisen3Sector( void );
     MIBool   DocumentRisen3Template( void );
+    MIBool   DocumentRisen3Hdr( void );
     mCString ReadHash( mCString const & a_strType = "hash" );
 private:
     mCRisenDoc( mCRisenDoc const & );
