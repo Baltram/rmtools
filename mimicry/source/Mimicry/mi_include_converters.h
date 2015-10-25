@@ -31,6 +31,7 @@
 #include "mi_xnvmshwriter.h"
 #include "mi_xcomreader.h"
 #include "mi_xcomwriter.h"
+#include "mi_r3mshreader.h"
 #include "mi_genomefile.h"
 #include "mi_genomevolume.h"
 #include "mi_genomematerial.h"

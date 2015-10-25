@@ -44,7 +44,7 @@ BatchDialog::BatchDialog( void ) :
     m_bAborted( false )
 {
     m_pUi->setupUi( this );
-    m_pUi->cobOutputFileFormat->addItems( QStringList() << "Baltram's 3D format (*.3db)" << "3D Studio Mesh (*.3ds)" << "Wavefront OBJ format (*.obj)" << "3ds Max ASCII Scene (*.ase)" << "Gothic ASCII Scene (*.asc)" << "Gothic 3 Mesh (*.xcmsh)" << "Gothic 3 Motion Actor (*.xact)" << "Gothic 3 LOD Mesh (*.xlmsh)" << "Gothic 3 Collision Mesh (*.xnvmsh)" << "Risen Mesh (*._xmsh)" << "Risen Motion Actor (*._xmac)" << "Risen Collision Mesh (*._xcom)" );
+    m_pUi->cobOutputFileFormat->addItems( QStringList() << "Baltram's 3D format (*.3db)" << "3D Studio Mesh (*.3ds)" << "Wavefront OBJ format (*.obj)" << "3ds Max ASCII Scene (*.ase)" << "Gothic ASCII Scene (*.asc)" << "Gothic 3 Mesh (*.xcmsh)" << "Gothic 3 Motion Actor (*.xact)" << "Gothic 3 LOD Mesh (*.xlmsh)" << "Gothic 3 Collision Mesh (*.xnvmsh)" << "Risen Mesh (*._xmsh)" << "Risen Motion Actor (*._xmac)" << "Risen Collision Mesh (*._xcom)" << "Risen 3 Mesh (*.r3msh)" );
     qRegisterMetaType< Rimy3D::EMessage >( "Rimy3D::EMessage" );
     connect( Rimy3D::getInstance(), SIGNAL( message( QString const &, Rimy3D::EMessage ) ), this, SLOT( onMessage( QString const &, Rimy3D::EMessage ) ) );
     connect( Rimy3D::getInstance(), SIGNAL( settingsSaving( QSettings & ) ), this, SLOT( saveSettings( QSettings & ) ) );
@@ -68,7 +68,7 @@ void BatchDialog::addFilesFromDirectory( QDir const & a_Dir )
 {
     bool bSortingEnabled = m_pUi->lwSourceFiles->isSortingEnabled();
     m_pUi->lwSourceFiles->setSortingEnabled( false );
-    QFileInfoList arrFiles = a_Dir.entryInfoList( QStringList() << "*.3db" << "*.3ds" << "*.obj" << "*.ase" << "*.asc" << "*.xcmsh" << "*.xact" << "*.xlmsh" << "*.xnvmsh" << "*._xmsh" << "*._xmac" << "*._xcom", QDir::Files | QDir::Readable );
+    QFileInfoList arrFiles = a_Dir.entryInfoList( QStringList() << "*.3db" << "*.3ds" << "*.obj" << "*.ase" << "*.asc" << "*.xcmsh" << "*.xact" << "*.xlmsh" << "*.xnvmsh" << "*._xmsh" << "*._xmac" << "*._xcom" << "*.r3msh", QDir::Files | QDir::Readable );
     for ( int i = 0, ie = arrFiles.count(); i != ie; ++i )
         m_pUi->lwSourceFiles->addItem( QDir::toNativeSeparators( arrFiles.at( i ).absoluteFilePath() ) );
     if ( m_pUi->cbIncludeSubdirs->isChecked() )

@@ -18,7 +18,7 @@ MainWindow & MainWindow::getInstance( void )
 QString MainWindow::getOpenFilter( void )
 {
     QString strResult = tr( "All files" );
-    strResult.append( " (*.3ds *.obj *.3db *.gmax *.ase *.asc *.xcmsh *.xlmsh *.xnvmsh *.xact *._xmac *._xmsh *._xcom);;"
+    strResult.append( " (*.3ds *.obj *.3db *.gmax *.ase *.asc *.xcmsh *.xlmsh *.xnvmsh *.xact *._xmac *._xmsh *._xcom *.r3msh);;"
                       "Baltram's 3D format (*.3db);;"
                       "3D Studio Mesh (*.3ds);;"
                       "Wavefront OBJ format (*.obj);;"
@@ -31,7 +31,8 @@ QString MainWindow::getOpenFilter( void )
                       "Gothic 3 Collision Mesh (*.xnvmsh);;"
                       "Risen Mesh (*._xmsh);;"
                       "Risen Motion Actor (*._xmac);;"
-                      "Risen Collision Mesh (*._xcom);;" );
+                      "Risen Collision Mesh (*._xcom);;"
+                      "Risen 3 Mesh (*.r3msh);;" );
     return strResult;
 }
 

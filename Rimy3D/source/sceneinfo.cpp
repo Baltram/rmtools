@@ -244,6 +244,10 @@ bool SceneInfo::openSceneFile( QString a_strFilePath, bool a_bMerge )
     {
         enuResult = mCXnvmshReader::ReadXnvmshFileData( sceneNew, streamIn );
     }
+    else if ( strExt == "r3msh" )
+    {
+        enuResult = mCR3mshReader::ReadR3mshFileData( sceneNew, streamIn );
+    }
     else
     {
         Rimy3D::showError( tr( "Unknown file type: \".%1\"" ).arg( strExt ), Rimy3D::applicationName() );
