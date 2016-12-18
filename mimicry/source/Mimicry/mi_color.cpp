@@ -17,10 +17,10 @@ mCColor::mCColor( mCColor const & a_colSource ) :
 }
 
 mCColor::mCColor( void ) :
-    m_u8Red( 0 ),
-    m_u8Green( 0 ),
-    m_u8Blue( 0 ),
-    m_u8Alpha( 0 )
+    m_u8Red( 255 ),
+    m_u8Green( 255 ),
+    m_u8Blue( 255 ),
+    m_u8Alpha( 255 )
 {
 }
 

@@ -14,7 +14,7 @@ mEResult mCR3mshReader::ReadR3mshFileData(mCScene & a_sceneDest, mCIOStreamBinar
     mCString const strSceneName = dynamic_cast< mCFileStream * >( &a_streamSource ) ? g_GetFileNameNoExt( dynamic_cast< mCFileStream * >( &a_streamSource )->GetFileName() ) : "";
     if ( a_streamSource.ReadString( 4 ) != "R3RF" )
         return MI_ERROR( mCStreamError, EBadFormat, "Invalid .r3msh file." ), mEResult_False;
-    MIU32 uResourceHeaderOffset = a_streamSource.ReadU32();
+    a_streamSource.ReadU32();
     a_streamSource.Skip(36);
     if (a_streamSource.ReadString(4) != "GMSH" || a_streamSource.ReadU32() != 0x01)
         return MI_ERROR(mCStreamError, EBadFormat, "Invalid .r3msh file."), mEResult_False;
