@@ -99,7 +99,7 @@
       <item>
        <widget class="QCheckBox" name="cbGothic3ds">
         <property name="text">
-         <string>Gothic 3DS format</string>
+         <string>Gothic 3DS Format</string>
         </property>
        </widget>
       </item>
@@ -370,7 +370,7 @@
       <item>
        <widget class="QCheckBox" name="cbConvex">
         <property name="text">
-         <string>All Meshes Are Convex</string>
+         <string>Mesh Is Convex</string>
         </property>
        </widget>
       </item>

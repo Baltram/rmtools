@@ -85,6 +85,7 @@ void GenomeMaterialDialog::openMaterial( QString const & a_strMaterialName )
                 if ( arrReferencedShaderElementIndices[ v ] != MI_DW_INVALID )
                     strShaderElement += QString::number( arrReferencedShaderElementIndices[ v ] ).rightJustified( 2, '0' ) + ", ";
             strShaderElement[ strShaderElement.length() - 2 ] = '}';
+            strShaderElement.truncate( strShaderElement.length() - 1 );
         }
         MILPCChar arrColorSourceTypeStrings[ mCGenomeMaterial::EColorSourceType_Count ] =
         {
@@ -105,7 +106,7 @@ void GenomeMaterialDialog::openMaterial( QString const & a_strMaterialName )
         };
         mCGenomeMaterial::EColorSourceType enumColoRourceType = m_pMaterial->GetColorSourceType( u );
         if ( enumColoRourceType != mCGenomeMaterial::EColorSourceType_Invalid )
-            strShaderElement += QString( "(" ) + arrColorSourceTypeStrings[ enumColoRourceType ] + ")";
+            strShaderElement += QString( " (" ) + arrColorSourceTypeStrings[ enumColoRourceType ] + ")";
         arrItems << strShaderElement;
     }
     arrItems << ( "** " + m_pMaterial->GetShaderElementType( mCGenomeMaterial::ESpecialShaderElementIndex_MaterialResourceObject ) ).GetText();

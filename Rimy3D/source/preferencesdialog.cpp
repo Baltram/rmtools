@@ -128,7 +128,7 @@ void PreferencesDialog::loadSettings( QSettings & a_Settings )
     a_Settings.beginGroup( "Preferences" );
     m_pUi->cobImgExt->setCurrentIndex( a_Settings.value( "cobImgExt", 0 ).toInt() );
     m_pUi->cbAscPrefixes->setChecked( a_Settings.value( "cbAscPrefixes", true ).toBool() );
-    m_pUi->cbGizmos->setChecked( a_Settings.value( "cbGizmos", true ).toBool() );
+    m_pUi->cbGizmos->setChecked( a_Settings.value( "cbGizmos", false ).toBool() );
     m_pUi->cbXmacCollisionMesh->setChecked( a_Settings.value( "cbXmacCollisionMesh", true ).toBool() );
     m_pUi->cbLookUpMaterials->setChecked( a_Settings.value( "cbLookUpMaterials", true ).toBool() );
     m_pUi->cbLookUpTextures->setChecked( a_Settings.value( "cbLookUpTextures", true ).toBool() );
@@ -137,7 +137,7 @@ void PreferencesDialog::loadSettings( QSettings & a_Settings )
     a_Settings.endGroup();
     if ( m_iAutoUpdates == -1 )
     {
-        m_iAutoUpdates = 0;
+        m_iAutoUpdates = 3;
         showAutoUpdateDialog();
         checkForUpdates( false, true );
     }

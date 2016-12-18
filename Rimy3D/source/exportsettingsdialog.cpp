@@ -132,7 +132,7 @@ void exportSettingsDialog::loadSettings( QSettings & a_Settings )
     m_pUi->rbNKeep->setChecked( a_Settings.value( "rbNKeep", false ).toBool() );
     m_pUi->rbNRecalcS->setChecked( a_Settings.value( "rbNRecalcS", false ).toBool() );
     m_pUi->rbNRecalcA->setChecked( a_Settings.value( "rbNRecalcA", true ).toBool() );
-    m_pUi->sbAngle->setValue( a_Settings.value( "sbAngle", 70 ).toInt() );
+    m_pUi->sbAngle->setValue( a_Settings.value( "sbAngle", 80 ).toInt() );
     m_pUi->cbVertsOnly->setChecked( a_Settings.value( "cbVertsOnly", false ).toBool() );
     m_pUi->rbIndirectMatching->setChecked( a_Settings.value( "rbIndirectMatching", true ).toBool() );
     m_pUi->rbDirectMatching->setChecked( a_Settings.value( "rbDirectMatching", false ).toBool() );
