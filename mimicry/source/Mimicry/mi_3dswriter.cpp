@@ -174,7 +174,7 @@ mEResult mC3dsWriter::Write3dsFileData( mCScene a_sceneSource, mCIOStreamBinary 
                 arrFaceIndices.Reserve( arrUVFaces.GetCount() );
                 for ( MIUInt w = 0, we = arrUVFaces.GetCount(); w != we; ++w )
                     if ( arrUniVerts[ arrUVFaces[ w ].GetA() ].m_uMatID % ve == v )
-                        arrFaceIndices.Add( w );
+                        arrFaceIndices.Add( static_cast< MIU16 >( w ) );
                 StartChunk( a_streamDest, EChunkID_MSH_MAT_GROUP );
                 WriteString( a_streamDest, arrSubMaterials[ v ].GetName() );
                 a_streamDest << ( MIU16 )( arrFaceIndices.GetCount() );

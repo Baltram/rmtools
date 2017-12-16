@@ -27,8 +27,8 @@ MIU64  g_time( void );
 void   g_unsetbit( MILPVoid a_pBase, MIUInt uOffset );
 
 void      g_free( MILPVoid a_pDest );
-MIInt     g_fseek( MILPVoid a_pFile, MIUInt a_uOffset, MIInt a_iOrigin );
-MIUInt    g_ftell( MILPVoid a_pFile );
+MIInt     g_fseek( MILPVoid a_pFile, MII64 a_i64Offset, MIInt a_iOrigin );
+MII64     g_ftell( MILPVoid a_pFile );
 MILPVoid  g_malloc( MISize a_sizeSize );
 MILPCVoid g_memchr( MILPCVoid a_pBlock, MIInt a_iValue, MISize a_sizeNum );
 MILPVoid  g_memchr( MILPVoid a_pBlock, MIInt a_iValue, MISize a_sizeNum );

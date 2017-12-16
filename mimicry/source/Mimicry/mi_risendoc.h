@@ -11,10 +11,12 @@ public:
 public:
     virtual void FormatData( mCString a_strType, MIUInt uSize = MI_DW_INVALID );
 public:
+    MIBool   DocumentElexWorld( void );
     MIBool   DocumentRisen3DlgData2( void );
     MIUInt   DocumentRisen3Class( void );
-    MIBool   DocumentRisen3Sector( void );
-    MIBool   DocumentRisen3Template( void );
+    void     DocumentRisen3ClassData( mCString a_strName, MIUInt uVersion );
+    MIBool   DocumentRisen3Sector( MIBool a_bElex = MIFalse );
+    MIBool   DocumentRisen3Template( MIBool a_bElex = MIFalse );
     MIBool   DocumentRisen3Hdr( void );
     mCString ReadHash( mCString const & a_strType = "hash" );
 private:
@@ -22,8 +24,8 @@ private:
 private:
     mCRisenDoc & operator = ( mCRisenDoc const & );
 private:
-    MIBool DocumentRisen3DynamicEntity( void );
-    MIBool DocumentRisen3TemplateClass( MIBool a_bMasterEntity );
+    MIBool DocumentRisen3DynamicEntity( MIBool a_bElex = MIFalse );
+    MIBool DocumentRisen3TemplateClass( MIBool a_bMasterEntity, MIBool a_bElex = MIFalse );
     void   FormatVariable( mCString const & a_strName, mCString const & a_strType, MIUInt a_uSize = MI_DW_INVALID );
 };
 

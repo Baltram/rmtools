@@ -40,7 +40,7 @@ MIBool CreateFiles( mCString const & a_strDirectory, mCGenomeVolume::CDir const 
     if ( a_strRootDirectory == a_strDirectory )
     {
         s_uCreatedFileCount = 0;
-        s_uTotalFileCount = a_Dir.GetFileCount();
+        s_uTotalFileCount = a_Dir.GetTotalFileCount();
     }
     DWORD dwAttrib = GetFileAttributesA( a_strDirectory.GetText() );
     if ( dwAttrib == INVALID_FILE_ATTRIBUTES )
@@ -332,57 +332,57 @@ MIBool SecToSecDoc( mCIOStreamBinary & a_streamIn, mCString const & a_strFilePat
     return MITrue;
 }
 
-MIBool HdrToHdrDoc(mCIOStreamBinary & streamIn, mCString const & a_strFilePath)
+MIBool HdrToHdrDoc( mCIOStreamBinary & streamIn, mCString const & a_strFilePath )
 {
-    if (streamIn.ReadString(4) != "GAR5")
-        return streamIn.Seek(0), MIFalse;
-    streamIn.ReadU32(); // 0x00000020
+	if ( streamIn.ReadString( 4 ) != "GAR5" )
+		return streamIn.Seek( 0 ), MIFalse;
+	streamIn.ReadU32();  // 0x00000020
 
-    mCMemoryStream streamDoc;
-    mCRisenDoc Doc(streamIn, streamDoc);
-    if (!Doc.DocumentRisen3Hdr())
-    {
-        printf("Error: Unknown hdr file version.\n");
-        WaitForEnterKey(MITrue);
-        return MIFalse;
-    }
+	mCMemoryStream streamDoc;
+	mCRisenDoc Doc( streamIn, streamDoc );
+	if ( !Doc.DocumentRisen3Hdr() )
+	{
+		printf( "Error: Unknown hdr file version.\n" );
+		WaitForEnterKey( MITrue );
+		return MIFalse;
+	}
 
-    mCString const strDocPath = g_GetDirectoryPath(a_strFilePath) + "\\" + g_GetFileNameNoExt(a_strFilePath) + ".hdrdoc";
-    if (!streamDoc.ToFile(strDocPath))
-    {
-        printf("Error: Could not create %s\nThe problem might be missing access rights. Try starting the program with admin rights.\n", strDocPath.GetText());
-        WaitForEnterKey(MITrue);
-        return MIFalse;
-    }
-    return MITrue;
+	mCString const strDocPath = g_GetDirectoryPath( a_strFilePath ) + "\\" + g_GetFileNameNoExt( a_strFilePath ) + ".hdrdoc";
+	if ( !streamDoc.ToFile( strDocPath ) )
+	{
+		printf( "Error: Could not create %s\nThe problem might be missing access rights. Try starting the program with admin rights.\n", strDocPath.GetText() );
+		WaitForEnterKey( MITrue );
+		return MIFalse;
+	}
+	return MITrue;
 }
 
-MIBool HdrDocToHdr(mCIOStreamBinary & a_streamIn, mCString const & a_strFilePath)
+MIBool HdrDocToHdr( mCIOStreamBinary & a_streamIn, mCString const & a_strFilePath )
 {
-    mCString strResourceName = g_GetFileNameNoExt(a_strFilePath);
-    mCString const strR3HdrPath = g_GetDirectoryPath(a_strFilePath) + "\\" + strResourceName + ".hdr";
-    mCMemoryStream streamHdr;
-    mCStringStream streamDoc;
-    a_streamIn >> streamDoc;
-    streamDoc.Seek(0);
-    mCRisenDocParser Parser(streamDoc, streamHdr);
-    if (!Parser.ParseRisen3Hdr(MITrue))
-    {
-        printf("Error: Parse error at line %u.\n", Parser.GetLastErrorLine());
-        WaitForEnterKey(MITrue);
-        return MIFalse;
-    }
-    mCFileStream streamDest(strR3HdrPath, mEFileOpenMode_Write);
-    if (!streamDest.IsOpen())
-    {
-        printf("Error: Could not create %s\nThe problem might be missing access rights. Try starting the program with admin rights.\n", strR3HdrPath.GetText());
-        WaitForEnterKey(MITrue);
-        return MIFalse;
-    }
-    streamDest << "GAR5" << 0x00000020;
-    streamDest << streamHdr;
-    
-    return MITrue;
+	mCString strResourceName = g_GetFileNameNoExt( a_strFilePath );
+	mCString const strR3HdrPath = g_GetDirectoryPath( a_strFilePath ) + "\\" + strResourceName + ".hdr";
+	mCMemoryStream streamHdr;
+	mCStringStream streamDoc;
+	a_streamIn >> streamDoc;
+	streamDoc.Seek( 0 );
+	mCRisenDocParser Parser( streamDoc, streamHdr );
+	if ( !Parser.ParseRisen3Hdr( MITrue ) )
+	{
+		printf( "Error: Parse error at line %u.\n", Parser.GetLastErrorLine() );
+		WaitForEnterKey( MITrue );
+		return MIFalse;
+	}
+	mCFileStream streamDest( strR3HdrPath, mEFileOpenMode_Write );
+	if ( !streamDest.IsOpen() )
+	{
+		printf( "Error: Could not create %s\nThe problem might be missing access rights. Try starting the program with admin rights.\n", strR3HdrPath.GetText() );
+		WaitForEnterKey( MITrue );
+		return MIFalse;
+	}
+	streamDest << "GAR5" << g_32( 0x00000020 );
+	streamDest << streamHdr;
+
+	return MITrue;
 }
 
 MIBool ReadResourceFile( mCIOStreamBinary & streamIn, mCString const & a_strFilePath, MIBool & a_bIsResourceFile )
@@ -406,7 +406,7 @@ MIBool ReadResourceFile( mCIOStreamBinary & streamIn, mCString const & a_strFile
 
 int ResolveRisen3Hashes( void )
 {
-    mCRisenName::InitializeRisen3Strings();
+    mCRisenName::InitializeGameStrings();
     while ( MITrue )
     {
         MIU32 u32Hash = 0;
@@ -474,7 +474,7 @@ MIBool WavToSnd( mCIOStreamBinary & a_streamIn, mCString const & a_strFilePath, 
     for ( MIUInt u = 3; u--; )
         streamOffsetTable << g_32( uOffset ) << ( MIU32 ) 0 << ( MIU8 ) 0;
     streamDest << streamOffsetTable;
-    mCRisenName::InitializeRisen3Strings();
+    mCRisenName::InitializeGameStrings();
     streamDest << mCRisenName( "class eCSoundResource2" ) << "SN09";
     uOffset = streamDest.Tell();
     streamDest << ( MIU32 ) 0;
@@ -547,7 +547,7 @@ MIBool DlgDocToDlg( mCIOStreamBinary & a_streamIn, mCString const & a_strFilePat
     for ( MIUInt u = 2; u--; )
         streamOffsetTable << g_32( uOffset ) << ( MIU32 ) 0 << ( MIU8 ) 0;
     streamDest << streamOffsetTable;
-    mCRisenName::InitializeRisen3Strings();
+    mCRisenName::InitializeGameStrings();
     streamDest << mCRisenName( "class eCDialogueResource2" ) << "DI14";
     uOffset = streamDest.Tell();
     streamDest << ( MIU32 ) 0;
@@ -583,7 +583,7 @@ namespace
 MIBool ProcessSecMod( mCIOStreamBinary & a_streamIn, mCString const & a_strFilePath )
 {
     mCError::CProbe Probe;
-    mCRisenName::InitializeRisen3Strings();
+    mCRisenName::InitializeGameStrings();
     mCStringStream streamIn;
     streamIn << a_streamIn;
     streamIn.Seek( a_streamIn.Tell() );
@@ -796,7 +796,7 @@ MIBool SecDocToSec( mCIOStreamBinary & a_streamIn, mCString const & a_strFilePat
     for ( MIUInt u = 3; u--; )
         streamOffsetTable << g_32( uOffset ) << ( MIU32 ) 0 << ( MIU8 ) 0;
     streamDest << streamOffsetTable;
-    mCRisenName::InitializeRisen3Strings();
+    mCRisenName::InitializeGameStrings();
     streamDest << mCRisenName( "class gCSectorResource" ) << "SC02";
     uOffset = streamDest.Tell();
     streamDest << ( MIU32 ) 0;
@@ -846,7 +846,7 @@ MIBool TplDocToTpl( mCIOStreamBinary & a_streamIn, mCString const & a_strFilePat
     for ( MIUInt u = 3; u--; )
         streamOffsetTable << g_32( uOffset ) << ( MIU32 ) 0 << ( MIU8 ) 0;
     streamDest << streamOffsetTable;
-    mCRisenName::InitializeRisen3Strings();
+    mCRisenName::InitializeGameStrings();
     streamDest << mCRisenName( "class gCTemplateResource" ) << "TP02";
     uOffset = streamDest.Tell();
     streamDest << ( MIU32 ) 0;
@@ -954,9 +954,9 @@ MIBool DdsToImg( mCIOStreamBinary & a_streamIn, mCString const & a_strFilePath, 
         {
             if ( u32RGBBitCount == 32 && u32RBitMask == 0xFF0000 && u32GBitMask == 0xFF00 && u32BBitMask == 0xFF && u32ABitMask == 0xFF000000 )
                 enuColorFormat = eEColorFormat_A8R8G8B8, enuColorFormatHash = eEColorFormat_A8R8G8B8Hash;
-            else if ( u32RGBBitCount == 16 && u32RBitMask == 0x7C00 && u32GBitMask == 0x3E0 && u32BBitMask == 0x1F && u32BBitMask == 0x8000 )
+            else if ( u32RGBBitCount == 16 && u32RBitMask == 0x7C00 && u32GBitMask == 0x3E0 && u32BBitMask == 0x1F && u32ABitMask == 0x8000 )
                 enuColorFormat = eEColorFormat_A1R5G5B5, enuColorFormatHash = eEColorFormat_A1R5G5B5Hash;
-            else if ( u32RGBBitCount == 16 && u32RBitMask == 0xFF00 && u32GBitMask == 0xFF0 && u32BBitMask == 0xFF && u32ABitMask == 0xFF000 )
+            else if ( u32RGBBitCount == 16 && u32RBitMask == 0x0F00 && u32GBitMask == 0xF0 && u32BBitMask == 0x0F && u32ABitMask == 0xF000 )
                 enuColorFormat = eEColorFormat_A4R4G4B4, enuColorFormatHash = eEColorFormat_A4R4G4B4Hash;
         }
         else
@@ -986,7 +986,7 @@ MIBool DdsToImg( mCIOStreamBinary & a_streamIn, mCString const & a_strFilePath, 
     for ( MIUInt u = 3; u--; )
         streamOffsetTable << g_32( uOffset ) << ( MIU32 ) 0 << ( MIU8 ) 0;
     streamDest << streamOffsetTable;
-    mCRisenName::InitializeRisen3Strings();
+    mCRisenName::InitializeGameStrings();
     streamDest << mCRisenName( "class eCImageResource2" ) << "IM06";
     uOffset = streamDest.Tell();
     streamDest << ( MIU32 ) 0;
@@ -1017,6 +1017,7 @@ MIBool DdsToImg( mCIOStreamBinary & a_streamIn, mCString const & a_strFilePath, 
 
 int main( int argc, char* argv[] )
 {
+    mCRisenName::SetGame( mEGame_Risen3 );
     if ( argc < 2 )
     {
         printf( "Risen 3 Resource Manager v1.0 by Baltram\n"
@@ -1088,10 +1089,10 @@ int main( int argc, char* argv[] )
         return SecDocToSec( streamIn, strPath ) ? 0 : 1;
     else if ( g_GetFileExt( strPath ).ToLower() == "r3secmod" )
         return ProcessSecMod( streamIn, strPath ) ? 0 : 1;
-    else if (g_GetFileExt(strPath).ToLower() == "hdr")
-        return HdrToHdrDoc(streamIn, strPath) ? 0 : 1;
-    else if (g_GetFileExt(strPath).ToLower() == "hdrdoc")
-        return HdrDocToHdr(streamIn, strPath) ? 0 : 1;
+    else if ( g_GetFileExt( strPath ).ToLower() == "hdr" )
+        return HdrToHdrDoc( streamIn, strPath ) ? 0 : 1;
+    else if ( g_GetFileExt( strPath ).ToLower() == "hdrdoc" )
+        return HdrDocToHdr( streamIn, strPath ) ? 0 : 1;
     MIBool bIsResourceFile = MIFalse, bIsDdsFile = MIFalse, bIsWavFile = MIFalse;
     MIBool bSuccess = ReadResourceFile( streamIn, strPath, bIsResourceFile );
     if ( bIsResourceFile )
@@ -1131,7 +1132,7 @@ int main( int argc, char* argv[] )
         return 1;
     }
     mCGenomeVolume::CDir const & Root = Pak.GetRoot();
-    mCString strResourceType = Pak.GetRisen3ResourceType();
+    mCString strResourceType = Root.GetRisen3ResourceType();
     mCString strDir = g_GetDirectoryPath( strPath );
     if ( strDir == "" )
         strDir = ".";

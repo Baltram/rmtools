@@ -560,7 +560,7 @@ mCString & mCString::VFormat( MILPCChar a_pcFormat, va_list a_Arguments )
 MIInt mCString::VScan( MILPCChar a_pcFormat, va_list a_Arguments ) const
 {
     MIInt iCount = 0;
-#ifdef _MSC_VER
+#if defined _MSC_VER && _MSC_VER < 1800
     MILPCChar pcFormat = a_pcFormat;
     MILPCChar pcEndFormat = a_pcFormat + g_strlen( a_pcFormat );
     MIInt ( MI_CDECL * funcSscanf )( MILPCChar, MILPCChar, ... );

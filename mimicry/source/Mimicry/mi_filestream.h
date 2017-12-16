@@ -19,24 +19,24 @@ public:
     mCFileStream( void );
     mCFileStream( mCString const & a_strFileName, mEFileOpenMode a_enuOpenMode );
 public:
-    virtual MIUInt   GetSize( void ) const;
+    virtual MIU64    GetSize64( void ) const;
     virtual MIBool   IsAtEnd( void ) const;
     virtual mEResult Read( MILPVoid a_pDest, MIUInt a_uSize );
     virtual mEResult Read( mCString & a_strDest, MIUInt a_uSize );
     virtual mEResult Read( mCString & a_strDest );
-    virtual mEResult Seek( MIUInt a_uPosition, mEStreamSeekMode a_enuMode = mEStreamSeekMode_Begin );
-    virtual MIUInt   Tell( void ) const;
+    virtual mEResult Seek( MIU64 a_u64Position, mEStreamSeekMode a_enuMode = mEStreamSeekMode_Begin );
+    virtual MIU64    Tell64( void ) const;
     virtual mEResult Write( MILPCVoid a_pSource, MIUInt a_uSize );
     virtual mEResult Write( mCString const & a_strSource );
 public:
-    void             Buffer( MIUInt a_uPosition );
+    void             Buffer( MIU64 a_u64Position );
     void             Close( void );
     void             Flush( void );
     mCString const & GetFileName( void );
     MIBool           IsOpen( void );
     mEResult         Open( mCString const & a_strFileName, mEFileOpenMode a_enuOpenMode );
 protected:
-    virtual void DirectRead( MILPVoid a_pDest, MIUInt a_uPosition, MIUInt a_uSize );
+    virtual void DirectRead( MILPVoid a_pDest, MIU64 a_u64Position, MIUInt a_uSize );
     virtual void Init( MILPVoid a_pFile, mCString const & a_strFileName, mEFileOpenMode a_enuOpenMode );
 protected:
     void Clear( void );
@@ -52,8 +52,8 @@ protected:
     mCString       m_strFileName;
     mEFileOpenMode m_enuOpenMode;
     MILPVoid       m_pFile;
-    MIUInt         m_uRecentFileSize;
-    MIUInt         m_uBufferedPosition;
+    MIU64          m_u64RecentFileSize;
+    MIU64          m_u64BufferedPosition;
     MIUInt         m_uOffset;
     MIUInt         m_uOffsetPending;
     MIBool         m_bPendingData;

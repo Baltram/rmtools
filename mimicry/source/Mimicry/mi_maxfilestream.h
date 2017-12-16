@@ -13,7 +13,7 @@ public:
     mEResult Open( mCString const & a_strFileName );
     mEResult ReadPersistentGlobal( mCString const & a_strName, mCVariant & a_vDest );
 protected:
-    virtual void DirectRead( MILPVoid a_pDest, MIUInt a_uPosition, MIUInt a_uSize );
+    virtual void DirectRead( MILPVoid a_pDest, MIU64 a_u64Position, MIUInt a_uSize );
     virtual void Init( MILPVoid a_pFile, mCString const & a_strFileName, mEFileOpenMode a_enuOpenMode );
 private:
     void     Decrypt( MILPVoid a_pData, MIUInt a_uSize, MIU8 a_u8Type );

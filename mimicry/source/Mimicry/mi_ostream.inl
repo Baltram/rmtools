@@ -50,22 +50,6 @@ mCOStreamBinary & mCOStreamBinary::operator << ( MIU32 a_u32Source )
 }
 
 template<> inline
-mCOStreamBinary & mCOStreamBinary::operator << ( MIInt a_iSource )
-{
-    Handle32( &a_iSource );
-    Write( &a_iSource, static_cast< MIUInt >( sizeof( MIInt ) ) );
-    return *this;
-}
-
-template<> inline
-mCOStreamBinary & mCOStreamBinary::operator << ( MIUInt a_uSource )
-{
-    Handle32( &a_uSource );
-    Write( &a_uSource, static_cast< MIUInt >( sizeof( MIUInt ) ) );
-    return *this;
-}
-
-template<> inline
 mCOStreamBinary & mCOStreamBinary::operator << ( MII64 a_i64Source )
 {
     Handle64( &a_i64Source );
@@ -177,20 +161,6 @@ mCOStreamFormatted & mCOStreamFormatted::operator << ( MIU32 a_u32Source )
 }
 
 template<> inline
-mCOStreamFormatted & mCOStreamFormatted::operator << ( MIInt a_iSource )
-{
-    WriteFormatted( &a_iSource, "%i" );
-    return *this;
-}
-
-template<> inline
-mCOStreamFormatted & mCOStreamFormatted::operator << ( MIUInt a_uSource )
-{
-    WriteFormatted( &a_uSource, "%u" );
-    return *this;
-}
-
-template<> inline
 mCOStreamFormatted & mCOStreamFormatted::operator << ( MII64 a_i64Source )
 {
     WriteFormatted( &a_i64Source, "%i" );
@@ -286,20 +256,6 @@ template< mEStreamType M >
 mTOStream< M > & operator >> ( MIU32 a_u32Source, mTOStream< M > & a_streamDest )
 {
     a_streamDest << a_u32Source;
-    return a_streamDest;
-}
-
-template< mEStreamType M >
-mTOStream< M > & operator >> ( MIInt a_iSource, mTOStream< M > & a_streamDest )
-{
-    a_streamDest << a_iSource;
-    return a_streamDest;
-}
-
-template< mEStreamType M >
-mTOStream< M > & operator >> ( MIUInt a_uSource, mTOStream< M > & a_streamDest )
-{
-    a_streamDest << a_uSource;
     return a_streamDest;
 }
 

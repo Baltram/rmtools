@@ -16,8 +16,6 @@ public:
     mTOStream< M > & operator << ( MIU16 a_u16Source );
     mTOStream< M > & operator << ( MII32 a_i32Source );
     mTOStream< M > & operator << ( MIU32 a_u32Source );
-    mTOStream< M > & operator << ( MIInt a_iSource );
-    mTOStream< M > & operator << ( MIUInt a_uSource );
     mTOStream< M > & operator << ( MII64 a_i64Source );
     mTOStream< M > & operator << ( MIU64 a_u64Source );
     mTOStream< M > & operator << ( MIBool a_bSource );
@@ -39,8 +37,6 @@ template< mEStreamType M > mTOStream< M > & operator >> ( MII16 a_i16Source, mTO
 template< mEStreamType M > mTOStream< M > & operator >> ( MIU16 a_u16Source, mTOStream< M > & a_streamDest );
 template< mEStreamType M > mTOStream< M > & operator >> ( MII32 a_i32Source, mTOStream< M > & a_streamDest );
 template< mEStreamType M > mTOStream< M > & operator >> ( MIU32 a_u32Source, mTOStream< M > & a_streamDest );
-template< mEStreamType M > mTOStream< M > & operator >> ( MIInt a_iSource, mTOStream< M > & a_streamDest );
-template< mEStreamType M > mTOStream< M > & operator >> ( MIUInt a_uSource, mTOStream< M > & a_streamDest );
 template< mEStreamType M > mTOStream< M > & operator >> ( MII64 a_i64Source, mTOStream< M > & a_streamDest );
 template< mEStreamType M > mTOStream< M > & operator >> ( MIU64 a_u64Source, mTOStream< M > & a_streamDest );
 template< mEStreamType M > mTOStream< M > & operator >> ( MIBool a_bSource, mTOStream< M > & a_streamDest );

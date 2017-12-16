@@ -179,7 +179,7 @@ mEResult mCStringStream::ReadFormatted( MILPVoid a_pDest, MILPCChar a_Format )
 
     for ( ; ; )
     {
-        a_Format += 3;
+        a_Format += 4;
         if ( *a_Format == 'c' )
         {
             SkipWhiteSpaceCharacters( pcIt, s_pcWhiteSpaceIndicator );
@@ -201,11 +201,34 @@ mEResult mCStringStream::ReadFormatted( MILPVoid a_pDest, MILPCChar a_Format )
             }
             else if ( *a_Format == 'i' )
             {
-                *static_cast< MIInt * >( a_pDest ) = strtol( pcIt, &pcIt, 0 );
+                if ( a_Format[ -1 ] == 'l' && a_Format[ -2 ] == 'l' )
+                {
+#ifdef _MSC_VER
+                    *static_cast< MII64 * >( a_pDest ) = _strtoi64( pcIt, &pcIt, 0 );
+#else
+                    *static_cast< MII64 * >( a_pDest ) = strtoll( pcIt, &pcIt, 0 );  // C++11
+#endif
+                }
+                else
+                    *static_cast< MIInt * >( a_pDest ) = strtol( pcIt, &pcIt, 0 );
+            }
+            else if ( *a_Format == 'u' )
+            {
+                if ( a_Format[ -1 ] == 'l' && a_Format[ -2 ] == 'l' )
+                {
+#ifdef _MSC_VER
+                    *static_cast< MIU64 * >( a_pDest ) = _strtoui64( pcIt, &pcIt, 0 );
+#else
+                    *static_cast< MIU64 * >( a_pDest ) = strtoull( pcIt, &pcIt, 0 );  // C++11
+#endif
+                }
+                else
+                    *static_cast< MIUInt * >( a_pDest ) = strtoul( pcIt, &pcIt, 0 );
             }
             else
             {
-                *static_cast< MIUInt * >( a_pDest ) = strtoul( pcIt, &pcIt, 0 );
+                MI_ERROR( mCStreamError, EBadFormat, "Unsupported input pattern." );
+                return mEResult_False;
             }
             *pcEnd = cTemp;
             if ( pcIt == pcBegin )

@@ -139,19 +139,20 @@ mEResult mCMaxFileStream::ReadPersistentGlobal( mCString const & a_strName, mCVa
     return mEResult_False;
 }
 
-void mCMaxFileStream::DirectRead( MILPVoid a_pDest, MIUInt a_uPosition, MIUInt a_uSize )
+void mCMaxFileStream::DirectRead( MILPVoid a_pDest, MIU64 a_u64Position, MIUInt a_uSize )
 {
-    MIUInt u = GetNextJunkBlockVirtual( a_uPosition, GetSize(), m_arrJunkBlocks );
+    MIUInt uPosition = static_cast< MIUInt >( a_u64Position );
+    MIUInt u = GetNextJunkBlockVirtual( uPosition, GetSize(), m_arrJunkBlocks );
     FILE * pFile = static_cast< FILE * >( m_pFile );
     MIByte * pDest = static_cast< MIByte * >( a_pDest );
     while ( a_uSize )
     {
-        MIUInt uSize = g_min( a_uSize, ( m_arrJunkBlocks[ u ] - a_uPosition ) );
-        g_fseek( pFile, ( a_uPosition + u * mEBlockSize ), SEEK_SET );
+        MIUInt uSize = g_min( a_uSize, ( m_arrJunkBlocks[ u ] - uPosition ) );
+        g_fseek( pFile, ( uPosition + u * mEBlockSize ), SEEK_SET );
         fread( pDest, sizeof( MIByte ), uSize, pFile );
         a_uSize -= uSize;
         pDest += uSize;
-        a_uPosition += uSize;
+        uPosition += uSize;
         ++u;
     }
 }
@@ -213,7 +214,7 @@ void mCMaxFileStream::Init( MILPVoid a_pFile, mCString const & a_strFileName, mE
 
         Clear();
         m_pFile = a_pFile;
-        m_uRecentFileSize = uFileSize;
+        m_u64RecentFileSize = uFileSize;
         m_enuOpenMode = a_enuOpenMode;
         m_strFileName = a_strFileName;
         Buffer( 0 );

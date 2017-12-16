@@ -15,22 +15,30 @@ public:
         MIU64    m_u64Created;
         MIU64    m_u64Modified;
     };
+    class CDir;
     class CFileHandle
     {
     public:
-        CFileHandle( mCGenomeVolume * a_pVolume, MIUInt a_uFileIndex, MIBool a_bResolveRisen3Entries = MIFalse );
         CFileHandle( void );
     public:
         MIU64    GetCreationTime( void ) const;
         MIBool   GetFileData( mCIOStreamBinary & a_streamFileDataDest ) const;
-        MIUInt   GetFileIndex( void ) const;
         mCString GetFilePath( void ) const;
         MIU64    GetLastAccessTime( void ) const;
         MIU64    GetLastWriteTime( void ) const;
+        MIUInt   GetSize( void ) const;
     private:
-        mCGenomeVolume * m_pVolume;
-        MIUInt           m_uFileIndex;
-        MIBool           m_bResolveRisen3Entries;
+        CFileHandle( mCGenomeVolume * a_pVolume, MIUInt a_uFileIndex, MIBool a_bResolveRisen3Entries = MIFalse );
+    private:
+        MIUInt GetFileIndex( void ) const;
+    private:
+        mCGenomeVolume *       m_pVolume;
+        mCGenomeVolume::CDir * m_pDir;
+        MIUInt                 m_uFileIndex;
+        MIBool                 m_bResolveRisen3Entries;
+    private:
+        friend class CDir;
+        friend class mCGenomeVolume;
     };
     class CDir :
         public SFileTime
@@ -43,18 +51,32 @@ public:
         MIU64 &                        AccessLastAccessTime( void );
         MIU64 &                        AccessLastWriteTime( void );
         mCString &                     AccessName( void );
-        mTArray< CDir >  &             AccessSubDirs( void );
+        mTArray< CDir > &              AccessSubDirs( void );
         MIU64                          GetCreationTime( void ) const;
-        MIUInt                         GetFileCount( void ) const;
+        MIUInt                         GetTotalFileCount( void ) const;
         mTArray< CFileHandle > const & GetFiles( void ) const;
         MIU64                          GetLastAccessTime( void ) const;
         MIU64                          GetLastWriteTime( void ) const;
         mCString const &               GetName( void ) const;
+        mCString                       GetRisen3ResourceType( void ) const;
         mTArray< CDir > const &        GetSubDirs( void ) const;
+        MIU64                          GetTotalSize( void ) const;
+    private:
+        void ResolveRisen3Entries( void );
     private:
         mCString               m_strName;
         mTArray< CFileHandle > m_arrFiles;
         mTArray< CDir >        m_arrSubDirs;
+        mCString               m_strRisen3Name;             // Risen 3, Elex only
+        mCString               m_strResourceToken;          // Risen 3, Elex only
+        mCString               m_strLanguage;               // Risen 3, Elex only
+        mCString               m_strResourceDir;            // Risen 3, Elex only
+        MIU32                  m_u32ResourceClassRevision;  // Risen 3, Elex only
+        MIU32                  m_u32ResourceClassHash;      // Risen 3, Elex only
+        mCMemoryStream         m_streamResourceDatabase;    // Risen 3, Elex only
+    private:
+        friend class CFileHandle;
+        friend class mCGenomeVolume;
     };
 public:
     explicit mCGenomeVolume( mCString const & a_strFilePath, MIBool a_bResolveRisen3Entries = MIFalse );
@@ -66,7 +88,6 @@ public:
     static void     RegisterZlibUncompressFunction( MIInt( *a_pfuncUncompress )( MILPByte, MIU32 *, MILPCByte, MIU32 ) );
 public:
     void         Close( void );
-    mCString     GetRisen3ResourceType( void );
     CDir const & GetRoot( void );
     MIBool       FindFile( mCString a_strFileName, mCString & a_strFilePathDest, mCMemoryStream & a_streamFileDataDest );
     MIBool       IsOpen( void );
@@ -76,10 +97,10 @@ private:
         public SFileTime
     {
         mCString m_strFilePath;
-        mCString m_strResourceName;     // Risen 3 only
-        MIUInt   m_uDatabaseOffset;     // Risen 3 only
-        MIUInt   m_uDatabaseEntrySize;  // Risen 3 only
-        MIUInt   m_uDataOffset;
+        mCString m_strResourceName;     // Risen 3, Elex only
+        MIUInt   m_uDatabaseOffset;     // Risen 3, Elex only
+        MIUInt   m_uDatabaseEntrySize;  // Risen 3, Elex only
+        MIU64    m_u64DataOffset;
         MIUInt   m_uDataSize;
         MIUInt   m_uFileSize;
         MIBool   m_bCompressed;
@@ -96,17 +117,12 @@ private:
     static MIInt ( * s_pfuncCompress )( MILPByte, MIU32 *, MILPCByte, MIU32 );
     static MIInt ( * s_pfuncUncompress )( MILPByte, MIU32 *, MILPCByte, MIU32 );
 private:
-    mTArray< SFile >        m_arrFiles;
-    mTStringMap< MIUInt >   m_mapFileIndices;
+    MIBool                   m_bResolveRisen3Entries;
+    mTArray< SFile >         m_arrFiles;
+    mTStringMap< MIUInt >    m_mapFileIndices;
     mTStringMap< SFileTime > m_mapDirTimes;
-    mCFileStream            m_streamArchive;
-    CDir *                  m_pRoot;
-    mCString                m_strRisen3Name;             // Risen 3 only
-    mCString                m_strResourceToken;          // Risen 3 only
-    mCString                m_strLanguage;               // Risen 3 only
-    MIU32                   m_u32ResourceClassRevision;  // Risen 3 only
-    MIU32                   m_u32ResourceClassHash;      // Risen 3 only
-    mCMemoryStream          m_streamResourceDatabase;    // Risen 3 only
+    mCFileStream             m_streamArchive;
+    CDir *                   m_pRoot;
 };
 
 #endif

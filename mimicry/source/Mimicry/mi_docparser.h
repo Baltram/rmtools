@@ -4,7 +4,7 @@
 class mCDocParser
 {
 public:
-    mCDocParser( mCStringStream & a_streamIn, mCIOStreamBinary & a_streamOut );
+    mCDocParser( mCStringStream & a_streamIn, mCIOStreamBinary & a_streamOut, MIBool a_bStripComments = MIFalse );
 public:
     MIBool EnterArray( MIBool a_bSetLastErrorLine = MIFalse );
     MIBool EnterBlock( mCString * a_pName = 0, MIBool a_bSetLastErrorLine = MIFalse, MIBool a_bCaseSensitive = MIFalse );

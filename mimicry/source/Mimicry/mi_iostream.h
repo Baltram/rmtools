@@ -17,12 +17,15 @@ class mTIOStream :
 public:
     virtual ~mTIOStream( void );
 public:
-    virtual MIUInt   GetSize( void ) const = 0;
+    virtual MIU64    GetSize64( void ) const = 0;
     virtual MIBool   IsAtEnd( void ) const = 0;
-    virtual mEResult Seek( MIUInt a_uPosition, mEStreamSeekMode a_enuMode = mEStreamSeekMode_Begin ) = 0;
+    virtual mEResult Seek( MIU64 a_u64Position, mEStreamSeekMode a_enuMode = mEStreamSeekMode_Begin ) = 0;
     virtual void     SetInvertEndianness( MIBool a_bMode );
-    virtual mEResult Skip( MIInt a_iCount );
-    virtual MIUInt   Tell( void ) const = 0;
+    virtual mEResult Skip( MII64 a_i64Count );
+    virtual MIU64    Tell64( void ) const = 0;
+public:
+    MIUInt GetSize( void ) const;
+    MIUInt Tell( void ) const;
 };
 
 typedef mTIOStream< mEStreamType_Binary >    mCIOStreamBinary;

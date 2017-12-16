@@ -121,15 +121,18 @@ mEResult mCXmshWriter::WriteXmshFileData( mCScene a_sceneSource, mCIOStreamBinar
     a_streamDest << u16PropertyVersion << ( MIU32 )( sizeof( mCBox ) ) << boxBoundary.GetMin() << boxBoundary.GetMax();
     a_streamDest << u16PropertySystemVersion;
     MIUInt const uDataOffset = a_streamDest.Tell();
+    // For better info see https://forum.worldofplayers.de/forum/threads/717908?p=12013400&viewfull=1#post12013400
+    // D3DVERTEXELEMENT9   Stream    Offset          Type           Method        Usage          UsageIndex
     a_streamDest << ( MIU16 ) 000 << ( MIU16 ) 00 << ( MIU8 ) 02 << ( MIU8 ) 0 << ( MIU8 ) 00 << ( MIU8 ) 0;
     a_streamDest << ( MIU16 ) 000 << ( MIU16 ) 12 << ( MIU8 ) 02 << ( MIU8 ) 0 << ( MIU8 ) 03 << ( MIU8 ) 0;
     a_streamDest << ( MIU16 ) 000 << ( MIU16 ) 24 << ( MIU8 ) 02 << ( MIU8 ) 0 << ( MIU8 ) 06 << ( MIU8 ) 0;
     a_streamDest << ( MIU16 ) 000 << ( MIU16 ) 36 << ( MIU8 ) 04 << ( MIU8 ) 0 << ( MIU8 ) 10 << ( MIU8 ) 0;
     a_streamDest << ( MIU16 ) 000 << ( MIU16 ) 40 << ( MIU8 ) 04 << ( MIU8 ) 0 << ( MIU8 ) 10 << ( MIU8 ) 1;
     a_streamDest << ( MIU16 ) 000 << ( MIU16 ) 44 << ( MIU8 ) 01 << ( MIU8 ) 0 << ( MIU8 ) 05 << ( MIU8 ) 0;
-    a_streamDest << ( MIU16 ) 255 << ( MIU16 ) 00 << ( MIU8 ) 17 << ( MIU8 ) 0 << ( MIU8 ) 00 << ( MIU8 ) 0;
-    a_streamDest << ( MIU16 ) 255 << ( MIU16 ) 00 << ( MIU8 ) 17 << ( MIU8 ) 0 << ( MIU8 ) 00 << ( MIU8 ) 0;
-    a_streamDest << ( MIU64 ) 0 << ( MIU64 ) 0 << ( MIU64 ) 0 << ( MIU64 ) 0 << ( MIU64 ) 0 << ( MIU64 ) 0 << ( MIU64 ) 0 << ( MIU64 ) 0;
+    a_streamDest << ( MIU16 ) 003 << ( MIU16 ) 00 << ( MIU8 ) 00 << ( MIU8 ) 0 << ( MIU8 ) 05 << ( MIU8 ) 4;
+    a_streamDest << ( MIU16 ) 255 << ( MIU16 ) 00 << ( MIU8 ) 17 << ( MIU8 ) 0 << ( MIU8 ) 00 << ( MIU8 ) 0;  // D3DDECL_END
+    a_streamDest << ( MIU16 ) 255 << ( MIU16 ) 00 << ( MIU8 ) 17 << ( MIU8 ) 0 << ( MIU8 ) 00 << ( MIU8 ) 0;  // D3DDECL_END
+    a_streamDest << ( MIU64 ) 0 << ( MIU64 ) 0 << ( MIU64 ) 0 << ( MIU64 ) 0 << ( MIU64 ) 0 << ( MIU64 ) 0 << ( MIU64 ) 0;
     a_streamDest << ( MIU32 )( arrUVerts.GetCount() * 52 ) << ( MIU32 ) 0 << ( MIU32 ) 0 << ( MIU32 ) 1 << ( MIU32 ) 52;
     a_streamDest << ( MIU64 ) 0 << ( MIU64 ) 0 << ( MIU64 ) 0 << ( MIU64 ) 0 << ( MIU64 ) 0;
     a_streamDest << ( MIU32 )( arrUVFaces.GetCount() * 12 ) << ( MIU32 ) 0 << ( MIU32 ) 102 << ( MIU32 ) 1;

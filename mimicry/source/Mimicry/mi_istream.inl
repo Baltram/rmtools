@@ -50,22 +50,6 @@ mCIStreamBinary & mCIStreamBinary::operator >> ( MIU32 & a_u32Dest )
 }
 
 template<> inline
-mCIStreamBinary & mCIStreamBinary::operator >> ( MIInt & a_iDest )
-{
-    Read( &a_iDest, static_cast< MIUInt >( sizeof( MIInt ) ) );
-    Handle32( &a_iDest );
-    return *this;
-}
-
-template<> inline
-mCIStreamBinary & mCIStreamBinary::operator >> ( MIUInt & a_uDest )
-{
-    Read( &a_uDest, static_cast< MIUInt >( sizeof( MIUInt ) ) );
-    Handle32( &a_uDest );
-    return *this;
-}
-
-template<> inline
 mCIStreamBinary & mCIStreamBinary::operator >> ( MII64 & a_i64Dest )
 {
     Read( &a_i64Dest, static_cast< MIUInt >( sizeof( MII64 ) ) );
@@ -255,7 +239,7 @@ template<> inline
 mCIStreamFormatted & mCIStreamFormatted::operator >> ( MII8 & a_i8Dest )
 {
     MIInt iTemp;
-    ReadFormatted( &iTemp, "  %i" );
+    ReadFormatted( &iTemp, "   %i" );
     a_i8Dest = static_cast< MII8 >( iTemp );
     return *this;
 }
@@ -264,7 +248,7 @@ template<> inline
 mCIStreamFormatted & mCIStreamFormatted::operator >> ( MIU8 & a_u8Dest )
 {
     MIUInt uTemp;
-    ReadFormatted( &uTemp, "  %u" );
+    ReadFormatted( &uTemp, "   %u" );
     a_u8Dest = static_cast< MIU8 >( uTemp );
     return *this;
 }
@@ -273,7 +257,7 @@ template<> inline
 mCIStreamFormatted & mCIStreamFormatted::operator >> ( MII16 & a_i16Dest )
 {
     MIInt iTemp;
-    ReadFormatted( &iTemp, "  %i" );
+    ReadFormatted( &iTemp, "   %i" );
     a_i16Dest = static_cast< MII16 >( iTemp );
     return *this;
 }
@@ -282,7 +266,7 @@ template<> inline
 mCIStreamFormatted & mCIStreamFormatted::operator >> ( MIU16 & a_u16Dest )
 {
     MIUInt uTemp;
-    ReadFormatted( &uTemp, "  %u" );
+    ReadFormatted( &uTemp, "   %u" );
     a_u16Dest = static_cast< MIU16 >( uTemp );
     return *this;
 }
@@ -290,44 +274,28 @@ mCIStreamFormatted & mCIStreamFormatted::operator >> ( MIU16 & a_u16Dest )
 template<> inline
 mCIStreamFormatted & mCIStreamFormatted::operator >> ( MII32 & a_i32Dest )
 {
-    ReadFormatted( &a_i32Dest, "  %i" );
+    ReadFormatted( &a_i32Dest, "   %i" );
     return *this;
 }
 
 template<> inline
 mCIStreamFormatted & mCIStreamFormatted::operator >> ( MIU32 & a_u32Dest )
 {
-    ReadFormatted( &a_u32Dest, "  %u" );
-    return *this;
-}
-
-template<> inline
-mCIStreamFormatted & mCIStreamFormatted::operator >> ( MIInt & a_iDest )
-{
-    ReadFormatted( &a_iDest, "  %i" );
-    return *this;
-}
-
-template<> inline
-mCIStreamFormatted & mCIStreamFormatted::operator >> ( MIUInt & a_uDest )
-{
-    ReadFormatted( &a_uDest, "  %u" );
+    ReadFormatted( &a_u32Dest, "   %u" );
     return *this;
 }
 
 template<> inline
 mCIStreamFormatted & mCIStreamFormatted::operator >> ( MII64 & a_i64Dest )
 {
-    a_i64Dest = 0;
-    ReadFormatted( &a_i64Dest, "  %i" );
+    ReadFormatted( &a_i64Dest, " %lli" );
     return *this;
 }
 
 template<> inline
 mCIStreamFormatted & mCIStreamFormatted::operator >> ( MIU64 & a_u64Dest )
 {
-    a_u64Dest = 0;
-    ReadFormatted( &a_u64Dest, "  %u" );
+    ReadFormatted( &a_u64Dest, " %llu" );
     return *this;
 }
 
@@ -344,7 +312,7 @@ template<> inline
 mCIStreamFormatted & mCIStreamFormatted::operator >> ( MIFloat & a_fDest )
 {
     MIDouble dTemp;
-    ReadFormatted( &dTemp, " %lf" );
+    ReadFormatted( &dTemp, "  %lf" );
     a_fDest = static_cast< MIFloat >( dTemp );
     return *this;
 }
@@ -352,14 +320,14 @@ mCIStreamFormatted & mCIStreamFormatted::operator >> ( MIFloat & a_fDest )
 template<> inline
 mCIStreamFormatted & mCIStreamFormatted::operator >> ( MIDouble & a_dDest )
 {
-    ReadFormatted( &a_dDest, " %lf" );
+    ReadFormatted( &a_dDest, "  %lf" );
     return *this;
 }
 
 template<> inline
 mCIStreamFormatted & mCIStreamFormatted::operator >> ( MIChar & a_cDest )
 {
-    ReadFormatted( &a_cDest, "  %c" );
+    ReadFormatted( &a_cDest, "   %c" );
     return *this;
 }
 
@@ -409,20 +377,6 @@ template< mEStreamType M >
 mTIStream< M > & operator << ( MIU32 & a_u32Dest, mTIStream< M > & a_streamSource )
 {
     a_streamSource >> a_u32Dest;
-    return a_streamSource;
-}
-
-template< mEStreamType M >
-mTIStream< M > & operator << ( MIInt & a_iDest, mTIStream< M > & a_streamSource )
-{
-    a_streamSource >> a_iDest;
-    return a_streamSource;
-}
-
-template< mEStreamType M >
-mTIStream< M > & operator << ( MIUInt & a_uDest, mTIStream< M > & a_streamSource )
-{
-    a_streamSource >> a_uDest;
     return a_streamSource;
 }
 

@@ -2,12 +2,9 @@ inline
 MIU32 g_djb2( MILPCChar a_pcText )
 {
     MIU32 uResult = 5381;
-    if (a_pcText && *a_pcText)
-        while (*a_pcText)
-            uResult += (uResult << 5) + *a_pcText++;
-    else
-        return 0; //according to w_quest.hdr->PH_CS_Old_New_Enemies->LogTopic the hash of an empty string is 0 and not 5381
-
+    if ( a_pcText )
+        while ( *a_pcText )
+            uResult += ( uResult << 5 ) + *a_pcText++;
     return uResult;
 }
 

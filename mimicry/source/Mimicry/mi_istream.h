@@ -17,8 +17,6 @@ public:
     mTIStream< M > & operator >> ( MIU16 & a_u16Dest );
     mTIStream< M > & operator >> ( MII32 & a_i32Dest );
     mTIStream< M > & operator >> ( MIU32 & a_u32Dest );
-    mTIStream< M > & operator >> ( MIInt & a_iDest );
-    mTIStream< M > & operator >> ( MIUInt & a_uDest );
     mTIStream< M > & operator >> ( MII64 & a_i64Dest );
     mTIStream< M > & operator >> ( MIU64 & a_u64Dest );
     mTIStream< M > & operator >> ( MIBool & a_bDest );

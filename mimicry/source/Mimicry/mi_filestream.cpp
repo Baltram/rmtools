@@ -5,7 +5,7 @@ namespace
 {
     enum
     {
-        mEFileBufferSize = 8191
+        mEFileBufferSize = ( 1 << 20 ) - 1
     };
 }
 
@@ -25,14 +25,14 @@ mCFileStream::mCFileStream( mCString const & a_strFileName, mEFileOpenMode a_enu
     Open( a_strFileName, a_enuOpenMode );
 }
 
-MIUInt mCFileStream::GetSize( void ) const
+MIU64 mCFileStream::GetSize64( void ) const
 {
-    return g_max( m_uRecentFileSize, ( m_uBufferedPosition + m_uOffset ) );
+    return g_max( m_u64RecentFileSize, ( m_u64BufferedPosition + m_uOffset ) );
 }
 
 MIBool mCFileStream::IsAtEnd( void ) const
 {
-    return GetSize() <= Tell();
+    return GetSize64() <= Tell64();
 }
 
 mEResult mCFileStream::Read( MILPVoid a_pDest, MIUInt a_uSize )
@@ -48,7 +48,7 @@ mEResult mCFileStream::Read( MILPVoid a_pDest, MIUInt a_uSize )
         MI_ERROR( mCStreamError, EFileNotOpen, "File is not open for reading operations." );
         return mEResult_False;
     }
-    if ( ( Tell() + a_uSize ) > GetSize() )
+    if ( ( Tell64() + a_uSize ) > GetSize64() )
     {
         MI_ERROR( mCStreamError, ESizeExceeded, "File size exceeded when reading binary data." );
         return mEResult_False;
@@ -63,7 +63,7 @@ mEResult mCFileStream::Read( MILPVoid a_pDest, MIUInt a_uSize )
         m_uOffset += uSize;
         if ( !a_uSize )
             break;
-        Buffer( Tell() );
+        Buffer( Tell64() );
     }
     return mEResult_Ok;
 }
@@ -82,7 +82,7 @@ mEResult mCFileStream::Read( mCString & a_strDest )
         MI_ERROR( mCStreamError, EFileNotOpen, "File is not open for reading operations." );
         return mEResult_False;
     }
-    if ( Tell() == GetSize() )
+    if ( Tell64() == GetSize64() )
     {
         MI_ERROR( mCStreamError, ESizeExceeded, "File size exceeded when reading binary data." );
         return mEResult_False;
@@ -93,9 +93,9 @@ mEResult mCFileStream::Read( mCString & a_strDest )
     m_uOffset += uSize;
     if ( m_uOffset == m_arrBuffer.GetCount() )
     {
-        if ( Tell() == GetSize() )
+        if ( Tell64() == GetSize64() )
             return mEResult_Ok;
-        Buffer( Tell() );
+        Buffer( Tell64() );
         mCString strTemp;
         Read( strTemp );
         a_strDest.Append( strTemp );
@@ -107,7 +107,7 @@ mEResult mCFileStream::Read( mCString & a_strDest )
     return mEResult_Ok;
 }
 
-mEResult mCFileStream::Seek( MIUInt a_uPosition, mEStreamSeekMode a_enuMode )
+mEResult mCFileStream::Seek( MIU64 a_u64Position, mEStreamSeekMode a_enuMode )
 {
     if ( m_enuOpenMode == mEFileOpenMode_Invalid )
     {
@@ -115,45 +115,45 @@ mEResult mCFileStream::Seek( MIUInt a_uPosition, mEStreamSeekMode a_enuMode )
         return mEResult_False;
     }
     Flush();
-    MIUInt uNewPosition;
+    MIU64 u64NewPosition;
     if ( a_enuMode == mEStreamSeekMode_Current )
     {
-        uNewPosition = Tell() + a_uPosition;
+        u64NewPosition = Tell64() + a_u64Position;
     }
     else if ( a_enuMode == mEStreamSeekMode_End )
     {
-        uNewPosition = GetSize() - a_uPosition;
+        u64NewPosition = GetSize64() - a_u64Position;
     }
     else
     {
-        uNewPosition = a_uPosition;
+        u64NewPosition = a_u64Position;
     }
-    if ( uNewPosition > GetSize() )
+    if ( u64NewPosition > GetSize64() )
     {
         MI_ERROR( mCStreamError, ESizeExceeded, "File size exceeded when seeking." );
         return mEResult_False;
     }
-    if ( ( uNewPosition < m_uBufferedPosition ) || ( uNewPosition > ( m_uBufferedPosition + m_arrBuffer.GetCount() ) ) )
+    if ( ( u64NewPosition < m_u64BufferedPosition ) || ( u64NewPosition > ( m_u64BufferedPosition + m_arrBuffer.GetCount() ) ) )
     {
-        Buffer( uNewPosition );
+        Buffer( u64NewPosition );
     }
     else
     {
-        m_uOffset = ( uNewPosition - m_uBufferedPosition );
+        m_uOffset = static_cast< MIUInt >( u64NewPosition - m_u64BufferedPosition );
     }
     return mEResult_Ok; 
 }
 
-MIUInt mCFileStream::Tell( void ) const
+MIU64 mCFileStream::Tell64( void ) const
 {
-    return ( m_uBufferedPosition + m_uOffset );
+    return ( m_u64BufferedPosition + m_uOffset );
 }
 
 mEResult mCFileStream::Write( MILPCVoid a_pSource, MIUInt a_uSize )
 {
     if ( m_bPendingData )
     {
-        if ( ( m_uOffset + a_uSize ) <= mEFileBufferSize )
+        if ( m_uOffset + a_uSize <= mEFileBufferSize )
         {
             m_arrBuffer.SetAt( m_uOffset, static_cast< MILPCChar >( a_pSource ), a_uSize );
             m_uOffset += a_uSize;
@@ -180,7 +180,7 @@ mEResult mCFileStream::Write( MILPCVoid a_pSource, MIUInt a_uSize )
         a_uSize -= uSize;
         if ( !a_uSize )
             break;
-        Buffer( Tell() );
+        Buffer( Tell64() );
     }
     return mEResult_Ok;
 }
@@ -190,7 +190,7 @@ mEResult mCFileStream::Write( mCString const & a_strSource )
     return Write( a_strSource.GetText(), a_strSource.GetLength() );
 }
 
-void mCFileStream::Buffer( MIUInt a_uPosition )
+void mCFileStream::Buffer( MIU64 a_u64Position )
 {
     // Padding: Room for reading before a_uPosition or writing over end of file.
     enum
@@ -198,45 +198,45 @@ void mCFileStream::Buffer( MIUInt a_uPosition )
         EPadding = mEFileBufferSize / 3
     };
     Flush();
-    MIBool const bCanRead             = ( m_enuOpenMode & mEFileOpenMode_Read ? MITrue : MIFalse );
-    MIBool const bCanWrite            = ( m_enuOpenMode & mEFileOpenMode_Write ? MITrue : MIFalse );
-    MIUInt const uReadPadding         = bCanRead ? EPadding : 0 ;
-    MIUInt const uWritePadding        = bCanRead ? ( bCanWrite ? EPadding : 0 ) : mEFileBufferSize;
-    MIUInt const uMinBufferSize       = g_min( ( mEFileBufferSize - uWritePadding ), GetSize() );
-    MIUInt const uMaxBufferedPosition = GetSize() - uMinBufferSize;
-    MIUInt const uOldBufferedPosition = m_uBufferedPosition;
-    if ( a_uPosition <= uReadPadding )
+    MIBool const bCanRead               = ( m_enuOpenMode & mEFileOpenMode_Read ? MITrue : MIFalse );
+    MIBool const bCanWrite              = ( m_enuOpenMode & mEFileOpenMode_Write ? MITrue : MIFalse );
+    MIUInt const uReadPadding           = bCanRead ? EPadding : 0 ;
+    MIUInt const uWritePadding          = bCanRead ? ( bCanWrite ? EPadding : 0 ) : mEFileBufferSize;
+    MIUInt const uMinBufferSize         = static_cast< MIUInt >( g_min< MIU64 >( mEFileBufferSize - uWritePadding, GetSize64() ) );
+    MIU64  const u64MaxBufferedPosition = GetSize64() - uMinBufferSize;
+    MIU64  const u64OldBufferedPosition = m_u64BufferedPosition;
+    if ( a_u64Position <= uReadPadding )
     {
-        m_uBufferedPosition = 0;
+        m_u64BufferedPosition = 0;
     }
     else
     {
-        m_uBufferedPosition = g_min( ( a_uPosition - uReadPadding ), uMaxBufferedPosition );
+        m_u64BufferedPosition = g_min( ( a_u64Position - uReadPadding ), u64MaxBufferedPosition );
     }
-    m_uOffset = a_uPosition - m_uBufferedPosition;
+    m_uOffset = static_cast< MIUInt >( a_u64Position - m_u64BufferedPosition );
     if ( !bCanRead )
         return;
-    MIUInt const uNewBufferSize = g_min< MIUInt >( mEFileBufferSize, ( GetSize() - m_uBufferedPosition ) );
+    MIUInt const uNewBufferSize = static_cast< MIUInt >( g_min< MIU64 >( mEFileBufferSize, ( GetSize64() - m_u64BufferedPosition ) ) );
     if ( !m_arrBuffer.GetCount() )
     {
         m_arrBuffer.Resize( uNewBufferSize );
-        DirectRead( m_arrBuffer.AccessBuffer(), m_uBufferedPosition, uNewBufferSize );
+        DirectRead( m_arrBuffer.AccessBuffer(), m_u64BufferedPosition, uNewBufferSize );
         return;
     }
     m_arrBuffer.Resize( mEFileBufferSize );
     MILPChar const pData = m_arrBuffer.AccessBuffer();
-    MIInt const iDifference = g_limit< MIInt >( ( m_uBufferedPosition - uOldBufferedPosition ), -mEFileBufferSize, mEFileBufferSize );
+    MIInt const iDifference =  static_cast< MIInt >( g_limit< MII64 >( ( m_u64BufferedPosition - u64OldBufferedPosition ), -mEFileBufferSize, mEFileBufferSize ) );
     if ( iDifference >= 0 )
     {
         MIUInt uSizeRetainable = ( mEFileBufferSize - iDifference );
         g_memmove( pData, ( pData + iDifference ), uSizeRetainable );
-        DirectRead( ( pData + uSizeRetainable ), ( m_uBufferedPosition + uSizeRetainable ), iDifference );
+        DirectRead( ( pData + uSizeRetainable ), ( m_u64BufferedPosition + uSizeRetainable ), iDifference );
     }
     else
     {
         MIUInt uSizeRetainable = ( mEFileBufferSize + iDifference );
         g_memmove( ( pData - iDifference ), pData, uSizeRetainable );
-        DirectRead( pData, m_uBufferedPosition, -iDifference );
+        DirectRead( pData, m_u64BufferedPosition, -iDifference );
     }
     m_arrBuffer.Resize( uNewBufferSize );
 }
@@ -254,9 +254,9 @@ void mCFileStream::Flush( void )
 {
     if ( !m_bPendingData )
         return;
-    m_uRecentFileSize = GetSize();
+    m_u64RecentFileSize = GetSize64();
     FILE * const pFile = static_cast< FILE * >( m_pFile );
-    g_fseek( pFile, ( m_uBufferedPosition + m_uOffsetPending ), SEEK_SET );
+    g_fseek( pFile, ( m_u64BufferedPosition + m_uOffsetPending ), SEEK_SET );
     fwrite( ( m_arrBuffer.GetBuffer() + m_uOffsetPending ), sizeof( MIChar ), ( m_uOffset - m_uOffsetPending ), pFile );
     fflush( pFile );
     m_bPendingData = MIFalse;
@@ -274,8 +274,9 @@ MIBool mCFileStream::IsOpen( void )
 
 mEResult mCFileStream::Open( mCString const & a_strFileName, mEFileOpenMode a_enuOpenMode )
 {
+    Close();
     if ( a_enuOpenMode == mEFileOpenMode_Invalid )
-        return mEResult_Ok; 
+        return mEResult_False; 
     MILPVoid pFile;
     if ( a_enuOpenMode == mEFileOpenMode_ReadWrite )
     {
@@ -295,15 +296,13 @@ mEResult mCFileStream::Open( mCString const & a_strFileName, mEFileOpenMode a_en
         return mEResult_False;
     }
     Init( pFile, a_strFileName, a_enuOpenMode );
-    if ( m_enuOpenMode == mEFileOpenMode_Invalid )
-        return mEResult_False;
     return mEResult_Ok;
 }
 
-void mCFileStream::DirectRead( MILPVoid a_pDest, MIUInt a_uPosition, MIUInt a_uSize )
+void mCFileStream::DirectRead( MILPVoid a_pDest, MIU64 a_u64Position, MIUInt a_uSize )
 {
     FILE * const pFile = static_cast< FILE * >( m_pFile );
-    g_fseek( pFile, a_uPosition, SEEK_SET );
+    g_fseek( pFile, a_u64Position, SEEK_SET );
     fread( a_pDest, sizeof( MIChar ), a_uSize, pFile );
 }
 
@@ -313,7 +312,7 @@ void mCFileStream::Init( MILPVoid a_pFile, mCString const & a_strFileName, mEFil
     g_fseek( pFile, 0, SEEK_END );
     Clear();
     m_pFile = pFile;
-    m_uRecentFileSize = g_ftell( pFile );
+    m_u64RecentFileSize = g_ftell( pFile );
     m_enuOpenMode = a_enuOpenMode;
     m_strFileName = a_strFileName;
     Buffer( 0 );
@@ -345,8 +344,8 @@ void mCFileStream::Clear( void )
     m_strFileName = "";
     m_enuOpenMode = mEFileOpenMode_Invalid;
     m_pFile = 0;
-    m_uRecentFileSize = 0;
-    m_uBufferedPosition = 0;
+    m_u64RecentFileSize = 0;
+    m_u64BufferedPosition = 0;
     m_uOffset = 0;
     m_uOffsetPending = 0;
     m_bPendingData = MIFalse;

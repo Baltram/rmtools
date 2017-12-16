@@ -57,7 +57,7 @@ mTMemoryStreamBase< M > & mTMemoryStreamBase< M >::operator = ( mTMemoryStreamBa
 }
 
 template< mEStreamType M >
-MIUInt mTMemoryStreamBase< M >::GetSize( void ) const
+MIU64 mTMemoryStreamBase< M >::GetSize64( void ) const
 {
     return m_arrBuffer.GetCount();
 }
@@ -84,19 +84,20 @@ mEResult mTMemoryStreamBase< M >::Read( mCString & a_strDest, MIUInt a_uSize )
 }
 
 template< mEStreamType M >
-mEResult mTMemoryStreamBase< M >::Seek( MIUInt a_uPosition, mEStreamSeekMode a_enuMode )
+mEResult mTMemoryStreamBase< M >::Seek( MIU64 a_u64Position, mEStreamSeekMode a_enuMode )
 {
+    MIUInt uPosition = static_cast< MIUInt >( a_u64Position );
     if ( a_enuMode == mEStreamSeekMode_Current )
     {
-        m_uPosition += a_uPosition;
+        m_uPosition += uPosition;
     }
     else if ( a_enuMode == mEStreamSeekMode_End )
     {
-        m_uPosition = m_arrBuffer.GetCount() - a_uPosition;
+        m_uPosition = m_arrBuffer.GetCount() - uPosition;
     }
     else
     {
-        m_uPosition = a_uPosition;
+        m_uPosition = uPosition;
     }
     if ( m_uPosition <= m_arrBuffer.GetCount() )
         return mEResult_Ok;
@@ -107,7 +108,7 @@ mEResult mTMemoryStreamBase< M >::Seek( MIUInt a_uPosition, mEStreamSeekMode a_e
 }
 
 template< mEStreamType M >
-MIUInt mTMemoryStreamBase< M >::Tell( void ) const
+MIU64 mTMemoryStreamBase< M >::Tell64( void ) const
 {
     return m_uPosition;
 }
@@ -151,7 +152,7 @@ mEResult mTMemoryStreamBase< M >::FromFile( mCString const & a_strFileName )
 
     Clear();
     g_fseek( pSourceFile, 0, SEEK_END );
-    MIUInt const uSize = g_ftell( pSourceFile );
+    MIUInt const uSize = static_cast< MIUInt >( g_min< MIU64 >( g_ftell( pSourceFile ), UINT_MAX ) );
     g_fseek( pSourceFile, 0, SEEK_SET );
 
     MIByte * pTempBuffer = new MIByte [ uSize ];

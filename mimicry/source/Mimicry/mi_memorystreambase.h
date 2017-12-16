@@ -15,13 +15,13 @@ public:
 public:
     mTMemoryStreamBase< M > & operator = ( mTMemoryStreamBase< M > const & a_Source );
 public:
-    virtual MIUInt   GetSize( void ) const;
+    virtual MIU64    GetSize64( void ) const;
     virtual MIBool   IsAtEnd( void ) const = 0;
     virtual mEResult Read( MILPVoid a_pDest, MIUInt a_uSize );
     virtual mEResult Read( mCString & a_strDest, MIUInt a_uSize );
     virtual mEResult Read( mCString & a_strDest ) = 0;
-    virtual mEResult Seek( MIUInt a_uPosition, mEStreamSeekMode a_enuMode = mEStreamSeekMode_Begin );
-    virtual MIUInt   Tell( void ) const;
+    virtual mEResult Seek( MIU64 a_u64Position, mEStreamSeekMode a_enuMode = mEStreamSeekMode_Begin );
+    virtual MIU64    Tell64( void ) const;
     virtual mEResult Write( MILPCVoid a_pSource, MIUInt a_uSize );
     virtual mEResult Write( mCString const & a_strSource );
 public:

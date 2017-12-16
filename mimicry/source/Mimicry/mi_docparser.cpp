@@ -1,10 +1,52 @@
 #include "mi_include_streams.h"
 
-mCDocParser::mCDocParser( mCStringStream & a_streamIn, mCIOStreamBinary & a_streamOut ) :
+mCDocParser::mCDocParser( mCStringStream & a_streamIn, mCIOStreamBinary & a_streamOut, MIBool a_bStripComments ) :
     m_streamIn( a_streamIn ),
     m_streamOut( a_streamOut ),
     m_uLastErrorLine( 0 )
 {
+    if ( !a_bStripComments )
+        return;
+    // Replace comments with spaces
+    enum { EGeneral, EString, ERawString, EComment } enuState = EGeneral;
+    for ( MILPChar pcIt = static_cast< MILPChar >( a_streamIn.AccessBuffer() ), pcEnd = pcIt + a_streamIn.GetSize(); pcIt != pcEnd; ++pcIt )
+    {
+        switch ( enuState )
+        {
+        case EGeneral:
+            if ( pcIt[ 0 ] == '/' && pcIt[ 1 ] == '/' )
+            {
+                enuState = EComment;
+                pcIt[ 0 ] = ' ';
+            }
+            else if ( pcIt[ 0 ] == '"' )
+            {
+                if ( pcIt[ 1 ] == '"' && pcIt[ 2 ] == '"' )
+                    pcIt += 2, enuState = ERawString;
+                else
+                    enuState = EString;
+            }
+            break;
+        case EString:
+            if ( pcIt[ 0 ] == '"' )
+                enuState = EGeneral;
+            break;
+        case ERawString:
+            if ( pcIt[ 0 ] == '"' && pcIt[ 1 ] == '"' && pcIt[ 2 ] == '"' )
+            {
+                enuState = EGeneral;
+                while ( pcIt[ 1 ] == '"' )
+                    ++pcIt;
+            }
+            break;
+        case EComment:
+            if ( pcIt[ 0 ] == '\n' )
+                enuState = EGeneral;
+            else
+                pcIt[ 0 ] = ' ';
+            break;
+        }
+    }
 }
 
 MIBool mCDocParser::EnterArray( MIBool a_bSetLastErrorLine )
