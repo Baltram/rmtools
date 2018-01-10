@@ -143,29 +143,14 @@ MIBool CreateRisen3Volume( mCString a_strDirectoryPath )
     a_strDirectoryPath.Replace( '/', '\\' );
     a_strDirectoryPath.TrimRight( "\\" );
     AddFiles( a_strDirectoryPath, arrFilePaths, arrFileTimes );
-    mCString const strPakPath = a_strDirectoryPath + ".pak";
-    mCFileStream streamPAK( strPakPath, mEFileOpenMode_Write );
-    if ( !streamPAK.IsOpen() )
-    {
-        printf( "Error: Could not create %s\n", strPakPath.GetText() );
-        return MIFalse;
-    }
-    mCString strVolumeName;
-    if ( !mCGenomeVolume::CreateRisen3Archive( a_strDirectoryPath, arrFilePaths, arrFileTimes, streamPAK, &RequestGeneration, &strVolumeName, &ShowProgress ) )
+    mCString strVolumePath;
+    if ( !mCGenomeVolume::CreateRisen3Archive( a_strDirectoryPath, arrFilePaths, arrFileTimes, &RequestGeneration, &strVolumePath, &ShowProgress ) )
     {
         if ( mCError::GetLastError< mCError >() )
             printf( "Error: %s\n", mCError::GetLastError< mCError >()->GetText() );
-        streamPAK.Close();
-        DeleteFileA( strPakPath.GetText() );
         return MIFalse;
     }
-    streamPAK.Close();
-    mCString strPakPathNew = g_GetDirectoryPath( strPakPath ) + "\\" + strVolumeName;
-    if ( strPakPathNew == strPakPath || MoveFileA( strPakPath.GetText(), strPakPathNew.GetText() ) )
-        return printf( "Successfully created %s.\n", strPakPathNew.GetText() ), MITrue;
-    else
-        printf( "Successfully created %s but could not rename to %s\n", strPakPath.GetText(), g_GetFileName( strPakPathNew ).GetText() );
-    return MIFalse;
+    return printf( "Successfully created %s.\n", strVolumePath.GetText() ), MITrue;
 }
 
 namespace
@@ -1577,6 +1562,15 @@ MIBool Unpack( mCGenomeVolume & a_Pak, mCString const & a_strPath )
 int main( int argc, char* argv[] )
 {
     mCRisenName::SetGame( mEGame_Elex );
+
+    /*mCFileStream streamIn2("E:\\Steam\\steamapps\\common\\ELEX\\data\\packed\\c_1_na\\SkinnedMesh\\Mesh_Male_Hair_Short_01_L1.elexskn", mEFileOpenMode_Read);
+    mCFileStream streamOut("C:\\Users\\Val\\Desktop\\Mesh_Male_Hair_Short_01_L1.elexskndoc", mEFileOpenMode_Write);
+    streamIn2.Seek(523603);
+    mCString strIndent;
+    mCRisenDoc doc( streamIn2, streamOut, strIndent );
+    doc.DocumentRisen3Class();
+    return 0;*///$
+
     if ( argc < 2 )
     {
         printf( "Elex Resource Manager v0.6 by Baltram\n"

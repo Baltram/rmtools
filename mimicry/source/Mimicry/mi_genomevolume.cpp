@@ -436,7 +436,7 @@ namespace
     }
 }
 
-mEResult mCGenomeVolume::CreateRisen3Archive( mCString a_strRootPath, mTArray< mCString > const & a_arrFilePaths, mTArray< SFileTime > const & a_arrFileTimes, mCIOStreamBinary & a_streamDest, MIUInt ( *a_pfuncRequestGeneration )( void ), mCString * a_pVolumeName, void ( * a_pfuncShowProgress )( MIUInt, MIUInt ) )
+mEResult mCGenomeVolume::CreateRisen3Archive( mCString a_strRootPath, mTArray< mCString > const & a_arrFilePaths, mTArray< SFileTime > const & a_arrFileTimes, MIUInt ( *a_pfuncRequestGeneration )( void ), mCString * a_pVolumePath, void ( * a_pfuncShowProgress )( MIUInt, MIUInt ) )
 {
     s_uTotalFileCount = a_arrFilePaths.GetCount();
     s_uCurrentFileCount = 0;
@@ -504,19 +504,23 @@ mEResult mCGenomeVolume::CreateRisen3Archive( mCString a_strRootPath, mTArray< m
     }
     mCMemoryStream streamEntryTable;
     s_pEntryStream = &streamEntryTable;
-    s_pDataStream = &a_streamDest;
-    a_streamDest << ( MIU32 ) 1 << "G3V0" << ( MIU32 ) 0 << ( MIU32 ) 0 << ( MIU32 ) 1 << ( MIU32 ) 0xFEEDFACE << ( MIU64 ) 48 << ( MIU64 ) 0 << ( MIU64 ) 0;  // Header
-    if ( a_pVolumeName )
-        *a_pVolumeName = Root.GetName() + ".pak";
+    mCString const strVolumePath = g_GetDirectoryPath( a_strRootPath ) + "\\" + Root.GetName() + ".pak";
+    if ( a_pVolumePath )
+        *a_pVolumePath = strVolumePath;
+    mCFileStream streamDest( strVolumePath, mEFileOpenMode_Write );
+    if ( !streamDest.IsOpen() )
+        return MI_ERROR( mCGenomeArchiveError, EDestFileOpenError, mCString().Format( "Could not create %s\n", strVolumePath.GetText() ).GetText() ), mEResult_False;
+    s_pDataStream = &streamDest;
+    streamDest << ( MIU32 ) 1 << "G3V0" << ( MIU32 ) 0 << ( MIU32 ) 0 << ( MIU32 ) 1 << ( MIU32 ) 0xFEEDFACE << ( MIU64 ) 48 << ( MIU64 ) 0 << ( MIU64 ) 0;  // Header
     Root.AccessName().Clear();
     if ( !WritePakDir( Root, a_arrFilePaths, a_arrFileTimes ) )
         return MI_ERROR( mCGenomeArchiveError, ESourceFileOpenError, mCString().Format( "Failed to create PAK volume. Error when processing %s", s_strProblematicFilePath.GetText() ).GetText() ), mEResult_False;
-    MIU64 const u64RootOffset = a_streamDest.Tell64();
-    a_streamDest << streamEntryTable;
-    MIU64 const u64VolumeSize = a_streamDest.Tell64();
-    a_streamDest.Seek( 32 );
-    a_streamDest << u64RootOffset << u64VolumeSize;
-    a_streamDest.Seek( u64VolumeSize );
+    MIU64 const u64RootOffset = streamDest.Tell64();
+    streamDest << streamEntryTable;
+    MIU64 const u64VolumeSize = streamDest.Tell64();
+    streamDest.Seek( 32 );
+    streamDest << u64RootOffset << u64VolumeSize;
+    streamDest.Seek( u64VolumeSize );
     return mEResult_Ok;
 }
 

@@ -4,7 +4,8 @@
 MI_ERROR_DEFINE_DERIVED( mCGenomeArchiveError,
                          mCError,
                          EMixedRisen3ResourceTypes,
-                         ESourceFileOpenError )
+                         ESourceFileOpenError,
+                         EDestFileOpenError )
 
 class mCGenomeVolume
 {
@@ -83,7 +84,7 @@ public:
              mCGenomeVolume( void );
             ~mCGenomeVolume( void );
 public:
-    static mEResult CreateRisen3Archive( mCString a_strRootPath, mTArray< mCString > const & a_arrFilePaths, mTArray< SFileTime > const & a_arrFileTimes, mCIOStreamBinary & a_streamDest, MIUInt ( * a_pfuncRequestGeneration )( void ), mCString * a_pVolumeName = 0, void ( * a_pfuncShowProgress )( MIUInt, MIUInt ) = 0 );
+    static mEResult CreateRisen3Archive( mCString a_strRootPath, mTArray< mCString > const & a_arrFilePaths, mTArray< SFileTime > const & a_arrFileTimes, MIUInt ( * a_pfuncRequestGeneration )( void ), mCString * a_pVolumePath = 0, void ( * a_pfuncShowProgress )( MIUInt, MIUInt ) = 0 );
     static void     RegisterZlibCompressFunction( MIInt ( * a_pfuncCompress )( MILPByte, MIU32 *, MILPCByte, MIU32 ) );
     static void     RegisterZlibUncompressFunction( MIInt( *a_pfuncUncompress )( MILPByte, MIU32 *, MILPCByte, MIU32 ) );
 public:
