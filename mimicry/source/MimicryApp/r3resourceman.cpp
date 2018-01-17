@@ -1053,8 +1053,8 @@ int main( int argc, char* argv[] )
             return 1;
         }
     }
-    mCGenomeVolume::RegisterZlibCompressFunction( &compress );
-    mCGenomeVolume::RegisterZlibUncompressFunction( &uncompress );
+    mCGenomeVolume::RegisterZlibCompressFunction( reinterpret_cast< MIInt ( MI_CDECL * )( MILPByte, MIU32 *, MILPCByte, MIU32 ) >( &compress ) );
+    mCGenomeVolume::RegisterZlibUncompressFunction( reinterpret_cast< MIInt ( MI_CDECL * )( MILPByte, MIU32 *, MILPCByte, MIU32 ) >( &uncompress ) );
     GetFullPathNameA( argv[ 1 ], mCString::GetStaticBufferSize(), mCString::AccessStaticBuffer(), NULL );
     mCString strPath( mCString::AccessStaticBuffer() );
     DWORD dwAttrib = GetFileAttributesA( strPath.GetText() );
