@@ -1562,18 +1562,9 @@ MIBool Unpack( mCGenomeVolume & a_Pak, mCString const & a_strPath )
 int main( int argc, char* argv[] )
 {
     mCRisenName::SetGame( mEGame_Elex );
-
-    /*mCFileStream streamIn2("E:\\Steam\\steamapps\\common\\ELEX\\data\\packed\\c_1_na\\SkinnedMesh\\Mesh_Male_Hair_Short_01_L1.elexskn", mEFileOpenMode_Read);
-    mCFileStream streamOut("C:\\Users\\Val\\Desktop\\Mesh_Male_Hair_Short_01_L1.elexskndoc", mEFileOpenMode_Write);
-    streamIn2.Seek(523603);
-    mCString strIndent;
-    mCRisenDoc doc( streamIn2, streamOut, strIndent );
-    doc.DocumentRisen3Class();
-    return 0;*///$
-
     if ( argc < 2 )
     {
-        printf( "Elex Resource Manager v0.6 by Baltram\n"
+        printf( "Elex Resource Manager v1.0 by Baltram\n"
                 "Start by dragging a file or folder onto elexresman.exe.\n\n"
                 "Supported file types and actions:\n\n"
                 "  Elex PAK volume : (un)pack .pak     <--> [folder]\n"
