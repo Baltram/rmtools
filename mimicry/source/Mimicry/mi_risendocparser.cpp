@@ -584,6 +584,7 @@ MIBool mCRisenDocParser::ParseData( mCString a_strType, MIBool a_bWriteSize, MIB
         case EWeatherEnvironmentProxy:
         case EEffectProxy:
         case EImageEffectProxy:
+        case EWeatherStatesProxy:
         case EFocusModeProxy2:
         case EMovementSpeciesProxy:
         case EParticleSystemProxy:

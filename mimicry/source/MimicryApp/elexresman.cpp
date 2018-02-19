@@ -1564,7 +1564,7 @@ int main( int argc, char* argv[] )
     mCRisenName::SetGame( mEGame_Elex );
     if ( argc < 2 )
     {
-        printf( "Elex Resource Manager v1.0 by Baltram\n"
+        printf( "Elex Resource Manager v1.1 by Baltram\n"
                 "Start by dragging a file or folder onto elexresman.exe.\n\n"
                 "Supported file types and actions:\n\n"
                 "  Elex PAK volume : (un)pack .pak     <--> [folder]\n"
