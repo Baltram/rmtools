@@ -1023,7 +1023,7 @@ MIBool ProcessSecMod( mCIOStreamBinary & a_streamIn, mCString const & a_strFileP
                     streamSecDoc.SkipTo( "\n", 1 );
                     for ( MILPCChar pcIt = static_cast< MILPCChar >( streamSecDoc.GetBuffer() ) + streamSecDoc.Tell() + 1; *pcIt++ == ' '; Replace.m_strIndent += ' ' );
                     if ( !streamSecDoc.SkipTo( "ClassData {", mCString( "ClassData {" ).GetLength() ) )
-                        return printf( "Error: Unsupported sector document formatting in %s.\n", g_GetFileName( arrSectorDocs[ u ].GetText() ) ), WaitForEnterKey( MITrue ), MIFalse;
+                        return printf( "Error: Unsupported sector document formatting in %s.\n", g_GetFileName( arrSectorDocs[ u ].GetText() ).GetText() ), WaitForEnterKey( MITrue ), MIFalse;
                     Replace.m_uSize = streamSecDoc.Tell() - Replace.m_uOffset;
                     Replace.m_uTemplateEntity = v;
                     Replace.m_uPropertySet = w;
