@@ -16,7 +16,7 @@ Verwendung:
 
   Über 'File' > 'Import' bzw. 'File' > 'Export' können .3db-Dateien im-/exportiert werden.
 
-Unterst�tzte Daten:
+Unterstützte Daten:
 
   * Meshes
     - Vertices - Triangles - UV-Koordinaten - Zwei Vertex-Color-Kanäle ('rgb', 'alpha')
