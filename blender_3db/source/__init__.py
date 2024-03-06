@@ -19,19 +19,19 @@
 bl_info = {
     "name": "Baltram's 3D format",
     "author": "Baltram",
-    "version": (1, 0),
-    "blender": (2, 62, 0),
+    "version": (1, 1),
+    "blender": (2, 80, 0),
     "location": "File > Import-Export",
     "description": "Import-Export 3DB, meshes, uvs, materials, textures, vertex colors, bones, skinning",
     "warning": "",
     "category": "Import-Export"}
 
 if "bpy" in locals():
-    import imp
+    from importlib import reload
     if "import_3db" in locals():
-        imp.reload(import_3db)
+        reload(import_3db)
     if "export_3db" in locals():
-        imp.reload(export_3db)
+        reload(export_3db)
 
 
 import bpy
@@ -47,7 +47,7 @@ class Import3DB(bpy.types.Operator, ImportHelper):
     filename_ext = ".3db"
     filter_glob = StringProperty(default="*.3db", options={'HIDDEN'})
 
-    scale = FloatProperty(
+    scale: FloatProperty(
         name="Scale",
         description="Scale imported models (default 0.01)",
         min=0.0, max=1000.0,
@@ -55,7 +55,7 @@ class Import3DB(bpy.types.Operator, ImportHelper):
         default=0.01,
         )
 
-    diffuseOnly = BoolProperty(
+    diffuseOnly: BoolProperty(
         name="Diffuse maps only",
         description="Don't import specular and normal maps",
         default=True,
@@ -74,7 +74,7 @@ class Export3DS(bpy.types.Operator, ExportHelper):
     filename_ext = ".3db"
     filter_glob = StringProperty(default="*.3db", options={'HIDDEN'})
 
-    scale = FloatProperty(
+    scale: FloatProperty(
         name="Scale",
         description="Scale exported models (default 100.0)",
         min=0.0, max=1000.0,
@@ -82,7 +82,7 @@ class Export3DS(bpy.types.Operator, ExportHelper):
         default=100.0,
         )
 
-    useSelection = BoolProperty(
+    useSelection: BoolProperty(
         name="Selection Only",
         description="Export selected objects only",
         default=False,
@@ -102,15 +102,17 @@ def menu_func_import(self, context):
 
 
 def register():
-    bpy.utils.register_module(__name__)
-    bpy.types.INFO_MT_file_import.append(menu_func_import)
-    bpy.types.INFO_MT_file_export.append(menu_func_export)
+    bpy.utils.register_class(Import3DB)
+    bpy.utils.register_class(Export3DS)
+    bpy.types.TOPBAR_MT_file_import.append(menu_func_import)
+    bpy.types.TOPBAR_MT_file_export.append(menu_func_export)
 
 
 def unregister():
-    bpy.utils.unregister_module(__name__)
-    bpy.types.INFO_MT_file_import.remove(menu_func_import)
-    bpy.types.INFO_MT_file_export.remove(menu_func_export)
+    bpy.utils.unregister_class(Import3DB)
+    bpy.utils.unregister_class(Export3DS)
+    bpy.types.TOPBAR_MT_file_import.remove(menu_func_import)
+    bpy.types.TOPBAR_MT_file_export.remove(menu_func_export)
 
 
 if __name__ == "__main__":

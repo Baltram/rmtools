@@ -1,25 +1,25 @@
 ------
-Blender 3db Import-/Export-Scripts v1.0 by Baltram <baltram-lielb@web.de> (22. Juni 2014)
+Blender 3db Import-/Export-Scripts v1.1 by Baltram <baltram-lielb@web.de> (6. MÃ¤rz 2024)
 ------
 
-Unterstützte Blender-Versionen
+Unterstï¿½tzte Blender-Versionen
 
-  2.63 bis 2.70 (und evt. neuere Versionen)
+  2.80 bis 3.0 (und evt. neuere Versionen)
 
 Installation:
 
   Nachdem die Scriptdateien in das Addon-Verzeichnis von Blender kopiert worden sind, muss
-  unter 'File' > 'User Preferences' das Häkchen neben 'Import-Export: Baltram's 3D format'
-  gesetzt werden und die Auswahl mit einem Klick auf 'Save User Settings' bestätigt werden.
+  unter 'File' > 'User Preferences' das Hï¿½kchen neben 'Import-Export: Baltram's 3D format'
+  gesetzt werden und die Auswahl mit einem Klick auf 'Save User Settings' bestï¿½tigt werden.
 
 Verwendung:
 
-  Über 'File' > 'Import' bzw. 'File' > 'Export' können .3db-Dateien im-/exportiert werden.
+  ï¿½ber 'File' > 'Import' bzw. 'File' > 'Export' kï¿½nnen .3db-Dateien im-/exportiert werden.
 
-Unterstützte Daten:
+Unterstï¿½tzte Daten:
 
   * Meshes
-    - Vertices - Triangles - UV-Koordinaten - Zwei Vertex-Color-Kanäle ('rgb', 'alpha')
+    - Vertices - Triangles - UV-Koordinaten - Zwei Vertex-Color-Kanï¿½le ('rgb', 'alpha')
   * Empties
   * Bones
   * Armature

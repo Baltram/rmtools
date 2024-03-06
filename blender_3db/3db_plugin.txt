@@ -1,10 +1,10 @@
 ------
-Blender 3db import/export scripts v1.0 by Baltram <baltram-lielb@web.de> (June 22th 2014)
+Blender 3db import/export scripts v1.1 by Baltram <baltram-lielb@web.de> (March 6th 2024)
 ------
 
 Supported Blender versions:
 
-  2.63 up to 2.70 (and possibly newer versions)
+  2.80 up to 3.0 (and possibly newer versions)
 
 Installation:
 

@@ -17,7 +17,7 @@
 # ##### END GPL LICENSE BLOCK #####
 
 #Author:  Baltram
-#Version: 0.5
+#Version: 1.1
 
 import ntpath
 import struct
@@ -68,7 +68,7 @@ def b_name(bone, armature):  # Create unique bone name
 
 def scaleless_matrix(m):
     pos, rot, scale = m.decompose()
-    return mathutils.Matrix.Translation(pos) * rot.to_matrix().to_4x4()
+    return mathutils.Matrix.Translation(pos) @ rot.to_matrix().to_4x4()
 
 
 def write_string(file, s):
@@ -84,23 +84,21 @@ def unselect_all():
 
 def select_edit(o):
     unselect_all()
-    bpy.context.scene.objects.active = o
-    o.select = True
+    bpy.context.view_layer.objects.active = o
+    o.select_set(True)
     bpy.ops.object.mode_set(mode='EDIT')
 
 
 def collect_objects(objects, nodes, nodeIndexPerName, materialObjects, meshes, armatures, scaleMatrix):
+    dg = bpy.context.evaluated_depsgraph_get()
     for o in objects:
         nodeIndex = len(nodes)
         meshIndex = len(meshes)
         if o.type == 'MESH':
-            nodes.append([o.name, NodeType.mesh, scaleless_matrix(scaleMatrix * o.matrix_world), o.parent.name if o.parent else '', -1])
+            nodes.append([o.name, NodeType.mesh, scaleless_matrix(scaleMatrix @ o.matrix_world), o.parent.name if o.parent else '', -1])
             nodeIndexPerName[o.name] = nodeIndex
-            try:
-                m = o.to_mesh(bpy.context.scene, True, 'PREVIEW', calc_tessface=False)
-            except:
-                m = o.to_mesh(bpy.context.scene, True, 'PREVIEW')
-            m.transform(scaleMatrix * o.matrix_world)
+            m = o.evaluated_get(dg).to_mesh(preserve_all_data_layers=True, depsgraph=dg).copy()
+            m.transform(scaleMatrix @ o.matrix_world)
             materialObjects.update({mat.name:mat for mat in o.data.materials if mat})
             meshes.append([m, nodeIndex, [mat.name for mat in o.data.materials if mat]])
             for mod in o.modifiers:
@@ -109,12 +107,14 @@ def collect_objects(objects, nodes, nodeIndexPerName, materialObjects, meshes, a
                     if mod.use_vertex_groups and len(o.data.vertices) == len(m.vertices) and len(mod.object.data.edit_bones) > 0:
                         armatures.append((mod.object, nodeIndex, o))
         elif o.type == 'EMPTY':
-            nodes.append([o.name, NodeType.other, scaleless_matrix(scaleMatrix * o.matrix_world), o.parent.name if o.parent else '', -1])
+            nodes.append([o.name, NodeType.other, scaleless_matrix(scaleMatrix @ o.matrix_world), o.parent.name if o.parent else '', -1])
             nodeIndexPerName[o.name] = nodeIndex
         elif o.type == 'ARMATURE':
             select_edit(o)
+            # In Blender, bones point to the front (+Y in Blender coordinates) whereas in Genome/3db they point to the right (+X in Blender coordinates)
+            boneOrientationFix = mathutils.Matrix(((0,1,0,0),(-1,0,0,0),(0,0,1,0),(0,0,0,1))) # rotation by 270 degrees around the Z-axis
             for b in o.data.edit_bones:
-                nodes.append([b.name, NodeType.bone, scaleless_matrix(scaleMatrix * o.matrix_world * b.matrix * mathutils.Matrix(((0,0,1,0),(1,0,0,0),(0,1,0,0),(0,0,0,1)))), b_name(b.parent.name, o) if b.parent else '', -1])
+                nodes.append([b.name, NodeType.bone, scaleless_matrix(scaleMatrix @ o.matrix_world @ b.matrix @ boneOrientationFix.inverted()), b_name(b.parent.name, o) if b.parent else '', -1])
                 nodeIndexPerName[b_name(b.name, o)] = nodeIndex
                 nodeIndex += 1
     for node in nodes:
@@ -164,15 +164,13 @@ def end_chunk(file):
     chunkCount += 1
 
 
-def write_texmap_chunk(file, slot, matIndex, subIndex):
-    if slot and slot.texture and slot.texture.type == 'IMAGE':
-        type = MapType.diffuse if slot.use_map_color_diffuse else (MapType.normal if slot.use_map_color_normal else (MapType.specular if slot.use_map_color_specular else -1))
-        if type == -1:
-            return
-        begin_chunk(file, ChunkID.texmap)
-        file.write(struct.pack('<III', as_index(matIndex), as_index(subIndex), type))
-        write_string(file, slot.texture.name)
-        end_chunk(file)
+def write_texmap_chunk(file, image_name, type, matIndex, subIndex):
+    if type == -1:
+        return
+    begin_chunk(file, ChunkID.texmap)
+    file.write(struct.pack('<III', as_index(matIndex), as_index(subIndex), type))
+    write_string(file, image_name)
+    end_chunk(file)
 
 
 def write_material_chunk(file, material, matIndex, isSub=False, subIndex=-1):
@@ -190,8 +188,15 @@ def write_material_chunk(file, material, matIndex, isSub=False, subIndex=-1):
         if isSub:
             file.write(struct.pack('<I', as_index(matIndex)))
         end_chunk(file)
-        for slot in subMaterials[0].texture_slots:
-            write_texmap_chunk(file, slot, matIndex, subIndex)
+        texture_nodes = [node for node in subMaterials[0].node_tree.nodes if node.type == 'TEX_IMAGE'] if subMaterials[0].node_tree else []
+        for node in texture_nodes:
+            for link in node.outputs[0].links:
+                if link.to_socket.name == 'Base Color':
+                    write_texmap_chunk(file, node.image.name, MapType.diffuse, matIndex, subIndex)
+                elif link.to_socket.name == 'Normal':
+                    write_texmap_chunk(file, node.image.name, MapType.normal, matIndex, subIndex)
+                elif link.to_socket.name == 'Specular':
+                    write_texmap_chunk(file, node.image.name, MapType.specular, matIndex, subIndex)
 
 
 def write_node_chunk(file, node):
@@ -338,9 +343,9 @@ def save(operator, context, filePath='', scale=100.0, useSelection=False):
     if bpy.context.mode != 'OBJECT':
         bpy.ops.object.mode_set(mode='OBJECT')
     if useSelection:
-        objects = [ob for ob in scene.objects if ob.is_visible(scene) and ob.select]
+        objects = [ob for ob in scene.objects if ob.visible_get() and ob.select_get()]
     else:
-        objects = [ob for ob in scene.objects if ob.is_visible(scene)]
+        objects = [ob for ob in scene.objects if ob.visible_get()]
 
     nodeIndexPerName = {} # name:index in nodes array
     nodes = []            # [name, type, matrix, parentIndex, materialIndex]
