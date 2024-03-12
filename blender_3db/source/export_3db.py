@@ -17,7 +17,7 @@
 # ##### END GPL LICENSE BLOCK #####
 
 #Author:  Baltram
-#Version: 1.1
+#Version: 1.2
 
 import ntpath
 import struct
@@ -255,31 +255,27 @@ def write_mesh_chunk(file, mesh):
                 uniqueUVCount += 1
             faceTVertIndices[i] = index
 
-    # Find color vertex channels:
-    channelCount = len(mesh.vertex_colors)
-    rgbChannel = 0 if 0 < channelCount else None
-    alphaChannel = 1 if 1 < channelCount else None
-    for i, channel in enumerate(mesh.vertex_colors):
-        if channel.name.lower() == 'rgb':
-            rgbChannel = i
-            if alphaChannel == i:
-                alphaChannel = 0
-        if channel.name.lower() == 'alpha':
-            alphaChannel = i
-            if rgbChannel == i:
-                rgbChannel = 1 if 1 < channelCount else None
+    # Find color attributes:
+    rgbAttr = None
+    alphaAttr = None
+    for attr in mesh.attributes:
+        if attr.data_type == 'BYTE_COLOR' and attr.domain == 'CORNER':
+            if attr.name.lower() == 'alpha':
+                alphaAttr = attr
+            elif attr.name.lower() == 'rgb' or rgbAttr == None:
+                rgbAttr = attr
 
     # Compose vertex colors:
-    hasVertexColors = rgbChannel != None or alphaChannel != None
+    hasVertexColors = rgbAttr != None or alphaAttr != None
     vertexColors = [255] * (len(mesh.vertices) * 4 if hasVertexColors else 0)
-    if rgbChannel != None:
+    if rgbAttr != None:
         for i, l in enumerate(loopPerVertex):
-            color = mesh.vertex_colors[rgbChannel].data[l].color
-            for j in range(3):
+            color = rgbAttr.data[l].color
+            for j in range(4):
                 vertexColors[i * 4 + j] = round(color[j] * 255)
-    if alphaChannel != None:
+    if alphaAttr != None:
         for i, l in enumerate(loopPerVertex):
-            color = mesh.vertex_colors[alphaChannel].data[l].color
+            color = alphaAttr.data[l].color
             vertexColors[i * 4 + 3] = round((color[0] + color[1] + color[2]) / 3 * 255)
 
     begin_chunk(file, ChunkID.mesh)

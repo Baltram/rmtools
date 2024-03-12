@@ -16,7 +16,7 @@
 # ##### END GPL LICENSE BLOCK #####
 
 #Author:  Baltram
-#Version: 1.1
+#Version: 1.2
 
 import ntpath
 import struct
@@ -294,11 +294,11 @@ def build_scene(scene):
         mesh.polygons.foreach_set('material_index', matIDs)
         if len(meshData.vcolors) != 0:
             vcolors = [c / 255.0 for c in meshData.vcolors]
-            mesh.vertex_colors.new(name = 'rgb')
-            mesh.vertex_colors.new(name = 'alpha')
+            rgbAttr = mesh.attributes.new(name='rgb', type='BYTE_COLOR', domain='CORNER')
+            alphaAttr = mesh.attributes.new(name='alpha', type='BYTE_COLOR', domain='CORNER')
             fverts = [i for f in faces for i in f]
-            mesh.vertex_colors[0].data.foreach_set('color', [val for i in fverts for val in vcolors[i*4:i*4 + 3]])
-            mesh.vertex_colors[1].data.foreach_set('color', [val for i in fverts for val in [vcolors[i*4 + 3]]*3])
+            rgbAttr.data.foreach_set('color', [val for i in fverts for val in vcolors[i*4:i*4 + 4]])
+            alphaAttr.data.foreach_set('color', [val for i in fverts for val in [vcolors[i*4 + 3]]*4])
         if len(tverts):
             mesh.uv_layers.new()
             mesh.uv_layers[-1].data.foreach_set('uv', [coord for i in tfaceIndices for coord in tverts[i]])

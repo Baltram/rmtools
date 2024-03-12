@@ -19,8 +19,8 @@
 bl_info = {
     "name": "Baltram's 3D format",
     "author": "Baltram",
-    "version": (1, 1),
-    "blender": (2, 80, 0),
+    "version": (1, 2),
+    "blender": (2, 91, 0),
     "location": "File > Import-Export",
     "description": "Import-Export 3DB, meshes, uvs, materials, textures, vertex colors, bones, skinning",
     "warning": "",

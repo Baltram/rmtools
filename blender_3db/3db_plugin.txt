@@ -1,10 +1,10 @@
 ------
-Blender 3db import/export scripts v1.1 by Baltram <baltram-lielb@web.de> (March 6th 2024)
+Blender 3db import/export scripts v1.2 by Baltram <baltram-lielb@web.de> (March 12th 2024)
 ------
 
 Supported Blender versions:
 
-  2.80 up to 3.0 (and possibly newer versions)
+  2.91 up to 4.0 (and possibly newer versions)
 
 Installation:
 
@@ -20,7 +20,7 @@ Usage:
 Supported data:
 
   * Meshes
-    - vertices - triangles - UV coordinates - two vertex color channels ('rgb', 'alpha')
+    - vertices - triangles - UV coordinates - two vertex color attributes ('rgb', 'alpha')
   * Empties
   * Bones
   * Armature
