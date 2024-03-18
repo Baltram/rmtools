@@ -511,14 +511,14 @@ MIBool mCGenomeMaterial::FindRisenMaterial( mCString const & a_strMaterialName, 
     return FindMaterial( a_strMaterialName, a_matDest, "_xmat" );
 }
 
-void mCGenomeMaterial::LoadGothic3Materials( mCScene & a_sceneDest )
+void mCGenomeMaterial::LoadGothic3Materials( mCScene & a_sceneDest, mCString const & a_strTextureFileExtension )
 {
-    LoadMaterials( a_sceneDest, "xshmat" );
+    LoadMaterials( a_sceneDest, "xshmat", a_strTextureFileExtension );
 }
 
-void mCGenomeMaterial::LoadRisenMaterials( mCScene & a_sceneDest )
+void mCGenomeMaterial::LoadRisenMaterials( mCScene & a_sceneDest, mCString const & a_strTextureFileExtension )
 {
-    LoadMaterials( a_sceneDest, "_xmat" );
+    LoadMaterials( a_sceneDest, "_xmat", a_strTextureFileExtension );
 }
 
 void mCGenomeMaterial::RegisterMaterialFileFinderFunction( MIFMaterialFileFinderFunction a_pfuncMaterialFileFinderFunction )
@@ -558,34 +558,44 @@ void mCGenomeMaterial::GetReferencedShaderElements( MIUInt a_uShaderElementIndex
                 a_arrReferencedShaderElementIndices.Add( u );
 }
 
-void mCGenomeMaterial::GetMaterialData( mCMaterial & a_matDest ) const
+void mCGenomeMaterial::GetMaterialData( mCMaterial & a_matDest, mCString a_strTextureFileExtension ) const
 {
     if ( !IsValid() )
         return;
     for ( mCMaterial::EMapType i = mCMaterial::EMapType_Diffuse; i != mCMaterial::EMapType_Count; ++i )
         a_matDest.RemoveTexMap( i );
-    for ( MIUInt u = GetShaderElementCount(); u--; )
+    const MIUInt uShaderElementCount = GetShaderElementCount();
+    mTArray< MIBool > arrShaderElementIsReferencedDiffuse( MIFalse, uShaderElementCount );
+    mTArray< MIBool > arrShaderElementIsReferencedSpecular( MIFalse, uShaderElementCount );
+    mTArray< MIBool > arrShaderElementIsReferencedNormal( MIFalse, uShaderElementCount );
+    for ( MIUInt u = uShaderElementCount; u--; )
     {
-        EColorSourceType enumType = GetColorSourceType( u );
-        mCTexMap mapSource;
-        mCVariant varPath;
-        if ( !GetPropertyDeep( u, "ImageFilePath", varPath ) )
-            continue;
-        mapSource.AccessTextureFilePath() = varPath.GetData< mCString >();
-        if ( mapSource.GetTextureFilePath().GetLength() == 0 )
-            continue;
-        switch ( enumType )
+        switch ( GetColorSourceType( u ) )
         {
         case EColorSourceType_Diffuse:
-            a_matDest.AccessTexMap( mCMaterial::EMapType_Diffuse ) = mapSource;
+            GetShaderElementIsReferencedDeep( u, arrShaderElementIsReferencedDiffuse );
             break;
         case EColorSourceType_Specular:
-            a_matDest.AccessTexMap( mCMaterial::EMapType_Specular ) = mapSource;
+            GetShaderElementIsReferencedDeep( u, arrShaderElementIsReferencedSpecular );
             break;
         case EColorSourceType_Normal:
-            a_matDest.AccessTexMap( mCMaterial::EMapType_Normal ) = mapSource;
+            GetShaderElementIsReferencedDeep( u, arrShaderElementIsReferencedNormal );
             break;
         }
+    }
+    if ( !a_strTextureFileExtension.StartsWith( "." ) && a_strTextureFileExtension != "" )
+        a_strTextureFileExtension = "." + a_strTextureFileExtension;
+    mCVariant varPath;
+    for ( MIUInt u = uShaderElementCount; u--; )
+    {
+        if ( !GetProperty( u, "ImageFilePath", varPath ) || varPath.GetData< mCString >() == "" )
+            continue;
+        if ( arrShaderElementIsReferencedDiffuse[ u ] )
+            a_matDest.AccessTexMap( mCMaterial::EMapType_Diffuse ) = mCTexMap( "", varPath.GetData< mCString >() + a_strTextureFileExtension );
+        else if ( arrShaderElementIsReferencedSpecular[ u ] )
+            a_matDest.AccessTexMap( mCMaterial::EMapType_Specular ) = mCTexMap( "", varPath.GetData< mCString >() + a_strTextureFileExtension );
+        else if ( arrShaderElementIsReferencedNormal[ u ] )
+            a_matDest.AccessTexMap( mCMaterial::EMapType_Normal ) = mCTexMap( "", varPath.GetData< mCString >() + a_strTextureFileExtension );
     }
 }
 
@@ -594,12 +604,7 @@ mCGenomeMaterial::SProperty const & mCGenomeMaterial::GetProperty( MIUInt a_uSha
     return GetShaderElement( a_uShaderElementIndex ).m_arrProperties[ a_uPropertyIndex ];
 }
 
-MIUInt mCGenomeMaterial::GetPropertyCount( MIUInt a_uShaderElementIndex ) const
-{
-    return GetShaderElement( a_uShaderElementIndex ).m_arrProperties.GetCount();
-}
-
-MIBool mCGenomeMaterial::GetPropertyDeep( MIUInt a_uShaderElementIndex, mCString const & a_strPropertyName, mCVariant & a_varDest ) const
+MIBool mCGenomeMaterial::GetProperty( MIUInt a_uShaderElementIndex, mCString const & a_strPropertyName, mCVariant & a_varDest ) const
 {
     for ( MIUInt u = GetPropertyCount( a_uShaderElementIndex ); u--; )
     {
@@ -607,17 +612,34 @@ MIBool mCGenomeMaterial::GetPropertyDeep( MIUInt a_uShaderElementIndex, mCString
         if ( Property.m_strName == a_strPropertyName )
             return a_varDest = Property.m_varValue, MITrue;
     }
-    mTArray< MIUInt > arrReferencedIndices;
-    GetReferencedShaderElements( a_uShaderElementIndex, arrReferencedIndices );
-    for ( MIUInt u = 0, ue = arrReferencedIndices.GetCount(); u != ue; ++u )
-        if ( arrReferencedIndices[ u ] != MI_DW_INVALID && GetPropertyDeep( arrReferencedIndices[ u ], a_strPropertyName, a_varDest ) )
-            return MITrue;
     return MIFalse;
+}
+
+MIUInt mCGenomeMaterial::GetPropertyCount( MIUInt a_uShaderElementIndex ) const
+{
+    return GetShaderElement( a_uShaderElementIndex ).m_arrProperties.GetCount();
 }
 
 MIUInt mCGenomeMaterial::GetShaderElementCount( void ) const
 {
     return m_arrShaderElements.GetCount();
+}
+
+void mCGenomeMaterial::GetShaderElementIsReferencedDeep( MIUInt a_uShaderElementIndex, mTArray< MIBool > & a_arrShaderElementIsReferenced ) const
+{
+    a_arrShaderElementIsReferenced.Resize( GetShaderElementCount() );
+    a_arrShaderElementIsReferenced[ a_uShaderElementIndex ] = MITrue;
+    mTArray< MIUInt > arrReferencedIndices;
+    GetReferencedShaderElements( a_uShaderElementIndex, arrReferencedIndices );
+    for ( MIUInt u = 0, ue = arrReferencedIndices.GetCount(); u != ue; ++u )
+    {
+        MIUInt uShaderElementIndex = arrReferencedIndices[ u ];
+        if ( a_arrShaderElementIsReferenced[ uShaderElementIndex ] == MIFalse )
+        {
+            a_arrShaderElementIsReferenced[ uShaderElementIndex ] = MITrue;
+            GetShaderElementIsReferencedDeep( uShaderElementIndex, a_arrShaderElementIsReferenced );
+        }
+    }
 }
 
 mCString mCGenomeMaterial::GetShaderElementType( MIUInt a_uShaderElementIndex ) const
@@ -803,7 +825,7 @@ MIBool mCGenomeMaterial::FindMaterial( mCString const & a_strMaterialName, mCGen
     return bResult;
 }
 
-void mCGenomeMaterial::LoadMaterials( mCScene & a_sceneDest, mCString const & a_strEx )
+void mCGenomeMaterial::LoadMaterials( mCScene & a_sceneDest, mCString const & a_strEx, mCString const & a_strTextureFileExtension )
 {
     for ( MIUInt u = a_sceneDest.GetNumMaterials(); u--; )
     {
@@ -814,7 +836,7 @@ void mCGenomeMaterial::LoadMaterials( mCScene & a_sceneDest, mCString const & a_
             mCGenomeMaterial matSource;
             if ( !FindMaterial( pMaterial->GetName(), matSource, a_strEx ) )
                 continue;
-            matSource.GetMaterialData( *pMaterial );
+            matSource.GetMaterialData( *pMaterial, a_strTextureFileExtension );
         }
         if ( pMultiMaterial )
         {
@@ -824,7 +846,7 @@ void mCGenomeMaterial::LoadMaterials( mCScene & a_sceneDest, mCString const & a_
                 mCGenomeMaterial matSource;
                 if ( !FindMaterial( arrSubMaterials[ v ].GetName(), matSource, a_strEx ) )
                     continue;
-                matSource.GetMaterialData( arrSubMaterials[ v ] );
+                matSource.GetMaterialData( arrSubMaterials[ v ], a_strTextureFileExtension );
             }
         }
     }

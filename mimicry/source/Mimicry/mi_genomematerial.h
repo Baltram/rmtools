@@ -39,17 +39,18 @@ public:
     static MIBool & AccessMaterialLookupHint( void );
     static MIBool   FindGothic3Material( mCString const & a_strMaterialName, mCGenomeMaterial & a_matDest );
     static MIBool   FindRisenMaterial( mCString const & a_strMaterialName, mCGenomeMaterial & a_matDest );
-    static void     LoadGothic3Materials( mCScene & a_sceneDest );
-    static void     LoadRisenMaterials( mCScene & a_sceneDest );
+    static void     LoadGothic3Materials( mCScene & a_sceneDest, mCString const & a_strTextureFileExtension = "" );
+    static void     LoadRisenMaterials( mCScene & a_sceneDest, mCString const & a_strTextureFileExtension = "" );
     static void     RegisterMaterialFileFinderFunction( MIFMaterialFileFinderFunction a_pfuncMaterialFileFinderFunction );
 public:
     EColorSourceType  GetColorSourceType( MIUInt a_uShaderElementIndex ) const;
     void              GetReferencedShaderElements( MIUInt a_uShaderElementIndex, mTArray< MIUInt > & a_arrReferencedShaderElementIndices ) const;
-    void              GetMaterialData( mCMaterial & a_matDest ) const;
+    void              GetMaterialData( mCMaterial & a_matDest, mCString a_strTextureFileExtension ) const;
     SProperty const & GetProperty( MIUInt a_uShaderElementIndex, MIUInt a_uPropertyIndex ) const;
+    MIBool            GetProperty( MIUInt a_uShaderElementIndex, mCString const & a_strPropertyName, mCVariant & a_varDest ) const;
     MIUInt            GetPropertyCount( MIUInt a_uShaderElementIndex ) const;
-    MIBool            GetPropertyDeep( MIUInt a_uShaderElementIndex, mCString const & a_strPropertyName, mCVariant & a_varDest ) const;
     MIUInt            GetShaderElementCount( void ) const;
+    void              GetShaderElementIsReferencedDeep( MIUInt a_uShaderElementIndex, mTArray< MIBool > & a_arrShaderElementIsReferenced ) const;
     mCString          GetShaderElementType( MIUInt a_uShaderElementIndex ) const;
     void              Invalidate( void );
     MIBool            IsReadOnly( MIUInt a_uShaderElementIndex, MIUInt a_uPropertyIndex ) const;
@@ -66,7 +67,7 @@ private:
     mCGenomeMaterial & operator = ( mCGenomeMaterial const & );
 private:
     static MIBool FindMaterial( mCString const & a_strMaterialName, mCGenomeMaterial & a_matDest, mCString const & a_strExt );
-    static void   LoadMaterials( mCScene & a_sceneDest, mCString const & a_strEx );
+    static void   LoadMaterials( mCScene & a_sceneDest, mCString const & a_strEx, mCString const & a_strTextureFileExtension );
 private:
     SPropertyObject &       AccessShaderElement( MIUInt a_uShaderElementIndex );
     SPropertyObject const & GetShaderElement( MIUInt a_uShaderElementIndex ) const;
