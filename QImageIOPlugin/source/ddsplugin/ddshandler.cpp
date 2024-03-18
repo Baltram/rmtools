@@ -74,11 +74,41 @@ int DdsHandler::getCompressedSize( QSize const & a_sizeSize, ES3TCCompression a_
     return ( ( a_sizeSize.width() + 3 ) / 4 ) * ( ( a_sizeSize.height() + 3 ) / 4 ) * ( a_enuCompression == ES3TCCompression_DXT1 ? 8 : 16 );
 }
 
+class ContextHelper
+{
+public:
+    ContextHelper()
+    {
+        m_bActive = QGLContext::currentContext() ? false : true;
+        if ( !m_bActive )
+            return;
+        if ( !s_pContext )
+        {
+            s_pContext = new QGLContext( QGLFormat(), new QGLWidget );
+            s_pContext->create();
+        }
+        s_pContext->makeCurrent();
+    }
+   ~ContextHelper()
+    {
+        if ( m_bActive )
+            s_pContext->doneCurrent();
+    }
+private:
+    bool m_bActive;
+    static QGLContext * s_pContext;
+};
+
+QGLContext * ContextHelper::s_pContext = 0;
+
 bool DdsHandler::readCompressedImage( SImageInfo const & a_ImageInfo, QIODevice * a_pDevice, QImage * a_pDestImage )
 {
     typedef void ( APIENTRY * FP_glCompressedTexImage2DARB )( GLenum, GLint, GLenum, GLsizei, GLsizei, GLint, GLsizei, GLvoid const * );
-    static QGLContext const * s_pContext = QGLContext::currentContext() ? QGLContext::currentContext() : new QGLContext( QGLFormat(), 0 );
-    static FP_glCompressedTexImage2DARB s_fpCompressedTexImage2DARB = static_cast< FP_glCompressedTexImage2DARB >( s_pContext->getProcAddress( "glCompressedTexImage2DARB" ) );
+    static FP_glCompressedTexImage2DARB s_fpCompressedTexImage2DARB = static_cast< FP_glCompressedTexImage2DARB >( 0 );
+    ContextHelper contextHelper;  // this ensures that there is a current QGLContext
+    if ( !s_fpCompressedTexImage2DARB )
+        if ( QGLContext::currentContext() )
+            s_fpCompressedTexImage2DARB = static_cast< FP_glCompressedTexImage2DARB >( QGLContext::currentContext()->getProcAddress( "glCompressedTexImage2DARB" ) );
     static GLenum s_arrCompressionConstants[ ES3TCCompression_Count ] = { 0x83F1, 0x83F2, 0x83F3 };
     int const iPixelCount = a_ImageInfo.m_sizeSize.width() * a_ImageInfo.m_sizeSize.height(), iSize = getCompressedSize( a_ImageInfo.m_sizeSize, a_ImageInfo.m_enuCompression );
     if ( !s_fpCompressedTexImage2DARB || a_ImageInfo.m_sizeSize.width() % 4 || a_ImageInfo.m_sizeSize.height() % 4 || !a_pDevice || a_pDevice->bytesAvailable() < iSize || a_ImageInfo.m_enuCompression >= ES3TCCompression_Invalid )
