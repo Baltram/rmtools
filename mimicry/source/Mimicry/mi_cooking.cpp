@@ -133,14 +133,14 @@ MIBool mCCooking::InitCooking( MIUInt a_uPhysicsSDKVersion )
 mEResult mCCooking::InitGothic3Cooking( void )
 {
     if ( !InitCooking( 2 << 24 | 5 << 16 | 0 << 0 ) )  // Actually Gothic 3 uses PhysX 2.4.1 but 2.5.0 is easier to load
-        return MI_ERROR( mCPhysXError, EMissingSystemSoftware, "Please download and install 'Nvidia PhysX Legacy System Software' (NOT 'Nvidia PhysX System Software'!) from the official Nvidia homepage and restart the program." ), mEResult_False;
+        return MI_ERROR( mCPhysXError, EMissingLegacySystemSoftware, "Please download and install 'Nvidia PhysX Legacy System Software' (NOT 'Nvidia PhysX System Software'!) from the official Nvidia homepage and restart the program." ), mEResult_False;
     return mEResult_Ok;
 }
 
 mEResult mCCooking::InitRisenCooking( void )
 {
     if ( !InitCooking( 2 << 24 | 8 << 16 | 1 << 8 ) )
-        return MI_ERROR( mCPhysXError, EMissingLegacySystemSoftware, "Please download and install 'Nvidia PhysX System Software' from the official Nvidia homepage and restart the program." ), mEResult_False;
+        return MI_ERROR( mCPhysXError, EMissingSystemSoftware, "Please download and install 'Nvidia PhysX System Software' from the official Nvidia homepage and restart the program." ), mEResult_False;
     return mEResult_Ok;
 }
 

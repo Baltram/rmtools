@@ -58,7 +58,7 @@ mEResult mCXnvmshReader::ReadXnvmshFileData( mCScene & a_sceneDest, mCIOStreamBi
         File().ReadU64();  // Size
         mCMesh meshDest;
         if ( !mCCooking::ReadCookedMesh( File(), meshDest ) )
-            return MI_ERROR( mCStreamError, EBadFormat, "PhysX error." ), mEResult_False;
+            return MI_ERROR( mCStreamError, EBadFormat, "PhysX error. It might help to download and install 'Nvidia PhysX Legacy System Software' (NOT 'Nvidia PhysX System Software'!) from the official Nvidia homepage and restart the program." ), mEResult_False;
         mCVec3 * pVerts = meshDest.AccessVerts();
         for ( MIUInt u = meshDest.GetNumVerts(); u--; pVerts[ u ] *= 100.0f );
         a_sceneDest.AddNewNode().SwapMesh( meshDest );

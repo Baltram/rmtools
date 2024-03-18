@@ -74,7 +74,8 @@ mEResult mCXcomReader::ReadXcomFileData( mCScene & a_sceneDest, mCIOStreamBinary
         for ( MIUInt v = a_streamSource.ReadU32(); v--; )
         {
             mCMesh meshDest;
-            mCCooking::ReadCookedMesh( a_streamSource, meshDest );
+            if ( !mCCooking::ReadCookedMesh( a_streamSource, meshDest ) )
+                return MI_ERROR( mCStreamError, EBadFormat, "PhysX error. It might help to download and install 'Nvidia PhysX System Software' from the official Nvidia homepage and restart the program." ), mEResult_False;
             mCVec3 * pVerts = meshDest.AccessVerts();
             for ( MIUInt u = meshDest.GetNumVerts(); u--; pVerts[ u ] *= 100.0f );
             a_sceneDest.AddNewNode().SwapMesh( meshDest );
