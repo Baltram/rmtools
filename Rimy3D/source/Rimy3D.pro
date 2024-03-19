@@ -32,6 +32,7 @@ SOURCES += glwidget.cpp \
            batchdialog.cpp
 
 HEADERS += glwidget.h \
+           main.h \
            mainwindow.h \
            rimy3d.h \
            sceneinfo.h \

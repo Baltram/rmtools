@@ -36,7 +36,7 @@ If the model already has vertex normals, they are retained. Otherwise they are c
 Calculates the vertex normals based on the smoothing groups. Each triangle is assigned the smoothing group 0 by default.[B][/B]
 [B][/B]
 [I]Recalculate By Angle[/I][B][/B]
-The angle between two triangles determines whether the common edge appears soft or hard. If an angle of 0° is chosen, all edges appear hard, whereas with 180° all appear soft. In most cases a value between 60° and 90° is appropriate.
+The angle between two triangles determines whether the common edge appears soft or hard. If an angle of 0ï¿½ is chosen, all edges appear hard, whereas with 180ï¿½ all appear soft. In most cases a value between 60ï¿½ and 90ï¿½ is appropriate.
 [/td]
 [/tr]
 [/table]
@@ -51,3 +51,7 @@ The angle between two triangles determines whether the common edge appears soft 
 [SIZE=2]Individual files or entire folders can be added to the list of source files. All of these files are converted to the target file format with a click on 'Start'. The same export settings are available as when exporting single files.[/SIZE]
 
 [SIZE=2]The new files are saved either in the same directories as the source files or in the selected target directory, depending on the state of the bottom check box. If errors occur during the conversion they are printed in the log.[/SIZE]
+
+[SIZE=4]Command line interface[/SIZE]
+
+[SIZE=2][B]Rimy3D[/B] supports the conversion of 3D files via command line interface. The command [tt]Rimy3D.exe -help[/tt] shows an extensive explanation of the usage.[/SIZE]

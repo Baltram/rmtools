@@ -51,3 +51,7 @@ Der Neigungswinkel zwischen zwei Triangles entscheidet darüber, ob die gemeinsam
 [SIZE=2]Zur Liste der Quelldateien können einzelne 3D-Dateien oder auch ganze Ordner hinzugefügt werden. Alle diese Dateien werden nach einem Klick auf 'Start' in das ausgeählte Zielformat umgewandelt. Es stehen die selben Exporteinstellungen zur Verfügung wie beim Speichern einzelner Dateien.[/SIZE]
 
 [SIZE=2]Die neuen Dateien werden wahlweise in den gleichen Ordnern wie die Quelldateien gespeichert oder in das ausgewählte Zielverzeichnis (dazu muss das Häkchen bei 'Ausgabe in den Quellverzeichnissen' entfernt werden). Falls dabei Fehler auftreten, werden diese in den Log ausgegeben.[/SIZE]
+
+[SIZE=4]Bedienung per Kommandozeile[/SIZE]
+
+[SIZE=2][B]Rimy3D[/B] unterstützt das Umwandeln von 3D-Dateien per Kommandozeile. Der Befehl [tt]Rimy3D.exe -help[/tt] zeigt eine ausführliche Erklärung zur Bedienung an.[/SIZE]

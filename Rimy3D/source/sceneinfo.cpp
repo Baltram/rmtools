@@ -250,7 +250,7 @@ bool SceneInfo::openSceneFile( QString a_strFilePath, bool a_bMerge )
     }
     else
     {
-        Rimy3D::showError( tr( "Unknown file type: \".%1\"" ).arg( strExt ), Rimy3D::applicationName() );
+        Rimy3D::showError( tr( "Unsupported file type: \".%1\"" ).arg( strExt ), Rimy3D::applicationName() );
     }
     streamIn.Close();
     if ( enuResult == mEResult_Ok )
@@ -474,8 +474,8 @@ void SceneInfo::lookUpGenomeMaterials( void )
 {
     if ( m_sceneCurrentScene.GetNumMaterials() == 0 )
         return;
-    mCGenomeMaterial::LoadGothic3Materials( m_sceneCurrentScene );
-    mCGenomeMaterial::LoadRisenMaterials( m_sceneCurrentScene );
+    mCGenomeMaterial::LoadGothic3Materials( m_sceneCurrentScene, PreferencesDialog::getInstance().defaultImageFileExt().toAscii().data() );
+    mCGenomeMaterial::LoadRisenMaterials( m_sceneCurrentScene, PreferencesDialog::getInstance().defaultImageFileExt().toAscii().data() );
     emit sceneChanged();
 }
 
@@ -499,7 +499,10 @@ void SceneInfo::errorMessageTranslations( void )
     tr( "Invalid .xlmsh file." );
     tr( "Invalid .xnvmsh file." );
     tr( "Incompatible PhysX version - .xnvmsh file version too old.\n\n(Gothic 3 can't read such files either. If needed, it recreates them using the original .xcmsh data.)" );
-    tr( "PhysX error." );
+    tr( "PhysX error. It might help to download and install 'Nvidia PhysX System Software' from the official Nvidia homepage and restart the program." );
+    tr( "PhysX error. It might help to download and install 'Nvidia PhysX Legacy System Software' (NOT 'Nvidia PhysX System Software'!) from the official Nvidia homepage and restart the program." );
+    tr( "Please download and install 'Nvidia PhysX System Software' from the official Nvidia homepage and restart the program." );
+    tr( "Please download and install 'Nvidia PhysX Legacy System Software' (NOT 'Nvidia PhysX System Software'!) from the official Nvidia homepage and restart the program." );
     tr( "Invalid ._xmsh file." );
     tr( "Invalid ._xmac file." );
     tr( "Unknown ._xmac file version." );

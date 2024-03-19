@@ -16,7 +16,7 @@
 # ##### END GPL LICENSE BLOCK #####
 
 #Author:  Baltram
-#Version: 0.5
+#Version: 1.2
 
 import ntpath
 import struct
@@ -25,7 +25,7 @@ import bpy
 import mathutils
 
 from bpy_extras.image_utils import load_image
-from math import pi
+from math import pi, radians
 
 
 VERSION_3DB = 1
@@ -192,11 +192,11 @@ def create_node(nodeData, scale, mesh=None):
     if nodeData.type == NodeType.bone:
         return
     node = bpy.data.objects.new(as_string(nodeData.name), mesh)
-    bpy.context.scene.objects.link(node)
+    bpy.context.scene.collection.objects.link(node)
     node.matrix_world = nodeData.transform
     if node.data != None:
         node.data.transform(node.matrix_local.inverted())
-    node.matrix_world = mathutils.Matrix.Scale(scale, 4) * node.matrix_world
+    node.matrix_world = mathutils.Matrix.Scale(scale, 4) @ node.matrix_world
     return node
 
 
@@ -212,28 +212,26 @@ def build_scene(scene):
             materials[i<<16 | -1&0xFFFF] = bpy.data.materials.new(as_string(mat.name))
     for key in materials:
         materials[key].specular_intensity = 0
+        materials[key].use_nodes = True
 
     #Load images
     images = {}
     for texMap in scene.texMaps:
         images[texMap.texturePath] = None
     for path in images:
-        images[path] = load_image(as_string(path), ntpath.dirname(scene.filePath))
+        images[path] = load_image(as_string(path), dirname=ntpath.dirname(scene.filePath), place_holder=True)
 
     #Create Blender textures
     for texMap in scene.texMaps:
         if scene.diffuseOnly and texMap.type != MapType.diffuse:
             continue
         mat = materials[texMap.materialIndex << 16 | texMap.subMaterialIndex & 0xFFFF]
-        tex = bpy.data.textures.new(ntpath.basename(as_string(texMap.texturePath)), type='IMAGE')
-        if images[texMap.texturePath]:
-            tex.image = images[texMap.texturePath]
-        slot = mat.texture_slots.add()
-        slot.texture = tex
-        slot.texture_coords = 'UV'
-        slot.use_map_color_diffuse = texMap.type == MapType.diffuse
-        slot.use_map_specular = texMap.type == MapType.specular
-        slot.use_map_normal = texMap.type == MapType.normal
+        
+        node_shader = mat.node_tree.nodes.get('Principled BSDF')
+        node_tex = mat.node_tree.nodes.new('ShaderNodeTexImage')
+        node_tex.image = images[texMap.texturePath]
+        shader_input = 'Base Color' if texMap.type == MapType.diffuse else ('Specular' if texMap.type == MapType.specular else 'Normal')
+        mat.node_tree.links.new(node_tex.outputs['Color'], node_shader.inputs[shader_input])
 
     #Identify bones
     def check_parents(boneIndices, i):
@@ -296,13 +294,13 @@ def build_scene(scene):
         mesh.polygons.foreach_set('material_index', matIDs)
         if len(meshData.vcolors) != 0:
             vcolors = [c / 255.0 for c in meshData.vcolors]
-            mesh.vertex_colors.new(name = 'rgb')
-            mesh.vertex_colors.new(name = 'alpha')
+            rgbAttr = mesh.attributes.new(name='rgb', type='BYTE_COLOR', domain='CORNER')
+            alphaAttr = mesh.attributes.new(name='alpha', type='BYTE_COLOR', domain='CORNER')
             fverts = [i for f in faces for i in f]
-            mesh.vertex_colors[0].data.foreach_set('color', [val for i in fverts for val in vcolors[i*4:i*4 + 3]])
-            mesh.vertex_colors[1].data.foreach_set('color', [val for i in fverts for val in [vcolors[i*4 + 3]]*3])
+            rgbAttr.data.foreach_set('color', [val for i in fverts for val in vcolors[i*4:i*4 + 4]])
+            alphaAttr.data.foreach_set('color', [val for i in fverts for val in [vcolors[i*4 + 3]]*4])
         if len(tverts):
-            mesh.uv_textures.new()
+            mesh.uv_layers.new()
             mesh.uv_layers[-1].data.foreach_set('uv', [coord for i in tfaceIndices for coord in tverts[i]])
         if nodeData.materialIndex >= 0:
             subs = scene.materials[nodeData.materialIndex].subMaterials
@@ -327,13 +325,13 @@ def build_scene(scene):
             nodes[i].matrix_world = transform
 
     #Create Blender armatures
-    scale = mathutils.Matrix.Scale(scene.scale, 4)
+    scaleMatrix = mathutils.Matrix.Scale(scene.scale, 4)
     for skinData in scene.skins:
         mesh = None
         for i in range(len(scene.meshes)):
             if scene.meshes[i].nodeIndex == skinData.nodeIndex:
                 mesh = meshes[i]
-        defaultBoneLength = (mesh.matrix_world * (mathutils.Vector(mesh.bound_box[0]) -
+        defaultBoneLength = (mesh.matrix_world @ (mathutils.Vector(mesh.bound_box[0]) -
                                                   mathutils.Vector(mesh.bound_box[6]))).length / 40 / scene.scale
         boneLengths = [defaultBoneLength] * len(scene.nodes)
         for i in skinData.boneIndices:
@@ -341,19 +339,19 @@ def build_scene(scene):
             if nodeData.parentIndex < 0:
                 continue
             parentNodeData = scene.nodes[nodeData.parentIndex]
-            relativePos = (parentNodeData.transform.inverted() * nodeData.transform).translation
+            relativePos = (parentNodeData.transform.inverted() @ nodeData.transform).translation
             if relativePos.x / relativePos.length > 0.999:
                 boneLengths[nodeData.parentIndex] = relativePos.x
         name = 'Armature_' + mesh.name
         armatureObject = bpy.data.objects.new(name, bpy.data.armatures.new(name))
-        armatureObject.show_x_ray = True
-        bpy.context.scene.objects.link(armatureObject)
+        armatureObject.show_in_front = True
+        bpy.context.scene.collection.objects.link(armatureObject)
 
         if bpy.context.mode != 'OBJECT':
             bpy.ops.object.mode_set(mode = 'OBJECT')
         bpy.ops.object.select_all(action='DESELECT')
-        bpy.context.scene.objects.active = armatureObject
-        armatureObject.select = True
+        bpy.context.view_layer.objects.active = armatureObject
+        armatureObject.select_set(True)
         bpy.ops.object.mode_set(mode='EDIT')
 
         armature = mesh.modifiers.new("Armature", "ARMATURE")
@@ -361,12 +359,14 @@ def build_scene(scene):
         armature.use_vertex_groups = True
         mesh.parent = armatureObject
         vertexGroups = [None] * len(scene.nodes)
+        # In Blender, bones point to the front (+Y in Blender coordinates) whereas in Genome/3db they point to the right (+X in Blender coordinates)
+        boneOrientationFix = mathutils.Matrix(((0,1,0,0),(-1,0,0,0),(0,0,1,0),(0,0,0,1))) # rotation by 270 degrees around the Z-axis
         for i in skinData.boneIndices:
             nodeData = scene.nodes[i]
             bone = armatureObject.data.edit_bones.new(as_string(nodeData.name))
-            bone.head = scale * nodeData.transform.translation
-            bone.tail = (scale * (nodeData.transform)) * mathutils.Vector((boneLengths[i], 0, 0))
-            vertexGroups[i] = mesh.vertex_groups.new(as_string(scene.nodes[i].name))
+            bone.tail = mathutils.Vector((boneLengths[i], 0, 0))
+            bone.matrix = scaleMatrix @ nodeData.transform @ boneOrientationFix
+            vertexGroups[i] = mesh.vertex_groups.new(name=as_string(scene.nodes[i].name))
             nodes[i] = bone
         for i in range(len(skinData.weightsPerVertex)):
             weights = skinData.weightsPerVertex[i]
@@ -379,7 +379,7 @@ def build_scene(scene):
         bpy.ops.object.mode_set(mode = 'OBJECT')
         bpy.ops.object.select_all(action='DESELECT')
 
-    bpy.context.scene.update()
+    bpy.context.view_layer.update()
 
 
 def load(operator, context, filePath='', scale=0.01, diffuseOnly=True):
@@ -414,6 +414,6 @@ def load(operator, context, filePath='', scale=0.01, diffuseOnly=True):
             read_skin_chunk(chunkData, scene)
 
     build_scene(scene)
-    bpy.context.scene.update()
+    bpy.context.view_layer.update()
     file.close()
     return {'FINISHED'}

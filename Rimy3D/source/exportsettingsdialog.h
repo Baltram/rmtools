@@ -1,6 +1,7 @@
 #ifndef EXPORTSETTINGSDIALOG_H_INCLUDED
 #define EXPORTSETTINGSDIALOG_H_INCLUDED
 
+#include "main.h"
 #include <QDialog>
 
 class QSettings;
@@ -39,6 +40,7 @@ public:
 public:
     int     angle( void ) const;
     bool    anglesNotSgs( void ) const;
+    void    applyCliOptions( QVariant ( &options )[ CliOption_Count ] );
     QString baseXact( void ) const;
     QString baseXmac( void ) const;
     bool    colors( void ) const;

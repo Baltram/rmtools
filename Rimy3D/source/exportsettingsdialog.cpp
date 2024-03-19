@@ -1,6 +1,5 @@
 #include "exportsettingsdialog.h"
 #include "ui_exportsettingsdialog.h"
-#include "rimy3d.h"
 #include <QFileDialog>
 
 exportSettingsDialog::exportSettingsDialog( QWidget * a_pParent, QString a_strExt, Flags a_Flags ) :
@@ -42,6 +41,59 @@ int exportSettingsDialog::angle( void ) const
 bool exportSettingsDialog::anglesNotSgs( void ) const
 {
     return m_pUi->rbNRecalcA->isChecked();
+}
+
+void exportSettingsDialog::applyCliOptions( QVariant ( &options )[ CliOption_Count ] )
+{
+    if ( options[ CliOption_ExportTextures ].type() == QVariant::Bool )
+        m_pUi->cbSaveTextures->setChecked( options[ CliOption_ExportTextures ].toBool() );
+    else if ( options[ CliOption_ExportTextures ].type() == QVariant::String )
+    {
+        m_pUi->cbSaveTextures->setChecked( true );
+        QString fmt = options[ CliOption_ExportTextures ].toString();
+        if ( fmt == "tga" )
+            m_pUi->cbTextureFormat->setCurrentIndex( 0 );
+        else if ( fmt == "jpg" )
+            m_pUi->cbTextureFormat->setCurrentIndex( 1 );
+        else if ( fmt == "png" )
+            m_pUi->cbTextureFormat->setCurrentIndex( 2 );
+        else if ( fmt == "bmp" )
+            m_pUi->cbTextureFormat->setCurrentIndex( 3 );
+    }
+    if ( options[ CliOption_ExportNormals ].type() == QVariant::Bool )
+        m_pUi->cbNormals->setChecked( options[ CliOption_ExportNormals ].toBool() );
+    if ( options[ CliOption_NormalsRecalcBySmoothingGroups ].type() == QVariant::Bool )
+        m_pUi->rbNRecalcS->setChecked( options[ CliOption_NormalsRecalcBySmoothingGroups ].toBool() );
+    if ( options[ CliOption_NormalsRecalcByAngle ].type() == QVariant::Int )
+    {
+        m_pUi->rbNRecalcA->setChecked( true );
+        m_pUi->sbAngle->setValue( options[ CliOption_NormalsRecalcByAngle ].toInt() );
+    }
+    if ( options[ CliOption_NormalsKeepIfPossible ].type() == QVariant::Bool )
+        m_pUi->rbNKeep->setChecked( options[ CliOption_NormalsKeepIfPossible ].toBool() );
+    if ( options[ CliOption_ExportVertexColors ].type() == QVariant::Bool )
+        m_pUi->cbVColors->setChecked( options[ CliOption_ExportVertexColors ].toBool() );
+    if ( options[ CliOption_BaseFile ].type() == QVariant::String )
+    {
+        QString base = options[ CliOption_BaseFile ].toString();
+        m_pUi->leBaseXact->setText( base );
+        m_pUi->leBaseXmac->setText( base );
+    }
+    if ( options[ CliOption_OnlyVertices ].type() == QVariant::Bool )
+        m_pUi->cbVertsOnly->setChecked( options[ CliOption_OnlyVertices ].toBool() );
+    if ( options[ CliOption_AutoSkinDirectVertexMatching ].type() == QVariant::Bool )
+    {
+        m_pUi->rbDirectMatching->setChecked( options[ CliOption_AutoSkinDirectVertexMatching ].toBool() );
+        m_pUi->rbIndirectMatching->setChecked( !options[ CliOption_AutoSkinDirectVertexMatching ].toBool() );
+    }
+    if ( options[ CliOption_MeshIsConvex ].type() == QVariant::Bool )
+        m_pUi->cbConvex->setChecked( options[ CliOption_MeshIsConvex ].toBool() );
+    if ( options[ CliOption_ExportMtl ].type() == QVariant::Bool )
+        m_pUi->cbMtl->setChecked( options[ CliOption_ExportMtl ].toBool() );
+    if ( options[ CliOption_Gothic3dsFormat ].type() == QVariant::Bool )
+        m_pUi->cbGothic3ds->setChecked( options[ CliOption_Gothic3dsFormat ].toBool() );
+    if ( options[ CliOption_ExportSmoothingGroups ].type() == QVariant::Bool )
+        m_pUi->cbExportSGs->setChecked( options[ CliOption_ExportSmoothingGroups ].toBool() );
 }
 
 QString exportSettingsDialog::baseXact( void ) const

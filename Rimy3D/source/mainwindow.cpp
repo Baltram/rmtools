@@ -1,6 +1,5 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "rimy3d.h"
 #include "texturefinder.h"
 #include "batchdialog.h"
 #include "pluginsdialog.h"
@@ -55,6 +54,27 @@ QString MainWindow::getSaveFilter( void )
     return strResult;
 }
 
+void MainWindow::applyCliOptions( QVariant ( &options )[ CliOption_Count ] )
+{
+    exportSettingsDialog * dialogs[] =
+    {
+        &m_3dbDialog,
+        &m_3dsDialog,
+        &m_ascDialog,
+        &m_aseDialog,
+        &m_objDialog,
+        &m_xcmshDialog,
+        &m_xmshDialog,
+        &m_xlmshDialog,
+        &m_xactDialog,
+        &m_xmacDialog,
+        &m_xnvmshDialog,
+        &m_xcomDialog
+    };
+    for ( int i = sizeof( dialogs ) / sizeof( dialogs[ 0 ] ); i--; )
+        dialogs[ i ]->applyCliOptions( options );
+}
+
 exportSettingsDialog const * MainWindow::getExportSettings( QString const & a_strPath, bool a_bAllowSkinCalculation )
 {
     QString strExt = QFileInfo( a_strPath ).suffix().toLower();
@@ -85,7 +105,7 @@ exportSettingsDialog const * MainWindow::getExportSettings( QString const & a_st
         pDialog = &m_xcomDialog;
     else
         Rimy3D::showError( tr( "Unknown file extension:" ).append( QString( " '.%1'" ).arg( strExt ) ) );
-    if ( pDialog && strExt != "asc" && strExt != "xlmsh" )
+    if ( pDialog && strExt != "asc" && strExt != "xlmsh" && !Rimy3D::quiet() )
     {
         pDialog->setParent( Rimy3D::activeWindow(), Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::Dialog );
         int iResult = pDialog->exec();
@@ -95,20 +115,19 @@ exportSettingsDialog const * MainWindow::getExportSettings( QString const & a_st
     return pDialog;
 }
 
-void MainWindow::open( QString a_strFilePath )
+bool MainWindow::open( QString a_strFilePath )
 {
     bool bOnMerge = m_bOnMerge;
     m_bOnMerge = false;
     if ( a_strFilePath == "" )
-        return;
+        return false;
     a_strFilePath = QDir::toNativeSeparators( a_strFilePath );
     QString strExt = QFileInfo( a_strFilePath ).suffix();
-    if ( strExt == "_xmat" || strExt == "xshmat" )
+    if ( !Rimy3D::quiet() && ( strExt == "_xmat" || strExt == "xshmat" ) )
     {
         if ( !m_GenomeMaterialDialog.isVisible() )
             m_GenomeMaterialDialog.show();
-        m_GenomeMaterialDialog.openMaterial( a_strFilePath );
-        return;
+        return m_GenomeMaterialDialog.openMaterial( a_strFilePath );
     }
     m_RecentFiles.removeOne( a_strFilePath );
     if ( m_SceneInfo.openSceneFile( a_strFilePath, bOnMerge ) )
@@ -120,18 +139,22 @@ void MainWindow::open( QString a_strFilePath )
         QFileInfo File( a_strFilePath );
         if ( !bOnMerge )
             setWindowTitle( Rimy3D::applicationName() + " - " + File.fileName() );
+        updateRecentFiles();
+        return true;
     }
     updateRecentFiles();
+    return false;
 }
 
-void MainWindow::save( QString a_strFilePath )
+bool MainWindow::save( QString a_strFilePath )
 {
     if ( a_strFilePath == "" )
-        return;
+        return false;
     a_strFilePath = QDir::toNativeSeparators( a_strFilePath );
     exportSettingsDialog const * pDialog = getExportSettings( a_strFilePath, true );
     if ( pDialog )
-        m_SceneInfo.saveSceneFile( a_strFilePath, *pDialog, &m_pUi->widget->getWorld() );
+        return m_SceneInfo.saveSceneFile( a_strFilePath, *pDialog, &m_pUi->widget->getWorld() );
+    return false;
 }
 
 void MainWindow::loadSettings( QSettings & a_Settings )
@@ -268,10 +291,10 @@ void MainWindow::on_action3db_Tools_for_3ds_Max_triggered( void )
 
 void MainWindow::on_actionAbout_triggered( void )
 {
-    Rimy3D::showMessage( "<p></p><b>Rimy3D v" + Rimy3D::getVersionString() + tr( "</b> (December 18th 2016)"
-                         "<div style='text-indent:16px;'>by <a href='mailto:baltram-lielb@web.de'>Baltram</a> @<a href='http://forum.worldofplayers.de/forum/members/33859'>WoP</a></div>"
-                         "<p>Support: <a href='http://www.baltr.de/Rimy3D.htm'>www.baltr.de/Rimy3D.htm</a></p>"
-                         "<p>This program uses the <a href='http://www.glc-lib.net'>GLC_lib</a> library by Laurent Ribon.</p>"
+    Rimy3D::showMessage( "<p></p><b>Rimy3D v" + Rimy3D::getVersionString() + tr( "</b> (March 18th 2024)"
+                         "<div style='text-indent:16px;'>by <a href='mailto:baltram-lielb@web.de'>Baltram</a> @<a href='https://forum.worldofplayers.de/forum/members/33859'>WoP</a></div>"
+                         "<p>Support: <a href='https://www.baltr.de/Rimy3D.htm'>www.baltr.de/Rimy3D.htm</a></p>"
+                         "<p>This program uses the GLC_lib library by Laurent Ribon.</p>"
                          "<p></p>" ),
                          tr( "About Rimy3D" ) );
 }

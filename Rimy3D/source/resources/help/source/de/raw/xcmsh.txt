@@ -8,4 +8,4 @@ Der RGB-Wert eines Vertex wird in gewissen Materialien dafür verwendet, zwische
 
 [SIZE=2]Der beste Weg um die Funktionsweise solcher Texturübergänge zu verstehen und somit selbst anwenden zu können, ist es, sich einige der originalen Landschaftsmeshes im bevorzugten 3D-Editor anzusehen und dabei besonders auf die Werte der Vertex Colors zu achten.[/SIZE]
 
-[SIZE=2]Über das [B].3db[/B]-Dateiformat können sowohl in [B]GMax[/B] und [B]3ds Max[/B] als auch in [B]Blender[/B] Vertex Colors im- und exportiert werden. In [B]Blender[/B] verwendet man dazu zwei separate Vertex Color Channels mit den Namen 'rgb' und 'alpha'.[/SIZE]
+[SIZE=2]Über das [B].3db[/B]-Dateiformat können sowohl in [B]GMax[/B] und [B]3ds Max[/B] als auch in [B]Blender[/B] Vertex Colors im- und exportiert werden. In [B]Blender[/B] verwendet man dazu zwei separate Vertex Color-Attribute mit den Namen 'rgb' und 'alpha'.[/SIZE]

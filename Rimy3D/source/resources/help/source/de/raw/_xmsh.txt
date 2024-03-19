@@ -10,7 +10,7 @@ Die RGB-Werte eines Vertex können dazu genutzt werden, zwischen verschiedenen M
 
 [SIZE=2]Der beste Weg um die Funktionsweise solcher Texturübergänge zu verstehen und somit selbst anwenden zu können, ist es, sich einige der originalen Landschaftsmeshes im bevorzugten 3D-Editor anzusehen und dabei besonders auf die Werte der Vertex Colors zu achten. Die RenderPriority eines Materials kann man nachsehen, indem man es im [URL="materialeditor.htm"]Genome Material-Editor[/URL] öffnet. Am Ende dieses Artikels steht außerdem eine Liste, die jedem Material zwei Zahlen zuordnet. Die erste Zahl entspricht der RenderPriority und die zweite Zahl beschreibt das durchschnittliche Größenverhältnis zwischen den UV-Koordinaten und der Geometrie in den originalen Levelmeshes. Das dient als Anhaltspunkt dafür, wie stark man je nach Material die UV-Koordinaten skalieren sollte.[/SIZE]
 
-[SIZE=2]Über das [B].3db[/B]-Dateiformat können sowohl in [B]GMax[/B] und [B]3ds Max[/B] als auch in [B]Blender[/B] Vertex Colors im- und exportiert werden. In [B]Blender[/B] verwendet man dazu zwei separate Vertex Color Channels mit den Namen 'rgb' und 'alpha'.[/SIZE]
+[SIZE=2]Über das [B].3db[/B]-Dateiformat können sowohl in [B]GMax[/B] und [B]3ds Max[/B] als auch in [B]Blender[/B] Vertex Colors im- und exportiert werden. In [B]Blender[/B] verwendet man dazu zwei separate Vertex Color-Attribute mit den Namen 'rgb' und 'alpha'.[/SIZE]
 
 [CODE]0000/00670 Arch_Bordellcloth_02_Diffuse_01[B][/B]
 0000/00505 Arch_Bridge_Wood_01_Diffuse_01[B][/B]

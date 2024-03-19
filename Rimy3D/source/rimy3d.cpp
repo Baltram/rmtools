@@ -248,6 +248,8 @@ bool Rimy3D::quiet( void )
 
 void Rimy3D::saveSettings( void )
 {
+    if ( quiet() )
+        return;  // Don't save settings in CLI mode
     if ( s_pSettings && getInstance() )
         getInstance()->saveSettingsIntern();
 }
@@ -329,7 +331,8 @@ void Rimy3D::loadSettingsIntern( void )
     }
 #ifdef Q_WS_WIN
     if ( ( QSysInfo::WindowsVersion != QSysInfo::WV_XP ) &&
-         ( !s_pSettings->contains( "MAXComponents" ) ) )
+         ( !s_pSettings->contains( "MAXComponents" ) ) &&
+         ( !quiet() ) )
         checkGmaxInstallation();
 #endif
     setLanguage( enuLanguage );

@@ -1,6 +1,7 @@
 #ifndef MAINWINDOW_H_INCLUDED
 #define MAINWINDOW_H_INCLUDED
 
+#include "main.h"
 #include "sceneinfo.h"
 #include "exportsettingsdialog.h"
 #include "genomematerialdialog.h"
@@ -24,9 +25,10 @@ public:
     static QString      getOpenFilter( void );
     static QString      getSaveFilter( void );
 public:
+    void                         applyCliOptions( QVariant ( &options )[ CliOption_Count ] );
     exportSettingsDialog const * getExportSettings( QString const & a_strPath, bool a_bAllowSkinCalculation );
-    void                         open( QString a_strFilePath );
-    void                         save( QString a_strFilePath );
+    bool                         open( QString a_strFilePath );
+    bool                         save( QString a_strFilePath );
 public slots:
     void loadSettings( QSettings & a_Settings );
     void saveSettings( QSettings & a_Settings );

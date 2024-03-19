@@ -295,6 +295,19 @@ Whenever possible you should prefer [B]3DB[/B] over the other file formats![/SIZ
 		[URL="_xcom.htm"]Information on Risen collision meshes[/URL]
 	[/td]
 [/tr]
+[tr]
+	[td]Risen 3 Mesh[/td]
+	[td].r3msh[/td]
+	[td][LIST]
+		[*]Object names
+		[*]Geometry
+		[*]Texture coordinates
+		[*]Vertex normals
+		[*]Vertex colors
+		[/LIST]
+	[/td]
+	[td][/td]
+[/tr]
 [/table]
 [SIZE=2](*) [I]Texture file paths are extracted from the Gothic 3/Risen materials if available.[/I][/SIZE]
 

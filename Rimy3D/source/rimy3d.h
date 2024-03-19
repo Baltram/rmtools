@@ -12,7 +12,7 @@ class Rimy3D :
     Q_OBJECT
 public:
     enum { EVersionMajor = 1 };
-    enum { EVersionMinor = 0 };
+    enum { EVersionMinor = 1 };
     enum ELanguage
     {
         ELanguage_English,

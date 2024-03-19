@@ -1,6 +1,7 @@
 #ifndef PREFERENCESDIALOG_H_INCLUDED
 #define PREFERENCESDIALOG_H_INCLUDED
 
+#include "main.h"
 #include <QDialog>
 #include <QDate>
 
@@ -18,6 +19,7 @@ public:
     static PreferencesDialog & getInstance( void );
     static void                showAutoUpdateDialog( void );
 public:
+    void    applyCliOptions( QVariant ( &options )[ CliOption_Count ] );
     bool    autoUpdate( void ) const;
     void    checkForUpdates( bool a_bManual = false, bool a_bInitial = false );
     QString defaultImageFileExt( void ) const;

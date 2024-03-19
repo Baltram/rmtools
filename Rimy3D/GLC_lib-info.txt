@@ -1,7 +1,7 @@
-This project uses GLC_lib 2.2 by Laurent Ribon (http://www.glc-lib.net/) which is licensed under the GNU Lesser General Public License.
+This project uses GLC_lib 2.2 by Laurent Ribon (https://web.archive.org/web/20221006041036/http://www.glc-lib.net/) which is licensed under the GNU Lesser General Public License.
 
 How to set up GLC_lib for this project:
-- Download and install GLC_lib 2.2 (GLC_lib_2.2.0-setup.exe)
+- Download and install GLC_lib 2.2 (GLC_lib_2.2.0-setup.exe: https://sourceforge.net/projects/glc-lib/files/glc-lib/GLC_lib_2.2.0/)
 - Compile GLC_lib\src\GLC_lib.pro in debug mode (Qt 4.7x is recommended)
 - Copy the resulting GLC_lib2.lib in GLC_lib\lib
 - Copy the resulting GLC_lib2.dll in all of your debug build directories for this project

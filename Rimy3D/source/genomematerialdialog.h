@@ -21,7 +21,7 @@ public:
    ~GenomeMaterialDialog( void );
 public:
     void closeMaterial( void );
-    void openMaterial( QString const & a_strMaterialName );
+    bool openMaterial( QString const & a_strMaterialName );
     void updateMaterialSuggestions( void );
 protected:
     void changeEvent( QEvent * a_pEvent );

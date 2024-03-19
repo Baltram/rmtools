@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>310</width>
-    <height>291</height>
+    <height>324</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -25,6 +25,12 @@
      </item>
      <item>
       <widget class="QPushButton" name="pbUpdate">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>23</height>
+        </size>
+       </property>
        <property name="text">
         <string>Check Now</string>
        </property>
@@ -43,27 +49,6 @@
     </widget>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="hl3">
-     <item>
-      <widget class="QCheckBox" name="cbLookUpMaterials">
-       <property name="text">
-        <string>Look Up Gothic 3/Risen Materials</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="pbLookUpMaterials">
-       <property name="text">
-        <string>Look Up Now</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item>
     <widget class="QCheckBox" name="cbLookUpTextures">
      <property name="text">
       <string>Look Up Textures</string>
@@ -74,31 +59,67 @@
     </widget>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="hl2">
-     <item>
-      <widget class="QLabel" name="lbImgExt">
-       <property name="text">
-        <string>Default Image Filetype:</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QComboBox" name="cobImgExt"/>
-     </item>
-     <item>
-      <spacer name="horizontalSpacer">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-    </layout>
+    <widget class="QGroupBox" name="gbGenome">
+     <property name="title">
+      <string>Gothic 3/Risen Mesh Import</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_4">
+      <item>
+       <layout class="QHBoxLayout" name="hl2">
+        <item>
+         <widget class="QLabel" name="lbImgExt">
+          <property name="text">
+           <string>Texture Filetype:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="cobImgExt"/>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="hl3">
+        <item>
+         <widget class="QCheckBox" name="cbLookUpMaterials">
+          <property name="text">
+           <string>Look Up Gothic 3/Risen Materials</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pbLookUpMaterials">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>23</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Look Up Now</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
    </item>
    <item>
     <widget class="QGroupBox" name="gbAscImport">
@@ -142,6 +163,12 @@
     <layout class="QHBoxLayout" name="hl1">
      <item>
       <widget class="QPushButton" name="pbRestoreDefaults">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>23</height>
+        </size>
+       </property>
        <property name="text">
         <string>   Restore Default   </string>
        </property>
@@ -162,6 +189,12 @@
      </item>
      <item>
       <widget class="QPushButton" name="pbOk">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>23</height>
+        </size>
+       </property>
        <property name="text">
         <string>OK</string>
        </property>

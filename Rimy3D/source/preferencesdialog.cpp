@@ -1,6 +1,5 @@
 #include "preferencesdialog.h"
 #include "ui_preferencesdialog.h"
-#include "rimy3d.h"
 #include "Mimicry.h"
 #include <QRadioButton>
 #include <QDesktopwidget>
@@ -42,6 +41,30 @@ void PreferencesDialog::showAutoUpdateDialog( void )
         if ( pRadio1Buttons[ i ]->isChecked() )
             pPreferencesDialog->m_iAutoUpdates = i;
     pPreferencesDialog->m_pUi->cbAutoUpdate->setChecked( pPreferencesDialog->m_iAutoUpdates != 3 );
+}
+
+void PreferencesDialog::applyCliOptions( QVariant ( &options )[ CliOption_Count ] )
+{
+    if ( options[ CliOption_LookUpTextures ].type() == QVariant::Bool )
+        m_pUi->cbLookUpTextures->setChecked( options[ CliOption_LookUpTextures ].toBool() );
+    if ( options[ CliOption_LookUpMaterials ].type() == QVariant::Bool )
+        m_pUi->cbLookUpMaterials->setChecked( options[ CliOption_LookUpMaterials ].toBool() );
+    if ( options[ CliOption_DefaultImageFileExt ].type() == QVariant::String )
+    {
+        QString fmt = options[ CliOption_DefaultImageFileExt ].toString();
+        if ( fmt == "tga" )
+            m_pUi->cobImgExt->setCurrentIndex( 0 );
+        else if ( fmt == "jpg" )
+            m_pUi->cobImgExt->setCurrentIndex( 1 );
+        else if ( fmt == "png" )
+            m_pUi->cobImgExt->setCurrentIndex( 2 );
+        else if ( fmt == "bmp" )
+            m_pUi->cobImgExt->setCurrentIndex( 3 );
+    }
+    if ( options[ CliOption_RemoveXmacCollisionMesh ].type() == QVariant::Bool )
+        m_pUi->cbXmacCollisionMesh->setChecked( options[ CliOption_RemoveXmacCollisionMesh ].toBool() );
+    if ( options[ CliOption_RemoveAscPrefixes ].type() == QVariant::Bool )
+        m_pUi->cbAscPrefixes->setChecked( options[ CliOption_RemoveAscPrefixes ].toBool() );
 }
 
 bool PreferencesDialog::autoUpdate( void ) const
@@ -135,6 +158,8 @@ void PreferencesDialog::loadSettings( QSettings & a_Settings )
     m_iAutoUpdates = a_Settings.value( "iAutoUpdates", -1 ).toInt();
     m_dateLastUpdateCheck = a_Settings.value( "dateLastUpdateCheck", QDate( 1900, 1, 1 ) ).toDate();
     a_Settings.endGroup();
+    if ( Rimy3D::quiet() )
+        return;  // Avoid showing update related windows
     if ( m_iAutoUpdates == -1 )
     {
         m_iAutoUpdates = 3;

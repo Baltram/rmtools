@@ -295,6 +295,19 @@ Wann immer möglich, sollten Sie die Benutzung des [B]3DB[/B]-Formats den andere
 		[URL="_xcom.htm"]Hinweise zum Export von Risen Collision Meshes[/URL]
 	[/td]
 [/tr]
+[tr]
+	[td]Risen 3 Mesh[/td]
+	[td].r3msh[/td]
+	[td][LIST]
+		[*]Objektnamen
+		[*]Geometrie
+		[*]Texturkoordinaten
+		[*]Vertex Normals
+		[*]Vertex Colors
+		[/LIST]
+	[/td]
+	[td][/td]
+[/tr]
 [/table]
 [SIZE=2](*) [I]Texturdateipfade werden aus den Gothic 3-/Risen-Materialien ausgelesen, wenn verfügbar.[/I][/SIZE]
 

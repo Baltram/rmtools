@@ -53,7 +53,7 @@ void GenomeMaterialDialog::closeMaterial( void )
     updateActiveGroupBox();
 }
 
-void GenomeMaterialDialog::openMaterial( QString const & a_strMaterialName )
+bool GenomeMaterialDialog::openMaterial( QString const & a_strMaterialName )
 {
     closeMaterial();
     m_pMaterial = new mCGenomeMaterial;
@@ -64,7 +64,7 @@ void GenomeMaterialDialog::openMaterial( QString const & a_strMaterialName )
         delete m_pMaterial;
         m_pMaterial = 0;
         Rimy3D::showError( tr( "Could not find/open the material." ), windowTitle() );
-        return;
+        return false;
     }
     setWindowTitle( fileSource.baseName() + ( m_pMaterial->GetShaderElementType( mCGenomeMaterial::ESpecialShaderElementIndex_MaterialResourceObject ).Contains( "PS" ) ? ".xshmat" : "._xmat" ) );
     m_pUi->lbShaderElement->setEnabled( true );
@@ -113,6 +113,7 @@ void GenomeMaterialDialog::openMaterial( QString const & a_strMaterialName )
     arrItems << ( "** " + m_pMaterial->GetShaderElementType( mCGenomeMaterial::ESpecialShaderElementIndex_ShaderObject ) ).GetText();
     m_pUi->cbShaderElement->insertItems( 0, arrItems );
     updateActiveGroupBox();
+    return true;
 }
 
 void GenomeMaterialDialog::updateMaterialSuggestions( void )
