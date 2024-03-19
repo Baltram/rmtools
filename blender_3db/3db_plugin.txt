@@ -9,9 +9,8 @@ Supported Blender versions:
 Installation:
 
   After the script files have been copied to your Blender addons directory, start Blender
-  and open the dialog File > User Preferences, then switch to the 'Addons' tab and select
-  the category 'Import-Export'. Make sure the addon 'Import-Export: Baltram's 3D format'
-  is checked and click on 'Save User Settings'.
+  and open the dialog Edit > Preferences, then switch to the 'Addons' tab and select
+  the category 'Import-Export'. Make sure the addon 'Baltram's 3D format' is checked.
 
 Usage:
 
