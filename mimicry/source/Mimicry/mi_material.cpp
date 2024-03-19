@@ -84,6 +84,7 @@ void mCMaterial::RemoveEmptyTexMaps( void )
 void mCMaterial::RemoveTexMap( EMapType a_enuMapType )
 {
     m_u32MapStates &= ~( 1 << a_enuMapType );
+    m_arrMaps[ a_enuMapType ] = mCTexMap();
 }
 
 void mCMaterial::Swap( mCMaterial & a_mtlOther )
