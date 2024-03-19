@@ -330,7 +330,7 @@ mEResult mCMaxFileStream::ReadPersistentGlobalData( mCVariant & a_vDest )
     default:
         {
             a_vDest.Clear();
-            Skip( u32Size - 6 );
+            Skip( static_cast< MIInt >( u32Size - 6 ) );
             return mEResult_Ok;
         }
     }

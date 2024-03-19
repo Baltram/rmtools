@@ -155,11 +155,7 @@ mEResult mCXmshReader::ReadXmshFileData( mCScene & a_sceneDest, mCIOStreamBinary
     mCMaxRisenCoordShifter::GetInstance().ShiftMeshCoords( meshDest );
     nodeDest.SwapMesh( meshDest );
     if ( mCGenomeMaterial::AccessMaterialLookupHint() )
-        mCGenomeMaterial::LoadRisenMaterials( a_sceneDest );
-    if ( a_Options.m_strTextureFileExtension != "" )
-        for ( mCMaterial * pMat = matMultiDest.AccessSubMaterials().AccessBuffer(), * pEnd = pMat + matMultiDest.GetSubMaterials().GetCount(); pMat != pEnd; ( pMat++ )->RemoveEmptyTexMaps() )
-            for ( mCMaterial::EMapType i = mCMaterial::EMapType_Diffuse; i != mCMaterial::EMapType_Count; ++i )
-                g_ReplaceFileExt( pMat->AccessTexMap( i ).AccessTextureFilePath(), a_Options.m_strTextureFileExtension );
+        mCGenomeMaterial::LoadRisenMaterials( a_sceneDest, a_Options.m_strTextureFileExtension );
     a_sceneDest.SetName( strSceneName );
     return mEResult_Ok;
 }

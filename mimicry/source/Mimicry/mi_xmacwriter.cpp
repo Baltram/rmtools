@@ -303,7 +303,7 @@ mEResult mCXmacWriter::WriteXmacFileData( mCScene a_sceneSource, mCIOStreamBinar
                             a_streamDest << g_32( uUVertIndex - uPassedVertCount );
                         }
                     }
-                    a_streamDest.Skip( -16 - uPartFaceCount * 12 );
+                    a_streamDest.Skip( static_cast< MIInt >( -16 - uPartFaceCount * 12 ) );
                     a_streamDest << g_32( uPartFaceCount * 3 ) << g_32( uPartVertCount );
                     a_streamDest.Skip( 8 + uPartFaceCount * 12 );
                     for ( MIUInt v = 0, ve = arrBoneIndicesPerMat[ uMatID ].GetCount(); v != ve; ++v )
@@ -311,7 +311,7 @@ mEResult mCXmacWriter::WriteXmacFileData( mCScene a_sceneSource, mCIOStreamBinar
                 }
                 MIUInt uSectionEnd = a_streamDest.Tell();
                 a_streamDest.Seek( uSectionBegin - 8 );
-                a_streamDest << g_32( uSectionEnd- uSectionBegin );
+                a_streamDest << g_32( uSectionEnd - uSectionBegin );
                 a_streamDest.Seek( uSectionEnd );
                 uSyncOffset = uNextSection;
             }

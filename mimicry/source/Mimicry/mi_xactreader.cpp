@@ -113,7 +113,7 @@ mEResult mCXactReader::ReadXactFileData( mCScene & a_sceneDest, mCIOStreamBinary
                     {
                         a_streamSource >> pTVerts[ v ];
                         pTVerts[ v ].AccessZ() = 0.0f;
-                        a_streamSource.Skip( uChannelCount * 8 - 12 );
+                        a_streamSource.Skip( static_cast< MIInt >( uChannelCount * 8 - 12 ) );
                     }
                 }
                 for ( MIUInt v = 0; v != uPartFaceCount; ++v )
@@ -205,7 +205,7 @@ mEResult mCXactReader::ReadXactFileData( mCScene & a_sceneDest, mCIOStreamBinary
             InitNode( a_sceneDest, u, arrParentNames, arrIsNodeInitialized );
     a_sceneDest.IdentifyBones();
     if ( mCGenomeMaterial::AccessMaterialLookupHint() )
-        mCGenomeMaterial::LoadGothic3Materials( a_sceneDest );
+        mCGenomeMaterial::LoadGothic3Materials( a_sceneDest, a_Options.m_strTextureFileExtension );
     a_sceneDest.SetName( strSceneName );
     return mEResult_Ok;
 }
