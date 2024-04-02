@@ -23,6 +23,7 @@ public:
     bool    autoUpdate( void ) const;
     void    checkForUpdates( bool a_bManual = false, bool a_bInitial = false );
     QString defaultImageFileExt( void ) const;
+    bool    lookUpMaterials( void ) const;
     bool    lookUpTextures( void ) const;
     bool    removeAscPrefixes( void ) const;
     bool    removeXmacCollisionMesh( void ) const;

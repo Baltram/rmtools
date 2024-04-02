@@ -111,26 +111,13 @@ namespace
 
 void PluginsDialog::on_pushButton_3_clicked( void )
 {
-    QString strDir = QFileDialog::getExistingDirectory( this, tr( "Please specify your Blender installation directory" ), QDir::homePath() );
-    if ( strDir == "" )
-        return;
-    QDir dirBlender( strDir );
-    if ( !getBlenderAddonsDirectory( dirBlender ) )
+    QString strDest = QDir::currentPath() + "/io_scene_3db.zip";
+    if ( !overwriteFile( strDest, ":/plugins/plugins/blender_3db/io_scene_3db.zip" ) )
     {
-        Rimy3D::showError( tr( "Could not find Blender's addons directory at the specified location." ) );
+        Rimy3D::showError( tr( "Failed to create %1.\nTry running Rimy3D with administrator privileges." ).arg( strDest ) );
         return;
     }
-    QString strDirDest = dirBlender.absolutePath() + "/io_scene_3db/";
-    QString strDirSource = ":/plugins/plugins/blender_3db/";
-    if ( !( QDir( strDirDest ).exists() || QDir( strDirDest ).mkdir( "." ) ) ||
-         !overwriteFile( strDirDest + "__init__.py", strDirSource + "__init__.py" ) ||
-         !overwriteFile( strDirDest + "export_3db.py", strDirSource + "export_3db.py" ) ||
-         !overwriteFile( strDirDest + "import_3db.py", strDirSource + "import_3db.py" ) )
-    {
-        Rimy3D::showError( tr( "Rimy3D has not write permissions to %1\nTry running Rimy3D with administrator rights." ).arg( dirBlender.absolutePath() ) );
-        return;
-    }
-    Rimy3D::showMessage( tr( "The script files have been successfully copied to %1\nYou can now start Blender and enable the addon in 'File' > 'User Preferences'." ).arg( dirBlender.absolutePath() ) );
+    Rimy3D::showMessage( tr( "The addon has been made available as %1. \nIt can now be installed via the Blender preferences menu." ).arg( strDest ) );
 }
 
 void PluginsDialog::on_pushButton_4_clicked( void )
@@ -146,7 +133,7 @@ void PluginsDialog::on_pushButton_4_clicked( void )
     }
     if ( !overwriteFile( dirMax.absolutePath() + "/3dbTools.ms", ":/plugins/plugins/max_3db/3dbTools.ms" ) )
     {
-        Rimy3D::showError( tr( "Rimy3D has not write permissions to %1\nTry running Rimy3D with administrator rights." ).arg( dirMax.absolutePath() ) );
+        Rimy3D::showError( tr( "Failed to write to the directory %1\nTry running Rimy3D with administrator privileges." ).arg( dirMax.absolutePath() ) );
         return;
     }
     Rimy3D::showMessage( tr( "3db Tools have been successfully installed." ) );

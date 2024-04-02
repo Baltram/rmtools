@@ -68,6 +68,7 @@ private slots:
     void on_actionRecent5_triggered( void );
     void on_actionSave_As_triggered( void );
     void on_menuNew_Version_Available_triggered( void );
+    void on_menuSearchPathsReminder_triggered( void );
     void onSceneChanged( void );
 private:
     static MainWindow * s_pInstance;

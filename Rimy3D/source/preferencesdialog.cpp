@@ -96,6 +96,11 @@ QString PreferencesDialog::defaultImageFileExt( void ) const
     return m_pUi->cobImgExt->currentText().toLower();
 }
 
+bool PreferencesDialog::lookUpMaterials( void ) const
+{
+    return m_pUi->cbLookUpMaterials->isChecked();
+}
+
 bool PreferencesDialog::lookUpTextures( void ) const
 {
     return m_pUi->cbLookUpTextures->isChecked();

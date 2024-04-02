@@ -123,6 +123,11 @@ bool TextureFinder::findTexture( QString const & a_strFilePathGuess, QString con
     return false;
 }
 
+bool TextureFinder::hasArchives( void )
+{
+    return m_Dialog.getArchives().length() > 0;
+}
+
 namespace
 {
     char const * const s_arrKeywords[] = { "program", "games", "spiele", "deep silver", "jowood", "piranha", "risen", "gothic" };

@@ -8,13 +8,14 @@ Supported Blender versions:
 
 Installation:
 
-  After the script files have been copied to your Blender addons directory, start Blender
-  and open the dialog Edit > Preferences, then switch to the 'Addons' tab and select
-  the category 'Import-Export'. Make sure the addon 'Baltram's 3D format' is checked.
+  Click on 'Get Add-on File' to make the packed scripts available in Rimy3D's current 
+  directory. Then start Blender and open the dialog Edit > Preferences, switch to the 
+  'Add-ons' tab and click on 'Install...'. Select the file io_scene_3db.zip and click  
+  the checkbox next to the newly installed addon in order to enable it.
 
 Usage:
 
-  With the addon enabled, .3db files can be im-/exported via File > Import and File > Export.
+  Via File > Import and File > Export, .3db files can be im-/exported in Blender.
 
 Supported data:
 

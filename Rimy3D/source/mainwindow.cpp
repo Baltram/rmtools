@@ -129,6 +129,7 @@ bool MainWindow::open( QString a_strFilePath )
             m_GenomeMaterialDialog.show();
         return m_GenomeMaterialDialog.openMaterial( a_strFilePath );
     }
+    m_pUi->menuSearchPathsReminder->menuAction()->setVisible( false );
     m_RecentFiles.removeOne( a_strFilePath );
     if ( m_SceneInfo.openSceneFile( a_strFilePath, bOnMerge ) )
     {
@@ -140,6 +141,10 @@ bool MainWindow::open( QString a_strFilePath )
         if ( !bOnMerge )
             setWindowTitle( Rimy3D::applicationName() + " - " + File.fileName() );
         updateRecentFiles();
+        if ( ( strExt == "xcmsh" || strExt == "xact" || strExt == "_xmsh" || strExt == "_xmac" ) && 
+             PreferencesDialog::getInstance().lookUpMaterials() &&
+             !TextureFinder::getInstance().hasArchives() )
+            m_pUi->menuSearchPathsReminder->menuAction()->setVisible( true );
         return true;
     }
     updateRecentFiles();
@@ -235,8 +240,10 @@ MainWindow::MainWindow( QWidget * a_pParent ) :
     connect( Rimy3D::getInstance(), SIGNAL( settingsSaving( QSettings & ) ), this, SLOT( saveSettings( QSettings & ) ) );
     connect( Rimy3D::getInstance(), SIGNAL( settingsLoading( QSettings & ) ), this, SLOT( loadSettings( QSettings & ) ) );
     connect( m_pUi->menuNew_Version_Available, SIGNAL( aboutToShow( void ) ), this, SLOT( on_menuNew_Version_Available_triggered( void ) ) );
+    connect( m_pUi->menuSearchPathsReminder, SIGNAL( aboutToShow( void ) ), this, SLOT( on_menuSearchPathsReminder_triggered( void ) ) );
     if ( Rimy3D::isUpToDate() )
         m_pUi->menuBar->removeAction( m_pUi->menuNew_Version_Available->menuAction() );
+    m_pUi->menuSearchPathsReminder->menuAction()->setVisible( false );
     TextureFinder::getInstance();
     PreferencesDialog::getInstance();
     BatchDialog::getInstance();
@@ -291,9 +298,10 @@ void MainWindow::on_action3db_Tools_for_3ds_Max_triggered( void )
 
 void MainWindow::on_actionAbout_triggered( void )
 {
-    Rimy3D::showMessage( "<p></p><b>Rimy3D v" + Rimy3D::getVersionString() + tr( "</b> (March 18th 2024)"
+    Rimy3D::showMessage( "<p></p><b>Rimy3D v" + Rimy3D::getVersionString() + tr( "</b> (April 2nd 2024)"
                          "<div style='text-indent:16px;'>by <a href='mailto:baltram-lielb@web.de'>Baltram</a> @<a href='https://forum.worldofplayers.de/forum/members/33859'>WoP</a></div>"
-                         "<p>Support: <a href='https://www.baltr.de/Rimy3D.htm'>www.baltr.de/Rimy3D.htm</a></p>"
+                         "<p>Website: <a href='https://www.baltr.de/Rimy3D.htm'>baltr.de/Rimy3D.htm</a></p>"
+                         "<p>GitHub: <a href='https://github.com/Baltram/rmtools'>github.com/Baltram/rmtools</a></p>"
                          "<p>This program uses the GLC_lib library by Laurent Ribon.</p>"
                          "<p></p>" ),
                          tr( "About Rimy3D" ) );
@@ -415,6 +423,25 @@ void MainWindow::on_menuNew_Version_Available_triggered( void )
     m_pUi->menuNew_Version_Available->hide();
     m_pUi->menuNew_Version_Available->show();
     on_actionCheck_For_Updates_triggered();
+}
+
+void MainWindow::on_menuSearchPathsReminder_triggered( void )
+{
+    m_pUi->menuSearchPathsReminder->hide();
+    m_pUi->menuSearchPathsReminder->show();
+    Rimy3D::showMessage( tr( "When importing Gothic 3/Risen meshes, it is recommended to register material\n"
+        "and texture archives in the search paths dialog in the 'Extras' menu.\n"
+        "\n"
+        "Minimal configuration for Gothic 3:\n"
+        "    <Gothic 3 directory>\\Data\\_compiledMaterial.pak\n"
+        "    <Gothic 3 directory>\\Data\\_compiledImage.pak\n"
+        "\n"
+        "Minimal configuration for Risen:\n"
+        "    <Risen directory>\\data\\common\\materials.pak\n"
+        "    <Risen directory>\\data\\compiled\\images.pak\n"
+        "\n"
+        "For both games, any patch or mod volumes (.p00, .p01, .m00 etc.) containing\n"
+        "images or materials can be added on top of that." ) );
 }
 
 void MainWindow::onSceneChanged( void )

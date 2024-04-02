@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>800</width>
-    <height>521</height>
+    <height>551</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -59,7 +59,16 @@
        <item>
         <widget class="QWidget" name="wGmax" native="true">
          <layout class="QHBoxLayout" name="horizontalLayout">
-          <property name="margin">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
            <number>0</number>
           </property>
           <item>
@@ -124,7 +133,16 @@
        <item>
         <widget class="QWidget" name="wMax" native="true">
          <layout class="QHBoxLayout" name="horizontalLayout_4">
-          <property name="margin">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
            <number>0</number>
           </property>
           <item>
@@ -165,7 +183,16 @@
           </size>
          </property>
          <layout class="QHBoxLayout" name="horizontalLayout_2">
-          <property name="margin">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
            <number>0</number>
           </property>
           <item>
@@ -177,7 +204,7 @@
              </size>
             </property>
             <property name="text">
-             <string>Install Script Files</string>
+             <string>Get Add-on File</string>
             </property>
            </widget>
           </item>

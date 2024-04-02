@@ -5,9 +5,7 @@
         <file>plugins/Extended Saving/Extended Saving_DE.txt</file>
         <file>plugins/blender_3db/3db_plugin.txt</file>
         <file>plugins/blender_3db/3db_plugin_DE.txt</file>
-        <file>plugins/blender_3db/__init__.py</file>
-        <file>plugins/blender_3db/export_3db.py</file>
-        <file>plugins/blender_3db/import_3db.py</file>
+        <file>plugins/blender_3db/io_scene_3db.zip</file>
         <file>plugins/max_3db/3dbTools.ms</file>
         <file>plugins/max_3db/3db Tools.txt</file>
         <file>plugins/max_3db/3db Tools_DE.txt</file>

@@ -17,6 +17,7 @@ public:
 public:
     void findFile( char const * a_pcFileName, char const * a_pcFileExt, QByteArray * a_pDest );
     bool findTexture( QString const & a_strFilePathGuess, QString const & a_strCurrentDir, QImage & a_imgDest, bool a_bExtensiveSearch );
+    bool hasArchives( void );
     void searchForInstalledGames( void );
     void showDialog( void );
     void updateArchives( void );

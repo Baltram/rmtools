@@ -1,5 +1,5 @@
 ------
-Blender 3db Import-/Export-Scripts v1.2 by Baltram <baltram-lielb@web.de> (12. März 2024)
+Blender 3db Import-/Export-Scripts v1.2 von Baltram <baltram-lielb@web.de> (12. März 2024)
 ------
 
 Unterstützte Blender-Versionen
@@ -8,9 +8,10 @@ Unterstützte Blender-Versionen
 
 Installation:
 
-  Nachdem die Scriptdateien in das Addon-Verzeichnis von Blender kopiert worden sind, muss
-  unter 'Edit' > 'Preferences...' > 'Add-ons' das Häkchen bei 'Baltram's 3D format' 
-  gesetzt werden. Es befindet sich in der 'Import-Export'-Kategorie.
+  Per Klick auf 'Add-on-Datei bereitstellen' wird die Datei io_scene_3db.zip im aktuellen
+  Verzeichnis von Rimy3D bereitgestellt. In Blender kann diese Datei dann über 
+  'Edit' > 'Preferences...' > 'Add-ons' > 'Install...' installiert werden. Das 
+  Häkchen neben dem frisch installierten Add-on muss zur Aktivierung gesetzt werden.
 
 Verwendung:
 
